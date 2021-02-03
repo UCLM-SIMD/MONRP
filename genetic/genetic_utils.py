@@ -1,5 +1,5 @@
 import random
-from population import Population
+from models.population import Population
 
 class GeneticUtils:
     def __init__(self, problem, random_seed,selection_candidates=2, crossover_prob=0.9,mutation_prob=0.1):
@@ -19,7 +19,7 @@ class GeneticUtils:
         best_candidate=None
         best_total_score=0
         #elegir individuo entre X num de candidatos aleatorios
-        for j in range(0,self.num_candidates):
+        for j in range(0,self.selection_candidates):
           random_index=random.randint(0,len(population)-1)
           candidate=population.get(random_index)
           candidate.evaluate_fitness()
@@ -53,7 +53,7 @@ class GeneticUtils:
 
             else:
                 # pair 2 parents -> crossover or add them and jump 1 index extra
-                prob = random()
+                prob = random.random()
                 if prob < self.crossover_prob:
                     offsprings = self.crossover_aux_one_point(population.get(i), population.get(i + 1))
                     # print(offsprings)
@@ -101,7 +101,7 @@ class GeneticUtils:
         new_population.extend(population.population)
 
         for individual in new_population:
-            prob = random()
+            prob = random.random()
         if prob < self.mutation_prob:
             # print(individual)
             chromosome_length = len(individual.genes)

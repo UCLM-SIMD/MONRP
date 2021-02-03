@@ -148,3 +148,9 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 fabric.properties
+
+
+.idea/workspace.xml
+# output
+output
+.idea/workspace.xml

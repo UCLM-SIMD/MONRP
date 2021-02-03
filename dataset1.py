@@ -1,5 +1,5 @@
 #DATASET 1
-from gen import Gen
+from models.gen import Gen
 
 
 def generate_dataset1_genes():

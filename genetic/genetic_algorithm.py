@@ -1,12 +1,11 @@
-from genetic_algorithm.genetic_utils import GeneticUtils
-from individual import Individual
-from population import Population
+from genetic.genetic_utils import GeneticUtils
+from models.individual import Individual
+from models.population import Population
 import copy
-import random
 import time
 
 class GeneticAlgorithm:
-	def __init__(self, problem, random_seed, population_length=20, max_evaluations=1000,
+	def __init__(self, problem, random_seed, population_length=20, max_generations=1000,
 				 selection="tournament", selection_candidates=2,
 				 crossover="onepoint", crossover_prob=0.9,
 				 mutation="mutation", mutation_prob=0.1,
@@ -14,10 +13,11 @@ class GeneticAlgorithm:
 
 		self.problem = problem
 		self.population_length = population_length
-		self.max_evaluations = max_evaluations
+		self.max_generations = max_generations
 		self.random_seed=random_seed
 		self.utils = GeneticUtils(self.problem,self.random_seed, selection_candidates, crossover_prob, mutation_prob)
 		self.best_individual = None
+		self.population=None
 
 		if selection == "tournament":
 			self.selection = self.utils.selection_tournament
@@ -68,32 +68,42 @@ class GeneticAlgorithm:
 	# RUN ALGORITHM------------------------------------------------------------------
 	def run(self):
 		start = time.time()
-		num_evaluations = 0
-		population = self.generate_starting_population()
-		self.evaluate(population)
-		print("Best individual score: ", self.best_individual.total_score)
-		while num_evaluations < self.max_evaluations:
+
+		num_generations = 0
+		returned_population = None
+
+		self.population = self.generate_starting_population()
+		self.evaluate(self.population)
+		#print("Best individual score: ", self.best_individual.total_score)
+
+		while num_generations < self.max_generations:
 			# selection
-			new_population = self.selection(population)
+			new_population = self.selection(self.population)
+
 			# crossover
 			new_population = self.crossover(new_population)
+
 			# mutation
 			new_population = self.mutation(new_population)
+
 			# evaluation
 			self.evaluate(new_population)
-			# replacement
-			population = self.replacement(population, new_population)
+			returned_population = copy.deepcopy(new_population)
 
-			num_evaluations += 1
+			# replacement
+			self.population = self.replacement(self.population, new_population)
+
+			num_generations += 1
 			# mostrar por pantalla
-			if num_evaluations % 100 == 0:
-				print("Nº Evaluations: ", num_evaluations)
-				print("Best individual score: ", self.best_individual.total_score)
+			#if num_generations % 100 == 0:
+				#print("Nº Generations: ", num_generations)
+				#print("Best individual score: ", self.best_individual.total_score)
 
 		# end
 		# print(self.best_individual)
 		end = time.time()
 
-		return {"population": new_population,
+		return {"population": returned_population,
 				"time": end - start,
+				"best_individual": self.best_individual
 				}

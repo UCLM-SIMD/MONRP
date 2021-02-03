@@ -1,8 +1,7 @@
-import math
 import random
 import copy
 
-from population import Population
+from models.population import Population
 from scipy.spatial import distance
 
 class NSGAIIUtils:

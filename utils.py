@@ -1,6 +1,4 @@
 import math
-from individual import Individual
-from population import Population
 
 
 #HYPERVOLUME------------------------------------------------------------------

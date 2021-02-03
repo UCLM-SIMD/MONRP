@@ -1,7 +1,6 @@
-from genetic_algorithm.genetic_utils import GeneticUtils
-from individual import Individual
+from models.individual import Individual
 from nsgaii.nsgaii_utils import NSGAIIUtils
-from population import Population
+from models.population import Population
 import copy
 import time
 
@@ -105,13 +104,14 @@ class NSGAIIAlgorithm:
 			returned_population = copy.deepcopy(self.population)
 			num_generations += 1
 			# mostrar por pantalla
-			if num_generations % 100 == 0:
-				print("Nº Generations: ", num_generations)
-
-		end = time.time()
+			#if num_generations % 100 == 0:
+			#	print("Nº Generations: ", num_generations)
 
 		hv = self.calculate_hypervolume(returned_population)
 		spread = self.calculate_spread(returned_population)
+
+		end = time.time()
+
 		return {"population": returned_population.fronts[0],
 				"time": end - start,
 				"hv": hv,

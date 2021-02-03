@@ -1,11 +1,7 @@
 from dataset1 import generate_dataset1_genes
-from genetic_algorithm.genetic_algorithm import GeneticAlgorithm
-from nsgaii.nsgaii_algorithm import NSGAIIAlgorithm
-from problem import Problem
+from genetic_nds.genetic_nds_algorithm import GeneticNDSAlgorithm
+from models.problem import Problem
 import matplotlib.pyplot as plt
-import time
-import random
-
 
 # generar los genes de los requisitos------------------------------------------------------------------
 genes=generate_dataset1_genes()
@@ -32,7 +28,23 @@ print("Best individual: ",algorithm.best_individual)
 
 '''
 
-algorithm=NSGAIIAlgorithm(problem,random_seed=seed,population_length=20,max_generations=100,crossover_prob=0.9,mutation_prob=0.1)
+algorithm=GeneticNDSAlgorithm(problem,random_seed=seed,population_length=20,max_generations=200,crossover_prob=0.9,mutation_prob=0.5)
+result=algorithm.run()
+
+print("Time: ",result["time"])
+print("HV: ",result["hv"])
+print("Spread: ",result["spread"])
+print(len(result["nds"]))
+func = [i.objectives for i in result["nds"]]
+function1 = [i[0].value for i in func]
+function2 = [i[1].value for i in func]
+plt.xlabel('Function score [MAX]', fontsize=15)
+plt.ylabel('Function cost (SP) [MIN]', fontsize=15)
+plt.scatter(function1, function2)
+plt.show()
+
+'''
+algorithm=NSGAIIAlgorithm(problem,random_seed=seed,population_length=20,max_generations=1000,crossover_prob=0.9,mutation_prob=0.5)
 result=algorithm.run()
 
 print("Time: ",result["time"])
@@ -50,5 +62,5 @@ plt.xlabel('Function score [MAX]', fontsize=15)
 plt.ylabel('Function cost (SP) [MIN]', fontsize=15)
 plt.scatter(function1, function2)
 plt.show()
-
+'''
 

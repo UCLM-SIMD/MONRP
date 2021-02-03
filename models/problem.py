@@ -1,6 +1,5 @@
-from individual import Individual
-from objective import Objective
-from population import Population
+from models.individual import Individual
+from models.objective import Objective
 
 
 class Problem:
