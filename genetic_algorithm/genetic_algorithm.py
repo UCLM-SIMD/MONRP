@@ -2,10 +2,11 @@ from genetic_algorithm.genetic_utils import GeneticUtils
 from individual import Individual
 from population import Population
 import copy
-
+import random
+import time
 
 class GeneticAlgorithm:
-	def __init__(self, problem, population_length=20, max_evaluations=1000,
+	def __init__(self, problem, random_seed, population_length=20, max_evaluations=1000,
 				 selection="tournament", selection_candidates=2,
 				 crossover="onepoint", crossover_prob=0.9,
 				 mutation="mutation", mutation_prob=0.1,
@@ -14,8 +15,8 @@ class GeneticAlgorithm:
 		self.problem = problem
 		self.population_length = population_length
 		self.max_evaluations = max_evaluations
-
-		self.utils = GeneticUtils(self.problem, selection_candidates, crossover_prob, mutation_prob)
+		self.random_seed=random_seed
+		self.utils = GeneticUtils(self.problem,self.random_seed, selection_candidates, crossover_prob, mutation_prob)
 		self.best_individual = None
 
 		if selection == "tournament":
@@ -29,6 +30,13 @@ class GeneticAlgorithm:
 
 		if replacement == "elitism":
 			self.replacement = self.utils.replacement_elitism
+
+	'''
+	def aa(self):
+		random.seed(self.random_seed)
+		print(random.random())
+		print(random.random())
+	'''
 
 	# GENERATE STARTING POPULATION------------------------------------------------------------------
 	def generate_starting_population(self):
@@ -59,6 +67,7 @@ class GeneticAlgorithm:
 
 	# RUN ALGORITHM------------------------------------------------------------------
 	def run(self):
+		start = time.time()
 		num_evaluations = 0
 		population = self.generate_starting_population()
 		self.evaluate(population)
@@ -83,3 +92,8 @@ class GeneticAlgorithm:
 
 		# end
 		# print(self.best_individual)
+		end = time.time()
+
+		return {"population": new_population,
+				"time": end - start,
+				}

@@ -1,16 +1,18 @@
-from random import *
+import random
 from population import Population
 
 class GeneticUtils:
-    def __init__(self, problem,selection_candidates=2, crossover_prob=0.9,mutation_prob=0.1):
+    def __init__(self, problem, random_seed,selection_candidates=2, crossover_prob=0.9,mutation_prob=0.1):
         self.problem=problem
+        self.random_seed=random_seed
+        random.seed(self.random_seed)
         self.selection_candidates=selection_candidates
         self.crossover_prob=crossover_prob
         self.mutation_prob=mutation_prob
 
     #SELECTION------------------------------------------------------------------
     def selection_tournament(self,population):
-      self.num_candidates=2
+      #self.num_candidates=2
       new_population=Population()
       #crear tantos individuos como tamaño de la poblacion
       for i in range(0,len(population)):
@@ -18,7 +20,7 @@ class GeneticUtils:
         best_total_score=0
         #elegir individuo entre X num de candidatos aleatorios
         for j in range(0,self.num_candidates):
-          random_index=randint(0,len(population)-1)
+          random_index=random.randint(0,len(population)-1)
           candidate=population.get(random_index)
           candidate.evaluate_fitness()
           #print(candidate)
@@ -70,7 +72,7 @@ class GeneticUtils:
         # print(parent2)
         chromosome_length = len(parent1.genes)
         # index aleatorio del punto de division para el cruce
-        crossover_point = randint(1, chromosome_length - 1)
+        crossover_point = random.randint(1, chromosome_length - 1)
         # print('-------------crossover_point :', crossover_point )
         offspring_genes1 = parent1.genes[0:crossover_point] + parent2.genes[crossover_point:]
         # print("first slice")
@@ -104,7 +106,7 @@ class GeneticUtils:
             # print(individual)
             chromosome_length = len(individual.genes)
             # print(prob)
-            mutation_point = randint(0, chromosome_length - 1)
+            mutation_point = random.randint(0, chromosome_length - 1)
             if individual.genes[mutation_point].included == 0:
                 individual.genes[mutation_point].included = 1
             else:

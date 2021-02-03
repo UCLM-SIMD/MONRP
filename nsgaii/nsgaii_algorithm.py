@@ -3,22 +3,24 @@ from individual import Individual
 from nsgaii.nsgaii_utils import NSGAIIUtils
 from population import Population
 import copy
+import time
 
 
 class NSGAIIAlgorithm:
-	def __init__(self, problem, population_length=20, max_generations=1000,
+	def __init__(self, problem, random_seed, population_length=20, max_generations=1000,
 				 selection="tournament", selection_candidates=2,
 				 crossover="onepoint", crossover_prob=0.9,
 				 mutation="mutation", mutation_prob=0.1,
 				 replacement="elitism"):
 
 		self.problem = problem
+		self.random_seed = random_seed
 		self.population_length = population_length
 		self.max_generations = max_generations
 
 		self.population = None
 
-		self.utils = NSGAIIUtils(self.problem,selection_candidates, crossover_prob, mutation_prob)
+		self.utils = NSGAIIUtils(self.problem, random_seed, selection_candidates, crossover_prob, mutation_prob)
 
 		self.calculate_hypervolume = self.utils.calculate_hypervolume
 		self.calculate_spread = self.utils.calculate_spread
@@ -49,6 +51,7 @@ class NSGAIIAlgorithm:
 
 	# RUN ALGORITHM------------------------------------------------------------------
 	def run(self):
+		start = time.time()
 		# inicializacion del nsgaii
 		self.population = self.generate_starting_population()
 
@@ -61,7 +64,7 @@ class NSGAIIAlgorithm:
 		offsprings = self.selection(self.population)
 		offsprings = self.crossover(offsprings)
 		offsprings = self.mutation(offsprings)
-		#offsprings = self.replacement(self.population, offsprings)
+		# offsprings = self.replacement(self.population, offsprings)
 
 		# iteraciones del nsgaii
 		num_generations = 0
@@ -93,12 +96,11 @@ class NSGAIIAlgorithm:
 			for front in self.population.fronts:
 				self.calculate_crowding_distance(front)
 
-
 			# use selection,crossover and mutation to create a new population Qt+1
 			offsprings = self.selection(self.population)
 			offsprings = self.crossover(offsprings)
 			offsprings = self.mutation(offsprings)
-			#offsprings = self.replacement(self.population, offsprings)
+			# offsprings = self.replacement(self.population, offsprings)
 
 			returned_population = copy.deepcopy(self.population)
 			num_generations += 1
@@ -106,4 +108,12 @@ class NSGAIIAlgorithm:
 			if num_generations % 100 == 0:
 				print("Nº Generations: ", num_generations)
 
-		return returned_population.fronts[0]
+		end = time.time()
+
+		hv = self.calculate_hypervolume(returned_population)
+		spread = self.calculate_spread(returned_population)
+		return {"population": returned_population.fronts[0],
+				"time": end - start,
+				"hv": hv,
+				"spread": spread
+				}

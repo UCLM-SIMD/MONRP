@@ -1,13 +1,15 @@
 import math
-from random import randint, random
+import random
 import copy
 
 from population import Population
-
+from scipy.spatial import distance
 
 class NSGAIIUtils:
-	def __init__(self, problem, selection_candidates=2, crossover_prob=0.9, mutation_prob=0.1):
+	def __init__(self, problem,random_seed, selection_candidates=2, crossover_prob=0.9, mutation_prob=0.1):
 		self.problem = problem
+		self.random_seed = random_seed
+		random.seed(self.random_seed)
 		self.selection_candidates = selection_candidates
 		self.crossover_prob = crossover_prob
 		self.mutation_prob = mutation_prob
@@ -21,7 +23,7 @@ class NSGAIIUtils:
 			best_candidate = None
 			# elegir individuo entre X num de candidatos aleatorios
 			for j in range(0, self.num_candidates):
-				random_index = randint(0, len(population) - 1)
+				random_index = random.randint(0, len(population) - 1)
 				candidate = population.get(random_index)
 
 				# guardar el candidato que mejor crowding tiene
@@ -47,7 +49,7 @@ class NSGAIIUtils:
 
 			else:
 				# pair 2 parents -> crossover or add them and jump 1 index extra
-				prob = random()
+				prob = random.random()
 				if prob < self.crossover_prob:
 					offsprings = self.crossover_aux_one_point(population.get(i), population.get(i + 1))
 					new_population.extend(offsprings)
@@ -63,7 +65,7 @@ class NSGAIIUtils:
 		chromosome_length = len(parent1.genes)
 
 		# index aleatorio del punto de division para el cruce
-		crossover_point = randint(1, chromosome_length - 1)
+		crossover_point = random.randint(1, chromosome_length - 1)
 		offspring_genes1 = parent1.genes[0:crossover_point] + parent2.genes[crossover_point:]
 		offspring_genes2 = parent2.genes[0:crossover_point] + parent1.genes[crossover_point:]
 
@@ -78,10 +80,10 @@ class NSGAIIUtils:
 		new_population.extend(population.population)
 
 		for individual in new_population:
-			prob = random()
+			prob = random.random()
 		if prob < self.mutation_prob:
 			chromosome_length = len(individual.genes)
-			mutation_point = randint(0, chromosome_length - 1)
+			mutation_point = random.randint(0, chromosome_length - 1)
 			if individual.genes[mutation_point].included == 0:
 				individual.genes[mutation_point].included = 1
 			else:
@@ -168,56 +170,50 @@ class NSGAIIUtils:
 	# HYPERVOLUME------------------------------------------------------------------
 	def calculate_hypervolume(self, population):
 		# obtener minimos y maximos de cada objetivo
-		score_min = float('inf')
-		score_max = 0
-		cost_min = float('inf')
-		cost_max = 0
-		for ind in population:
-			if ind.score > score_max:
-				score_max = ind.score
-			if ind.score < score_min:
-				score_min = ind.score
+		objectives_diff=[]
+		for i in range(0,len(population.get(0).objectives)):
+			aux_min = float('inf')
+			aux_max = 0
+			for ind in population:  ##############################################
+				if ind.objectives[i].value < aux_min:
+					aux_min = ind.objectives[i].value
+				if ind.objectives[i].value > aux_max:
+					aux_max = ind.objectives[i].value
 
-			if ind.cost > cost_max:
-				cost_max = ind.cost
-			if ind.cost < cost_min:
-				cost_min = ind.cost
+			objectives_diff.append(aux_max-aux_min)
 
 		# calcular hypervolume
-		score_diff = score_max - score_min
-		cost_diff = cost_max - cost_min
-		hypervolume = score_diff * cost_diff
+		hypervolume=1
+		for i in range(0, len(objectives_diff)):
+			hypervolume*=objectives_diff[i]
+
 		return hypervolume
 
 	# SPREAD------------------------------------------------------------------
-	def eudis(self, v1, v2):
-		dist = [(a - b) ** 2 for a, b in zip(v1, v2)]
-		dist = math.sqrt(sum(dist))
-		return dist
+	def eudis2(self, v1, v2):
+		return distance.euclidean(v1,v2)
 
 	def calculate_spread(self, population):
-		MAX_SCORE = 25  # max_importancia_Stakeholder * max_prioridad_pbi_para_Stakeholder
-		MAX_COST = 40  # max estimacion de pbi
+		MIN_OBJ1 = 0
+		MIN_OBJ2 = 0
+		MAX_OBJ1 = 25  # max_importancia_Stakeholder * max_prioridad_pbi_para_Stakeholder
+		MAX_OBJ2 = 40  # max estimacion de pbi
 		df = None
 		dl = None
 		davg = None
 		sum_dist = None
 		N = len(population)
 		spread = None
-		# ordenar de menor a mayor coste
-		population.population.sort(key=lambda x: x.cost)
-		# for p in population:
-		# print(p)
-		# obtener first_solution=menor coste y last_solution=mayor coste
+
 		first_solution = population.get(0)
 		last_solution = population.get(len(population) - 1)
 
 		# obtener first_extreme=[score=0 (worst),cost=0 (best)] y last_extreme=[score=MAX_SCORE (best),cost=MAX_COST (worst)]
-		first_extreme = [0, 0]
-		last_extreme = [MAX_SCORE, MAX_COST]
+		first_extreme = [MIN_OBJ1, MIN_OBJ2]
+		last_extreme = [MAX_OBJ1, MAX_OBJ2]
 
-		df = self.eudis([first_solution.score, first_solution.cost], first_extreme)
-		dl = self.eudis([last_solution.score, last_solution.cost], last_extreme)
+		df = self.eudis2([first_solution.objectives[0].value, first_solution.objectives[1].value], first_extreme)
+		dl = self.eudis2([last_solution.objectives[0].value, last_solution.objectives[1].value], last_extreme)
 
 		# calcular media de todas las distancias entre puntos
 		davg = 0
@@ -227,16 +223,16 @@ class NSGAIIUtils:
 				# no calcular distancia de un punto a si mismo
 				if i != j:
 					dist_count += 1
-					davg += self.eudis([population.get(i).score, population.get(i).cost],
-									   [population.get(j).score, population.get(j).cost])
+					davg += self.eudis2([population.get(i).objectives[0].value, population.get(i).objectives[1].value],
+									   [population.get(j).objectives[0].value, population.get(j).objectives[1].value])
 		# media=distancia total / numero de distancias
 		davg /= dist_count
 
 		# calcular sumatorio(i=1->N-1) |di-davg|
 		sum_dist = 0
 		for i in range(0, len(population) - 1):
-			di = self.eudis([population.get(i).score, population.get(i).cost],
-							[population.get(i + 1).score, population.get(i + 1).cost])
+			di = self.eudis2([population.get(i).objectives[0].value, population.get(i).objectives[1].value],
+							[population.get(i + 1).objectives[0].value, population.get(i + 1).objectives[1].value])
 			sum_dist += abs(di - davg)
 
 		# formula spread
