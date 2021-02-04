@@ -72,44 +72,24 @@ class GeneticNDSAlgorithm:
 			self.best_individual = copy.deepcopy(new_best_individual)
 
 	# UPDATE NDS------------------------------------------------------------------
+	def is_non_dominated(self, ind, population):
+		non_dominated = True
+		for other_ind in population:
+			if ind.dominates(other_ind):
+				non_dominated=non_dominated and True
+			elif other_ind.dominates(ind):
+				non_dominated=False
+
+		return non_dominated
+
 	def updateNDS(self, population):
-		newNDS=copy.deepcopy(self.nds)
+		# juntamos todos los individuos posibles
+		newNDS = copy.deepcopy(self.nds)
 		for ind in population:
 			newNDS.append(ind)
-			for other_ind in self.nds:
-				# si domina a cualquiera del nds: lo elimina
-				if ind.dominates(other_ind):
-					if other_ind in newNDS:##########################
-						newNDS.remove(other_ind)
 
-				# si alguno le domina al ind: se quita si esta metido y se pasa al siguiente
-				elif other_ind.dominates(ind):
-					if ind in newNDS:
-						newNDS.remove(ind)
-					break
-
-		self.nds = copy.deepcopy(newNDS)
-
-	# UPDATE NDS------------------------------------------------------------------
-	def updateNDS2(self, population):
-		for ind in population:
-			self.nds.append(ind)
-
-		newNDS = copy.deepcopy(self.nds)
-
-		for ind in self.nds:
-			for other_ind in self.nds:
-				# si domina a cualquiera del nds: lo elimina
-				if ind.dominates(other_ind):
-					newNDS.remove(other_ind)
-				# no detecta que exista el elemento en la lista porque es de una lista y la otra está clonada
-
-				# si alguno le domina al ind: se quita si esta metido y se pasa al siguiente
-				elif other_ind.dominates(ind):
-					newNDS.remove(ind)
-					break
-
-		self.nds = copy.deepcopy(newNDS)
+		# para cada candidato: incluirlo si no lo domina ninguno de la lista
+		self.nds = [x for x in newNDS if self.is_non_dominated(x,newNDS)]
 
 	# RUN ALGORITHM------------------------------------------------------------------
 	def run(self):
@@ -136,7 +116,7 @@ class GeneticNDSAlgorithm:
 			self.evaluate(new_population)
 
 			#update NDS
-			self.updateNDS2(new_population)
+			self.updateNDS(new_population)
 
 			returned_population = copy.deepcopy(new_population)
 
