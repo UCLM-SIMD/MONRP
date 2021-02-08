@@ -1,11 +1,11 @@
-from genetic.genetic_utils import GeneticUtils
+from algorithms.genetic_nds.genetic_nds_utils import GeneticNDSUtils
 from models.individual import Individual
 from models.population import Population
 import copy
 import time
 
-class GeneticAlgorithm:
-	def __init__(self, problem, random_seed, population_length=20, max_generations=1000,
+class GeneticNDSAlgorithm:
+	def __init__(self, problem, random_seed=None, population_length=20, max_generations=1000,
 				 selection="tournament", selection_candidates=2,
 				 crossover="onepoint", crossover_prob=0.9,
 				 mutation="mutation", mutation_prob=0.1,
@@ -15,9 +15,25 @@ class GeneticAlgorithm:
 		self.population_length = population_length
 		self.max_generations = max_generations
 		self.random_seed=random_seed
-		self.utils = GeneticUtils(self.problem,self.random_seed, selection_candidates, crossover_prob, mutation_prob)
+
+		self.selection_scheme=selection
+		self.selection_candidates = selection_candidates
+		self.crossover_scheme = crossover
+		self.crossover_prob = crossover_prob
+		self.mutation_scheme = mutation
+		self.mutation_prob = mutation_prob
+		self.replacement_scheme = replacement
+
+
+		self.utils = GeneticNDSUtils(self.problem,self.random_seed, selection_candidates, crossover_prob, mutation_prob)
+
+		self.calculate_hypervolume = self.utils.calculate_hypervolume
+		self.calculate_spread = self.utils.calculate_spread
+
 		self.best_individual = None
 		self.population=None
+
+		self.nds=[]
 
 		if selection == "tournament":
 			self.selection = self.utils.selection_tournament
@@ -65,6 +81,26 @@ class GeneticAlgorithm:
 		else:
 			self.best_individual = copy.deepcopy(new_best_individual)
 
+	# UPDATE NDS------------------------------------------------------------------
+	def is_non_dominated(self, ind, population):
+		non_dominated = True
+		for other_ind in population:
+			if ind.dominates(other_ind):
+				non_dominated=non_dominated and True
+			elif other_ind.dominates(ind):
+				non_dominated=False
+
+		return non_dominated
+
+	def updateNDS(self, population):
+		# juntamos todos los individuos posibles
+		newNDS = copy.deepcopy(self.nds)
+		for ind in population:
+			newNDS.append(ind)
+
+		# para cada candidato: incluirlo si no lo domina ninguno de la lista
+		self.nds = [x for x in newNDS if self.is_non_dominated(x,newNDS)]
+
 	# RUN ALGORITHM------------------------------------------------------------------
 	def run(self):
 		start = time.time()
@@ -88,6 +124,10 @@ class GeneticAlgorithm:
 
 			# evaluation
 			self.evaluate(new_population)
+
+			#update NDS
+			self.updateNDS(new_population)
+
 			returned_population = copy.deepcopy(new_population)
 
 			# replacement
@@ -101,9 +141,16 @@ class GeneticAlgorithm:
 
 		# end
 		# print(self.best_individual)
+
+		hv = self.calculate_hypervolume(returned_population)
+		spread = self.calculate_spread(returned_population)
+
 		end = time.time()
 
 		return {"population": returned_population,
 				"time": end - start,
-				"best_individual": self.best_individual
+				"best_individual": self.best_individual,
+				"nds": self.nds,
+				"hv": hv,
+				"spread": spread
 				}

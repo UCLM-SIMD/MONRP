@@ -1,12 +1,12 @@
 from models.individual import Individual
-from nsgaii.nsgaii_utils import NSGAIIUtils
+from algorithms.nsgaii.nsgaii_utils import NSGAIIUtils
 from models.population import Population
 import copy
 import time
 
 
 class NSGAIIAlgorithm:
-	def __init__(self, problem, random_seed, population_length=20, max_generations=1000,
+	def __init__(self, problem, random_seed=None, population_length=20, max_generations=1000,
 				 selection="tournament", selection_candidates=2,
 				 crossover="onepoint", crossover_prob=0.9,
 				 mutation="mutation", mutation_prob=0.1,
@@ -16,8 +16,15 @@ class NSGAIIAlgorithm:
 		self.random_seed = random_seed
 		self.population_length = population_length
 		self.max_generations = max_generations
-
 		self.population = None
+
+		self.selection_scheme = selection
+		self.selection_candidates = selection_candidates
+		self.crossover_scheme = crossover
+		self.crossover_prob = crossover_prob
+		self.mutation_scheme = mutation
+		self.mutation_prob = mutation_prob
+		self.replacement_scheme = replacement
 
 		self.utils = NSGAIIUtils(self.problem, random_seed, selection_candidates, crossover_prob, mutation_prob)
 

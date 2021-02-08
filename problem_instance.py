@@ -1,5 +1,5 @@
 from dataset1 import generate_dataset1_genes
-from genetic_nds.genetic_nds_algorithm import GeneticNDSAlgorithm
+from algorithms.genetic_nds.genetic_nds_algorithm import GeneticNDSAlgorithm
 from models.problem import Problem
 import matplotlib.pyplot as plt
 
