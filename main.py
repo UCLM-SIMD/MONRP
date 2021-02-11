@@ -19,16 +19,14 @@ seed=10
 seed=None
 
 # iniciar------------------------------------------------------------------
-
+'''
 algorithm=GeneticAlgorithm(problem,random_seed=seed,population_length=20,max_generations=100,crossover_prob=0.9,mutation_prob=0.1)
 executer(algorithm,iterations=5)
 
 
 algorithm=GeneticNDSAlgorithm(problem,random_seed=seed,population_length=20,max_generations=100,crossover_prob=0.9,mutation_prob=0.1)
 executer(algorithm,iterations=5)
+'''
 
-
-algorithm=NSGAIIAlgorithm(problem,random_seed=seed,population_length=20,max_generations=100,crossover_prob=0.9,mutation_prob=0.5)
-executer(algorithm,iterations=5)
-
-
+algorithm=NSGAIIAlgorithm(problem,random_seed=seed,population_length=20,max_generations=300,crossover_prob=0.8,mutation_prob=0.05)
+executer(algorithm,iterations=20)

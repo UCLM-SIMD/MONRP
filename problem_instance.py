@@ -1,3 +1,4 @@
+from algorithms.nsgaii.nsgaii_algorithm import NSGAIIAlgorithm
 from dataset1 import generate_dataset1_genes
 from algorithms.genetic_nds.genetic_nds_algorithm import GeneticNDSAlgorithm
 from models.problem import Problem
@@ -27,7 +28,7 @@ result=algorithm.run()
 print("Best individual: ",algorithm.best_individual)
 
 '''
-
+'''
 algorithm=GeneticNDSAlgorithm(problem,random_seed=seed,population_length=20,max_generations=200,crossover_prob=0.9,mutation_prob=0.5)
 result=algorithm.run()
 
@@ -44,7 +45,7 @@ plt.scatter(function1, function2)
 plt.show()
 
 '''
-algorithm=NSGAIIAlgorithm(problem,random_seed=seed,population_length=20,max_generations=1000,crossover_prob=0.9,mutation_prob=0.5)
+algorithm=NSGAIIAlgorithm(problem,random_seed=seed,population_length=20,max_generations=100,crossover_prob=0.9,mutation_prob=0.5)
 result=algorithm.run()
 
 print("Time: ",result["time"])
@@ -62,5 +63,5 @@ plt.xlabel('Function score [MAX]', fontsize=15)
 plt.ylabel('Function cost (SP) [MIN]', fontsize=15)
 plt.scatter(function1, function2)
 plt.show()
-'''
+
 

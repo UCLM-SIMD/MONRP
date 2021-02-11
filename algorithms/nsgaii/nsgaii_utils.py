@@ -2,7 +2,8 @@ import random
 import copy
 
 from models.population import Population
-from scipy.spatial import distance
+#from scipy.spatial import distance
+import math
 
 class NSGAIIUtils:
 	def __init__(self, problem,random_seed, selection_candidates=2, crossover_prob=0.9, mutation_prob=0.1):
@@ -190,7 +191,8 @@ class NSGAIIUtils:
 
 	# SPREAD------------------------------------------------------------------
 	def eudis2(self, v1, v2):
-		return distance.euclidean(v1,v2)
+		return math.dist(v1, v2)
+		#return distance.euclidean(v1,v2)
 
 	def calculate_spread(self, population):
 		MIN_OBJ1 = 0

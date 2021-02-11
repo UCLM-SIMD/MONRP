@@ -110,23 +110,23 @@ def executer(algorithm, iterations):
 		print("Executing iteration: ", i + 1)
 		result = algorithm.run()
 
-		time = str(result["time"]) if "time" in result else '-'
-		hv = str(result["hv"]) if "hv" in result else '-'
-		spread = str(result["spread"]) if "spread" in result else '-'
+		time = str(result["time"]) if "time" in result else 'NaN'
+		hv = str(result["hv"]) if "hv" in result else 'NaN'
+		spread = str(result["spread"]) if "spread" in result else 'NaN'
 
 		f = open("output/executer.txt", "a")
-		f.write(str(algorithm_name) + ", " +
-				str(population_length) + ", " +
-				str(generations) + ", " +
-				str(selection) + ", " +
-				str(selection_candidates) + ", " +
-				str(crossover) + ", " +
-				str(crossover_prob) + ", " +
-				str(mutation) + ", " +
-				str(mutation_prob) + ", " +
-				str(replacement) + ", " +
-				str(time) + ", " +
-				str(hv) + ", " +
+		f.write(str(algorithm_name) + "," +
+				str(population_length) + "," +
+				str(generations) + "," +
+				str(selection) + "," +
+				str(selection_candidates) + "," +
+				str(crossover) + "," +
+				str(crossover_prob) + "," +
+				str(mutation) + "," +
+				str(mutation_prob) + "," +
+				str(replacement) + "," +
+				str(time) + "," +
+				str(hv) + "," +
 				str(spread) +
 				"\n")
 		f.close()
