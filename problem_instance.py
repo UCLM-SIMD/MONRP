@@ -45,7 +45,7 @@ plt.scatter(function1, function2)
 plt.show()
 
 '''
-algorithm=NSGAIIAlgorithm(problem,random_seed=seed,population_length=20,max_generations=100,crossover_prob=0.9,mutation_prob=0.5)
+algorithm=NSGAIIAlgorithm(problem,random_seed=seed,population_length=40,max_generations=100,crossover_prob=0.8,mutation_prob=0.05)
 result=algorithm.run()
 
 print("Time: ",result["time"])
