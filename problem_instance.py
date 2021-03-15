@@ -45,7 +45,7 @@ plt.scatter(function1, function2)
 plt.show()
 
 '''
-algorithm=NSGAIIAlgorithm(problem,random_seed=seed,population_length=40,max_generations=100,crossover_prob=0.8,mutation_prob=0.05)
+algorithm=GeneticNDSAlgorithm(problem,random_seed=seed,population_length=40,max_generations=300,crossover_prob=0.85,mutation_prob=0.05)
 result=algorithm.run()
 
 print("Time: ",result["time"])
@@ -59,9 +59,15 @@ for ind in result["population"]:
 func = [i.objectives for i in result["population"]]
 function1 = [i[0].value for i in func]
 function2 = [i[1].value for i in func]
+
+plt.scatter(function1, function2, marker='o')
+algorithm=NSGAIIAlgorithm(problem,random_seed=seed,population_length=40,max_generations=300,crossover_prob=0.85,mutation_prob=0.1)
+result=algorithm.run()
+func = [i.objectives for i in result["population"]]
+function3 = [i[0].value for i in func]
+function4 = [i[1].value for i in func]
+
 plt.xlabel('Function score [MAX]', fontsize=15)
 plt.ylabel('Function cost (SP) [MIN]', fontsize=15)
-plt.scatter(function1, function2)
+plt.scatter(function3, function4, marker='x')
 plt.show()
-
-

@@ -46,7 +46,8 @@ class GeneticNDSAlgorithm:
 
 		if replacement == "elitism":
 			self.replacement = self.utils.replacement_elitism
-
+		elif replacement == "elitismNDS":
+			self.replacement = self.utils.replacement_elitism
 	'''
 	def aa(self):
 		random.seed(self.random_seed)
@@ -82,9 +83,9 @@ class GeneticNDSAlgorithm:
 			self.best_individual = copy.deepcopy(new_best_individual)
 
 	# UPDATE NDS------------------------------------------------------------------
-	def is_non_dominated(self, ind, population):
+	def is_non_dominated(self, ind, nds):
 		non_dominated = True
-		for other_ind in population:
+		for other_ind in nds:
 			if ind.dominates(other_ind):
 				non_dominated=non_dominated and True
 			elif other_ind.dominates(ind):
@@ -131,7 +132,10 @@ class GeneticNDSAlgorithm:
 			returned_population = copy.deepcopy(new_population)
 
 			# replacement
-			self.population = self.replacement(self.population, new_population)
+			if self.replacement_scheme == "elitismNDS":
+				self.population = self.replacement(self.nds, new_population)
+			else:
+				self.population = self.replacement(self.population, new_population)
 
 			num_generations += 1
 			# mostrar por pantalla
@@ -147,10 +151,11 @@ class GeneticNDSAlgorithm:
 
 		end = time.time()
 
-		return {"population": returned_population,
+		return {#"population": returned_population,
+				"population": self.nds,
 				"time": end - start,
 				"best_individual": self.best_individual,
-				"nds": self.nds,
+				#"nds": self.nds,
 				"hv": hv,
 				"spread": spread
 				}

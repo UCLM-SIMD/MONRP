@@ -81,13 +81,13 @@ class NSGAIIUtils:
 
 		for individual in new_population:
 			prob = random.random()
-		if prob < self.mutation_prob:
-			chromosome_length = len(individual.genes)
-			mutation_point = random.randint(0, chromosome_length - 1)
-			if individual.genes[mutation_point].included == 0:
-				individual.genes[mutation_point].included = 1
-			else:
-				individual.genes[mutation_point].included = 0
+			if prob < self.mutation_prob:
+				chromosome_length = len(individual.genes)
+				mutation_point = random.randint(0, chromosome_length - 1)
+				if individual.genes[mutation_point].included == 0:
+					individual.genes[mutation_point].included = 1
+				else:
+					individual.genes[mutation_point].included = 0
 
 		return new_population
 
