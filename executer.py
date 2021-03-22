@@ -1,10 +1,11 @@
 def initialize_file(file_path):
-	print("Running...")
+	#print("Running...")
 	f = open(file_path, "w")
 	f.write("Dataset,Algorithm,Population Length,Generations,"
 			"Selection Scheme,Selection Candidates,Crossover Scheme,Crossover Probability,Mutation Scheme,"
 			"Mutation Probability,Replacement Scheme,Time(s),AvgValue,BestAvgValue,BestGeneration,HV,Spread,NumSolutions,Spacing\n")
-	print("File reseted")
+	#print("File reseted")
+	f.close()
 
 def executer(algorithm, dataset, iterations, file_path):
 	algorithm_name = algorithm.__class__.__name__
