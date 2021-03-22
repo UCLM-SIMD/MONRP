@@ -28,8 +28,8 @@ def loop_executions():
 						for selected_algorithm in algorithms:
 							start = time.time()
 							algorithm = selected_algorithm(dataset_problem["problem"], random_seed=seed, population_length=p, max_generations=g,crossover_prob=c, mutation_prob=m,
-														   replacement = "elitismNDS")
-							executer(algorithm,dataset=dataset_problem["name"], iterations=2, file_path=FILE_PATH)
+														   replacement = "elitism")
+							executer(algorithm,dataset=dataset_problem["name"], iterations=1, file_path=FILE_PATH)
 
 							counter += 1
 							end = time.time()
@@ -52,24 +52,32 @@ problem2=Problem(genes2,objectives_minimization)
 # crear seed random------------------------------------------------------------------
 seed=10
 # opciones------------------------------------------------------------------
-cross=[0.8,0.85,0.9]
-mut=[0,0.05,0.1]
-pop=[20,30,40]
-generations=[100,200,300]
+cross=[0.8
+	#,0.85,0.9
+	   ]
+mut=[0
+	#,0.05,0.1
+	 ]
+pop=[20
+	#,30,40
+	 ]
+generations=[100
+	#,200,300
+	]
 dataset_problems=[
 	{"problem":problem1,
 	 "name":"dataset1"
 	 },
-	{"problem":problem2,
-	 "name":"dataset2"
-	 }]
+	#{"problem":problem2,
+	# "name":"dataset2"}
+]
 algorithms=[
-	#GeneticAlgorithm,
+	GeneticAlgorithm,
 	GeneticNDSAlgorithm,
-	#NSGAIIAlgorithm
+	NSGAIIAlgorithm
 ]
 
 FILE_PATH="output/resultados.txt"
-#initialize_file(FILE_PATH)
+initialize_file(FILE_PATH)
 
 loop_executions()#.compute()

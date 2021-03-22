@@ -27,12 +27,18 @@ class GeneticNDSAlgorithm:
 
 		self.utils = GeneticNDSUtils(self.problem,self.random_seed, selection_candidates, crossover_prob, mutation_prob)
 
+		self.calculate_numSolutions=self.utils.calculate_numSolutions
+		self.calculate_avgValue = self.utils.calculate_avgValue
+		self.calculate_bestAvgValue = self.utils.calculate_bestAvgValue
+
+		self.calculate_spacing = self.utils.calculate_spacing
 		self.calculate_hypervolume = self.utils.calculate_hypervolume
 		self.calculate_spread = self.utils.calculate_spread
 
 		self.best_individual = None
 		self.population=None
-
+		self.best_generation_avgValue = None
+		self.best_generation = None
 		self.nds=[]
 
 		if selection == "tournament":
@@ -102,12 +108,21 @@ class GeneticNDSAlgorithm:
 		# para cada candidato: incluirlo si no lo domina ninguno de la lista
 		self.nds = [x for x in newNDS if self.is_non_dominated(x,newNDS)]
 
+	# LAST GENERATION ENHANCE------------------------------------------------------------------
+	def calculate_last_generation_with_enhance(self, num_generation, population):
+		bestAvgValue = self.calculate_bestAvgValue(population)
+		if bestAvgValue > self.best_generation_avgValue:
+			self.best_generation_avgValue = bestAvgValue
+			self.best_generation = num_generation
+
 	# RUN ALGORITHM------------------------------------------------------------------
 	def run(self):
 		start = time.time()
 
 		num_generations = 0
 		returned_population = None
+		self.best_generation_avgValue = 0
+		self.best_generation = 0
 
 		self.population = self.generate_starting_population()
 		self.evaluate(self.population)
@@ -130,6 +145,7 @@ class GeneticNDSAlgorithm:
 			self.updateNDS(new_population)
 
 			returned_population = copy.deepcopy(new_population)
+			self.calculate_last_generation_with_enhance(num_generations, returned_population)
 
 			# replacement
 			if self.replacement_scheme == "elitismNDS":
@@ -145,10 +161,12 @@ class GeneticNDSAlgorithm:
 
 		# end
 		# print(self.best_individual)
-
-		hv = self.calculate_hypervolume(returned_population)
-		spread = self.calculate_spread(returned_population)
-
+		avgValue = self.calculate_avgValue(self.nds)
+		bestAvgValue = self.calculate_bestAvgValue(self.nds)
+		hv = self.calculate_hypervolume(self.nds)
+		spread = self.calculate_spread(self.nds)
+		numSolutions = self.calculate_numSolutions(self.nds)
+		spacing = self.calculate_spacing(self.nds)
 		end = time.time()
 
 		return {#"population": returned_population,
@@ -156,6 +174,11 @@ class GeneticNDSAlgorithm:
 				"time": end - start,
 				"best_individual": self.best_individual,
 				#"nds": self.nds,
+				"avgValue": avgValue,
+				"bestAvgValue": bestAvgValue,
 				"hv": hv,
-				"spread": spread
+				"spread": spread,
+				"numSolutions":numSolutions,
+				"spacing": spacing,
+				"best_generation_num": self.best_generation,
 				}

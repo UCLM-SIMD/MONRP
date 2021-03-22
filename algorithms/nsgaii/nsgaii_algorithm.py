@@ -17,6 +17,8 @@ class NSGAIIAlgorithm:
 		self.population_length = population_length
 		self.max_generations = max_generations
 		self.population = None
+		self.best_generation_avgValue = None
+		self.best_generation = None
 
 		self.selection_scheme = selection
 		self.selection_candidates = selection_candidates
@@ -28,6 +30,10 @@ class NSGAIIAlgorithm:
 
 		self.utils = NSGAIIUtils(self.problem, random_seed, selection_candidates, crossover_prob, mutation_prob)
 
+		self.calculate_numSolutions = self.utils.calculate_numSolutions
+		self.calculate_spacing = self.utils.calculate_spacing
+		self.calculate_avgValue = self.utils.calculate_avgValue
+		self.calculate_bestAvgValue = self.utils.calculate_bestAvgValue
 		self.calculate_hypervolume = self.utils.calculate_hypervolume
 		self.calculate_spread = self.utils.calculate_spread
 		self.fast_nondominated_sort = self.utils.fast_nondominated_sort
@@ -45,6 +51,8 @@ class NSGAIIAlgorithm:
 
 		if replacement == "elitism":
 			self.replacement = self.utils.replacement_elitism
+		else:
+			self.replacement = self.utils.replacement_elitism
 
 	# GENERATE STARTING POPULATION------------------------------------------------------------------
 	def generate_starting_population(self):
@@ -55,9 +63,18 @@ class NSGAIIAlgorithm:
 			population.append(individual)
 		return population
 
+	# LAST GENERATION ENHANCE------------------------------------------------------------------
+	def calculate_last_generation_with_enhance(self, num_generation, population):
+		bestAvgValue = self.calculate_bestAvgValue(population)
+		if bestAvgValue > self.best_generation_avgValue:
+			self.best_generation_avgValue = bestAvgValue
+			self.best_generation = num_generation
+
 	# RUN ALGORITHM------------------------------------------------------------------
 	def run(self):
 		start = time.time()
+		self.best_generation_avgValue = 0
+		self.best_generation = 0
 		# inicializacion del nsgaii
 		self.population = self.generate_starting_population()
 
@@ -109,18 +126,28 @@ class NSGAIIAlgorithm:
 			# offsprings = self.replacement(self.population, offsprings)
 
 			returned_population = copy.deepcopy(self.population)
+			self.calculate_last_generation_with_enhance(num_generations, returned_population)
+
 			num_generations += 1
 			# mostrar por pantalla
 			#if num_generations % 100 == 0:
 			#	print("Nº Generations: ", num_generations)
 
-		hv = self.calculate_hypervolume(returned_population)
-		spread = self.calculate_spread(returned_population)
-
+		avgValue = self.calculate_avgValue(returned_population.fronts[0])
+		bestAvgValue = self.calculate_bestAvgValue(returned_population.fronts[0])
+		hv = self.calculate_hypervolume(returned_population.fronts[0])
+		spread = self.calculate_spread(returned_population.fronts[0])
+		numSolutions = self.calculate_numSolutions(returned_population.fronts[0])
+		spacing = self.calculate_spacing(returned_population.fronts[0])
 		end = time.time()
 
 		return {"population": returned_population.fronts[0],
 				"time": end - start,
+				"avgValue": avgValue,
+				"bestAvgValue": bestAvgValue,
 				"hv": hv,
-				"spread": spread
+				"spread": spread,
+				"numSolutions": numSolutions,
+				"spacing": spacing,
+				"best_generation_num": self.best_generation
 				}

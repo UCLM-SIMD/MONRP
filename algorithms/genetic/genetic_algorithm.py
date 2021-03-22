@@ -27,6 +27,11 @@ class GeneticAlgorithm:
 		self.utils = GeneticUtils(self.problem,self.random_seed, selection_candidates, crossover_prob, mutation_prob)
 		self.best_individual = None
 		self.population=None
+		self.best_generation_avgValue = None
+		self.best_generation = None
+		self.calculate_numSolutions = self.utils.calculate_numSolutions
+		self.calculate_avgValue = self.utils.calculate_avgValue
+		self.calculate_bestAvgValue = self.utils.calculate_bestAvgValue
 
 		if selection == "tournament":
 			self.selection = self.utils.selection_tournament
@@ -38,6 +43,8 @@ class GeneticAlgorithm:
 			self.mutation = self.utils.mutation
 
 		if replacement == "elitism":
+			self.replacement = self.utils.replacement_elitism
+		else:
 			self.replacement = self.utils.replacement_elitism
 
 	'''
@@ -74,13 +81,21 @@ class GeneticAlgorithm:
 		else:
 			self.best_individual = copy.deepcopy(new_best_individual)
 
+	# LAST GENERATION ENHANCE------------------------------------------------------------------
+	def calculate_last_generation_with_enhance(self, num_generation, population):
+		bestAvgValue = self.calculate_bestAvgValue(population)
+		if bestAvgValue > self.best_generation_avgValue:
+			self.best_generation_avgValue = bestAvgValue
+			self.best_generation = num_generation
+
 	# RUN ALGORITHM------------------------------------------------------------------
 	def run(self):
 		start = time.time()
 
 		num_generations = 0
 		returned_population = None
-
+		self.best_generation_avgValue = 0
+		self.best_generation = 0
 		self.population = self.generate_starting_population()
 		self.evaluate(self.population)
 		#print("Best individual score: ", self.best_individual.total_score)
@@ -99,6 +114,8 @@ class GeneticAlgorithm:
 			self.evaluate(new_population)
 			returned_population = copy.deepcopy(new_population)
 
+			self.calculate_last_generation_with_enhance(num_generations, returned_population)
+
 			# replacement
 			self.population = self.replacement(self.population, new_population)
 
@@ -110,9 +127,15 @@ class GeneticAlgorithm:
 
 		# end
 		# print(self.best_individual)
+
+		avgValue = self.calculate_avgValue(returned_population)
+		bestAvgValue = self.calculate_bestAvgValue(returned_population)
 		end = time.time()
 
 		return {"population": returned_population,
 				"time": end - start,
-				"best_individual": self.best_individual
+				"avgValue": avgValue,
+				"bestAvgValue": bestAvgValue,
+				"best_individual": self.best_individual,
+				"best_generation_num": self.best_generation
 				}

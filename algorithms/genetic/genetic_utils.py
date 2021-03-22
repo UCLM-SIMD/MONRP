@@ -149,3 +149,24 @@ class GeneticUtils:
         # print(newpopulation_replaced[worst_individual_index])
         # print("end")
         return newpopulation_replaced
+
+    # AVGVALUE------------------------------------------------------------------
+    def calculate_avgValue(self, population):
+        avgValue = 0
+        for ind in population:
+            avgValue += ind.total_score
+        avgValue /= len(population)
+        return avgValue
+
+    # BESTAVGVALUE------------------------------------------------------------------
+    def calculate_bestAvgValue(self, population):
+        bestAvgValue = 0
+        for ind in population:
+            if bestAvgValue < ind.total_score:
+                bestAvgValue = ind.total_score
+
+        return bestAvgValue
+
+    # NUMSOLUTIONS------------------------------------------------------------------
+    def calculate_numSolutions(self, population):
+        return len(population)

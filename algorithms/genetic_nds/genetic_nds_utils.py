@@ -152,11 +152,59 @@ class GeneticNDSUtils:
         # print("end")
         return newpopulation_replaced
 
-        # HYPERVOLUME------------------------------------------------------------------
+    # AVGVALUE------------------------------------------------------------------
+    def calculate_avgValue(self, population):
+        avgValue = 0
+        for ind in population:
+            avgValue += ind.total_score
+        avgValue /= len(population)
+        return avgValue
+
+    # BESTAVGVALUE------------------------------------------------------------------
+    def calculate_bestAvgValue(self, population):
+        bestAvgValue = 0
+        for ind in population:
+            if bestAvgValue < ind.total_score:
+                bestAvgValue = ind.total_score
+
+        return bestAvgValue
+
+    # NUMSOLUTIONS------------------------------------------------------------------
+    def calculate_numSolutions(self, population):
+        return len(population)
+
+    # SPACING------------------------------------------------------------------
+    def calculate_spacing(self, population):
+        n = len(population)
+        N = len(population[0].objectives)
+        spacing = 0
+        mean_objectives = []
+        # calcular la media de cada objetivo
+        for i in range(0, len(population[0].objectives)):
+            objective = 0
+            for j in range(0, len(population)):
+                objective += population[j].objectives[i].value
+            objective /= len(population)
+            mean_objectives.append(objective)
+
+        for j in range(0, len(population)):
+            aux_spacing = 0
+            for i in range(0, len(population[0].objectives)):
+                di = mean_objectives[i]
+                dij = population[j].objectives[i].value
+                aux = (1 - (abs(dij) / di)) ** 2
+                aux_spacing += aux
+            aux_spacing = math.sqrt(aux_spacing)
+            spacing += aux_spacing
+
+        spacing /= (n * N)
+        return spacing
+
+    # HYPERVOLUME------------------------------------------------------------------
     def calculate_hypervolume(self, population):
         # obtener minimos y maximos de cada objetivo
         objectives_diff = []
-        for i in range(0, len(population.get(0).objectives)):
+        for i in range(0, len(population[0].objectives)):
             aux_min = float('inf')
             aux_max = 0
             for ind in population:  ##############################################
@@ -191,8 +239,8 @@ class GeneticNDSUtils:
         N = len(population)
         spread = None
 
-        first_solution = population.get(0)
-        last_solution = population.get(len(population) - 1)
+        first_solution = population[0]
+        last_solution = population[len(population) - 1]
 
         # obtener first_extreme=[score=0 (worst),cost=0 (best)] y last_extreme=[score=MAX_SCORE (best),cost=MAX_COST (worst)]
         first_extreme = [MIN_OBJ1, MIN_OBJ2]
@@ -209,17 +257,16 @@ class GeneticNDSUtils:
                 # no calcular distancia de un punto a si mismo
                 if i != j:
                     dist_count += 1
-                    davg += self.eudis2(
-                        [population.get(i).objectives[0].value, population.get(i).objectives[1].value],
-                        [population.get(j).objectives[0].value, population.get(j).objectives[1].value])
+                    davg += self.eudis2([population[i].objectives[0].value, population[i].objectives[1].value],
+                                        [population[j].objectives[0].value, population[j].objectives[1].value])
         # media=distancia total / numero de distancias
         davg /= dist_count
 
         # calcular sumatorio(i=1->N-1) |di-davg|
         sum_dist = 0
         for i in range(0, len(population) - 1):
-            di = self.eudis2([population.get(i).objectives[0].value, population.get(i).objectives[1].value],
-                             [population.get(i + 1).objectives[0].value, population.get(i + 1).objectives[1].value])
+            di = self.eudis2([population[i].objectives[0].value, population[i].objectives[1].value],
+                             [population[i + 1].objectives[0].value, population[i + 1].objectives[1].value])
             sum_dist += abs(di - davg)
 
         # formula spread

@@ -1,3 +1,4 @@
+from algorithms.genetic.genetic_algorithm import GeneticAlgorithm
 from algorithms.nsgaii.nsgaii_algorithm import NSGAIIAlgorithm
 from dataset1 import generate_dataset1_genes
 from algorithms.genetic_nds.genetic_nds_algorithm import GeneticNDSAlgorithm
@@ -45,13 +46,15 @@ plt.scatter(function1, function2)
 plt.show()
 
 '''
-algorithm=GeneticNDSAlgorithm(problem,random_seed=seed,population_length=40,max_generations=300,crossover_prob=0.85,mutation_prob=0.05)
+algorithm=NSGAIIAlgorithm(problem,random_seed=seed,population_length=40,max_generations=300,crossover_prob=0.85,mutation_prob=0.1)
 result=algorithm.run()
-
 print("Time: ",result["time"])
+print("AvgValue: ",result["avgValue"])
+print("NumSolutions: ",result["numSolutions"])
 print("HV: ",result["hv"])
 print("Spread: ",result["spread"])
-
+print("spacing: ",result["spacing"])
+'''
 print("Front 0:")
 for ind in result["population"]:
 	print(ind)
@@ -71,3 +74,4 @@ plt.xlabel('Function score [MAX]', fontsize=15)
 plt.ylabel('Function cost (SP) [MIN]', fontsize=15)
 plt.scatter(function3, function4, marker='x')
 plt.show()
+'''
