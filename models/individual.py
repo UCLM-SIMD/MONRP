@@ -66,3 +66,17 @@ class Individual:
             s += str(i) + '\n'
         s += "]"
         return s
+
+    def __eq__(self, other_ind):
+        return(other_ind.objectives[0].value == self.objectives[0].value and \
+					other_ind.objectives[1].value == self.objectives[1].value \
+               and self.print_genes()==other_ind.print_genes())
+
+    def __hash__(self):
+        return hash(('genes', self.print_genes()))
+
+    def print_genes(self):
+        return_genes=""
+        for i in range(0, len(self.genes)):
+            return_genes+=str(self.genes[i].included)+","
+        return return_genes

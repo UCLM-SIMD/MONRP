@@ -52,7 +52,7 @@ class GeneticNDSAlgorithm:
 
 		if replacement == "elitism":
 			self.replacement = self.utils.replacement_elitism
-		elif replacement == "elitismNDS":
+		elif replacement == "elitismnds":
 			self.replacement = self.utils.replacement_elitism
 	'''
 	def aa(self):
@@ -92,23 +92,31 @@ class GeneticNDSAlgorithm:
 	def is_non_dominated(self, ind, nds):
 		non_dominated = True
 		for other_ind in nds:
-			if ind.dominates(other_ind):
-				non_dominated=non_dominated and True
-			elif other_ind.dominates(ind):
+			#if ind.dominates(other_ind):
+				#non_dominated=non_dominated and True
+			#	pass
+			#elif other_ind.dominates(ind):
+			if other_ind.dominates(ind):
 				non_dominated=False
+				break
 
 		return non_dominated
 
-	def updateNDS(self, population):
-		# juntamos todos los individuos posibles
-		newNDS = copy.deepcopy(self.nds)
-		for ind in population:
-			newNDS.append(ind)
+	def updateNDS(self, new_population):
+		new_nds=[]
+		merged_population=copy.deepcopy(self.nds)
+		merged_population.extend(new_population)
+		for ind in merged_population:
+			dominated = False
+			for other_ind in merged_population:
+				if other_ind.dominates(ind):
+					dominated = True
+					break
+			if not dominated:
+				new_nds.append(ind)
+		self.nds=copy.deepcopy(new_nds)
 
-		# para cada candidato: incluirlo si no lo domina ninguno de la lista
-		self.nds = [x for x in newNDS if self.is_non_dominated(x,newNDS)]
-
-	# LAST GENERATION ENHANCE------------------------------------------------------------------
+# LAST GENERATION ENHANCE------------------------------------------------------------------
 	def calculate_last_generation_with_enhance(self, num_generation, population):
 		bestAvgValue = self.calculate_bestAvgValue(population)
 		if bestAvgValue > self.best_generation_avgValue:
@@ -148,7 +156,7 @@ class GeneticNDSAlgorithm:
 			self.calculate_last_generation_with_enhance(num_generations, returned_population)
 
 			# replacement
-			if self.replacement_scheme == "elitismNDS":
+			if self.replacement_scheme == "elitismnds":
 				self.population = self.replacement(self.nds, new_population)
 			else:
 				self.population = self.replacement(self.population, new_population)

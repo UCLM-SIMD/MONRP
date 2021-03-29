@@ -34,6 +34,8 @@ class NSGAIIAlgorithm:
 		self.calculate_spacing = self.utils.calculate_spacing
 		self.calculate_avgValue = self.utils.calculate_avgValue
 		self.calculate_bestAvgValue = self.utils.calculate_bestAvgValue
+		self.best_individual = None
+
 		self.calculate_hypervolume = self.utils.calculate_hypervolume
 		self.calculate_spread = self.utils.calculate_spread
 		self.fast_nondominated_sort = self.utils.fast_nondominated_sort
@@ -70,6 +72,24 @@ class NSGAIIAlgorithm:
 			self.best_generation_avgValue = bestAvgValue
 			self.best_generation = num_generation
 
+	# EVALUATION------------------------------------------------------------------
+	def evaluate(self, population):
+		best_score = 0
+		new_best_individual = None
+		for ind in population:
+			ind.evaluate_fitness()
+			if ind.total_score > best_score:
+				new_best_individual = copy.deepcopy(ind)
+				best_score = ind.total_score
+		# print(best_score)
+		# print(ind)
+
+		if self.best_individual is not None:
+			if new_best_individual.total_score > self.best_individual.total_score:
+				self.best_individual = copy.deepcopy(new_best_individual)
+		else:
+			self.best_individual = copy.deepcopy(new_best_individual)
+
 	# RUN ALGORITHM------------------------------------------------------------------
 	def run(self):
 		start = time.time()
@@ -77,7 +97,7 @@ class NSGAIIAlgorithm:
 		self.best_generation = 0
 		# inicializacion del nsgaii
 		self.population = self.generate_starting_population()
-
+		self.evaluate(self.population)
 		# ordenar por NDS y crowding distance
 		self.fast_nondominated_sort(self.population)
 		for front in self.population.fronts:
@@ -94,6 +114,7 @@ class NSGAIIAlgorithm:
 		returned_population = None
 		while num_generations < self.max_generations:
 			self.population.extend(offsprings)
+			self.evaluate(self.population)
 			self.fast_nondominated_sort(self.population)
 			new_population = Population()
 			front_num = 0
@@ -105,7 +126,7 @@ class NSGAIIAlgorithm:
 				front_num += 1
 
 			# ordenar los individuos del ultimo front por crowding distance y agregar los X que falten para completar la poblacion
-			self.calculate_crowding_distance(self.population.fronts[front_num])  ###########no se por que
+			self.calculate_crowding_distance(self.population.fronts[front_num])
 
 			# sort in descending order using >=n
 			self.population.fronts[front_num].sort(key=lambda individual: individual.crowding_distance, reverse=True)
@@ -145,6 +166,7 @@ class NSGAIIAlgorithm:
 				"time": end - start,
 				"avgValue": avgValue,
 				"bestAvgValue": bestAvgValue,
+				"best_individual": self.best_individual,
 				"hv": hv,
 				"spread": spread,
 				"numSolutions": numSolutions,

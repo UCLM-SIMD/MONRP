@@ -171,7 +171,7 @@ class GeneticNDSUtils:
 
     # NUMSOLUTIONS------------------------------------------------------------------
     def calculate_numSolutions(self, population):
-        return len(population)
+        return len(set(population))
 
     # SPACING------------------------------------------------------------------
     def calculate_spacing(self, population):

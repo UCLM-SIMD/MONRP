@@ -119,6 +119,7 @@ class NSGAIIUtils:
 			individual.domination_count = 0
 			individual.dominated_solutions = []
 			for other_individual in population:
+				#if not individual.__eq__(other_individual):##########################################
 				if individual.dominates(other_individual):
 					individual.dominated_solutions.append(other_individual)
 				elif other_individual.dominates(individual):
@@ -169,7 +170,7 @@ class NSGAIIUtils:
 
 	# NUMSOLUTIONS------------------------------------------------------------------
 	def calculate_numSolutions(self, population):
-		return len(population)
+		return len(set(population))
 
 	# SPACING------------------------------------------------------------------
 	def calculate_spacing(self, population):
