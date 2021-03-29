@@ -4,11 +4,13 @@ def generate_configurations():
 	cross=[0.8
 		,0.85,0.9
 		   ]
-	mut=[0
-		,0.05,0.1
+	mut=[
+		#0,0.05,0.1,
+		 0.5,0.7,1
 		 ]
 	pop=[20
 		,30,40
+		 #,100,125
 		 ]
 	generations=[100
 		,200,300
@@ -34,10 +36,12 @@ def generate_configurations():
 					for dataset_problem in dataset_problems:
 						for selected_algorithm in algorithms:
 							for r in replacements:
-								returnStr = str(dataset_problem) + ' '+str(seed) + ' '+str(selected_algorithm) + ' '+ \
-											 str(p) + ' ' +str(g) + ' '+str(c) + ' '+ \
-											 str(m) + ' ' +str(r) + '\n'
-								f.write(returnStr)
+								if (r==replacements[1] and selected_algorithm==algorithms[1]) or \
+								(r != replacements[1]):
+									returnStr = str(dataset_problem) + ' '+str(seed) + ' '+str(selected_algorithm) + ' '+ \
+												 str(p) + ' ' +str(g) + ' '+str(c) + ' '+ \
+												 str(m) + ' ' +str(r) + '\n'
+									f.write(returnStr)
 
 	f.close()
 	#print(returnStr)

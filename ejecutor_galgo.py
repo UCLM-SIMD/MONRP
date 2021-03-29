@@ -5,7 +5,7 @@ from algorithms.genetic_nds.genetic_nds_algorithm import GeneticNDSAlgorithm
 from algorithms.nsgaii.nsgaii_algorithm import NSGAIIAlgorithm
 from dataset1 import generate_dataset1_genes
 from dataset2 import generate_dataset2_genes
-from executer import executer, initialize_file
+from executer import executer, initialize_file, reset_file
 from models.problem import Problem
 import argparse
 
@@ -42,7 +42,7 @@ print(repl)
 print(filepath)
 '''
 
-execute = True
+#execute = True
 if dataset_name =="dataset1":
 	genes = generate_dataset1_genes()
 	problem = Problem(genes, objectives_minimization)
@@ -52,19 +52,20 @@ elif dataset_name =="dataset2":
 
 if algorithm_name == "genetic":
 	algorithm = GeneticAlgorithm
-	if repl != "elitism":
-		execute = False
+	#if repl != "elitism":
+	#	execute = False
 elif algorithm_name == "geneticnds":
 	algorithm = GeneticNDSAlgorithm
 elif algorithm_name == "nsgaii":
 	algorithm = NSGAIIAlgorithm
-	if repl != "elitism":
-		execute = False
+	#if repl != "elitism":
+	#	execute = False
 
-if execute:
-	algorithm = algorithm(problem, random_seed=seed, population_length=pop_length, max_generations=max_gens,
-						  crossover_prob=cross_prob, mutation_prob=mut_prob,
-								   replacement = repl)
-	#initialize_file(filepath)
-	executer(algorithm,dataset=dataset_name, iterations=10, file_path=filepath)
+#if execute:
+algorithm = algorithm(problem, random_seed=seed, population_length=pop_length, max_generations=max_gens,
+					  crossover_prob=cross_prob, mutation_prob=mut_prob,
+							   replacement = repl)
+#initialize_file(filepath)
+reset_file(filepath)
+executer(algorithm,dataset=dataset_name, iterations=10, file_path=filepath)
 

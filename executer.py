@@ -7,6 +7,10 @@ def initialize_file(file_path):
 	#print("File reseted")
 	f.close()
 
+def reset_file(file_path):
+	file = open(file_path, "w")
+	file.close()
+
 def executer(algorithm, dataset, iterations, file_path):
 	algorithm_name = algorithm.__class__.__name__
 	dataset = dataset
