@@ -48,15 +48,17 @@ plt.show()
 
 '''
 #algorithm=NSGAIIAlgorithm(problem,random_seed=seed,population_length=20,max_generations=100,crossover_prob=0.85,mutation_prob=0.1,replacement="elitism")
-algorithm=NSGAIIAlgorithm(problem,random_seed=seed,population_length=40,max_generations=300,crossover_prob=0.9,mutation_prob=0.1,replacement="elitism")
+algorithm=GeneticAlgorithm(problem,random_seed=seed,population_length=40,max_generations=300,crossover_prob=0.9,
+						   crossover="onepoint",mutation_prob=0.1,mutation="flip1bit",replacement="elitism")
 
 result=algorithm.run()
 print("Time: ",result["time"])
 print("AvgValue: ",result["avgValue"])
-print("NumSolutions: ",result["numSolutions"])
-print("HV: ",result["hv"])
-print("Spread: ",result["spread"])
-print("Spacing: ",result["spacing"])
+if "numSolutions" in result:
+	print("NumSolutions: ",result["numSolutions"])
+	print("HV: ",result["hv"])
+	print("Spread: ",result["spread"])
+	print("Spacing: ",result["spacing"])
 
 for ind in result["population"]:
 	counter=0
@@ -94,23 +96,25 @@ for ind in result["population"]:
 	#print(ind)
 #print(total_counter)
 
-print("Front 0:")
-for ind in result["population"]:
-	print(ind)
+#print("Front 0:")
+#for ind in result["population"]:
+	#print(ind)
 
 func = [i.objectives for i in result["population"]]
 function1 = [i[0].value for i in func]
 function2 = [i[1].value for i in func]
 
 plt.scatter(function1, function2, marker='o')
-algorithm=NSGAIIAlgorithm(problem,random_seed=seed,population_length=40,max_generations=300,crossover_prob=0.9,mutation_prob=1,replacement="elitism")
+algorithm=GeneticNDSAlgorithm(problem,random_seed=seed,population_length=40,max_generations=300,crossover_prob=0.9,
+							 crossover="onepoint", mutation_prob=0.1,mutation="flipeachbit",replacement="elitism")
 result=algorithm.run()
 print("Time: ",result["time"])
 print("AvgValue: ",result["avgValue"])
-print("NumSolutions: ",result["numSolutions"])
-print("HV: ",result["hv"])
-print("Spread: ",result["spread"])
-print("Spacing: ",result["spacing"])
+if "numSolutions" in result:
+	print("NumSolutions: ",result["numSolutions"])
+	print("HV: ",result["hv"])
+	print("Spread: ",result["spread"])
+	print("Spacing: ",result["spacing"])
 func = [i.objectives for i in result["population"]]
 function3 = [i[0].value for i in func]
 function4 = [i[1].value for i in func]

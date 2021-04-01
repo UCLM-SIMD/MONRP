@@ -28,7 +28,7 @@ def loop_executions():
 						for selected_algorithm in algorithms:
 							start = time.time()
 							algorithm = selected_algorithm(dataset_problem["problem"], random_seed=seed, population_length=p, max_generations=g,crossover_prob=c, mutation_prob=m,
-														   replacement = "elitism")
+														 crossover="onepoint", replacement = "elitism",mutation="flipeachbit")
 							executer(algorithm,dataset=dataset_problem["name"], iterations=1, file_path=FILE_PATH)
 
 							counter += 1

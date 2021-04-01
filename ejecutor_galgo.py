@@ -11,7 +11,7 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-c', '--config', nargs='+', help='<Required> configuration', required=True)
-# PARAMETROS: dataset_name, seed, algoritmo, pop_length, max_gens, cross_prob, mut_prob, replace, filepath
+# PARAMETROS: dataset_name, seed, algoritmo, pop_length, max_gens, sel_scheme, cross_scheme, cross_prob, mut_scheme, mut_prob, repl_scheme
 
 for _, value in parser.parse_args()._get_kwargs():
 	if value is not None:
@@ -22,14 +22,19 @@ for _, value in parser.parse_args()._get_kwargs():
 		algorithm_name = str(parameters[2])
 		pop_length = int(parameters[3])
 		max_gens = int(parameters[4])
-		cross_prob = float(parameters[5])
-		mut_prob = float(parameters[6])
-		repl = str(parameters[7])  # repl = elitismNDS o elitism
+		sel_scheme = str(parameters[5])
+		cross_scheme = str(parameters[6])
+		cross_prob = float(parameters[7])
+		mut_scheme = str(parameters[8])
+		mut_prob = float(parameters[9])
+		repl_scheme = str(parameters[10])  # repl = elitismNDS o elitism
 		# filepath = str(value[8])
-		objectives_minimization = ["MAX", "MIN"]
 
-filepath = "output/"+str(dataset_name)+"-"+str(seed)+"-"+str(algorithm_name)+"-"+str(pop_length)+"-"+str(max_gens)+"-"+str(cross_prob)\
-		   +"-"+str(mut_prob)+"-"+str(repl)+".txt"
+
+objectives_minimization = ["MAX", "MIN"]
+
+filepath = "output/"+str(dataset_name)+"-"+str(seed)+"-"+str(algorithm_name)+"-"+str(pop_length)+"-"+str(max_gens) +"-"+str(sel_scheme) \
+		   + "-" + str(cross_scheme) + "-" + str(cross_prob)+"-"+str(mut_scheme)+"-"+str(mut_prob) +"-"+str(repl_scheme)+".txt"
 '''
 print(dataset_name)
 print(seed)
@@ -42,7 +47,6 @@ print(repl)
 print(filepath)
 '''
 
-#execute = True
 if dataset_name =="dataset1":
 	genes = generate_dataset1_genes()
 	problem = Problem(genes, objectives_minimization)
@@ -52,19 +56,14 @@ elif dataset_name =="dataset2":
 
 if algorithm_name == "genetic":
 	algorithm = GeneticAlgorithm
-	#if repl != "elitism":
-	#	execute = False
 elif algorithm_name == "geneticnds":
 	algorithm = GeneticNDSAlgorithm
 elif algorithm_name == "nsgaii":
 	algorithm = NSGAIIAlgorithm
-	#if repl != "elitism":
-	#	execute = False
 
-#if execute:
 algorithm = algorithm(problem, random_seed=seed, population_length=pop_length, max_generations=max_gens,
-					  crossover_prob=cross_prob, mutation_prob=mut_prob,
-							   replacement = repl)
+					selection=sel_scheme,crossover=cross_scheme, crossover_prob=cross_prob,mutation=mut_scheme,
+							   mutation_prob=mut_prob,replacement = repl_scheme)
 #initialize_file(filepath)
 reset_file(filepath)
 executer(algorithm,dataset=dataset_name, iterations=10, file_path=filepath)

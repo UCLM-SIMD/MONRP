@@ -96,21 +96,34 @@ class GeneticUtils:
 
 
     # MUTATION------------------------------------------------------------------
-    def mutation(self,population):
+    def mutation_flip1bit(self, population):
         new_population = Population()
         new_population.extend(population.population)
 
         for individual in new_population:
             prob = random.random()
             if prob < self.mutation_prob:
-                # print(individual)
                 chromosome_length = len(individual.genes)
-                # print(prob)
                 mutation_point = random.randint(0, chromosome_length - 1)
                 if individual.genes[mutation_point].included == 0:
                     individual.genes[mutation_point].included = 1
                 else:
                     individual.genes[mutation_point].included = 0
+
+        return new_population
+
+    def mutation_flipeachbit(self, population):
+        new_population = Population()
+        new_population.extend(population.population)
+
+        for individual in new_population:
+            for gen in individual.genes:
+                prob = random.random()
+                if prob < self.mutation_prob:
+                    if gen.included == 0:
+                        gen.included = 1
+                    else:
+                        gen.included = 0
 
         return new_population
 
