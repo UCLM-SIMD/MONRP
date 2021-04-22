@@ -3,7 +3,7 @@ def initialize_file(file_path):
 	f = open(file_path, "w")
 	f.write("Dataset,Algorithm,Population Length,Generations,"
 			"Selection Scheme,Selection Candidates,Crossover Scheme,Crossover Probability,Mutation Scheme,"
-			"Mutation Probability,Replacement Scheme,Time(s),AvgValue,BestAvgValue,BestGeneration,HV,Spread,NumSolutions,Spacing\n")
+			"Mutation Probability,Replacement Scheme,Time(s),AvgValue,BestAvgValue,BestGeneration,HV,Spread,NumSolutions,Spacing,NumGenerations\n")
 	#print("File reseted")
 	f.close()
 
@@ -36,6 +36,7 @@ def executer(algorithm, dataset, iterations, file_path):
 		spread = str(result["spread"]) if "spread" in result else 'NaN'
 		numSolutions = str(result["numSolutions"]) if "numSolutions" in result else 'NaN'
 		spacing = str(result["spacing"]) if "spacing" in result else 'NaN'
+		num_generations = str(result["num_generations"]) if "num_generations" in result else 'NaN'
 
 		f = open(file_path, "a")
 		f.write(
@@ -57,7 +58,8 @@ def executer(algorithm, dataset, iterations, file_path):
 				str(hv) + "," +
 				str(spread) +"," +
 				str(numSolutions) + "," +
-				str(spacing)+
+				str(spacing)+ "," +
+				str(num_generations)+
 				"\n")
 		f.close()
 

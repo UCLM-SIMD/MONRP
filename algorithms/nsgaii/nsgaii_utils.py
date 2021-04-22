@@ -185,7 +185,11 @@ class NSGAIIUtils:
 
 	# NUMSOLUTIONS------------------------------------------------------------------
 	def calculate_numSolutions(self, population):
-		return len(set(population))
+		pop=[]
+		for ind in population:
+			genes = ind.print_genes()
+			pop.append(genes)
+		return len(list(dict.fromkeys(pop)))
 
 	# SPACING------------------------------------------------------------------
 	def calculate_spacing(self, population):
@@ -235,6 +239,8 @@ class NSGAIIUtils:
 	def calculate_hypervolume(self, population):
 		# obtener minimos y maximos de cada objetivo
 		objectives_diff=[]
+		aux_max_obj=[population[0].max_score,population[0].max_cost]
+		aux_min_obj=[population[0].min_score,population[0].min_cost]
 		for i in range(0,len(population[0].objectives)):
 			aux_min = float('inf')
 			aux_max = 0
@@ -244,7 +250,10 @@ class NSGAIIUtils:
 				if ind.objectives[i].value > aux_max:
 					aux_max = ind.objectives[i].value
 
-			objectives_diff.append(aux_max-aux_min)
+			aux_max_norm = (aux_max-aux_min_obj[i])/(aux_max_obj[i]-aux_min_obj[i])
+			aux_min_norm = (aux_min-aux_min_obj[i])/(aux_max_obj[i]-aux_min_obj[i])
+			aux_val = aux_max_norm-aux_min_norm
+			objectives_diff.append(aux_val)
 
 		# calcular hypervolume
 		hypervolume=1

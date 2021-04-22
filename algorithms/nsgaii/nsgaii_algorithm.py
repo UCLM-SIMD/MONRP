@@ -114,7 +114,7 @@ class NSGAIIAlgorithm:
 		# iteraciones del nsgaii
 		num_generations = 0
 		returned_population = None
-		while num_generations < self.max_generations:
+		while (num_generations < self.max_generations) or not(num_generations>(self.best_generation+20) ):
 			self.population.extend(offsprings)
 			self.evaluate(self.population)
 			self.fast_nondominated_sort(self.population)
@@ -136,7 +136,6 @@ class NSGAIIAlgorithm:
 			# choose first N elements of Pt+1
 			new_population.extend(self.population.fronts[front_num][0:self.population_length - len(new_population)])
 			self.population = copy.deepcopy(new_population)
-
 			# ordenar por NDS y crowding distance
 			self.fast_nondominated_sort(self.population)
 			for front in self.population.fronts:
@@ -173,5 +172,6 @@ class NSGAIIAlgorithm:
 				"spread": spread,
 				"numSolutions": numSolutions,
 				"spacing": spacing,
-				"best_generation_num": self.best_generation
+				"best_generation_num": self.best_generation,
+				"num_generations": num_generations,
 				}

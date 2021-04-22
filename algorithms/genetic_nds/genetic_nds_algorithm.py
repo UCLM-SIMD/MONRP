@@ -138,10 +138,9 @@ class GeneticNDSAlgorithm:
 		self.evaluate(self.population)
 		#print("Best individual score: ", self.best_individual.total_score)
 
-		while num_generations < self.max_generations:
+		while (num_generations < self.max_generations) or not(num_generations>(self.best_generation+20) ):
 			# selection
 			new_population = self.selection(self.population)
-
 			# crossover
 			new_population = self.crossover(new_population)
 
@@ -191,4 +190,5 @@ class GeneticNDSAlgorithm:
 				"numSolutions":numSolutions,
 				"spacing": spacing,
 				"best_generation_num": self.best_generation,
+				"num_generations": num_generations,
 				}
