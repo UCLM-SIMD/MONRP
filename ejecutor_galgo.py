@@ -9,6 +9,7 @@ from executer import executer
 from models.problem import Problem
 import argparse
 
+print("Starting...")
 parser = argparse.ArgumentParser()
 parser.add_argument('-c', '--config', nargs='+', help='<Required> configuration', required=True)
 # PARAMETROS: dataset_name, seed, algoritmo, pop_length, max_gens, cross_prob, mut_prob, replace, filepath
@@ -26,8 +27,9 @@ for _, value in parser.parse_args()._get_kwargs():
 		#filepath = str(value[8])
 		objectives_minimization = ["MAX", "MIN"]
 
-filepath = "output/"+str(dataset_name)+"-"+str(seed)+"-"+str(algorithm_name)+"-"+str(pop_length)+"-"+str(max_gens)+"-"+str(cross_prob)\
+filepath = "/home/pbermejo/MONRP/output/"+str(dataset_name)+"-"+str(seed)+"-"+str(algorithm_name)+"-"+str(pop_length)+"-"+str(max_gens)+"-"+str(cross_prob)\
 		   +"-"+str(mut_prob)+"-"+str(repl)+".txt"
+
 '''
 print(dataset_name)
 print(seed)

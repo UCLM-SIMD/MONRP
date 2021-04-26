@@ -23,7 +23,7 @@ def generate_configurations():
 											 str(p) + ' ' +str(g) + ' '+str(c) + ' '+ \
 											 str(m) + ' ' +str(r)+ '\n'
 
-	#print(returnStr)
+	print(returnStr)
 	return returnStr
 
 generate_configurations()
