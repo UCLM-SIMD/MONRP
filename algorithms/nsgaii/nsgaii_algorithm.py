@@ -9,7 +9,7 @@ class NSGAIIAlgorithm:
 	def __init__(self, problem, random_seed=None, population_length=20, max_generations=1000,
 				 selection="tournament", selection_candidates=2,
 				 crossover="onepoint", crossover_prob=0.9,
-				 mutation="mutation", mutation_prob=0.1,
+				 mutation="flipeachbit", mutation_prob=0.1,
 				 replacement="elitism"):
 
 		self.problem = problem
@@ -34,6 +34,8 @@ class NSGAIIAlgorithm:
 		self.calculate_spacing = self.utils.calculate_spacing
 		self.calculate_avgValue = self.utils.calculate_avgValue
 		self.calculate_bestAvgValue = self.utils.calculate_bestAvgValue
+		self.best_individual = None
+
 		self.calculate_hypervolume = self.utils.calculate_hypervolume
 		self.calculate_spread = self.utils.calculate_spread
 		self.fast_nondominated_sort = self.utils.fast_nondominated_sort
@@ -46,8 +48,10 @@ class NSGAIIAlgorithm:
 		if crossover == "onepoint":
 			self.crossover = self.utils.crossover_one_point
 
-		if mutation == "mutation":
-			self.mutation = self.utils.mutation
+		if mutation == "flip1bit":
+			self.mutation = self.utils.mutation_flip1bit
+		elif mutation == "flipeachbit":
+			self.mutation = self.utils.mutation_flipeachbit
 
 		if replacement == "elitism":
 			self.replacement = self.utils.replacement_elitism
@@ -70,6 +74,24 @@ class NSGAIIAlgorithm:
 			self.best_generation_avgValue = bestAvgValue
 			self.best_generation = num_generation
 
+	# EVALUATION------------------------------------------------------------------
+	def evaluate(self, population):
+		best_score = 0
+		new_best_individual = None
+		for ind in population:
+			ind.evaluate_fitness()
+			if ind.total_score > best_score:
+				new_best_individual = copy.deepcopy(ind)
+				best_score = ind.total_score
+		# print(best_score)
+		# print(ind)
+
+		if self.best_individual is not None:
+			if new_best_individual.total_score > self.best_individual.total_score:
+				self.best_individual = copy.deepcopy(new_best_individual)
+		else:
+			self.best_individual = copy.deepcopy(new_best_individual)
+
 	# RUN ALGORITHM------------------------------------------------------------------
 	def run(self):
 		start = time.time()
@@ -77,7 +99,7 @@ class NSGAIIAlgorithm:
 		self.best_generation = 0
 		# inicializacion del nsgaii
 		self.population = self.generate_starting_population()
-
+		self.evaluate(self.population)
 		# ordenar por NDS y crowding distance
 		self.fast_nondominated_sort(self.population)
 		for front in self.population.fronts:
@@ -92,8 +114,9 @@ class NSGAIIAlgorithm:
 		# iteraciones del nsgaii
 		num_generations = 0
 		returned_population = None
-		while num_generations < self.max_generations:
+		while (num_generations < self.max_generations) or not(num_generations>(self.best_generation+20) ):
 			self.population.extend(offsprings)
+			self.evaluate(self.population)
 			self.fast_nondominated_sort(self.population)
 			new_population = Population()
 			front_num = 0
@@ -105,7 +128,7 @@ class NSGAIIAlgorithm:
 				front_num += 1
 
 			# ordenar los individuos del ultimo front por crowding distance y agregar los X que falten para completar la poblacion
-			self.calculate_crowding_distance(self.population.fronts[front_num])  ###########no se por que
+			self.calculate_crowding_distance(self.population.fronts[front_num])
 
 			# sort in descending order using >=n
 			self.population.fronts[front_num].sort(key=lambda individual: individual.crowding_distance, reverse=True)
@@ -113,7 +136,6 @@ class NSGAIIAlgorithm:
 			# choose first N elements of Pt+1
 			new_population.extend(self.population.fronts[front_num][0:self.population_length - len(new_population)])
 			self.population = copy.deepcopy(new_population)
-
 			# ordenar por NDS y crowding distance
 			self.fast_nondominated_sort(self.population)
 			for front in self.population.fronts:
@@ -145,9 +167,11 @@ class NSGAIIAlgorithm:
 				"time": end - start,
 				"avgValue": avgValue,
 				"bestAvgValue": bestAvgValue,
+				"best_individual": self.best_individual,
 				"hv": hv,
 				"spread": spread,
 				"numSolutions": numSolutions,
 				"spacing": spacing,
-				"best_generation_num": self.best_generation
+				"best_generation_num": self.best_generation,
+				"num_generations": num_generations,
 				}

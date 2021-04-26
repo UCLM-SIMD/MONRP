@@ -8,7 +8,7 @@ class GeneticAlgorithm:
 	def __init__(self, problem, random_seed=None, population_length=20, max_generations=1000,
 				 selection="tournament", selection_candidates=2,
 				 crossover="onepoint", crossover_prob=0.9,
-				 mutation="mutation", mutation_prob=0.1,
+				 mutation="flipeachbit", mutation_prob=0.1,
 				 replacement="elitism"):
 
 		self.problem = problem
@@ -39,8 +39,10 @@ class GeneticAlgorithm:
 		if crossover == "onepoint":
 			self.crossover = self.utils.crossover_one_point
 
-		if mutation == "mutation":
-			self.mutation = self.utils.mutation
+		if mutation == "flip1bit":
+			self.mutation = self.utils.mutation_flip1bit
+		elif mutation == "flipeachbit":
+			self.mutation = self.utils.mutation_flipeachbit
 
 		if replacement == "elitism":
 			self.replacement = self.utils.replacement_elitism

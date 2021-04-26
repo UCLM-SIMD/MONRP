@@ -157,3 +157,7 @@ output
 .idea/misc.xml
 .idea/misc.xml
 .idea/workspace.xml
+plots
+temp-plot.*
+*.svg
+*.xml

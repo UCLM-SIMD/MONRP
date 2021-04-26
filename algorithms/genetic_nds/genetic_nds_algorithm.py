@@ -8,7 +8,7 @@ class GeneticNDSAlgorithm:
 	def __init__(self, problem, random_seed=None, population_length=20, max_generations=1000,
 				 selection="tournament", selection_candidates=2,
 				 crossover="onepoint", crossover_prob=0.9,
-				 mutation="mutation", mutation_prob=0.1,
+				 mutation="flipeachbit", mutation_prob=0.1,
 				 replacement="elitism"):
 
 		self.problem = problem
@@ -47,12 +47,14 @@ class GeneticNDSAlgorithm:
 		if crossover == "onepoint":
 			self.crossover = self.utils.crossover_one_point
 
-		if mutation == "mutation":
-			self.mutation = self.utils.mutation
+		if mutation == "flip1bit":
+			self.mutation = self.utils.mutation_flip1bit
+		elif mutation == "flipeachbit":
+			self.mutation = self.utils.mutation_flipeachbit
 
 		if replacement == "elitism":
 			self.replacement = self.utils.replacement_elitism
-		elif replacement == "elitismNDS":
+		elif replacement == "elitismnds":
 			self.replacement = self.utils.replacement_elitism
 	'''
 	def aa(self):
@@ -92,23 +94,31 @@ class GeneticNDSAlgorithm:
 	def is_non_dominated(self, ind, nds):
 		non_dominated = True
 		for other_ind in nds:
-			if ind.dominates(other_ind):
-				non_dominated=non_dominated and True
-			elif other_ind.dominates(ind):
+			#if ind.dominates(other_ind):
+				#non_dominated=non_dominated and True
+			#	pass
+			#elif other_ind.dominates(ind):
+			if other_ind.dominates(ind):
 				non_dominated=False
+				break
 
 		return non_dominated
 
-	def updateNDS(self, population):
-		# juntamos todos los individuos posibles
-		newNDS = copy.deepcopy(self.nds)
-		for ind in population:
-			newNDS.append(ind)
+	def updateNDS(self, new_population):
+		new_nds=[]
+		merged_population=copy.deepcopy(self.nds)
+		merged_population.extend(new_population)
+		for ind in merged_population:
+			dominated = False
+			for other_ind in merged_population:
+				if other_ind.dominates(ind):
+					dominated = True
+					break
+			if not dominated:
+				new_nds.append(ind)
+		self.nds=copy.deepcopy(new_nds)
 
-		# para cada candidato: incluirlo si no lo domina ninguno de la lista
-		self.nds = [x for x in newNDS if self.is_non_dominated(x,newNDS)]
-
-	# LAST GENERATION ENHANCE------------------------------------------------------------------
+# LAST GENERATION ENHANCE------------------------------------------------------------------
 	def calculate_last_generation_with_enhance(self, num_generation, population):
 		bestAvgValue = self.calculate_bestAvgValue(population)
 		if bestAvgValue > self.best_generation_avgValue:
@@ -128,10 +138,9 @@ class GeneticNDSAlgorithm:
 		self.evaluate(self.population)
 		#print("Best individual score: ", self.best_individual.total_score)
 
-		while num_generations < self.max_generations:
+		while (num_generations < self.max_generations) or not(num_generations>(self.best_generation+20) ):
 			# selection
 			new_population = self.selection(self.population)
-
 			# crossover
 			new_population = self.crossover(new_population)
 
@@ -148,7 +157,7 @@ class GeneticNDSAlgorithm:
 			self.calculate_last_generation_with_enhance(num_generations, returned_population)
 
 			# replacement
-			if self.replacement_scheme == "elitismNDS":
+			if self.replacement_scheme == "elitismnds":
 				self.population = self.replacement(self.nds, new_population)
 			else:
 				self.population = self.replacement(self.population, new_population)
@@ -181,4 +190,5 @@ class GeneticNDSAlgorithm:
 				"numSolutions":numSolutions,
 				"spacing": spacing,
 				"best_generation_num": self.best_generation,
+				"num_generations": num_generations,
 				}

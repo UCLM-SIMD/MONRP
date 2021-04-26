@@ -1,4 +1,4 @@
-from random import *
+import random
 import uuid
 import copy
 
@@ -14,6 +14,17 @@ class Individual:
         self.domination_count = None
         self.dominated_solutions = None
         self.objectives = copy.deepcopy(objectives)
+
+        self.max_cost=0
+        self.max_score=0
+        self.min_cost=0
+        self.min_score=0
+        for gen in self.genes:
+            self.max_score+=gen.value
+            self.max_cost+=gen.estimation
+        self.max_totalscore=self.max_score/(self.min_cost+1)
+        self.min_totalscore=self.min_score/(self.max_cost+1)
+
         # if random is True:
         # print("ran")
         # self.initRandom()
@@ -25,17 +36,21 @@ class Individual:
             if gen.included == 1:
                 score += gen.value
                 cost += gen.estimation
-
         self.score = score
         self.cost = cost
-        self.total_score = score / (cost + 1)
+        self.total_score = score / (cost+1)
+        # normalizar valores
+        if (self.max_totalscore-self.min_totalscore)<=0:
+            self.total_score = 0
+        else:
+            self.total_score = (self.total_score-self.min_totalscore)/(self.max_totalscore-self.min_totalscore)
 
         self.objectives[0].value = self.score
         self.objectives[1].value = self.cost
 
     def initRandom(self):
         for r in self.genes:
-            r.included = randint(0, 1)
+            r.included = random.randint(0, 1)
 
     def dominates(self, other_individual):
         self.evaluate_fitness()
@@ -66,3 +81,17 @@ class Individual:
             s += str(i) + '\n'
         s += "]"
         return s
+
+    def __eq__(self, other_ind):
+        return(other_ind.objectives[0].value == self.objectives[0].value and \
+					other_ind.objectives[1].value == self.objectives[1].value \
+               and self.print_genes()==other_ind.print_genes())
+
+    def __hash__(self):
+        return hash(('genes', self.print_genes()))
+
+    def print_genes(self):
+        return_genes=""
+        for i in range(0, len(self.genes)):
+            return_genes+=str(self.genes[i].included)+","
+        return return_genes

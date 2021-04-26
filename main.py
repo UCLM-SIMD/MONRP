@@ -26,9 +26,10 @@ def loop_executions():
 				for g in generations:
 					for dataset_problem in dataset_problems:
 						for selected_algorithm in algorithms:
+							print("start")
 							start = time.time()
 							algorithm = selected_algorithm(dataset_problem["problem"], random_seed=seed, population_length=p, max_generations=g,crossover_prob=c, mutation_prob=m,
-														   replacement = "elitism")
+														 crossover="onepoint", replacement = "elitismnds",mutation="flip1bit")
 							executer(algorithm,dataset=dataset_problem["name"], iterations=1, file_path=FILE_PATH)
 
 							counter += 1
@@ -52,16 +53,16 @@ problem2=Problem(genes2,objectives_minimization)
 # crear seed random------------------------------------------------------------------
 seed=10
 # opciones------------------------------------------------------------------
-cross=[0.8
+cross=[0.6
 	#,0.85,0.9
 	   ]
-mut=[0
+mut=[0.1
 	#,0.05,0.1
 	 ]
-pop=[20
+pop=[30
 	#,30,40
 	 ]
-generations=[100
+generations=[300
 	#,200,300
 	]
 dataset_problems=[
@@ -72,12 +73,12 @@ dataset_problems=[
 	# "name":"dataset2"}
 ]
 algorithms=[
-	GeneticAlgorithm,
+	#GeneticAlgorithm,
 	GeneticNDSAlgorithm,
 	NSGAIIAlgorithm
 ]
 
-FILE_PATH="output/resultados.txt"
+FILE_PATH="output/prueba_paper.txt"
 initialize_file(FILE_PATH)
 
 loop_executions()#.compute()

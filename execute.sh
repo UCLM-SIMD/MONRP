@@ -1,11 +1,20 @@
 #!/bin/sh
+# 8gb of memory should be enough
 
-PBS -l mem=15gb
+#PBS -l mem=8gb
 
 # Make sure that the script is run
 # in the current working directory
 cd $CWD
 
-source activate prueba
+source ../venv/bin/activate
 
-python "$FILE" --configuration $CONFIG
+CONFIGURATIONS=()
+while IFS= read -r line; do
+   CONFIGURATIONS+=("$line")
+done <$PWD/configs.txt
+
+# get configuration at job index (1..JOBS_NUM)
+CONFIG="${CONFIGURATIONS[$((PBS_ARRAY_INDEX - 1))]}"
+
+python "$FILE" -c "$CONFIG"
