@@ -14,10 +14,10 @@ def calculate_hypervolume(population):
     if ind.score<score_min:
       score_min=ind.score
 
-    if ind.cost>cost_max:
-      cost_max=ind.cost
-    if ind.cost<cost_min:
-      cost_min=ind.cost
+    if ind.total_cost>cost_max:
+      cost_max=ind.total_cost
+    if ind.total_cost<cost_min:
+      cost_min=ind.total_cost
 
   #calcular hypervolume
   score_diff=score_max-score_min
@@ -41,7 +41,7 @@ def calculate_spread(population):
   N=len(population)
   spread=None
   #ordenar de menor a mayor coste
-  population.population.sort(key=lambda x: x.cost)
+  population.population.sort(key=lambda x: x.total_cost)
   #for p in population:
    # print(p)
   #obtener first_solution=menor coste y last_solution=mayor coste
@@ -52,8 +52,8 @@ def calculate_spread(population):
   first_extreme=[0,0]
   last_extreme=[MAX_SCORE,MAX_COST]
 
-  df=eudis( [first_solution.score,first_solution.cost ] , first_extreme )
-  dl=eudis( [last_solution.score,last_solution.cost ] , last_extreme )
+  df=eudis([first_solution.score, first_solution.total_cost], first_extreme)
+  dl=eudis([last_solution.score, last_solution.total_cost], last_extreme)
 
   #calcular media de todas las distancias entre puntos
   davg=0
@@ -63,16 +63,16 @@ def calculate_spread(population):
       #no calcular distancia de un punto a si mismo
       if i!=j:
         dist_count+=1
-        davg+=eudis( [population.get(i).score,population.get(i).cost ],
-               [population.get(j).score,population.get(j).cost ] )
+        davg+=eudis([population.get(i).score, population.get(i).total_cost],
+                    [population.get(j).score, population.get(j).total_cost])
   #media=distancia total / numero de distancias
   davg/=dist_count
 
   #calcular sumatorio(i=1->N-1) |di-davg|
   sum_dist=0
   for i in range(0,len(population)-1):
-    di=eudis( [population.get(i).score,population.get(i).cost ],
-               [population.get(i+1).score,population.get(i+1).cost ] )
+    di=eudis([population.get(i).score, population.get(i).total_cost],
+             [population.get(i+1).score, population.get(i+1).total_cost])
     sum_dist+=abs(di-davg)
 
   #formula spread

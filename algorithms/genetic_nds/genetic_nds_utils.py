@@ -27,7 +27,7 @@ class GeneticNDSUtils:
           candidate.evaluate_fitness()
           #print(candidate)
           score=candidate.score
-          cost=candidate.cost
+          cost=candidate.total_cost
           total_score=candidate.total_score
           #guardar el candidato con mejor score
           if( total_score > best_total_score):

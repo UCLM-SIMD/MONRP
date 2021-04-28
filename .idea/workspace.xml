@@ -1,14 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ee391c3b-4637-40b3-b83e-70678c09f8c6" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/galgo/params_file" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/galgo/runJobs.pbs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/proyecto.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/proyecto.iml" afterDir="false" />
+    <list default="true" id="ee391c3b-4637-40b3-b83e-70678c09f8c6" name="Default Changelist" comment="cambios para lanzar en galgo">
+      <change afterPath="$PROJECT_DIR$/algorithms/GRASP/Dataset.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/algorithms/GRASP/GRASP.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/algorithms/GRASP/GraspSolution.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/algorithms/GRASP/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/analisis/ejemplo test wilcoxon.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ejecutor_galgo.py" beforeDir="false" afterPath="$PROJECT_DIR$/ejecutor_galgo.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/galgo/configurations.py" beforeDir="false" afterPath="$PROJECT_DIR$/galgo/configurations.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/algorithms/genetic/genetic_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/algorithms/genetic/genetic_utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/algorithms/genetic_nds/genetic_nds_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/algorithms/genetic_nds/genetic_nds_utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/analisis_executer.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/analisis_executer.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -134,7 +139,7 @@
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/galgo" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../betterAODE" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -150,12 +155,35 @@
       <recent name="C:\Users\48259328\Desktop\nsgaii\proyecto\genetic_nds" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Dropbox\INVESTIGACION\PROGRAMACION_PYTHON\MONRP\algorithms\GRASP" />
       <recent name="C:\Users\48259328\Desktop\nsgaii\proyecto\algorithms" />
       <recent name="C:\Users\48259328\Desktop\nsgaii\proyecto\models" />
       <recent name="C:\Users\48259328\Desktop\nsgaii\proyecto\output" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.ejecutor_galgo">
+  <component name="RunManager" selected="Python.GRASP">
+    <configuration name="GRASP" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="proyecto" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/algorithms/GRASP" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/algorithms/GRASP/GRASP.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="ejecutor_galgo" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="proyecto" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -292,11 +320,13 @@
       <item itemvalue="Python.main" />
       <item itemvalue="Python.reset_file" />
       <item itemvalue="Python.ejecutor_galgo" />
+      <item itemvalue="Python.GRASP" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.ejecutor_galgo" />
+        <item itemvalue="Python.GRASP" />
         <item itemvalue="Python.main" />
+        <item itemvalue="Python.ejecutor_galgo" />
         <item itemvalue="Python.reset_file" />
         <item itemvalue="Python.genetic_algorithm" />
       </list>
@@ -317,7 +347,20 @@
       <workItem from="1616435347877" duration="2892000" />
       <workItem from="1616519900066" duration="625000" />
       <workItem from="1617719617013" duration="56000" />
+      <workItem from="1619422063239" duration="2996000" />
+      <workItem from="1619512638302" duration="849000" />
+      <workItem from="1619516084646" duration="1064000" />
+      <workItem from="1619518626957" duration="4670000" />
+      <workItem from="1619589040437" duration="21988000" />
     </task>
+    <task id="LOCAL-00001" summary="cambios para lanzar en galgo">
+      <created>1619422214892</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1619422214892</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -358,7 +401,25 @@
     </option>
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="cambios para lanzar en galgo" />
+    <option name="LAST_COMMIT_MESSAGE" value="cambios para lanzar en galgo" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/algorithms/GRASP/GraspSolution.py</url>
+          <line>51</line>
+          <option name="timeStamp" value="7" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/MONRP$ejecutor_galgo.coverage" NAME="ejecutor_galgo Coverage Results" MODIFIED="1619423371305" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/MONRP$main.coverage" NAME="main Coverage Results" MODIFIED="1619423626569" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/MONRP$GRASP.coverage" NAME="GRASP Coverage Results" MODIFIED="1619625019243" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/algorithms/GRASP" />
     <SUITE FILE_PATH="coverage/MONRP$configurations.coverage" NAME="ejecutor_galgo Coverage Results" MODIFIED="1616434436661" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="editorHistoryManager">
