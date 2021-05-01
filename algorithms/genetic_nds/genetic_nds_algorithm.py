@@ -116,6 +116,7 @@ class GeneticNDSAlgorithm:
 					break
 			if not dominated:
 				new_nds.append(ind)
+		new_nds=list(set(new_nds))
 		self.nds=copy.deepcopy(new_nds)
 
 # LAST GENERATION ENHANCE------------------------------------------------------------------
