@@ -10,7 +10,7 @@ Para instalar las dependencias, ejecute ```pip install -r requirements.txt```
 - ```/models``` define los modelos para genes, individuos, población y problema
 - ```/output``` contiene el resultado de la experimentación realizada
 - ```ejecutor_galgo.py```,```execute.sh```,```executer.py```,```galgo.sh```,```galgo_test.sh``` son scripts necesariamente ubicados en el directorio raíz, utilizados para la experimentación en un cluster con colas PBS 
-- ```analyisis.ipynb``` es un notebook de jupyter que muestra el proceso seguido para encontrar las mejores configuraciones de cada algoritmo, calcular las métricas medias y generar los gráficos de Kiviat y de frente Pareto.
+- ```analysis.ipynb``` es un notebook de jupyter que muestra el proceso seguido para encontrar las mejores configuraciones de cada algoritmo, calcular las métricas medias y generar los gráficos de Kiviat y de frente Pareto.
 
 ## Ejecución
 Para ejecutar el notebook y reproducir los pasos es necesario ordenar la ejecución de todos los bloques del notebook.
