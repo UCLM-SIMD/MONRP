@@ -8,6 +8,7 @@ from algorithms.abstract_algorithm.abstract_algorithm import AbstractAlgorithm, 
 from algorithms.GRASP.grasp_executer import GRASPExecuter
 import time
 
+<<<<<<< HEAD
 import numpy as np
 import random
 from datasets import Dataset
@@ -32,6 +33,8 @@ import dataset1
 =======
 
 >>>>>>> 20ff8c5d (conversión a formato de victor para calcular metricas)
+=======
+>>>>>>> 30c2e1f7 (error solved in updateNDS when discarding insertion of a solution in nds)
 from algorithms.GRASP.Dataset import Dataset
 import numpy as np
 import getopt
@@ -708,10 +711,8 @@ class GRASP:
 
                 if sol.dominates(nds_sol):
                     now_dominated.append(nds_sol)
-                # left part of elif is because if some solution in NDS is already dominated by sol,
-                # then no other solution in NDS will dominate sol, so evaluating it is waste
-                elif (now_dominated.__len__ == 0 and nds_sol.dominates(sol)) \
-                        or np.array_equal(sol.selected, nds_sol.selected):  # sol already existed in self.NDS
+                # do not insert if sol is dominated by a solution in self.NDS or sol already exists in self.NDS
+                elif nds_sol.dominates(sol) or np.array_equal(sol.selected, nds_sol.selected):
                     insert = False
                     break
 
