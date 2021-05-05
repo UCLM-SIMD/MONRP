@@ -26,19 +26,21 @@ class GRASP(AbstractAlgorithm):
 =======
 import time
 
+<<<<<<< HEAD
 import dataset1
 >>>>>>> 2fb57e2a (GRASP terminado)
+=======
+
+>>>>>>> 20ff8c5d (conversión a formato de victor para calcular metricas)
 from algorithms.GRASP.Dataset import Dataset
 import numpy as np
 import getopt
 import sys
 
 from algorithms.GRASP.GraspSolution import GraspSolution
-from algorithms.genetic_nds import genetic_nds_utils
 from algorithms.genetic_nds.genetic_nds_utils import GeneticNDSUtils
-from models.gen import Gen
+from datasets import dataset1, dataset2
 from models.individual import Individual
-from models.population import Population
 from models.problem import Problem
 
 
@@ -311,7 +313,9 @@ class GRASP:
             selected_list.append(sol.selected)
         # return selected_list, seconds
 
-        return _results_in_victor_format(selected_list, seconds, self.iterations)
+        genes = dataset1.generate_dataset1_genes() if self.dataset.id == 1 else dataset2.generate_dataset2_genes()
+
+        return _results_in_victor_format(selected_list, seconds, self.iterations, genes)
 
     def init_solutions(self):
         """
@@ -718,9 +722,17 @@ class GRASP:
                     self.NDS.remove(dominated)
 
 
-def _results_in_victor_format(nds, seconds, num_iterations):
+def _results_in_victor_format(nds, seconds, num_iterations, genes):
+    """
+    esto será borrado cuando se programe un Evaluate que reciba el NDS (lista de listas de pbis) y el dataset usado,
+    para calcular las métricas fuera del algoritmo.
+    :param nds:
+    :param seconds:
+    :param num_iterations:
+    :param genes:
+    :return:
+    """
     # convertir solución al formato de las soluciones de Victor
-    genes = dataset1.generate_dataset1_genes()
     problem = Problem(genes, ["MAX", "MIN"])
     final_nds_formatted = []
     for solution in nds:
