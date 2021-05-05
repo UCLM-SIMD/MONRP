@@ -54,7 +54,7 @@ class GRASP:
     """
 
     def __init__(self, dataset=1, iterations=20, solutions_per_iteration=10,
-                 local_search_type="best_first_neighbor", seed=1):
+                 local_search_type="best_first_neighbor", seed=None):
         """
         :param dataset: integer number: 1 or 2
         :param iterations: integer (default 20), number of GRASP construct+local_search repetitions
@@ -67,7 +67,8 @@ class GRASP:
         self.number_of_solutions = solutions_per_iteration
         self.NDS = []
         self.local_search = local_search_type
-        self.seed = seed
+        if seed is not None:
+            np.random.seed(seed)
 
     def run(self):
         """
@@ -116,7 +117,7 @@ class GRASP:
         candidates_score_scaled = self.dataset.pbis_score / self.dataset.pbis_score.sum()
 
         # create GraspSolutions
-        np.random.seed(self.seed)
+
         solutions = []
         for i in np.arange(self.number_of_solutions):
             sol = GraspSolution(candidates_score_scaled, costs=self.dataset.pbis_cost_scaled,
