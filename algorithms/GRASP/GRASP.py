@@ -740,7 +740,7 @@ def _results_in_victor_format(nds, seconds, num_iterations, genes):
         individual = Individual(problem.genes, problem.objectives)
         for b in np.arange(len(individual.genes)):
             individual.genes[b].included = solution[b]
-            individual.evaluate_fitness()
+        individual.evaluate_fitness()
         final_nds_formatted.append(individual)
     # calcular métricas
     utils = GeneticNDSUtils(problem=problem, random_seed=1)  # aquí la semilla no sirve de nada
