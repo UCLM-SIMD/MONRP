@@ -10,6 +10,9 @@ class Dataset:
 
     Attributes
     -----------
+    id :  integer
+        1 or 2, currently.
+
     num_pbis : integer
         just used to represent the number of pbis or candidates to be selectd
 
@@ -43,6 +46,9 @@ class Dataset:
         dataset: integer number: 1 or 2 (at the moment)
             if dataset not in [1,2], all attributes are set to None.
         """
+
+        self.id = dataset
+
         if dataset == 1:
             self.pbis_cost = np.array([1, 4, 2, 3, 4, 7, 10, 2, 1, 3, 2, 5, 8, 2, 1, 4, 10, 4, 8, 4])
             self.stakeholders_importances = np.array([1, 4, 2, 3, 4])
