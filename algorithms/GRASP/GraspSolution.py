@@ -27,7 +27,7 @@ class GraspSolution:
     compute_mono_objective_score()
         a simple way to mix both satisfaction and cost metrics into a single one
     try_flip(i,cost_i, value_i)
-        it simulates the result of flip(i,cost_i,value_i) and returns the wouldbe new cost, value and mono_objective_score
+        it simulates the result of flip(i,cost_i,value_i) and returns the would-be new cost, value and mono_objective_score
     """
 
     def __init__(self, probabilities, costs, values):
@@ -41,11 +41,10 @@ class GraspSolution:
         :param values: numpy ndarray, shape is len(selected)
             values[i] is the goodness metric of candidate i.
             when called from GRASP object, it is recommended to use scaled values such as self.dataset.pbis_satisfaction_scaled
-        :param seed: int. Seed to be used for random generation of solutions
         """
         num_candidates = len(probabilities)
         self.selected = np.zeros(num_candidates)
-        # samples a random number of candidates. prob of each candidate to be chosen in received in probabilites
+        # samples a random number of candidates. prob of each candidate to be chosen in received in probabilities
         sampled = np.random.choice(np.arange(num_candidates), size=np.random.randint(num_candidates),
                                    replace=False, p=probabilities)
         self.selected[sampled] = 1
@@ -88,14 +87,14 @@ class GraspSolution:
         :param i: new candidate to be (un)selected
         :param i_cost: cost of such candidate
         :param i_value: value of such candidate
-        :return the wouldbe new cost, value and mono_objective_score
+        :return the would-be new cost, value and mono_objective_score
         """
         if self.selected[i] == 0:
             new_cost = self.total_cost + i_cost
             new_satisfaction = self.total_satisfaction + i_value
             smooth = len(np.where(self.selected == 1)) + 1
 
-        if self.selected[i] == 1:
+        else:  # if self.selected[i] == 1:
             new_cost = self.total_cost - i_cost
             new_satisfaction = self.total_satisfaction - i_value
             smooth = len(np.where(self.selected == 1)) - 1
@@ -114,9 +113,8 @@ class GraspSolution:
 
     def dominates_all_in(self, solutions):
         """
-
         :param solutions: list of GraspSolution
-        :return: True if self dominates all Graspsolution in solutions
+        :return: True if self dominates all GraspSolution in solutions
         """
         for sol in solutions:
             if not self.dominates(sol):
