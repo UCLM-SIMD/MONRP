@@ -1,11 +1,9 @@
-import time
-import sys
 from algorithms.genetic.genetic_algorithm import GeneticAlgorithm
 from algorithms.genetic_nds.genetic_nds_algorithm import GeneticNDSAlgorithm
 from algorithms.nsgaii.nsgaii_algorithm import NSGAIIAlgorithm
-from dataset1 import generate_dataset1_genes
-from dataset2 import generate_dataset2_genes
-from executer import executer, initialize_file, reset_file
+from datasets.dataset1 import generate_dataset1_genes
+from datasets.dataset2 import generate_dataset2_genes
+from executer import executer, reset_file
 from models.problem import Problem
 import argparse
 

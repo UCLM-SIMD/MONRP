@@ -1,22 +1,11 @@
-from dataset1 import generate_dataset1_genes
-from dataset2 import generate_dataset2_genes
+from datasets.dataset1 import generate_dataset1_genes
+from datasets.dataset2 import generate_dataset2_genes
 from executer import executer, initialize_file
-from algorithms.genetic.genetic_algorithm import GeneticAlgorithm
 from algorithms.genetic_nds.genetic_nds_algorithm import GeneticNDSAlgorithm
 from algorithms.nsgaii.nsgaii_algorithm import NSGAIIAlgorithm
 from models.problem import Problem
-from dask import delayed as delay
 import time
 # iniciar------------------------------------------------------------------
-'''
-algorithm=GeneticAlgorithm(problem,random_seed=seed,population_length=20,max_generations=100,crossover_prob=0.9,mutation_prob=0.1)
-executer(algorithm,iterations=5)
-algorithm=GeneticNDSAlgorithm(problem,random_seed=seed,population_length=20,max_generations=100,crossover_prob=0.9,mutation_prob=0.1)
-executer(algorithm,iterations=5)
-algorithm=NSGAIIAlgorithm(problem,random_seed=seed,population_length=20,max_generations=100,crossover_prob=0.8,mutation_prob=0.05)
-executer(algorithm,iterations=40)
-'''
-#@delay
 def loop_executions():
 	counter = 0
 	max_counter = len(cross) * len(mut) * len(pop) * len(generations)  * len(algorithms) * len(dataset_problems)
@@ -81,4 +70,4 @@ algorithms=[
 FILE_PATH="output/prueba_paper.txt"
 initialize_file(FILE_PATH)
 
-loop_executions()#.compute()
+loop_executions()

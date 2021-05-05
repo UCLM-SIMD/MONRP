@@ -184,11 +184,7 @@ class GeneticNDSUtils:
 
     # NUMSOLUTIONS------------------------------------------------------------------
     def calculate_numSolutions(self, population):
-        pop=[]
-        for ind in population:
-            genes = ind.print_genes()
-            pop.append(genes)
-        return len(list(dict.fromkeys(pop)))
+        return len(set(population))
 
     # SPACING------------------------------------------------------------------
     def calculate_spacing(self, population):
