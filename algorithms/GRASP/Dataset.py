@@ -14,7 +14,7 @@ class Dataset:
         1 or 2, currently.
 
     num_pbis : integer
-        just used to represent the number of pbis or candidates to be selectd
+        just used to represent the number of pbis or candidates to be selected
 
     pbis_cost : numpy ndarray
         Cost of each product backlog item
@@ -117,7 +117,7 @@ class Dataset:
         # now two escalation follows, based on
         # https://en.wikipedia.org/wiki/Feature_scaling#Rescaling_(min-max_normalization)
         # scale pbis cost in range [0-1]
-        margin = 1 / self.num_pbis # used to avoid zeros
+        margin = 1 / self.num_pbis  # used to avoid zeros
         diff = np.max(self.pbis_cost) - np.min(self.pbis_cost)
         self.pbis_cost_scaled = (self.pbis_cost - np.min(self.pbis_cost) + margin) / (diff + margin)
 
