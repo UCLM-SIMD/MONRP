@@ -51,7 +51,7 @@ mut=[0.1
 pop=[30
 	#,30,40
 	 ]
-generations=[10
+generations=[300
 	#,200,300
 	]
 dataset_problems=[
