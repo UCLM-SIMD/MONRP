@@ -22,12 +22,12 @@ class GraspSolution:
 
     Methods
     -------
-    set(i)
-        sets self.selected[i]=1, and updates the solution cost, satisfaction and mono_objective_score
-    unset(i)
-        sets self.selected[i]=0, and updates the solution cost, satisfaction and mono_objective_score
+    flip(i,cost_i, value_i)
+        swaps value of self.selected[i] (0 to 1 or 1 to 0), and updates the solution cost, satisfaction and mono_objective_score
     compute_mono_objective_score()
         a simple way to mix both satisfaction and cost metrics into a single one
+    try_flip(i,cost_i, value_i)
+        it simulates the result of flip(i,cost_i,value_i) and returns the wouldbe new cost, value and mono_objective_score
     """
 
     def __init__(self, probabilities, costs, values):
@@ -41,6 +41,7 @@ class GraspSolution:
         :param values: numpy ndarray, shape is len(selected)
             values[i] is the goodness metric of candidate i.
             when called from GRASP object, it is recommended to use scaled values such as self.dataset.pbis_satisfaction_scaled
+        :param seed: int. Seed to be used for random generation of solutions
         """
         num_candidates = len(probabilities)
         self.selected = np.zeros(num_candidates)
@@ -57,32 +58,81 @@ class GraspSolution:
     def compute_mono_objective_score(self):
         """
          computes self.mono_objective_score
-         It does not overwrite self.mono_objective_score. That should be done by the user if desired.
+         It does not overwrite self.mono_objective_score. That should be done by the user if desired (set and unset
+         methods do overwrite it)
         :return: mixture of satisfactions and costs of all selected candidates
         """
-        return self.total_satisfaction / (self.total_cost + 1/len(np.where(self.selected == 1)))
+        return self.total_satisfaction / (self.total_cost + 1 / len(np.where(self.selected == 1)))
 
-    def set(self, i, i_cost, i_value):
+    def flip(self, i, i_cost, i_value):
         """
-        :param i: new candidate selected
+        :param i: new candidate to be (un)selected
         :param i_cost: cost of such candidate
         :param i_value: value of such candidate
         """
-        self.selected[i] = 1
-        self.total_cost += i_cost
-        self.total_satisfaction += i_value
+        if self.selected[i] == 0:
+            self.selected[i] = 1
+            self.total_cost += i_cost
+            self.total_satisfaction += i_value
+
+        if self.selected[i] == 1:
+            self.selected[i] = 0
+            self.total_cost -= i_cost
+            self.total_satisfaction -= i_value
+
         self.mono_objective_score = self.compute_mono_objective_score()
 
-    def unset(self, i, i_cost, i_value):
+    def try_flip(self, i, i_cost, i_value):
         """
-        :param i: candidate to be unselected
+        This method simulates flip(i, i_cost, i_value), without changing any attribute from the object
+        :param i: new candidate to be (un)selected
         :param i_cost: cost of such candidate
         :param i_value: value of such candidate
+        :return the wouldbe new cost, value and mono_objective_score
         """
-        self.selected[i] = 0
-        self.total_cost -= i_cost
-        self.total_satisfaction -= i_value
-        self.mono_objective_score = self.compute_mono_objective_score()
+        if self.selected[i] == 0:
+            new_cost = self.total_cost + i_cost
+            new_satisfaction = self.total_satisfaction + i_value
+            smooth = len(np.where(self.selected == 1)) + 1
+
+        if self.selected[i] == 1:
+            new_cost = self.total_cost - i_cost
+            new_satisfaction = self.total_satisfaction - i_value
+            smooth = len(np.where(self.selected == 1)) - 1
+            smooth = 1 if smooth == 0 else smooth
+
+        return (new_cost, new_satisfaction,
+                new_satisfaction / (new_cost + 1 / smooth))
+
+    def dominates(self, solution):
+        """
+
+        :param solution: GRASPSolution
+        :return: True if self dominates solution, in terms of cost and satisfaction
+        """
+        return self.total_cost < solution.total_cost and self.total_satisfaction > solution.total_satisfaction
+
+    def dominates_all_in(self, solutions):
+        """
+
+        :param solutions: list of GraspSolution
+        :return: True if self dominates all Graspsolution in solutions
+        """
+        for sol in solutions:
+            if not self.dominates(sol):
+                return False
+        return True
+
+    def is_dominated_by_any_in(self, solutions):
+        """
+
+        :param solutions: list of GraspSolution
+        :return: True if self is dominated by any GraspSolution in solutions
+        """
+        for sol in solutions:
+            if sol.dominates(self):
+                return True
+        return False
 
     def __str__(self):
         string = "PBIs selected in this Solution: "
