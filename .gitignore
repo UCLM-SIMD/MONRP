@@ -156,7 +156,11 @@ fabric.properties
 
 
 # output
+<<<<<<< HEAD
 output
+=======
+
+>>>>>>> ffc231f9 (differences solved for pull request from pablo to master)
 .idea/misc.xml
 plots
 temp-plot.*
