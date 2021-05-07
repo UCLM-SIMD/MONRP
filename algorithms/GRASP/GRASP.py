@@ -175,16 +175,19 @@ class GRASP:
             # if sol is dominated by any solution in self.NDS, then search is stopped and sol is discarded
             now_dominated = []
             for nds_sol in self.NDS:
-
-                if sol.dominates(nds_sol):
-                    now_dominated.append(nds_sol)
-                # do not insert if sol is dominated by a solution in self.NDS or sol already exists in self.NDS
-                elif nds_sol.dominates(sol) or np.array_equal(sol.selected, nds_sol.selected):
+                if np.array_equal(sol.selected, nds_sol.selected):
                     insert = False
                     break
+                else:
+                    if sol.dominates(nds_sol):
+                        now_dominated.append(nds_sol)
+                    # do not insert if sol is dominated by a solution in self.NDS
+                    if nds_sol.dominates(sol):
+                        insert = False
+                        break
 
             # sol is inserted if it is not dominated by any solution in self.NDS,
-            # and all solutions in self.NDS dominated by sol are then removed
+            # then all solutions in self.NDS dominated by sol are removed
             if insert:
                 self.NDS.append(sol)
                 for dominated in now_dominated:
