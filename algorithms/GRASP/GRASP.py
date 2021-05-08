@@ -1,6 +1,5 @@
 import time
 
-
 from algorithms.GRASP.Dataset import Dataset
 import numpy as np
 import getopt
@@ -54,7 +53,7 @@ class GRASP:
     """
 
     def __init__(self, dataset=1, iterations=20, solutions_per_iteration=10,
-                 local_search_type="best_first_neighbor", seed=1):
+                 local_search_type="best_first_neighbor", seed=None):
         """
         :param dataset: integer number: 1 or 2
         :param iterations: integer (default 20), number of GRASP construct+local_search repetitions
@@ -67,7 +66,8 @@ class GRASP:
         self.number_of_solutions = solutions_per_iteration
         self.NDS = []
         self.local_search = local_search_type
-        self.seed = seed
+        if seed is not None:
+            np.random.seed(seed)
 
     def run(self):
         """
@@ -116,7 +116,7 @@ class GRASP:
         candidates_score_scaled = self.dataset.pbis_score / self.dataset.pbis_score.sum()
 
         # create GraspSolutions
-        np.random.seed(self.seed)
+
         solutions = []
         for i in np.arange(self.number_of_solutions):
             sol = GraspSolution(candidates_score_scaled, costs=self.dataset.pbis_cost_scaled,
@@ -175,18 +175,19 @@ class GRASP:
             # if sol is dominated by any solution in self.NDS, then search is stopped and sol is discarded
             now_dominated = []
             for nds_sol in self.NDS:
-
-                if sol.dominates(nds_sol):
-                    now_dominated.append(nds_sol)
-                # left part of elif is because if some solution in NDS is already dominated by sol,
-                # then no other solution in NDS will dominate sol, so evaluating it is waste
-                elif (now_dominated.__len__ == 0 and nds_sol.dominates(sol)) \
-                        or np.array_equal(sol.selected, nds_sol.selected):  # sol already existed in self.NDS
+                if np.array_equal(sol.selected, nds_sol.selected):
                     insert = False
                     break
+                else:
+                    if sol.dominates(nds_sol):
+                        now_dominated.append(nds_sol)
+                    # do not insert if sol is dominated by a solution in self.NDS
+                    if nds_sol.dominates(sol):
+                        insert = False
+                        break
 
             # sol is inserted if it is not dominated by any solution in self.NDS,
-            # and all solutions in self.NDS dominated by sol are then removed
+            # then all solutions in self.NDS dominated by sol are removed
             if insert:
                 self.NDS.append(sol)
                 for dominated in now_dominated:
@@ -210,7 +211,7 @@ def _results_in_victor_format(nds, seconds, num_iterations, genes):
         individual = Individual(problem.genes, problem.objectives)
         for b in np.arange(len(individual.genes)):
             individual.genes[b].included = solution[b]
-            individual.evaluate_fitness()
+        individual.evaluate_fitness()
         final_nds_formatted.append(individual)
     # calcular métricas
     utils = GeneticNDSUtils(problem=problem, random_seed=1)  # aquí la semilla no sirve de nada
