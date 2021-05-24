@@ -10,8 +10,8 @@ def generate_configurations():
 	dataset_problems = ["dataset1"
 		#, "dataset2"
 						]
-	algorithms = ["genetic"
-		#, "geneticnds", "nsgaii"
+	algorithms = [#"genetic",
+		"geneticnds", "nsgaii"
 				  ]
 	selection_schemes = ["tournament",
 						 ]
@@ -32,6 +32,7 @@ def generate_configurations():
 
 	f = open("configs.txt", "w")
 	returnStr = ''
+	type="genetic"
 	for dataset_problem in dataset_problems:
 		for selected_algorithm in algorithms:
 			for population_length in population_lengths:
@@ -42,7 +43,7 @@ def generate_configurations():
 								for mutation_scheme in mutation_schemes:
 									for mutation_prob in mutation_probs:
 										for replacement_scheme in replacement_schemes:
-											returnStr = str(dataset_problem) + ' ' + str(seed) + ' ' + str(
+											returnStr = type + " " + str(dataset_problem) + ' ' + str(seed) + ' ' + str(
 												selected_algorithm) + ' ' + str(population_length) + ' ' + str(
 												generation) + \
 														' ' + str(selection_scheme) + ' ' + str(

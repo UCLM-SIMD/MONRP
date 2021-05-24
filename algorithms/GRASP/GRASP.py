@@ -14,7 +14,7 @@ from models.problem import Problem
 
 class GRASP:
     """
-    __author__      = "Pablo.Bermejo@uclm.es"
+    __author__      = "Victor.PerezPiqueras@uclm.es" "Pablo.Bermejo@uclm.es"
 
     A GRASP search with two phases:
       - create initial set of solutions, based on a ranking of probabilities computed from
@@ -33,7 +33,7 @@ class GRASP:
     NDS: list of algorithms.GRASP.GraspSolution, empty at start.
         it contains the current set of non dominated solutions
 
-    local_search: string, type of search to perform.
+    local_search_type: string, type of search to perform.
         possible values are: best_first_neighbor (default)
 
     Methods
@@ -63,9 +63,9 @@ class GRASP:
         """
         self.dataset = Dataset(dataset)
         self.iterations = iterations
-        self.number_of_solutions = solutions_per_iteration
+        self.solutions_per_iteration = solutions_per_iteration
         self.NDS = []
-        self.local_search = local_search_type
+        self.local_search_type = local_search_type
         if seed is not None:
             np.random.seed(seed)
 
@@ -86,7 +86,7 @@ class GRASP:
             initiated_solutions = self.init_solutions()
 
             # local search phase
-            if self.local_search == "best_first_neighbor":
+            if self.local_search_type == "best_first_neighbor":
                 initiated_solutions = self.local_search_bitwise_neighborhood(initiated_solutions)
 
             # update NDS with solutions constructed and evolved in this iteration
@@ -118,7 +118,7 @@ class GRASP:
         # create GraspSolutions
 
         solutions = []
-        for i in np.arange(self.number_of_solutions):
+        for i in np.arange(self.solutions_per_iteration):
             sol = GraspSolution(candidates_score_scaled, costs=self.dataset.pbis_cost_scaled,
                                 values=self.dataset.pbis_satisfaction_scaled)
             if np.count_nonzero(sol.selected) > 0:  # avoid solution with 0 cost due to 0 candidates selected
@@ -224,14 +224,12 @@ def _results_in_victor_format(nds, seconds, num_iterations, genes):
     return {
         "population": final_nds_formatted,
         "time": seconds,
-        "best_individual": None,
-        "avg_value": avg_value,
-        "best_avg_value": best_avg_value,
+        "avgValue": avg_value,
+        "bestAvgValue": best_avg_value,
         "hv": hv,
         "spread": spread,
         "numSolutions": num_solutions,
         "spacing": spacing,
-        "best_generation_num": None,
         "num_generations": num_iterations,
     }
 

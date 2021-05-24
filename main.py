@@ -1,12 +1,15 @@
 from datasets.dataset1 import generate_dataset1_genes
 from datasets.dataset2 import generate_dataset2_genes
-from executer import executer, initialize_file
+from executer import Executer
 from algorithms.genetic_nds.genetic_nds_algorithm import GeneticNDSAlgorithm
 from algorithms.nsgaii.nsgaii_algorithm import NSGAIIAlgorithm
 from models.problem import Problem
 import time
+
+executer = Executer("genetic")
 # iniciar------------------------------------------------------------------
 def loop_executions():
+
 	counter = 0
 	max_counter = len(cross) * len(mut) * len(pop) * len(generations)  * len(algorithms) * len(dataset_problems)
 	for c in cross:
@@ -19,7 +22,7 @@ def loop_executions():
 							start = time.time()
 							algorithm = selected_algorithm(dataset_problem["problem"], random_seed=seed, population_length=p, max_generations=g,crossover_prob=c, mutation_prob=m,
 														 crossover="onepoint", replacement = "elitismnds",mutation="flip1bit")
-							executer(algorithm,dataset=dataset_problem["name"], iterations=1, file_path=FILE_PATH)
+							executer.execute(algorithm,dataset=dataset_problem["name"], iterations=1, file_path=FILE_PATH)
 
 							counter += 1
 							end = time.time()
@@ -51,8 +54,8 @@ mut=[0.1
 pop=[30
 	#,30,40
 	 ]
-generations=[300
-	#,200,300
+generations=[
+	200,300
 	]
 dataset_problems=[
 	{"problem":problem1,
@@ -68,6 +71,6 @@ algorithms=[
 ]
 
 FILE_PATH="output/prueba_paper.txt"
-initialize_file(FILE_PATH)
+executer.initialize_file(FILE_PATH)
 
 loop_executions()
