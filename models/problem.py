@@ -1,4 +1,4 @@
-from models.individual import Solution
+from models.solution import Solution
 from models.objective import Objective
 
 

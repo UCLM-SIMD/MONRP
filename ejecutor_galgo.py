@@ -1,6 +1,6 @@
 from algorithms.GRASP.GRASP import GRASP
 from algorithms.genetic.genetic_algorithm import GeneticAlgorithm
-from algorithms.genetic_nds.genetic_nds_algorithm import GeneticNDSAlgorithm
+from algorithms.genetic_nds.geneticnds_algorithm import GeneticNDSAlgorithm
 from algorithms.nsgaii.nsgaii_algorithm import NSGAIIAlgorithm
 from datasets.dataset1 import generate_dataset1_genes
 from datasets.dataset2 import generate_dataset2_genes
@@ -33,16 +33,10 @@ if(params[0]=="genetic"):
 	mut_scheme = str(params[9])
 	mut_prob = float(params[10])
 	repl_scheme = str(params[11])
-	objectives_minimization = ["MAX", "MIN"]
+
 	filepath = "output/genetic-"+(str(dataset_name)+"-"+str(seed)+"-"+str(algorithm_name)+"-"+str(pop_length)+"-"+str(max_gens) +"-"+str(sel_scheme) \
 						  + "-" + str(cross_scheme) + "-" + str(cross_prob)+"-"+str(mut_scheme)+"-"+str(mut_prob) +"-"+str(repl_scheme)+".txt")
 
-	if dataset_name =="dataset1":
-		genes = generate_dataset1_genes()
-		problem = Problem(genes, objectives_minimization)
-	elif dataset_name =="dataset2":
-		genes = generate_dataset2_genes()
-		problem = Problem(genes, objectives_minimization)
 
 	if algorithm_name == "genetic":
 		algorithm = GeneticAlgorithm
@@ -51,7 +45,7 @@ if(params[0]=="genetic"):
 	elif algorithm_name == "nsgaii":
 		algorithm = NSGAIIAlgorithm
 
-	algorithm = algorithm(problem, random_seed=seed, population_length=pop_length, max_generations=max_gens,
+	algorithm = algorithm(dataset_name=dataset_name, random_seed=seed, population_length=pop_length, max_generations=max_gens,
 						  selection=sel_scheme,crossover=cross_scheme, crossover_prob=cross_prob,mutation=mut_scheme,
 						  mutation_prob=mut_prob,replacement = repl_scheme)
 

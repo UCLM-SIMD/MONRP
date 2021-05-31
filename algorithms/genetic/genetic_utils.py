@@ -1,46 +1,60 @@
+from algorithms.abstract_genetic.basegenetic_utils import BaseGeneticUtils
 import random
 from models.population import Population
 
-class GeneticUtils:
-    def __init__(self, problem, random_seed,selection_candidates=2, crossover_prob=0.9,mutation_prob=0.1):
-        self.problem=problem
-        self.random_seed=random_seed
-        random.seed(self.random_seed)
-        self.selection_candidates=selection_candidates
-        self.crossover_prob=crossover_prob
-        self.mutation_prob=mutation_prob
 
-    #SELECTION------------------------------------------------------------------
-    def selection_tournament(self,population):
-      #self.num_candidates=2
-      new_population=Population()
-      #crear tantos individuos como tamaño de la poblacion
-      for i in range(0,len(population)):
-        best_candidate=None
-        best_total_score=0
-        #elegir individuo entre X num de candidatos aleatorios
-        for j in range(0,self.selection_candidates):
-          random_index=random.randint(0,len(population)-1)
-          candidate=population.get(random_index)
-          candidate.evaluate_fitness()
-          #print(candidate)
-          score=candidate.score
-          cost=candidate.cost
-          total_score=candidate.total_score
-          #guardar el candidato con mejor score
-          if( total_score > best_total_score):
-            best_total_score=total_score
-            best_candidate=candidate
+class GeneticUtils(BaseGeneticUtils):
+    def __init__(self, random_seed, population_length=20, selection_candidates=2, crossover_prob=0.9, mutation_prob=0.1):
+        super().__init__(random_seed, population_length,
+                         selection_candidates, crossover_prob, mutation_prob)
 
-        #insertar el mejor candidato del torneo en la nueva poblacion
-        #print(best_candidate)
-        new_population.append(best_candidate)
+    # GENERATE DATASET PROBLEM------------------------------------------------------------------
+    def generate_dataset_problem(self, dataset_name):
+        return super().generate_dataset_problem(dataset_name)
 
-      #retornar nueva poblacion
-      return new_population
+    # GENERATE STARTING POPULATION------------------------------------------------------------------
+    def generate_starting_population(self):
+        return super().generate_starting_population()
 
+    # EVALUATION------------------------------------------------------------------
+    def evaluate(self, population, best_individual):
+        super().evaluate(population, best_individual)
+
+    # LAST GENERATION ENHANCE------------------------------------------------------------------
+    def calculate_last_generation_with_enhance(self, best_generation, best_generation_avgValue, num_generation, population):
+        return super().calculate_last_generation_with_enhance(best_generation, best_generation_avgValue, num_generation, population)
+
+    # SELECTION------------------------------------------------------------------
+    def selection_tournament(self, population):
+        # self.num_candidates=2
+        new_population = Population()
+        # crear tantos individuos como tamaño de la poblacion
+        for i in range(0, len(population)):
+            best_candidate = None
+            best_total_score = 0
+            # elegir individuo entre X num de candidatos aleatorios
+            for j in range(0, self.selection_candidates):
+                random_index = random.randint(0, len(population)-1)
+                candidate = population.get(random_index)
+                candidate.evaluate_fitness()
+                # print(candidate)
+                score = candidate.score
+                cost = candidate.cost
+                total_score = candidate.total_score
+                # guardar el candidato con mejor score
+                if(total_score > best_total_score):
+                    best_total_score = total_score
+                    best_candidate = candidate
+
+            # insertar el mejor candidato del torneo en la nueva poblacion
+            # print(best_candidate)
+            new_population.append(best_candidate)
+
+        # retornar nueva poblacion
+        return new_population
 
     # CROSSOVER------------------------------------------------------------------
+
     def crossover_one_point(self, population):
         new_population = Population()
 
@@ -55,18 +69,20 @@ class GeneticUtils:
                 # pair 2 parents -> crossover or add them and jump 1 index extra
                 prob = random.random()
                 if prob < self.crossover_prob:
-                    offsprings = self.crossover_aux_one_point(population.get(i), population.get(i + 1))
+                    offsprings = self.crossover_aux_one_point(
+                        population.get(i), population.get(i + 1))
                     # print(offsprings)
                     new_population.extend(offsprings)
                 else:
-                    new_population.extend([population.get(i), population.get(i + 1)])
+                    new_population.extend(
+                        [population.get(i), population.get(i + 1)])
                 i += 1
 
             i += 1
 
         return new_population
 
-    def crossover_aux_one_point(self,parent1, parent2):
+    def crossover_aux_one_point(self, parent1, parent2):
         # print("-----------PARENTS:")
         # print(parent1)
         # print(parent2)
@@ -74,12 +90,14 @@ class GeneticUtils:
         # index aleatorio del punto de division para el cruce
         crossover_point = random.randint(1, chromosome_length - 1)
         # print('-------------crossover_point :', crossover_point )
-        offspring_genes1 = parent1.genes[0:crossover_point] + parent2.genes[crossover_point:]
+        offspring_genes1 = parent1.genes[0:crossover_point] + \
+            parent2.genes[crossover_point:]
         # print("first slice")
         # for o in offspring_genes1:
         # print("gen: ",o)
 
-        offspring_genes2 = parent2.genes[0:crossover_point] + parent1.genes[crossover_point:]
+        offspring_genes2 = parent2.genes[0:crossover_point] + \
+            parent1.genes[crossover_point:]
 
         # print("second slice")
         # for o in offspring_genes2:
@@ -94,8 +112,8 @@ class GeneticUtils:
 
         return offspring1, offspring2
 
-
     # MUTATION------------------------------------------------------------------
+
     def mutation_flip1bit(self, population):
         new_population = Population()
         new_population.extend(population.population)
@@ -128,7 +146,7 @@ class GeneticUtils:
         return new_population
 
     # REPLACEMENT------------------------------------------------------------------
-    def replacement_elitism(self,population, newpopulation):
+    def replacement_elitism(self, population, newpopulation):
         # print("POP----------------------------------------------------------")
         # encontrar mejor individuo de poblacion
         best_individual = None
@@ -162,24 +180,3 @@ class GeneticUtils:
         # print(newpopulation_replaced[worst_individual_index])
         # print("end")
         return newpopulation_replaced
-
-    # AVGVALUE------------------------------------------------------------------
-    def calculate_avgValue(self, population):
-        avgValue = 0
-        for ind in population:
-            avgValue += ind.total_score
-        avgValue /= len(population)
-        return avgValue
-
-    # BESTAVGVALUE------------------------------------------------------------------
-    def calculate_bestAvgValue(self, population):
-        bestAvgValue = 0
-        for ind in population:
-            if bestAvgValue < ind.total_score:
-                bestAvgValue = ind.total_score
-
-        return bestAvgValue
-
-    # NUMSOLUTIONS------------------------------------------------------------------
-    def calculate_numSolutions(self, population):
-        return len(population)

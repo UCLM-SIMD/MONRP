@@ -1,7 +1,7 @@
 from datasets.dataset1 import generate_dataset1_genes
 from datasets.dataset2 import generate_dataset2_genes
 from executer import Executer
-from algorithms.genetic_nds.genetic_nds_algorithm import GeneticNDSAlgorithm
+from algorithms.genetic_nds.geneticnds_algorithm import GeneticNDSAlgorithm
 from algorithms.nsgaii.nsgaii_algorithm import NSGAIIAlgorithm
 from models.problem import Problem
 import time
