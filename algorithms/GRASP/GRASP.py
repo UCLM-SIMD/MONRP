@@ -8,7 +8,7 @@ import sys
 from algorithms.GRASP.GraspSolution import GraspSolution
 from algorithms.genetic_nds.genetic_nds_utils import GeneticNDSUtils
 from datasets import dataset1, dataset2
-from models.individual import Individual
+from models.individual import Solution
 from models.problem import Problem
 
 
@@ -208,7 +208,7 @@ def _results_in_victor_format(nds, seconds, num_iterations, genes):
     problem = Problem(genes, ["MAX", "MIN"])
     final_nds_formatted = []
     for solution in nds:
-        individual = Individual(problem.genes, problem.objectives)
+        individual = Solution(problem.genes, problem.objectives)
         for b in np.arange(len(individual.genes)):
             individual.genes[b].included = solution[b]
         individual.evaluate_fitness()

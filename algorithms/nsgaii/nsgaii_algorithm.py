@@ -1,4 +1,4 @@
-from models.individual import Individual
+from models.individual import Solution
 from algorithms.nsgaii.nsgaii_utils import NSGAIIUtils
 from models.population import Population
 import copy
@@ -62,7 +62,7 @@ class NSGAIIAlgorithm:
 	def generate_starting_population(self):
 		population = Population()
 		for i in range(0, self.population_length):
-			individual = Individual(self.problem.genes, self.problem.objectives)
+			individual = Solution(self.problem.genes, self.problem.objectives)
 			individual.initRandom()
 			population.append(individual)
 		return population
@@ -155,23 +155,11 @@ class NSGAIIAlgorithm:
 			#if num_generations % 100 == 0:
 			#	print("Nº Generations: ", num_generations)
 
-		avgValue = self.calculate_avgValue(returned_population.fronts[0])
-		bestAvgValue = self.calculate_bestAvgValue(returned_population.fronts[0])
-		hv = self.calculate_hypervolume(returned_population.fronts[0])
-		spread = self.calculate_spread(returned_population.fronts[0])
-		numSolutions = self.calculate_numSolutions(returned_population.fronts[0])
-		spacing = self.calculate_spacing(returned_population.fronts[0])
 		end = time.time()
 
 		return {"population": returned_population.fronts[0],
 				"time": end - start,
-				"avgValue": avgValue,
-				"bestAvgValue": bestAvgValue,
 				"best_individual": self.best_individual,
-				"hv": hv,
-				"spread": spread,
-				"numSolutions": numSolutions,
-				"spacing": spacing,
-				"best_generation_num": self.best_generation,
-				"num_generations": num_generations,
+				"bestGeneration": self.best_generation,
+				"numGenerations": num_generations,
 				}

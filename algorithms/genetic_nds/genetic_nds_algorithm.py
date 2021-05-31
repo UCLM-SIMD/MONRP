@@ -1,10 +1,12 @@
+from algorithms.genetic_nds.geneticnds_executer import GeneticNDSExecuter
 from algorithms.genetic_nds.genetic_nds_utils import GeneticNDSUtils
-from models.individual import Individual
+from models.solution import Solution
 from models.population import Population
 import copy
 import time
+from algorithms.abstract.algorithm import Algorithm
 
-class GeneticNDSAlgorithm:
+class GeneticNDSAlgorithm(Algorithm):
 	def __init__(self, problem, random_seed=None, population_length=20, max_generations=1000,
 				 selection="tournament", selection_candidates=2,
 				 crossover="onepoint", crossover_prob=0.9,
@@ -24,22 +26,14 @@ class GeneticNDSAlgorithm:
 		self.mutation_prob = mutation_prob
 		self.replacement_scheme = replacement
 
-
-		self.utils = GeneticNDSUtils(self.problem,self.random_seed, selection_candidates, crossover_prob, mutation_prob)
-
-		self.calculate_numSolutions=self.utils.calculate_numSolutions
-		self.calculate_avgValue = self.utils.calculate_avgValue
-		self.calculate_bestAvgValue = self.utils.calculate_bestAvgValue
-
-		self.calculate_spacing = self.utils.calculate_spacing
-		self.calculate_hypervolume = self.utils.calculate_hypervolume
-		self.calculate_spread = self.utils.calculate_spread
-
 		self.best_individual = None
 		self.population=None
 		self.best_generation_avgValue = None
 		self.best_generation = None
 		self.nds=[]
+
+		self.utils = GeneticNDSUtils(self.problem,self.random_seed, selection_candidates, crossover_prob, mutation_prob)
+		self.executer = GeneticNDSExecuter()
 
 		if selection == "tournament":
 			self.selection = self.utils.selection_tournament
@@ -56,18 +50,12 @@ class GeneticNDSAlgorithm:
 			self.replacement = self.utils.replacement_elitism
 		elif replacement == "elitismnds":
 			self.replacement = self.utils.replacement_elitism
-	'''
-	def aa(self):
-		random.seed(self.random_seed)
-		print(random.random())
-		print(random.random())
-	'''
 
 	# GENERATE STARTING POPULATION------------------------------------------------------------------
 	def generate_starting_population(self):
 		population = Population()
 		for i in range(0, self.population_length):
-			individual = Individual(self.problem.genes, self.problem.objectives)
+			individual = Solution(self.problem.genes, self.problem.objectives)
 			individual.initRandom()
 			population.append(individual)
 		return population
@@ -171,12 +159,6 @@ class GeneticNDSAlgorithm:
 
 		# end
 		# print(self.best_individual)
-		avgValue = self.calculate_avgValue(self.nds)
-		bestAvgValue = self.calculate_bestAvgValue(self.nds)
-		hv = self.calculate_hypervolume(self.nds)
-		spread = self.calculate_spread(self.nds)
-		numSolutions = self.calculate_numSolutions(self.nds)
-		spacing = self.calculate_spacing(self.nds)
 		end = time.time()
 
 		return {#"population": returned_population,
@@ -184,12 +166,6 @@ class GeneticNDSAlgorithm:
 				"time": end - start,
 				"best_individual": self.best_individual,
 				#"nds": self.nds,
-				"avgValue": avgValue,
-				"bestAvgValue": bestAvgValue,
-				"hv": hv,
-				"spread": spread,
-				"numSolutions":numSolutions,
-				"spacing": spacing,
-				"best_generation_num": self.best_generation,
-				"num_generations": num_generations,
+				"bestGeneration": self.best_generation,
+				"numGenerations": num_generations,
 				}
