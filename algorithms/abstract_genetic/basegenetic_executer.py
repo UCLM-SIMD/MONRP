@@ -49,7 +49,7 @@ class BaseGeneticExecuter(Executer):
             numSolutions = str(metrics.calculate_numSolutions(result["population"]))
             spacing = str(metrics.calculate_spacing(result["population"]))
 
-            f = open(file_path+"/"+self.algorithm.file, "a")
+            f = open(file_path, "a")
             data = str(dataset) + "," + \
                 str(algorithm_name) + "," + \
                 str(population_length) + "," + \

@@ -1,3 +1,4 @@
+from algorithms.GRASP.grasp_executer import GRASPExecuter
 import time
 
 from algorithms.GRASP.Dataset import Dataset
@@ -72,6 +73,7 @@ class GRASP:
         if seed is not None:
             np.random.seed(seed)
 
+        self.executer = GRASPExecuter(algorithm=self)
         self.file = self.__class__.__name__+"-"+(str(dataset)+"-"+str(seed)+"-"+str(iterations)+"-"+str(solutions_per_iteration)
                                 + "-"+str(local_search_type)+".txt")
 
