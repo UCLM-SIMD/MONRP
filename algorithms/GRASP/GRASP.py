@@ -1,3 +1,4 @@
+from algorithms.GRASP.grasp_executer import GRASPExecuter
 import time
 
 from algorithms.GRASP.Dataset import Dataset
@@ -6,9 +7,8 @@ import getopt
 import sys
 
 from algorithms.GRASP.GraspSolution import GraspSolution
-from algorithms.genetic_nds.genetic_nds_utils import GeneticNDSUtils
 from datasets import dataset1, dataset2
-from models.individual import Individual
+from models.solution import Solution
 from models.problem import Problem
 
 
@@ -23,6 +23,9 @@ class GRASP:
 
     Attributes
     ----------
+    dataset_name: string
+        name of the dataset
+
     dataset: type algorithms.GRASP.Dataset
         each pbi in Dataset is a candidate to be included in one of the GRASP solutions.
         Dataset provides cost, satisfaction and score of each pbi.
@@ -52,7 +55,7 @@ class GRASP:
 
     """
 
-    def __init__(self, dataset=1, iterations=20, solutions_per_iteration=10,
+    def __init__(self, dataset="1", iterations=20, solutions_per_iteration=10,
                  local_search_type="best_first_neighbor", seed=None):
         """
         :param dataset: integer number: 1 or 2
@@ -62,12 +65,17 @@ class GRASP:
         :param seed: int. seed for random generation of solutions in the first phase of each GRASP iteration
         """
         self.dataset = Dataset(dataset)
+        self.dataset_name = dataset
         self.iterations = iterations
         self.solutions_per_iteration = solutions_per_iteration
         self.NDS = []
         self.local_search_type = local_search_type
         if seed is not None:
             np.random.seed(seed)
+
+        self.executer = GRASPExecuter(algorithm=self)
+        self.file = self.__class__.__name__+"-"+(str(dataset)+"-"+str(seed)+"-"+str(iterations)+"-"+str(solutions_per_iteration)
+                                + "-"+str(local_search_type)+".txt")
 
     def run(self):
         """
@@ -102,7 +110,7 @@ class GRASP:
             selected_list.append(sol.selected)
         # return selected_list, seconds
 
-        genes = dataset1.generate_dataset1_genes() if self.dataset.id == 1 else dataset2.generate_dataset2_genes()
+        genes = dataset1.generate_dataset1_genes() if self.dataset.id == "1" else dataset2.generate_dataset2_genes()
 
         return _results_in_victor_format(selected_list, seconds, self.iterations, genes)
 
@@ -208,29 +216,16 @@ def _results_in_victor_format(nds, seconds, num_iterations, genes):
     problem = Problem(genes, ["MAX", "MIN"])
     final_nds_formatted = []
     for solution in nds:
-        individual = Individual(problem.genes, problem.objectives)
+        individual = Solution(problem.genes, problem.objectives)
         for b in np.arange(len(individual.genes)):
             individual.genes[b].included = solution[b]
         individual.evaluate_fitness()
         final_nds_formatted.append(individual)
-    # calcular métricas
-    utils = GeneticNDSUtils(problem=problem, random_seed=1)  # aquí la semilla no sirve de nada
-    avg_value = utils.calculate_avgValue(final_nds_formatted)
-    best_avg_value = utils.calculate_bestAvgValue(final_nds_formatted)
-    hv = utils.calculate_hypervolume(final_nds_formatted)
-    spread = utils.calculate_spread(final_nds_formatted)
-    num_solutions = utils.calculate_numSolutions(final_nds_formatted)
-    spacing = utils.calculate_spacing(final_nds_formatted)
+
     return {
         "population": final_nds_formatted,
         "time": seconds,
-        "avgValue": avg_value,
-        "bestAvgValue": best_avg_value,
-        "hv": hv,
-        "spread": spread,
-        "numSolutions": num_solutions,
-        "spacing": spacing,
-        "num_generations": num_iterations,
+        "numGenerations": num_iterations,
     }
 
 
@@ -240,7 +235,7 @@ def _get_options(argv=None):
         :return: all the options
     """
 
-    dataset = 1
+    dataset = "1"
     iterations = 20
     solutions_per_iteration = 10
     local_search_type = "best_first_neighbor"
@@ -254,7 +249,7 @@ def _get_options(argv=None):
 
     for opt, arg in opts:
         if opt in ("-d", "--dataset"):
-            dataset = int(arg)
+            dataset = str(arg)
         elif opt in ("-i", "--iterations"):
             iterations = int(arg)
         elif opt in ("-s", "--solutions_per_it"):

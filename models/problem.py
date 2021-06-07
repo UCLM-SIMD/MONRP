@@ -1,4 +1,4 @@
-from models.individual import Individual
+from models.solution import Solution
 from models.objective import Objective
 
 
@@ -14,13 +14,13 @@ class Problem:
 
   # GENERATE INDIVIDUAL------------------------------------------------------------------
   def generate_individual(self, genes):
-    individual=Individual(genes, self.objectives)
+    individual=Solution(genes, self.objectives)
     individual.initRandom()
     return individual
 
   # GENERATE STARTING INDIVIDUAL------------------------------------------------------------------
   def generate_starting_individual(self):
-    individual=Individual(self.genes, self.objectives)
+    individual=Solution(self.genes, self.objectives)
     individual.initRandom()
     return individual
 

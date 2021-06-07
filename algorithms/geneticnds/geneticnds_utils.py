@@ -3,7 +3,7 @@ import random
 from models.population import Population
 
 
-class GeneticUtils(BaseGeneticUtils):
+class GeneticNDSUtils(BaseGeneticUtils):
     def __init__(self, random_seed, population_length=20, selection_candidates=2, crossover_prob=0.9, mutation_prob=0.1):
         super().__init__(random_seed, population_length,
                          selection_candidates, crossover_prob, mutation_prob)
@@ -26,7 +26,6 @@ class GeneticUtils(BaseGeneticUtils):
 
     # SELECTION------------------------------------------------------------------
     def selection_tournament(self, population):
-        # self.num_candidates=2
         new_population = Population()
         # crear tantos individuos como tamaño de la poblacion
         for i in range(0, len(population)):
@@ -37,7 +36,6 @@ class GeneticUtils(BaseGeneticUtils):
                 random_index = random.randint(0, len(population)-1)
                 candidate = population.get(random_index)
                 candidate.evaluate_fitness()
-                # print(candidate)
                 score = candidate.score
                 cost = candidate.cost
                 total_score = candidate.total_score
@@ -47,7 +45,6 @@ class GeneticUtils(BaseGeneticUtils):
                     best_candidate = candidate
 
             # insertar el mejor candidato del torneo en la nueva poblacion
-            # print(best_candidate)
             new_population.append(best_candidate)
 
         # retornar nueva poblacion
@@ -57,8 +54,6 @@ class GeneticUtils(BaseGeneticUtils):
 
     def crossover_one_point(self, population):
         new_population = Population()
-
-        # for i in range(0, len(population)-1):
         i = 0
         while i < len(population):
             # if last element is alone-> add it
@@ -83,32 +78,17 @@ class GeneticUtils(BaseGeneticUtils):
         return new_population
 
     def crossover_aux_one_point(self, parent1, parent2):
-        # print("-----------PARENTS:")
-        # print(parent1)
-        # print(parent2)
         chromosome_length = len(parent1.genes)
         # index aleatorio del punto de division para el cruce
         crossover_point = random.randint(1, chromosome_length - 1)
-        # print('-------------crossover_point :', crossover_point )
         offspring_genes1 = parent1.genes[0:crossover_point] + \
             parent2.genes[crossover_point:]
-        # print("first slice")
-        # for o in offspring_genes1:
-        # print("gen: ",o)
 
         offspring_genes2 = parent2.genes[0:crossover_point] + \
             parent1.genes[crossover_point:]
 
-        # print("second slice")
-        # for o in offspring_genes2:
-        # print("gen: ",o)
-
         offspring1 = self.problem.generate_individual(offspring_genes1)
         offspring2 = self.problem.generate_individual(offspring_genes2)
-
-        # print("-----------OFFSPRINGS:")
-        # print(offspring1)
-        # print(offspring2)
 
         return offspring1, offspring2
 
@@ -147,36 +127,25 @@ class GeneticUtils(BaseGeneticUtils):
 
     # REPLACEMENT------------------------------------------------------------------
     def replacement_elitism(self, population, newpopulation):
-        # print("POP----------------------------------------------------------")
         # encontrar mejor individuo de poblacion
         best_individual = None
         best_individual_total_score = 0
         for ind in population:
-            # print(ind)
             if (ind.total_score > best_individual_total_score):
                 best_individual_total_score = ind.total_score
                 best_individual = ind
-        # print("ind----------------------------------------------------------")
-        # print(best_individual)
-        # print("NEWPOP----------------------------------------------------------")
 
         # encontrar indice del peor individuo de nueva poblacion
         newpopulation_replaced = Population()
-        # = copy.deepcopy(newpopulation)
         newpopulation_replaced.extend(newpopulation.population)
 
         worst_individual_total_score = float('inf')
         worst_individual_index = None
         for ind in newpopulation_replaced:
-            # print(ind)
             if (ind.total_score < worst_individual_total_score):
                 worst_individual_total_score = ind.total_score
                 worst_individual_index = newpopulation_replaced.index(ind)
 
         # reemplazar peor individuo por el mejor de poblacion antigua
-        # print("index------------ ", worst_individual_index)
-        # print(newpopulation_replaced[worst_individual_index])
         newpopulation_replaced.set(worst_individual_index, best_individual)
-        # print(newpopulation_replaced[worst_individual_index])
-        # print("end")
         return newpopulation_replaced

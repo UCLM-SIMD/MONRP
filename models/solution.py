@@ -2,7 +2,7 @@ import random
 import uuid
 import copy
 
-class Individual:
+class Solution:
     def __init__(self, genes, objectives):
         self.id = uuid.uuid4()
         self.score = None
