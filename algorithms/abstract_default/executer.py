@@ -10,5 +10,5 @@ class Executer(ABC):
     def reset_file(self,file_path):
         pass
 
-    def execute(self, dataset, executions, file_path):
+    def execute(self, executions, file_path):
         pass

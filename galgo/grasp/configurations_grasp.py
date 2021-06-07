@@ -9,10 +9,10 @@ def generate_configurations():
         "grasp"
     ]
     iterations = [
-        20, 50, 100, 200, 300
+        20, 50, 100, 200, 300, 500, 1000
     ]
     solutions_per_iteration_list = [
-        20, 40, 60, 80, 100
+        20, 40, 60, 80, 100, 200, 500, 1000
     ]
     local_search_types = [
         "best_first_neighbor"
