@@ -109,7 +109,13 @@ class GraspSolution:
         :param solution: GRASPSolution
         :return: True if self dominates solution, in terms of cost and satisfaction
         """
-        return self.total_cost < solution.total_cost and self.total_satisfaction > solution.total_satisfaction
+        dominates = (self.total_cost < solution.total_cost) and (self.total_satisfaction > solution.total_satisfaction)
+
+        dominates = dominates or (self.total_cost == solution.total_cost and self.total_satisfaction > solution.total_satisfaction)
+
+        dominates = dominates or (self.total_cost < solution.total_cost and self.total_satisfaction == solution.total_satisfaction)
+
+        return dominates
 
     def dominates_all_in(self, solutions):
         """
