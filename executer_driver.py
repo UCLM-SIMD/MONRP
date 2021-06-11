@@ -35,16 +35,16 @@ if(params[0] == "genetic"):
     filepath = "output/genetic-"+algorithm.file
 
 elif(params[0] == "grasp"):
-    # -c grasp grasp 1 5 10 10 best_first_neighbor
+    # -c grasp grasp 1 5 10 10 stochastically best_first_neighbor
     # algorithmtype algorithm dataset seed iterations solutions_per_iteration local_search_type
     algorithm_model = GRASP
 
-    algorithm_name, dataset_name, seed, iterations, solutions_per_iteration, local_search_type = \
+    algorithm_name, dataset_name, seed, iterations, solutions_per_iteration, init_type, local_search_type = \
         [str(params[1]), str(params[2]), int(params[3]),
-            int(params[4]), int(params[5]), str(params[6])]
+            int(params[4]), int(params[5]), str(params[6]), str(params[7])]
 
     algorithm = algorithm_model(dataset=dataset_name, iterations=iterations, solutions_per_iteration=solutions_per_iteration,
-                                local_search_type=local_search_type, seed=seed)
+                                init_type=init_type, local_search_type=local_search_type, seed=seed)
     filepath = "output/grasp-"+algorithm.file
 
 # try:

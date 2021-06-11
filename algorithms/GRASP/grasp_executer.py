@@ -10,7 +10,7 @@ class GRASPExecuter(Executer):
     def initialize_file(self, file_path):
         # print("Running...")
         f = open(file_path, "w")
-        f.write("Dataset,Algorithm,Iterations,Solutions per Iteration,"
+        f.write("Dataset,Algorithm,Iterations,Solutions per Iteration, Initialization Type"
                 "Local Search Type,Time(s),AvgValue,BestAvgValue,HV,Spread,NumSolutions,Spacing\n")
         f.close()
 
@@ -24,6 +24,7 @@ class GRASPExecuter(Executer):
         iterations = self.algorithm.iterations
         solutions_per_iteration = self.algorithm.solutions_per_iteration
         local_search_type = self.algorithm.local_search_type
+        init_type = self.algorithm.init_type
 
         for i in range(0, executions):
             #print("Executing iteration: ", i + 1)
@@ -45,6 +46,7 @@ class GRASPExecuter(Executer):
                 str(algorithm_name) + "," + \
                 str(iterations) + "," + \
                 str(solutions_per_iteration) + "," + \
+                str(init_type) + "," + \
                 str(local_search_type) + "," + \
                 str(time) + "," + \
                 str(avgValue) + "," + \
