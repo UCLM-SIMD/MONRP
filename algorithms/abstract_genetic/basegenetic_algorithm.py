@@ -7,3 +7,6 @@ class BaseGeneticAlgorithm(Algorithm):
 
     def run(self):
         pass
+    
+    def get_name(self):
+        pass

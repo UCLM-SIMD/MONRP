@@ -62,6 +62,9 @@ class GeneticAlgorithm(BaseGeneticAlgorithm):
             str(crossover)+"-"+str(crossover_prob)+"-"+str(mutation) + \
             "-"+str(mutation_prob)+"-"+str(replacement)+".txt"
 
+    def get_name(self):
+        return "Genetic"
+
     # RUN ALGORITHM------------------------------------------------------------------
 
     def run(self):

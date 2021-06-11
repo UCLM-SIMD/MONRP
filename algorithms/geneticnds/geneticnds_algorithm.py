@@ -62,6 +62,9 @@ class GeneticNDSAlgorithm(BaseGeneticAlgorithm):
             str(crossover)+"-"+str(crossover_prob)+"-"+str(mutation) + \
             "-"+str(mutation_prob)+"-"+str(replacement)+".txt"
 
+    def get_name(self):
+        return "GeneticNDS "+self.replacement_scheme
+
     # UPDATE NDS------------------------------------------------------------------
     def is_non_dominated(self, ind, nds):
         non_dominated = True

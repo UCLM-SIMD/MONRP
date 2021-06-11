@@ -65,6 +65,9 @@ class NSGAIIAlgorithm(BaseGeneticAlgorithm):
             str(crossover)+"-"+str(crossover_prob)+"-"+str(mutation) + \
             "-"+str(mutation_prob)+"-"+str(replacement)+".txt"
 
+    def get_name(self):
+        return "NSGA-II"
+
     # RUN ALGORITHM------------------------------------------------------------------
     def run(self):
         start = time.time()
