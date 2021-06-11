@@ -14,8 +14,11 @@ def generate_configurations():
     solutions_per_iteration_list = [
         20, 40, 60, 80, 100, 200, 500, 1000
     ]
+    init_types=["stochastically","uniform"]
     local_search_types = [
-        "best_first_neighbor"
+        "best_first_neighbor",
+        "best_first_neighbor_random",
+        "best_first_neighbor_sorted_score",
     ]
     seed = 10
 
@@ -26,12 +29,14 @@ def generate_configurations():
         for algorithm in algorithms:
             for iteration in iterations:
                 for solutions_per_iteration in solutions_per_iteration_list:
-                    for local_search_type in local_search_types:
-                        returnStr = type + ' ' + str(algorithm) + " " + str(dataset_problem) + ' ' + \
-                            str(seed) + ' ' + str(iteration) + ' ' + \
-                            str(solutions_per_iteration) + ' ' + \
-                            str(local_search_type) + '\n'
-                        f.write(returnStr)
+                    for init_type in init_types:
+                        for local_search_type in local_search_types:
+                            returnStr = type + ' ' + str(algorithm) + " " + str(dataset_problem) + ' ' + \
+                                str(seed) + ' ' + str(iteration) + ' ' + \
+                                str(solutions_per_iteration) + ' ' + \
+                                str(init_type) + ' ' + \
+                                str(local_search_type) + '\n'
+                            f.write(returnStr)
     f.close()
 
 
