@@ -1,4 +1,5 @@
 #DATASET 1
+from algorithms.GRASP.Dataset import Dataset
 from models.gen import Gen
 
 
@@ -49,6 +50,12 @@ def generate_dataset1_genes():
     value/=len(stakeholders)
     new_gen=Gen(pbis[i]["idpbi"],value,pbis[i]["estimacion"])
     #print(new_gen)
+    genes.append(new_gen)
+
+  dataset=Dataset("1")
+  genes=[]
+  for i in range(len(dataset.pbis_cost_scaled)):
+    new_gen=Gen(pbis[i]["idpbi"],dataset.pbis_satisfaction_scaled[i],dataset.pbis_cost_scaled[i])
     genes.append(new_gen)
 
   return genes

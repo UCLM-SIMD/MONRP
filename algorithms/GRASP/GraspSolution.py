@@ -109,13 +109,33 @@ class GraspSolution:
         :param solution: GRASPSolution
         :return: True if self dominates solution, in terms of cost and satisfaction
         """
-        dominates = (self.total_cost < solution.total_cost) and (self.total_satisfaction > solution.total_satisfaction)
+        dominates = (self.total_cost < solution.total_cost) and (
+            self.total_satisfaction > solution.total_satisfaction)
 
-        dominates = dominates or (self.total_cost == solution.total_cost and self.total_satisfaction > solution.total_satisfaction)
+        dominates = dominates or (
+            self.total_cost == solution.total_cost and self.total_satisfaction > solution.total_satisfaction)
 
-        dominates = dominates or (self.total_cost < solution.total_cost and self.total_satisfaction == solution.total_satisfaction)
-
+        dominates = dominates or (
+            self.total_cost < solution.total_cost and self.total_satisfaction == solution.total_satisfaction)
+        
         return dominates
+
+    def is_dominated_by_value(self, cost, satisfaction):
+        """
+        :param cost: double
+        :param satisfaction: double
+        :return: True if self dominates solution, in terms of cost and satisfaction
+        """
+        dominated = (self.total_cost > cost) and (
+            self.total_satisfaction < satisfaction)
+
+        dominated = dominated or (
+            self.total_cost == cost and self.total_satisfaction < satisfaction)
+
+        dominated = dominated or (
+            self.total_cost > cost and self.total_satisfaction == satisfaction)
+        #print(self.total_cost,self.total_satisfaction,dominated,cost,satisfaction)
+        return dominated
 
     def dominates_all_in(self, solutions):
         """

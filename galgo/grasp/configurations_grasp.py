@@ -16,9 +16,10 @@ def generate_configurations():
     ]
     init_types=["stochastically","uniform"]
     local_search_types = [
-        "best_first_neighbor",
-        "best_first_neighbor_random",
-        "best_first_neighbor_sorted_score",
+        #"best_first_neighbor",
+        #"best_first_neighbor_random",
+        #"best_first_neighbor_sorted_score",
+        "best_first_neighbor_sorted_score_r",
     ]
     seed = 10
 

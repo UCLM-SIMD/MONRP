@@ -10,7 +10,7 @@ class GRASPExecuter(Executer):
     def initialize_file(self, file_path):
         # print("Running...")
         f = open(file_path, "w")
-        f.write("Dataset,Algorithm,Iterations,Solutions per Iteration, Initialization Type"
+        f.write("Dataset,Algorithm,Iterations,Solutions per Iteration,Initialization Type"
                 "Local Search Type,Time(s),AvgValue,BestAvgValue,HV,Spread,NumSolutions,Spacing\n")
         f.close()
 

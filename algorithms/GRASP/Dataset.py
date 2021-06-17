@@ -1,3 +1,4 @@
+from evaluation.normalize import normalize_dataset_sum
 import numpy as np
 
 
@@ -50,9 +51,11 @@ class Dataset:
         self.id = dataset
 
         if dataset == "1":
-            self.pbis_cost = np.array([1, 4, 2, 3, 4, 7, 10, 2, 1, 3, 2, 5, 8, 2, 1, 4, 10, 4, 8, 4])
+            self.pbis_cost = np.array(
+                [1, 4, 2, 3, 4, 7, 10, 2, 1, 3, 2, 5, 8, 2, 1, 4, 10, 4, 8, 4])
             self.stakeholders_importances = np.array([1, 4, 2, 3, 4])
-            self.stakeholders_pbis_priorities = np.array([4, 2, 1, 2, 5, 5, 2, 4, 4, 4, 2, 3, 4, 2, 4, 4, 4, 1, 3, 2])
+            self.stakeholders_pbis_priorities = np.array(
+                [4, 2, 1, 2, 5, 5, 2, 4, 4, 4, 2, 3, 4, 2, 4, 4, 4, 1, 3, 2])
             self.stakeholders_pbis_priorities = np.vstack((self.stakeholders_pbis_priorities,
                                                            [4, 4, 2, 2, 4, 5, 1, 4, 4, 5, 2, 3, 2, 4, 4, 2, 3, 2, 3,
                                                             1]))
@@ -73,57 +76,40 @@ class Dataset:
                                        16, 19, 17, 15, 11, 8, 20, 1, 5, 8, 3, 15, 4, 20, 10, 20, 3, 20, 10, 16,
                                        19, 3, 12, 16, 15, 1, 6, 7, 15, 18, 4, 7, 2, 7, 8, 7, 7, 3])
             self.num_pbis = len(self.pbis_cost)
-            self.stakeholders_importances = np.array([1, 4, 2, 3, 4])
+            self.stakeholders_importances = np.array([1, 5, 3, 3, 1])
 
-            self.stakeholders_pbis_priorities = np.array([1, 2, 1, 1, 2, 3, 3, 1, 1, 3, 1, 1, 3, 2, 3, 2, 2, 3, 1, 3,
-                                                          2, 1, 1, 1, 3, 3, 3, 3, 1, 2, 2, 3, 2, 1, 2, 2, 1, 3, 3, 2,
-                                                          2, 2, 3, 1, 1, 1, 2, 2, 3, 3, 3, 3, 1, 3, 2, 1, 3, 1, 3, 1,
-                                                          2, 2, 3, 3, 1, 3, 1, 3, 2, 3, 1, 3, 2, 3, 1, 1, 2, 3, 3, 1,
-                                                          2, 1, 3, 1, 2, 2, 2, 1, 3, 2, 2, 3, 1, 1, 1, 2, 1, 3, 1, 1])
+            self.stakeholders_pbis_priorities = np.array([1, 2, 1, 1, 2, 3, 3, 1, 1, 3, 1, 1, 3, 2, 3, 2, 2, 3, 1, 3, 2, 1, 1, 1, 3, 3, 3, 3, 1, 2, 2, 3, 2, 1, 2, 2, 1, 3, 3, 2, 2, 2, 3,
+                                                         1, 1, 1, 2, 2, 3, 3, 3, 3, 1, 3, 2, 1, 3, 1, 3, 1, 2, 2, 3, 3, 1, 3, 1, 3, 2, 3, 1, 3, 2, 3, 1, 1, 2, 3, 3, 1, 2, 1, 3, 1, 2, 2, 2, 1, 3, 2, 2, 3, 1, 1, 1, 2, 1, 3, 1, 1])
             self.stakeholders_pbis_priorities = np.vstack((self.stakeholders_pbis_priorities,
-                                                           [3, 2, 1, 2, 1, 2, 1, 2, 2, 1, 2, 3, 3, 2, 1, 3, 2, 3, 3, 1,
-                                                            3, 3, 3, 2, 3, 1, 2, 2, 3, 3, 1, 3, 2, 2, 1, 2, 3, 2, 3, 3,
-                                                            3, 3, 1, 1, 3, 2, 2, 2, 1, 3, 3, 3, 1, 2, 2, 3, 3, 2, 1, 1,
-                                                            1, 3, 2, 3, 1, 2, 1, 2, 3, 1, 1, 3, 1, 3, 2, 1, 3, 3, 1, 2,
-                                                            1, 2, 1, 2, 2, 1, 3, 2, 2, 2, 3, 2, 2, 3, 2, 2, 1, 3, 1,
-                                                            1]))
+                                                           [3,2,1,2,1,2,1,2,2,1,2,3,3,2,1,3,2,3,3,1,3,3,3,2,3,1,2,2,3,3,1,3,2,2,1,2,3,2,3,3,3,3,1,1,3,2,2,2,1,3,3,3,1,2,2,3,3,2,1,1,1,3,2,3,1,2,1,2,3,1,1,3,1,3,2,1,3,3,1,2,1,2,1,2,2,1,3,2,2,2,3,2,2,3,2,2,1,3,1,1]))
             self.stakeholders_pbis_priorities = np.vstack((self.stakeholders_pbis_priorities,
-                                                           [1, 1, 1, 2, 1, 1, 1, 3, 2, 2, 3, 3, 3, 1, 3, 1, 2, 2, 3, 3,
-                                                            2, 1, 2, 3, 2, 3, 3, 1, 3, 3, 3, 2, 1, 2, 2, 1, 1, 3, 1, 2,
-                                                            1, 3, 1, 3, 3, 3, 3, 1, 3, 2, 3, 1, 2, 3, 2, 3, 2, 1, 2, 3,
-                                                            1, 1, 2, 3, 3, 1, 3, 3, 3, 1, 3, 1, 3, 1, 1, 2, 3, 3, 1, 2,
-                                                            1, 2, 3, 2, 3, 1, 2, 2, 3, 3, 3, 3, 2, 1, 1, 2, 3, 3, 2,
-                                                            3]))
+                                                           [1,1,1,2,1,1,1,3,2,2,3,3,3,1,3,1,2,2,3,3,2,1,2,3,2,3,3,1,3,3,3,2,1,2,2,1,1,3,1,2,1,3,1,3,3,3,3,1,3,2,3,1,2,3,2,3,2,1,2,3,1,1,2,3,3,1,3,3,3,1,3,1,3,1,1,2,3,3,1,2,1,2,3,2,3,1,2,2,3,3,3,3,2,1,1,2,3,3,2,3]))
             self.stakeholders_pbis_priorities = np.vstack((self.stakeholders_pbis_priorities,
-                                                           [3, 2, 2, 1, 3, 1, 3, 2, 3, 2, 3, 2, 1, 3, 2, 3, 2, 1, 3, 3,
-                                                            1, 1, 1, 2, 3, 3, 2, 1, 1, 1, 1, 2, 2, 2, 3, 2, 2, 3, 1, 1,
-                                                            3, 1, 1, 3, 1, 2, 1, 1, 3, 2, 2, 1, 3, 2, 1, 3, 3, 1, 2, 3,
-                                                            2, 2, 3, 3, 3, 1, 2, 1, 2, 1, 2, 3, 3, 2, 2, 2, 1, 3, 3, 1,
-                                                            3, 1, 2, 2, 2, 1, 1, 1, 3, 1, 1, 3, 3, 1, 2, 1, 2, 3, 1,
-                                                            3]))
+                                                           [3,2,2,1,3,1,3,2,3,2,3,2,1,3,2,3,2,1,3,3,1,1,1,2,3,3,2,1,1,1,1,2,2,2,3,2,2,3,1,1,3,1,1,3,1,2,1,1,3,2,2,1,3,2,1,3,3,1,2,3,2,2,3,3,3,1,2,1,2,1,2,3,3,2,2,2,1,3,3,1,3,1,2,2,2,1,1,1,3,1,1,3,3,1,2,1,2,3,1,3]))
             self.stakeholders_pbis_priorities = np.vstack((self.stakeholders_pbis_priorities,
-                                                           [1, 2, 3, 1, 3, 1, 2, 3, 1, 1, 2, 2, 3, 1, 2, 1, 1, 1, 1, 3,
-                                                            1, 1, 3, 3, 3, 2, 2, 3, 2, 3, 1, 1, 3, 3, 2, 2, 1, 1, 2, 1,
-                                                            3, 1, 1, 2, 1, 2, 3, 3, 2, 2, 1, 3, 3, 2, 3, 1, 2, 1, 3, 2,
-                                                            2, 2, 1, 2, 1, 3, 2, 1, 2, 1, 2, 2, 3, 2, 1, 3, 2, 3, 1, 3,
-                                                            3, 2, 1, 2, 2, 2, 2, 1, 3, 3, 3, 1, 1, 3, 1, 3, 3, 3, 3,
-                                                            3]))
+                                                           [1,2,3,1,3,1,2,3,1,1,2,2,3,1,2,1,1,1,1,3,1,1,3,3,3,2,2,3,2,3,1,1,3,3,2,2,1,1,2,1,3,1,1,2,1,2,3,3,2,2,1,3,3,2,3,1,2,1,3,2,2,2,1,2,1,3,2,1,2,1,2,2,3,2,1,3,2,3,1,3,3,2,1,2,2,2,2,1,3,3,3,1,1,3,1,3,3,3,3,3]))
         else:
             raise Exception("Sorry, dataset with id=", id, " not found.")
 
         self.num_pbis = len(self.pbis_cost)
-        self.pbis_satisfaction = self.stakeholders_importances.dot(self.stakeholders_pbis_priorities)
+        self.pbis_satisfaction = self.stakeholders_importances.dot(
+            self.stakeholders_pbis_priorities)
 
         # now two escalation follows, based on
         # https://en.wikipedia.org/wiki/Feature_scaling#Rescaling_(min-max_normalization)
         # scale pbis cost in range [0-1]
         margin = 1 / self.num_pbis  # used to avoid zeros
         diff = np.max(self.pbis_cost) - np.min(self.pbis_cost)
-        self.pbis_cost_scaled = (self.pbis_cost - np.min(self.pbis_cost) + margin) / (diff + margin)
+        self.pbis_cost_scaled = (
+            self.pbis_cost - np.min(self.pbis_cost) + margin) / (diff + margin)
 
         # scale pbis satisfaction in range[0-1]
         diff = np.max(self.pbis_satisfaction) - np.min(self.pbis_satisfaction)
-        self.pbis_satisfaction_scaled = (self.pbis_satisfaction - np.min(self.pbis_satisfaction) + margin) / (diff + margin)
+        self.pbis_satisfaction_scaled = (
+            self.pbis_satisfaction - np.min(self.pbis_satisfaction) + margin) / (diff + margin)
 
         # each pbi score is computed from the scaled versions of pbi satisfaction and cost
         self.pbis_score = self.pbis_satisfaction_scaled / self.pbis_cost_scaled
+
+        self.pbis_cost_scaled, self.pbis_satisfaction_scaled, self.pbis_score = normalize_dataset_sum(
+            self.pbis_cost, self.pbis_satisfaction, self.stakeholders_importances, self.stakeholders_pbis_priorities)

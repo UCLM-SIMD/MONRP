@@ -85,7 +85,7 @@ def eudis2(v1, v2):
 def calculate_spread(population):
 	MIN_OBJ1 = 0
 	MIN_OBJ2 = 0
-	MAX_OBJ1 = 25  # max_importancia_Stakeholder * max_prioridad_pbi_para_Stakeholder
+	MAX_OBJ1 = 25  # max_importancia_Stakeholder * max_prioridad_pbi_para_Stakeholder # TODO fix 
 	MAX_OBJ2 = 40  # max estimacion de pbi
 	df = None
 	dl = None
