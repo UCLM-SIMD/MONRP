@@ -74,11 +74,10 @@ class GraspSolution:
             self.total_cost += i_cost
             self.total_satisfaction += i_value
 
-        if self.selected[i] == 1:
+        elif self.selected[i] == 1:
             self.selected[i] = 0
             self.total_cost -= i_cost
             self.total_satisfaction -= i_value
-
         self.mono_objective_score = self.compute_mono_objective_score()
 
     def try_flip(self, i, i_cost, i_value):
@@ -105,7 +104,6 @@ class GraspSolution:
 
     def dominates(self, solution):
         """
-
         :param solution: GRASPSolution
         :return: True if self dominates solution, in terms of cost and satisfaction
         """
