@@ -1,3 +1,4 @@
+from numpy.lib.function_base import diff
 from algorithms.abstract_default.algorithm import Algorithm
 from algorithms.GRASP.grasp_executer import GRASPExecuter
 import time
@@ -6,6 +7,7 @@ from algorithms.GRASP.Dataset import Dataset
 import numpy as np
 import getopt
 import sys
+import random
 
 from algorithms.GRASP.GraspSolution import GraspSolution
 from datasets import dataset1, dataset2
@@ -44,6 +46,9 @@ class GRASP(Algorithm):
         possible values are: best_first_neighbor_random (default), best_first_neighbor_sorted_score,
         best_first_neighbor_sorted_score_r, best_first_neighbor_sorted_domination
 
+    path_relinking_mode: type of path relinking.
+    possible values are: None (default), after_local
+
     Methods
     ---------
     get_name(): returns name of the algorithm.
@@ -79,7 +84,7 @@ class GRASP(Algorithm):
     """
 
     def __init__(self, dataset="1", iterations=20, solutions_per_iteration=10, init_type="stochastically",
-                 local_search_type="best_first_neighbor_random", seed=None):
+                 local_search_type="best_first_neighbor_random", path_relinking_mode=None, seed=None):
         """
         :param dataset: integer number: 1 or 2
         :param iterations: integer (default 20), number of GRASP construct+local_search repetitions
@@ -95,6 +100,7 @@ class GRASP(Algorithm):
         self.NDS = []
         self.init_type = init_type
         self.local_search_type = local_search_type
+        self.path_relinking_mode = path_relinking_mode
         if seed is not None:
             np.random.seed(seed)
 
@@ -112,7 +118,7 @@ class GRASP(Algorithm):
         elif self.local_search_type == "best_first_neighbor_random_domination":
             self.local_search = self.local_search_bitwise_neighborhood_random_domination
         elif self.local_search_type == "best_first_neighbor_sorted_domination":
-            self.local_search = self.local_search_bitwise_neighborhood_sorted_domination 
+            self.local_search = self.local_search_bitwise_neighborhood_sorted_domination
         elif self.local_search_type == "None":
             self.local_search = "None"
 
@@ -121,7 +127,8 @@ class GRASP(Algorithm):
                                                  + "-"+str(init_type) + "-"+str(local_search_type)+".txt")
 
     def get_name(self):
-        return "GRASP "+self.init_type+" "+self.local_search_type
+        path_relinking = self.path_relinking_mode if self.path_relinking_mode is not None else ""
+        return "GRASP "+self.init_type+" "+self.local_search_type+" "+path_relinking
 
     def run(self):
         """
@@ -142,6 +149,9 @@ class GRASP(Algorithm):
             # local search phase
             if self.local_search != "None":
                 initiated_solutions = self.local_search(initiated_solutions)
+
+            if self.path_relinking_mode == "after_local":
+                initiated_solutions = self.path_relinking(initiated_solutions)
 
             # update NDS with solutions constructed and evolved in this iteration
             self.update_nds(initiated_solutions)
@@ -201,7 +211,6 @@ class GRASP(Algorithm):
                 solutions.append(sol)
                 i -= 1
         return solutions
-
 
     def local_search_bitwise_neighborhood_sorted_score(self, initiated_solutions):
         """
@@ -423,8 +432,52 @@ class GRASP(Algorithm):
                         sol.selected) > 0:  # avoid solution with 0 cost due to 0 candidates selected
                     sol.flip(
                         i, self.dataset.pbis_cost_scaled[i], self.dataset.pbis_satisfaction_scaled[i])
+                    
 
         return initiated_solutions
+
+    def path_relinking(self, solutions):
+        if len(self.NDS) > 0:
+            for solution in solutions:
+                # get random solution from non dominated set
+                random_nds_solution = random.choice(self.NDS)
+                #print("random",random_nds_solution.selected)
+                # calculate distance from solution to goal random solution
+                distance = np.count_nonzero(
+                    solution.selected != random_nds_solution.selected)
+                # while distance greater than 0
+                while(distance > 0):
+                    #print("------------")
+                    #print("sol",solution.selected)
+                    #print("dist",distance)
+                    mono_score = solution.compute_mono_objective_score()
+                    # calculate indexes of different bits
+                    diff_bits = np.where(solution.selected !=
+                                         random_nds_solution.selected)
+                    diff_bits = diff_bits[0]
+                    # reordenar aleatoriamente
+                    np.random.shuffle(diff_bits)
+                    #print("diffs",diff_bits)
+                    # for each different bit, try flip and store the best if improves monoscore
+                    best_mo = mono_score
+                    selected_flip = None
+                    for i in diff_bits:
+                        (c2, s2, mo2) = solution.try_flip(i, self.dataset.pbis_cost_scaled[i],
+                                                          self.dataset.pbis_satisfaction_scaled[i])
+                        if mo2 > best_mo:
+                            best_mo = mo2
+                            selected_flip = i
+                    # if it does not improves monoscore: select random
+                    if mono_score >= best_mo:
+                        selected_flip = np.random.randint(
+                            0, self.dataset.pbis_cost_scaled.size)
+                    #print("selected",selected_flip)
+                    #print("mono-best",mono_score,best_mo)
+                    solution.flip(
+                        selected_flip, self.dataset.pbis_cost_scaled[selected_flip], self.dataset.pbis_satisfaction_scaled[selected_flip])
+                    distance = distance - 1
+
+        return solutions
 
     def update_nds(self, solutions):
         """
