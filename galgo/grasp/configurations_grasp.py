@@ -3,7 +3,10 @@ def generate_configurations():
     # opciones------------------------------------------------------------------
     dataset_problems = [
         "1",
-        "2"
+        "2",
+        "s1",
+        "s2",
+        "s3",
     ]
     algorithms = [
         "grasp"
@@ -16,10 +19,15 @@ def generate_configurations():
     ]
     init_types=["stochastically","uniform"]
     local_search_types = [
-        #"best_first_neighbor",
         #"best_first_neighbor_random",
         #"best_first_neighbor_sorted_score",
         "best_first_neighbor_sorted_score_r",
+        "best_first_neighbor_sorted_domination",
+        "best_first_neighbor_random_domination",
+    ]
+    path_relinking_types=[
+        "None",
+        "after_local"
     ]
     seed = 10
 
@@ -32,12 +40,14 @@ def generate_configurations():
                 for solutions_per_iteration in solutions_per_iteration_list:
                     for init_type in init_types:
                         for local_search_type in local_search_types:
-                            returnStr = type + ' ' + str(algorithm) + " " + str(dataset_problem) + ' ' + \
-                                str(seed) + ' ' + str(iteration) + ' ' + \
-                                str(solutions_per_iteration) + ' ' + \
-                                str(init_type) + ' ' + \
-                                str(local_search_type) + '\n'
-                            f.write(returnStr)
+                            for path_relinking_type in path_relinking_types:
+                                returnStr = type + ' ' + str(algorithm) + " " + str(dataset_problem) + ' ' + \
+                                    str(seed) + ' ' + str(iteration) + ' ' + \
+                                    str(solutions_per_iteration) + ' ' + \
+                                    str(init_type) + ' ' + \
+                                    str(local_search_type)+ ' ' + \
+                                    str(path_relinking_type)  + '\n'
+                                f.write(returnStr)
     f.close()
 
 

@@ -1,3 +1,5 @@
+from datasets.dataset_gen_generator import generate_dataset_genes
+from datasets.dataset3 import generate_dataset3_genes
 from models.solution import Solution
 from algorithms.abstract_default.utils import Utils
 import random
@@ -24,12 +26,8 @@ class BaseGeneticUtils(Utils):
 
     # GENERATE DATASET PROBLEM------------------------------------------------------------------
     def generate_dataset_problem(self, dataset_name):
-        if dataset_name == "1":
-            genes = generate_dataset1_genes()
-            problem = Problem(genes, self.objectives_minimization)
-        elif dataset_name == "2":
-            genes = generate_dataset2_genes()
-            problem = Problem(genes, self.objectives_minimization)
+        genes = generate_dataset_genes(dataset_name)
+        problem = Problem(genes, self.objectives_minimization)
         self.problem = problem
         return self.problem
 

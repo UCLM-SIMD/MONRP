@@ -1,3 +1,4 @@
+from datasets.dataset_gen_generator import generate_dataset_genes
 from numpy.lib.function_base import diff
 from algorithms.abstract_default.algorithm import Algorithm
 from algorithms.GRASP.grasp_executer import GRASPExecuter
@@ -10,7 +11,7 @@ import sys
 import random
 
 from algorithms.GRASP.GraspSolution import GraspSolution
-from datasets import dataset1, dataset2
+from datasets import dataset1, dataset2, dataset3
 from models.solution import Solution
 from models.problem import Problem
 
@@ -44,7 +45,7 @@ class GRASP(Algorithm):
 
     local_search_type: string, type of search to perform.
         possible values are: best_first_neighbor_random (default), best_first_neighbor_sorted_score,
-        best_first_neighbor_sorted_score_r, best_first_neighbor_sorted_domination
+        best_first_neighbor_sorted_score_r, best_first_neighbor_random_domination, best_first_neighbor_sorted_domination
 
     path_relinking_mode: type of path relinking.
     possible values are: None (default), after_local
@@ -84,7 +85,7 @@ class GRASP(Algorithm):
     """
 
     def __init__(self, dataset="1", iterations=20, solutions_per_iteration=10, init_type="stochastically",
-                 local_search_type="best_first_neighbor_random", path_relinking_mode=None, seed=None):
+                 local_search_type="best_first_neighbor_random", path_relinking_mode="None", seed=None):
         """
         :param dataset: integer number: 1 or 2
         :param iterations: integer (default 20), number of GRASP construct+local_search repetitions
@@ -124,11 +125,10 @@ class GRASP(Algorithm):
 
         self.executer = GRASPExecuter(algorithm=self)
         self.file = self.__class__.__name__+"-"+(str(dataset)+"-"+str(seed)+"-"+str(iterations)+"-"+str(solutions_per_iteration)
-                                                 + "-"+str(init_type) + "-"+str(local_search_type)+".txt")
+                                                 + "-"+str(init_type) + "-"+str(local_search_type) + "-"+str(path_relinking_mode)+".txt")
 
     def get_name(self):
-        path_relinking = self.path_relinking_mode if self.path_relinking_mode is not None else ""
-        return "GRASP "+self.init_type+" "+self.local_search_type+" "+path_relinking
+        return "GRASP "+self.init_type+" "+self.local_search_type+" "+self.path_relinking_mode
 
     def run(self):
         """
@@ -166,8 +166,7 @@ class GRASP(Algorithm):
             selected_list.append(sol.selected)
         # return selected_list, seconds
 
-        genes = dataset1.generate_dataset1_genes(
-        ) if self.dataset.id == "1" else dataset2.generate_dataset2_genes()
+        genes = generate_dataset_genes(self.dataset.id)
 
         return _results_in_victor_format(selected_list, seconds, self.iterations, genes)
 
@@ -432,7 +431,6 @@ class GRASP(Algorithm):
                         sol.selected) > 0:  # avoid solution with 0 cost due to 0 candidates selected
                     sol.flip(
                         i, self.dataset.pbis_cost_scaled[i], self.dataset.pbis_satisfaction_scaled[i])
-                    
 
         return initiated_solutions
 
@@ -441,15 +439,15 @@ class GRASP(Algorithm):
             for solution in solutions:
                 # get random solution from non dominated set
                 random_nds_solution = random.choice(self.NDS)
-                #print("random",random_nds_solution.selected)
+                # print("random",random_nds_solution.selected)
+                # print("sol",solution.selected)
                 # calculate distance from solution to goal random solution
                 distance = np.count_nonzero(
                     solution.selected != random_nds_solution.selected)
                 # while distance greater than 0
                 while(distance > 0):
-                    #print("------------")
-                    #print("sol",solution.selected)
-                    #print("dist",distance)
+                    # print("------------")
+                    # print("dist",distance)
                     mono_score = solution.compute_mono_objective_score()
                     # calculate indexes of different bits
                     diff_bits = np.where(solution.selected !=
@@ -457,7 +455,7 @@ class GRASP(Algorithm):
                     diff_bits = diff_bits[0]
                     # reordenar aleatoriamente
                     np.random.shuffle(diff_bits)
-                    #print("diffs",diff_bits)
+                    # print("diffs",diff_bits)
                     # for each different bit, try flip and store the best if improves monoscore
                     best_mo = mono_score
                     selected_flip = None
@@ -471,11 +469,12 @@ class GRASP(Algorithm):
                     if mono_score >= best_mo:
                         selected_flip = np.random.randint(
                             0, self.dataset.pbis_cost_scaled.size)
-                    #print("selected",selected_flip)
-                    #print("mono-best",mono_score,best_mo)
+                    # print("selected",selected_flip)
+                    # print("mono-best",mono_score,best_mo)
                     solution.flip(
                         selected_flip, self.dataset.pbis_cost_scaled[selected_flip], self.dataset.pbis_satisfaction_scaled[selected_flip])
                     distance = distance - 1
+                    # print("sol",solution.selected)
 
         return solutions
 

@@ -10,8 +10,13 @@ def generate_configurations():
                    200,
                    300
                    ]
-    dataset_problems = ["1", "2"
-                        ]
+    dataset_problems = [
+        "1",
+        "2",
+        "s1",
+        "s2",
+        "s3",
+    ]
     algorithms = [
         # "genetic",
         "geneticnds", "nsgaii"

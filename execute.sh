@@ -7,7 +7,7 @@
 # in the current working directory
 cd $CWD
 
-source ../venv/bin/activate
+source ../newvenv/bin/activate
 
 CONFIGURATIONS=()
 while IFS= read -r line; do
