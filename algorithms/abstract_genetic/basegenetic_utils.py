@@ -26,10 +26,11 @@ class BaseGeneticUtils(Utils):
 
     # GENERATE DATASET PROBLEM------------------------------------------------------------------
     def generate_dataset_problem(self, dataset_name):
-        genes = generate_dataset_genes(dataset_name)
+        genes, dataset = generate_dataset_genes(dataset_name)
         problem = Problem(genes, self.objectives_minimization)
         self.problem = problem
-        return self.problem
+        self.dataset = dataset
+        return self.problem,self.dataset
 
     # EVALUATION------------------------------------------------------------------
     def evaluate(self, population, best_individual):

@@ -10,4 +10,4 @@ def generate_dataset_genes(dataset_name):
     new_gen=Gen(None,dataset.pbis_satisfaction_scaled[i],dataset.pbis_cost_scaled[i])
     genes.append(new_gen)
 
-  return genes
+  return genes, dataset

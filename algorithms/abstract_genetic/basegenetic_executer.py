@@ -2,6 +2,7 @@ import evaluation.metrics as metrics
 
 from algorithms.abstract_default.executer import Executer
 
+
 class BaseGeneticExecuter(Executer):
     def __init__(self, algorithm):
         self.algorithm = algorithm
@@ -31,6 +32,7 @@ class BaseGeneticExecuter(Executer):
         mutation = self.algorithm.mutation_scheme
         mutation_prob = self.algorithm.mutation_prob
         replacement = self.algorithm.replacement_scheme
+        dataset = self.algorithm.dataset
 
         for i in range(0, executions):
             #print("Executing iteration: ", i + 1)
@@ -43,10 +45,13 @@ class BaseGeneticExecuter(Executer):
                 result["bestGeneration"]) if "bestGeneration" in result else 'NaN'
 
             avgValue = str(metrics.calculate_avgValue(result["population"]))
-            bestAvgValue = str(metrics.calculate_bestAvgValue(result["population"]))
+            bestAvgValue = str(
+                metrics.calculate_bestAvgValue(result["population"]))
             hv = str(metrics.calculate_hypervolume(result["population"]))
-            spread = str(metrics.calculate_spread(result["population"]))
-            numSolutions = str(metrics.calculate_numSolutions(result["population"]))
+            spread = str(metrics.calculate_spread(
+                result["population"], dataset))
+            numSolutions = str(
+                metrics.calculate_numSolutions(result["population"]))
             spacing = str(metrics.calculate_spacing(result["population"]))
 
             f = open(file_path, "a")
@@ -76,4 +81,3 @@ class BaseGeneticExecuter(Executer):
             f.close()
 
         # print("End")
-

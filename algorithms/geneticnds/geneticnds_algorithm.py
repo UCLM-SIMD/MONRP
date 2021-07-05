@@ -15,7 +15,7 @@ class GeneticNDSAlgorithm(BaseGeneticAlgorithm):
         self.utils = GeneticNDSUtils(
             random_seed, population_length, selection_candidates, crossover_prob, mutation_prob)
         self.executer = GeneticNDSExecuter(algorithm=self)
-        self.problem = self.utils.generate_dataset_problem(
+        self.problem, self.dataset = self.utils.generate_dataset_problem(
             dataset_name=dataset_name)
         self.dataset_name = dataset_name
 
@@ -107,7 +107,8 @@ class GeneticNDSAlgorithm(BaseGeneticAlgorithm):
         self.evaluate(self.population, self.best_individual)
         # print("Best individual score: ", self.best_individual.total_score)
 
-        while (num_generations < self.max_generations) or not(num_generations > (self.best_generation+20)):
+        # or not(num_generations > (self.best_generation+20)):
+        while (num_generations < self.max_generations):
             # selection
             new_population = self.selection(self.population)
             # crossover

@@ -16,7 +16,7 @@ class GeneticAlgorithm(BaseGeneticAlgorithm):
         self.utils = GeneticUtils(
             random_seed, population_length, selection_candidates, crossover_prob, mutation_prob)
         self.executer = GeneticExecuter(algorithm=self)
-        self.problem = self.utils.generate_dataset_problem(
+        self.problem,self.dataset = self.utils.generate_dataset_problem(
             dataset_name=dataset_name)
         self.dataset_name = dataset_name
 

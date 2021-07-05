@@ -1,6 +1,7 @@
 import random
 from models.population import Population
 import math
+import numpy as np
 
 # AVGVALUE------------------------------------------------------------------
 def calculate_avgValue( population):
@@ -82,11 +83,15 @@ def eudis2(v1, v2):
 	return math.dist(v1, v2)
 	#return distance.euclidean(v1, v2)
 
-def calculate_spread(population):
+def calculate_spread(population, dataset):
 	MIN_OBJ1 = 0
 	MIN_OBJ2 = 0
-	MAX_OBJ1 = 25  # max_importancia_Stakeholder * max_prioridad_pbi_para_Stakeholder # TODO fix 
-	MAX_OBJ2 = 40  # max estimacion de pbi
+	#MAX_OBJ1 = 25  # max_importancia_Stakeholder * max_prioridad_pbi_para_Stakeholder # TODO fix 
+	#MAX_OBJ2 = 40  # max estimacion de pbi
+
+	MAX_OBJ1 = np.max(dataset.pbis_satisfaction_scaled)  
+	MAX_OBJ2 = np.max(dataset.pbis_cost_scaled)    
+	
 	df = None
 	dl = None
 	davg = None

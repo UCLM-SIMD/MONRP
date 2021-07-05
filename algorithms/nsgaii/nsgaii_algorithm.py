@@ -17,7 +17,7 @@ class NSGAIIAlgorithm(BaseGeneticAlgorithm):
         self.utils = NSGAIIUtils(
             random_seed, population_length, selection_candidates, crossover_prob, mutation_prob)
         self.executer = NSGAIIExecuter(algorithm=self)
-        self.problem = self.utils.generate_dataset_problem(
+        self.problem, self.dataset = self.utils.generate_dataset_problem(
             dataset_name=dataset_name)
         self.dataset_name = dataset_name
 
@@ -66,7 +66,8 @@ class NSGAIIAlgorithm(BaseGeneticAlgorithm):
             "-"+str(mutation_prob)+"-"+str(replacement)+".txt"
 
     def get_name(self):
-        return "NSGA-II"
+        return "NSGA-II "+str(self.population_length)+"-"+str(self.max_generations)+"-"+str(self.crossover_prob)\
+            + "-"+str(self.mutation_scheme)+"-"+str(self.mutation_prob)
 
     # RUN ALGORITHM------------------------------------------------------------------
     def run(self):
@@ -90,7 +91,8 @@ class NSGAIIAlgorithm(BaseGeneticAlgorithm):
         # iteraciones del nsgaii
         num_generations = 0
         returned_population = None
-        while (num_generations < self.max_generations) or not(num_generations > (self.best_generation+20)):
+        # or not(num_generations > (self.best_generation+20)):
+        while (num_generations < self.max_generations):
             self.population.extend(offsprings)
             self.evaluate(self.population, self.best_individual)
             self.fast_nondominated_sort(self.population)
