@@ -33,7 +33,7 @@ if(params[0] == "genetic"):
     algorithm = algorithm_model(dataset_name=dataset_name, random_seed=seed, population_length=pop_length, max_generations=max_gens,
                                 selection=sel_scheme, crossover=cross_scheme, crossover_prob=cross_prob, mutation=mut_scheme,
                                 mutation_prob=mut_prob, replacement=repl_scheme)
-    filepath = "output/pareto-genetic-"+algorithm.file
+    filepath = "output/paretos/pareto-genetic-"+algorithm.file
 
 elif(params[0] == "grasp"):
     # -c grasp grasp 1 5 10 10 stochastically best_first_neighbor None
@@ -47,7 +47,7 @@ elif(params[0] == "grasp"):
     algorithm = algorithm_model(dataset=dataset_name, iterations=iterations, solutions_per_iteration=solutions_per_iteration,
                                 init_type=init_type, local_search_type=local_search_type,
                                 path_relinking_mode=path_relinking,seed=seed)
-    filepath = "output/pareto-grasp-"+algorithm.file
+    filepath = "output/paretos/pareto-grasp-"+algorithm.file
     
 # try:
 algorithm.executer.execute_pareto(file_path=filepath)

@@ -4,11 +4,17 @@ def generate_configurations():
     seed = 10
     population_lengths = [
         20,
-        30, 40
+        30, 40,
+        100,
+        200,
     ]
-    generations = [100,
+    generations = [
+                   100,
                    200,
-                   300
+                   300,
+                   500,
+                   1000,
+                   #2000,
                    ]
     dataset_problems = [
         "1",
@@ -19,27 +25,36 @@ def generate_configurations():
     ]
     algorithms = [
         # "genetic",
-        "geneticnds", "nsgaii"
+        #"geneticnds",
+         "nsgaii"
     ]
     selection_schemes = ["tournament",
                          ]
     selection_candidates = [2]
     crossover_schemes = ["onepoint"
                          ]
-    crossover_probs = [0.6, 0.8, 0.85, 0.9
+    crossover_probs = [
+        0.6, 
+        0.8, 
+        0.85, 0.9
                        ]
     mutation_schemes = ["flip1bit",
                         "flipeachbit"
                         ]
     mutation_probs = [
         0, 0.05,
+        #1/20,
+        1/40,
+        #1/80,
+        #1/100,
+        #1/140,
         0.1, 0.2, 0.5, 0.7, 1
     ]
     replacement_schemes = ["elitism",
-                           "elitismnds"
+                           #"elitismnds"
                            ]
 
-    f = open("configs.txt", "w")
+    f = open("configs_genetic.txt", "w")
     returnStr = ''
     type = "genetic"
     for dataset_problem in dataset_problems:

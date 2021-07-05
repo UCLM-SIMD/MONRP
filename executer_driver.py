@@ -11,8 +11,8 @@ parser.add_argument('-c', '--config', nargs="+",
                     help='<Required> configuration', required=False)
 
 
-#params = parser.parse_args().config[0].split()  # sh galgo
-params = parser.parse_args().config # local
+params = parser.parse_args().config[0].split()  # sh galgo
+#params = parser.parse_args().config # local
 print(params)
 if(params[0] == "genetic"):
     # -c genetic geneticnds 1 4 20 100 tournament 2 onepoint 0.8 flip1bit 0.1 elitism
@@ -33,7 +33,7 @@ if(params[0] == "genetic"):
     algorithm = algorithm_model(dataset_name=dataset_name, random_seed=seed, population_length=pop_length, max_generations=max_gens,
                                 selection=sel_scheme, crossover=cross_scheme, crossover_prob=cross_prob, mutation=mut_scheme,
                                 mutation_prob=mut_prob, replacement=repl_scheme)
-    filepath = "output/genetic-"+algorithm.file
+    filepath = "output/metrics/genetic-"+algorithm.file
 
 elif(params[0] == "grasp"):
     # -c grasp grasp 1 5 10 10 stochastically best_first_neighbor
@@ -46,7 +46,7 @@ elif(params[0] == "grasp"):
 
     algorithm = algorithm_model(dataset=dataset_name, iterations=iterations, solutions_per_iteration=solutions_per_iteration,
                                 init_type=init_type, local_search_type=local_search_type, seed=seed)
-    filepath = "output/grasp-"+algorithm.file
+    filepath = "output/metrics/grasp-"+algorithm.file
 
 # try:
 algorithm.executer.execute(executions=10, file_path=filepath)

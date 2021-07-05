@@ -8,7 +8,7 @@ python $PWD/galgo/grasp/configurations_grasp.py
 CONFIGURATIONS=()
 while IFS= read -r line; do
    CONFIGURATIONS+=("$line")
-done <$PWD/configs.txt
+done <$PWD/configs_grasp.txt
 
 NAME="monrp-grasp"
 JOBS=${#CONFIGURATIONS[@]}
@@ -18,4 +18,4 @@ qsub -J 1-"$JOBS" \
      -N "$NAME" \
      -e "$PWD"/errors/ \
      -o "$PWD"/outputs/ \
-     -v FILE="$PWD"/executer_driver.py,CWD="$PWD" "$PWD"/execute.sh
+     -v FILE="$PWD"/executer_driver.py,CWD="$PWD",CONFIG_FILE=configs_grasp.txt "$PWD"/execute.sh

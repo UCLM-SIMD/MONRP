@@ -128,7 +128,11 @@ class GRASP(Algorithm):
                                                  + "-"+str(init_type) + "-"+str(local_search_type) + "-"+str(path_relinking_mode)+".txt")
 
     def get_name(self):
-        return "GRASP "+self.init_type+" "+self.local_search_type+" "+self.path_relinking_mode
+        init = "stochastic" if self.init_type == "stochastically" else self.init_type
+        local = "+"+self.local_search_type.replace(
+            'best_first_neighbor_', '') if self.local_search_type != "None" else ""
+        PR = "+PR" if self.path_relinking_mode != "None" else ""
+        return "GRASP+"+init+local+PR
 
     def run(self):
         """
@@ -166,7 +170,7 @@ class GRASP(Algorithm):
             selected_list.append(sol.selected)
         # return selected_list, seconds
 
-        genes = generate_dataset_genes(self.dataset.id)
+        genes,_ = generate_dataset_genes(self.dataset.id)
 
         return _results_in_victor_format(selected_list, seconds, self.iterations, genes)
 

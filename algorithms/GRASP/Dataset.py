@@ -50,7 +50,7 @@ class Dataset:
 
         self.id = dataset
 
-        if dataset == "1":
+        if dataset == "1": # 5 clientes 20 reqs
             self.pbis_cost = np.array(
                 [1, 4, 2, 3, 4, 7, 10, 2, 1, 3, 2, 5, 8, 2, 1, 4, 10, 4, 8, 4])
             self.stakeholders_importances = np.array([1, 4, 2, 3, 4])
@@ -69,7 +69,7 @@ class Dataset:
                                                            [5, 4, 2, 4, 5, 4, 2, 4, 5, 2, 4, 5, 3, 4, 4, 1, 1, 2, 4,
                                                             1]))
 
-        elif dataset == "2":
+        elif dataset == "2": # 5 clientes 100 reqs
             self.pbis_cost = np.array([16, 19, 16, 7, 19, 15, 8, 10, 6, 18, 15, 12, 16, 20, 9, 4, 16, 2, 9, 3,
                                        2, 10, 4, 2, 7, 15, 8, 20, 9, 11, 5, 1, 17, 6, 2, 16, 8, 12, 18, 5, 6,
                                        14, 15, 20, 14, 9, 16, 6, 6, 6, 6, 2, 17, 8, 1, 3, 14, 16, 18, 7, 10, 7,

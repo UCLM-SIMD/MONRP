@@ -8,7 +8,7 @@ python $PWD/galgo/genetic/configurations_genetic.py
 CONFIGURATIONS=()
 while IFS= read -r line; do
    CONFIGURATIONS+=("$line")
-done <$PWD/configs.txt
+done <$PWD/configs_genetic.txt
 
 NAME="monrp-genetic"
 JOBS=${#CONFIGURATIONS[@]}
@@ -18,5 +18,5 @@ qsub -J 1-"$JOBS" \
      -N "$NAME" \
      -e "$PWD"/errors/ \
      -o "$PWD"/outputs/ \
-     -v FILE="$PWD"/executer_driver.py,CWD="$PWD" "$PWD"/execute.sh
+     -v FILE="$PWD"/executer_driver.py,CWD="$PWD",CONFIG_FILE=configs_genetic.txt "$PWD"/execute.sh
 
