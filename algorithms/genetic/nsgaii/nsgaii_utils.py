@@ -1,9 +1,8 @@
-from algorithms.abstract_genetic.basegenetic_utils import BaseGeneticUtils
+from algorithms.genetic.abstract_genetic.basegenetic_utils import BaseGeneticUtils
 import random
 import copy
 from models.population import Population
 #from scipy.spatial import distance
-import math
 
 
 class NSGAIIUtils(BaseGeneticUtils):

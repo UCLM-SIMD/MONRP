@@ -1,4 +1,4 @@
-Dataset,Algorithm,Iterations,Solutions per Iteration,Initialization TypeLocal Search Type,Time(s),AvgValue,BestAvgValue,HV,Spread,NumSolutions,Spacing
+Dataset,Algorithm,Iterations,Solutions per Iteration,Initialization Type,Local Search Type,Time(s),AvgValue,BestAvgValue,HV,Spread,NumSolutions,Spacing,NumGenerations
 2,GRASP,100,20,uniform,best_first_neighbor_sorted_score_r,33.87222933769226,0.00412325979988567,0.005009588665805644,0.008743078820519945,0.6265919787362871,66,0.22510958663260164,100
 2,GRASP,100,20,uniform,best_first_neighbor_sorted_score_r,34.62676668167114,0.004037479140696258,0.0051074321944346605,0.008730850738253484,0.6889011438546336,89,0.2338115471236169,100
 2,GRASP,100,20,uniform,best_first_neighbor_sorted_score_r,33.41281771659851,0.004013205459624002,0.0051074321944346605,0.008730850738253484,0.6596373918572804,89,0.2440764005524136,100

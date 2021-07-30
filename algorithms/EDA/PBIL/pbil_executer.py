@@ -1,19 +1,16 @@
+from algorithms.abstract_default.executer import Executer
 import evaluation.metrics as metrics
 
-from algorithms.abstract_default.executer import Executer
-
-
-class BaseGeneticExecuter(Executer):
+class PBILExecuter(Executer):
     def __init__(self, algorithm):
         self.algorithm = algorithm
-        self.algorithm_type = "genetic"
+        self.algorithm_type = "pbil"
 
     def initialize_file(self, file_path):
         # print("Running...")
         f = open(file_path, "w")
-        f.write("Dataset,Algorithm,Population Length,Generations,"
-                "Selection Scheme,Selection Candidates,Crossover Scheme,Crossover Probability,Mutation Scheme,"
-                "Mutation Probability,Replacement Scheme,Time(s),AvgValue,BestAvgValue,BestGeneration,HV,Spread,NumSolutions,Spacing,NumGenerations\n")
+        f.write("Dataset,Algorithm,Population Length,Generations,"#TODO
+                "Learning Rate,Mutation Probability,Mutation Shift,Time(s),AvgValue,BestAvgValue,BestGeneration,HV,Spread,NumSolutions,Spacing,NumGenerations\n")
         f.close()
 
     def reset_file(self, file_path):
@@ -22,27 +19,22 @@ class BaseGeneticExecuter(Executer):
 
     def execute(self, executions, file_path):
         algorithm_name = self.algorithm.__class__.__name__
-        dataset_name = self.algorithm.dataset_name
+        dataset = self.algorithm.dataset_name
         population_length = self.algorithm.population_length
         generations = self.algorithm.max_generations
-        selection = self.algorithm.selection_scheme
-        selection_candidates = self.algorithm.selection_candidates
-        crossover = self.algorithm.crossover_scheme
-        crossover_prob = self.algorithm.crossover_prob
-        mutation = self.algorithm.mutation_scheme
+        lr = self.algorithm.learning_rate
         mutation_prob = self.algorithm.mutation_prob
-        replacement = self.algorithm.replacement_scheme
+        mutation_shift = self.algorithm.mutation_shift
         dataset = self.algorithm.dataset
 
         for i in range(0, executions):
-            #print("Executing iteration: ", i + 1)
             result = self.algorithm.run()
 
             time = str(result["time"]) if "time" in result else 'NaN'
             numGenerations = str(
                 result["numGenerations"]) if "numGenerations" in result else 'NaN'
             bestGeneration = str(
-                result["bestGeneration"]) if "bestGeneration" in result else 'NaN'
+                result["bestGeneration"]) if "bestGeneration" in result else 'NaN' #TODO no hay bestgen
 
             avgValue = str(metrics.calculate_avgValue(result["population"]))
             bestAvgValue = str(
@@ -55,17 +47,13 @@ class BaseGeneticExecuter(Executer):
             spacing = str(metrics.calculate_spacing(result["population"]))
 
             f = open(file_path, "a")
-            data = str(dataset_name) + "," + \
+            data = str(dataset) + "," + \
                 str(algorithm_name) + "," + \
                 str(population_length) + "," + \
                 str(generations) + "," + \
-                str(selection) + "," + \
-                str(selection_candidates) + "," + \
-                str(crossover) + "," + \
-                str(crossover_prob) + "," + \
-                str(mutation) + "," + \
+                str(lr) + "," + \
                 str(mutation_prob) + "," + \
-                str(replacement) + "," + \
+                str(mutation_shift) + "," + \
                 str(time) + "," + \
                 str(avgValue) + "," + \
                 str(bestAvgValue) + "," + \
@@ -80,4 +68,3 @@ class BaseGeneticExecuter(Executer):
             f.write(data)
             f.close()
 
-        # print("End")

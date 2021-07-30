@@ -160,5 +160,5 @@ plots
 temp-plot.*
 *.svg
 *.xml
-#output
+output
 .vscode/settings.json

@@ -1,6 +1,6 @@
-from algorithms.abstract_genetic.basegenetic_algorithm import BaseGeneticAlgorithm
-from algorithms.geneticnds.geneticnds_executer import GeneticNDSExecuter
-from algorithms.geneticnds.geneticnds_utils import GeneticNDSUtils
+from algorithms.genetic.abstract_genetic.basegenetic_algorithm import BaseGeneticAlgorithm
+from algorithms.genetic.geneticnds.geneticnds_executer import GeneticNDSExecuter
+from algorithms.genetic.geneticnds.geneticnds_utils import GeneticNDSUtils
 import copy
 import time
 

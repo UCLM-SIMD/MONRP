@@ -30,7 +30,7 @@ class GraspSolution:
         it simulates the result of flip(i,cost_i,value_i) and returns the would-be new cost, value and mono_objective_score
     """
 
-    def __init__(self, probabilities, costs, values):
+    def __init__(self, probabilities, costs, values,selected=None):
         """
         :param probabilities: numpy ndarray
             probabilities[i] is the probability in range [0-1] to set self.selected[i] to 1.
@@ -42,15 +42,22 @@ class GraspSolution:
             values[i] is the goodness metric of candidate i.
             when called from GRASP object, it is recommended to use scaled values such as self.dataset.pbis_satisfaction_scaled
         """
-        num_candidates = len(probabilities)
-        self.selected = np.zeros(num_candidates)
-        # samples a random number of candidates. prob of each candidate to be chosen in received in probabilities
-        sampled = np.random.choice(np.arange(num_candidates), size=np.random.randint(num_candidates),
-                                   replace=False, p=probabilities)
-        self.selected[sampled] = 1
 
-        self.total_cost = costs[sampled].sum()
-        self.total_satisfaction = values[sampled].sum()
+        if selected is not None:
+            self.selected=np.array(selected)
+            indexes = np.array(self.selected).nonzero()
+            self.total_cost = costs[indexes].sum()
+            self.total_satisfaction = values[indexes].sum()
+        else:
+            num_candidates = len(probabilities)
+            self.selected = np.zeros(num_candidates)
+            # samples a random number of candidates. prob of each candidate to be chosen in received in probabilities
+            sampled = np.random.choice(np.arange(num_candidates), size=np.random.randint(num_candidates),
+                                    replace=False, p=probabilities)
+            self.selected[sampled] = 1
+
+            self.total_cost = costs[sampled].sum()
+            self.total_satisfaction = values[sampled].sum()
 
         self.mono_objective_score = self.compute_mono_objective_score()
 

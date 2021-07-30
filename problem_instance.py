@@ -1,7 +1,5 @@
-from algorithms.nsgaii.nsgaii_algorithm import NSGAIIAlgorithm
+from algorithms.genetic.nsgaii.nsgaii_algorithm import NSGAIIAlgorithm
 from algorithms.genetic_nds.geneticnds_algorithm import GeneticNDSAlgorithm
-from datasets.dataset2 import generate_dataset2_genes
-from models.problem import Problem
 import matplotlib.pyplot as plt
 
 # generar los genes de los requisitos------------------------------------------------------------------

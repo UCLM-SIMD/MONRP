@@ -1,3 +1,4 @@
+import copy
 from datasets.dataset_gen_generator import generate_dataset_genes
 from numpy.lib.function_base import diff
 from algorithms.abstract_default.algorithm import Algorithm
@@ -132,7 +133,7 @@ class GRASP(Algorithm):
         local = "+"+self.local_search_type.replace(
             'best_first_neighbor_', '') if self.local_search_type != "None" else ""
         PR = "+PR" if self.path_relinking_mode != "None" else ""
-        return "GRASP+"+init+local+PR
+        return "GRASP+"+str(self.iterations)+"+"+str(self.solutions_per_iteration)+"+"+init+local+PR
 
     def run(self):
         """
@@ -439,13 +440,16 @@ class GRASP(Algorithm):
         return initiated_solutions
 
     def path_relinking(self, solutions):
+        new_sols=[]
         if len(self.NDS) > 0:
             for solution in solutions:
+                new_sols_path=[]
                 # get random solution from non dominated set
                 random_nds_solution = random.choice(self.NDS)
                 # print("random",random_nds_solution.selected)
                 # print("sol",solution.selected)
                 # calculate distance from solution to goal random solution
+                init_sol=copy.deepcopy(solution)
                 distance = np.count_nonzero(
                     solution.selected != random_nds_solution.selected)
                 # while distance greater than 0
@@ -457,28 +461,51 @@ class GRASP(Algorithm):
                     diff_bits = np.where(solution.selected !=
                                          random_nds_solution.selected)
                     diff_bits = diff_bits[0]
-                    # reordenar aleatoriamente
+                    # random shuffle bits to flip
                     np.random.shuffle(diff_bits)
                     # print("diffs",diff_bits)
                     # for each different bit, try flip and store the best if improves monoscore
-                    best_mo = mono_score
+                    #best_mo = mono_score
+                    best_mo = 0
                     selected_flip = None
                     for i in diff_bits:
-                        (c2, s2, mo2) = solution.try_flip(i, self.dataset.pbis_cost_scaled[i],
+                        (c2, s2, mo2) = init_sol.try_flip(i, self.dataset.pbis_cost_scaled[i],
                                                           self.dataset.pbis_satisfaction_scaled[i])
                         if mo2 > best_mo:
                             best_mo = mo2
                             selected_flip = i
                     # if it does not improves monoscore: select random
                     if mono_score >= best_mo:
-                        selected_flip = np.random.randint(
-                            0, self.dataset.pbis_cost_scaled.size)
+                        selected_flip=np.random.choice(diff_bits)
+                        #selected_flip = np.random.randint(
+                        #    0, self.dataset.pbis_cost_scaled.size)
+
                     # print("selected",selected_flip)
                     # print("mono-best",mono_score,best_mo)
-                    solution.flip(
+
+                    # flip selected bit (best by monobjective or random) of the solution (copy created to not replace former)
+                    init_sol.flip(
                         selected_flip, self.dataset.pbis_cost_scaled[selected_flip], self.dataset.pbis_satisfaction_scaled[selected_flip])
                     distance = distance - 1
+
+                    # save intermediate solution of the path
+                    new_sols_path.append(init_sol)
                     # print("sol",solution.selected)
+
+                    #TODO actualizar NDS con soluciones intermedias(?)
+                    #new_sols.append(solution)
+
+                # after ending, select best path solution by monoscore 
+                if len(new_sols_path)>0:
+                    best_sol_path=max(new_sols_path,key=lambda x:x.compute_mono_objective_score())
+                    new_sols.append(best_sol_path)
+                #best_sol_path=new_sols_path[0]
+
+                # append it to new list of solutions
+                
+            
+            # add best path solutions to old solution list
+            solutions+=new_sols
 
         return solutions
 

@@ -3,17 +3,18 @@ def generate_configurations():
     # opciones------------------------------------------------------------------
     seed = 10
     population_lengths = [
-        20,
-        30, 40,
-        100,
-        200,
+        #20,
+        #30, 40,
+        #100,
+        #200,
+        500
     ]
     generations = [
-                   100,
-                   200,
+                   #100,
+                   #200,
                    300,
-                   500,
-                   1000,
+                   #500,
+                   #1000,
                    #2000,
                    ]
     dataset_problems = [
@@ -25,7 +26,7 @@ def generate_configurations():
     ]
     algorithms = [
         # "genetic",
-        #"geneticnds",
+        "geneticnds",
          "nsgaii"
     ]
     selection_schemes = ["tournament",
@@ -34,12 +35,12 @@ def generate_configurations():
     crossover_schemes = ["onepoint"
                          ]
     crossover_probs = [
-        0.6, 
+        #0.6, 
         0.8, 
-        0.85, 0.9
+        #0.85, 0.9
                        ]
     mutation_schemes = ["flip1bit",
-                        "flipeachbit"
+                        #"flipeachbit"
                         ]
     mutation_probs = [
         0, 0.05,
@@ -48,7 +49,8 @@ def generate_configurations():
         #1/80,
         #1/100,
         #1/140,
-        0.1, 0.2, 0.5, 0.7, 1
+        #0.1, 0.2, 0.5, 0.7,
+        1
     ]
     replacement_schemes = ["elitism",
                            #"elitismnds"

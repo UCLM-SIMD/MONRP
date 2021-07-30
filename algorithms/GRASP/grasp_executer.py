@@ -11,7 +11,7 @@ class GRASPExecuter(Executer):
         # print("Running...")
         f = open(file_path, "w")
         f.write("Dataset,Algorithm,Iterations,Solutions per Iteration,Initialization Type"
-                "Local Search Type,Time(s),AvgValue,BestAvgValue,HV,Spread,NumSolutions,Spacing\n")
+                "Local Search Type,Path Relinking,Time(s),AvgValue,BestAvgValue,HV,Spread,NumSolutions,Spacing\n")
         f.close()
 
     def reset_file(self, file_path):
@@ -20,11 +20,13 @@ class GRASPExecuter(Executer):
 
     def execute(self, executions, file_path):
         algorithm_name = self.algorithm.__class__.__name__
-        dataset = self.algorithm.dataset_name
+        dataset_name = self.algorithm.dataset_name
         iterations = self.algorithm.iterations
         solutions_per_iteration = self.algorithm.solutions_per_iteration
         local_search_type = self.algorithm.local_search_type
         init_type = self.algorithm.init_type
+        path_relinking = self.algorithm.path_relinking_mode
+        dataset = self.algorithm.dataset
 
         for i in range(0, executions):
             #print("Executing iteration: ", i + 1)
@@ -35,19 +37,23 @@ class GRASPExecuter(Executer):
                 result["numGenerations"]) if "numGenerations" in result else 'NaN'
 
             avgValue = str(metrics.calculate_avgValue(result["population"]))
-            bestAvgValue = str(metrics.calculate_bestAvgValue(result["population"]))
+            bestAvgValue = str(
+                metrics.calculate_bestAvgValue(result["population"]))
             hv = str(metrics.calculate_hypervolume(result["population"]))
-            spread = str(metrics.calculate_spread(result["population"]))
-            numSolutions = str(metrics.calculate_numSolutions(result["population"]))
+            spread = str(metrics.calculate_spread(
+                result["population"], dataset))
+            numSolutions = str(
+                metrics.calculate_numSolutions(result["population"]))
             spacing = str(metrics.calculate_spacing(result["population"]))
 
             f = open(file_path, "a")
-            data = str(dataset) + "," + \
+            data = str(dataset_name) + "," + \
                 str(algorithm_name) + "," + \
                 str(iterations) + "," + \
                 str(solutions_per_iteration) + "," + \
                 str(init_type) + "," + \
                 str(local_search_type) + "," + \
+                str(path_relinking) + "," + \
                 str(time) + "," + \
                 str(avgValue) + "," + \
                 str(bestAvgValue) + "," + \

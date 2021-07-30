@@ -1,13 +1,12 @@
-from algorithms.abstract_genetic.basegenetic_algorithm import BaseGeneticAlgorithm
-from algorithms.nsgaii.nsgaii_executer import NSGAIIExecuter
-from models.solution import Solution
-from algorithms.nsgaii.nsgaii_utils import NSGAIIUtils
+from algorithms.genetic.abstract_genetic.basegenetic_algorithm import BaseGeneticAlgorithm
+from algorithms.genetic.nsgaii.nsgaii_executer import NSGAIIExecuter
+from algorithms.genetic.nsgaii.nsgaii_utils import NSGAIIUtils
 from models.population import Population
 import copy
 import time
 
 
-class NSGAIIAlgorithm(BaseGeneticAlgorithm):
+class NSGAIIAlgorithm(BaseGeneticAlgorithm):# TODO NSGAIIALGORITHM -> NSGAII y reescribir ficheros output
     def __init__(self, dataset_name="1", random_seed=None, population_length=20, max_generations=1000,
                  selection="tournament", selection_candidates=2,
                  crossover="onepoint", crossover_prob=0.9,
@@ -66,8 +65,8 @@ class NSGAIIAlgorithm(BaseGeneticAlgorithm):
             "-"+str(mutation_prob)+"-"+str(replacement)+".txt"
 
     def get_name(self):
-        return "NSGA-II "+str(self.population_length)+"-"+str(self.max_generations)+"-"+str(self.crossover_prob)\
-            + "-"+str(self.mutation_scheme)+"-"+str(self.mutation_prob)
+        return "NSGA-II+"+str(self.population_length)+"+"+str(self.max_generations)+"+"+str(self.crossover_prob)\
+            + "+"+str(self.mutation_scheme)+"+"+str(self.mutation_prob)
 
     # RUN ALGORITHM------------------------------------------------------------------
     def run(self):

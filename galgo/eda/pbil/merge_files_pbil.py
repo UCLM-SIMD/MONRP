@@ -7,7 +7,7 @@ print(filenames)
 # Open file3 in write mode
 with open('merged_output_grasp.txt', 'w') as outfile:
 	outfile.write("Dataset,Algorithm,Iterations,Solutions per Iteration,Initialization Type,"
-                "Local Search Type,Path Relinking,Time(s),AvgValue,BestAvgValue,HV,Spread,NumSolutions,Spacing,NumGenerations\n")
+                "Local Search Type,Time(s),AvgValue,BestAvgValue,HV,Spread,NumSolutions,Spacing,NumGenerations\n")
 	# Iterate through list
 	for names in filenames:
 		# Open each file in read mode

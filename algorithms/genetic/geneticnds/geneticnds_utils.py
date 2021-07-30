@@ -1,4 +1,4 @@
-from algorithms.abstract_genetic.basegenetic_utils import BaseGeneticUtils
+from algorithms.genetic.abstract_genetic.basegenetic_utils import BaseGeneticUtils
 import random
 from models.population import Population
 

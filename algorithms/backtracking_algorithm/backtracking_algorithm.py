@@ -1,3 +1,4 @@
+import argparse
 from models.solution import Solution
 from datasets.dataset_gen_generator import generate_dataset_genes
 from models.problem import Problem
@@ -8,6 +9,16 @@ from algorithms.abstract_default.algorithm import Algorithm
 import numpy as np
 import itertools
 
+parser = argparse.ArgumentParser()
+parser.add_argument('-d', '--dataset', nargs="+",
+                    help='<Required> configuration', required=False)
+
+#params = parser.parse_args().config[0].split()  # sh galgo
+print(parser.parse_args())
+params = parser.parse_args().dataset # local
+
+print(params)
+dataset = params[0]
 
 class BacktrackingAlgorithm(Algorithm):
     def __init__(self, dataset, seed=None):
@@ -41,6 +52,7 @@ class BacktrackingAlgorithm(Algorithm):
             if counter % 1000 == 0:
                 #counter = 0
                 self.update_nds(sol_set)
+                self.write_nds()
                 sol_set = []
                 # print("--")
                 #print(counter, len(self.NDS), solution.selected,
@@ -114,3 +126,13 @@ class BacktrackingAlgorithm(Algorithm):
                 new_nds.append(ind)
         new_nds = list(set(new_nds))
         self.NDS = new_nds
+
+    def write_nds(self):
+        f = open("../../output/backtracking.txt", "w")
+        for ind in self.NDS:
+            f.write(str(ind.total_cost)+","+str(ind.total_satisfaction)+"\n")
+        f.close()    
+
+algorithm = BacktrackingAlgorithm(dataset=dataset)
+algorithm.run()
+    

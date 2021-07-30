@@ -1,6 +1,6 @@
-from algorithms.abstract_genetic.basegenetic_algorithm import BaseGeneticAlgorithm
-from algorithms.genetic.genetic_executer import GeneticExecuter
-from algorithms.genetic.genetic_utils import GeneticUtils
+from algorithms.genetic.abstract_genetic.basegenetic_algorithm import BaseGeneticAlgorithm
+from algorithms.genetic.genetic.genetic_executer import GeneticExecuter
+from algorithms.genetic.genetic.genetic_utils import GeneticUtils
 
 import copy
 import time

@@ -1,13 +1,13 @@
 # RUN SCRIPT IN THE FOLDER WHERE THE DATA IS LOCATED
 import os
 
-filenames = [f for f in os.listdir(os.getcwd()) if f.endswith('.txt') and "grasp" in f]
+filenames = [f for f in os.listdir(os.getcwd()) if f.endswith('.txt') and "umda" in f]
 print(filenames)
 
-# Open file3 in write mode
+# Open file in write mode
 with open('merged_output_grasp.txt', 'w') as outfile:
-	outfile.write("Dataset,Algorithm,Iterations,Solutions per Iteration,Initialization Type,"
-                "Local Search Type,Path Relinking,Time(s),AvgValue,BestAvgValue,HV,Spread,NumSolutions,Spacing,NumGenerations\n")
+	outfile.write("Dataset,Algorithm,Population Length,Generations,"#TODO
+                "Selected Individuals,Time(s),AvgValue,BestAvgValue,BestGeneration,HV,Spread,NumSolutions,Spacing,NumGenerations\n")
 	# Iterate through list
 	for names in filenames:
 		# Open each file in read mode

@@ -1,4 +1,4 @@
-from algorithms.abstract_genetic.basegenetic_executer import BaseGeneticExecuter
+from algorithms.genetic.abstract_genetic.basegenetic_executer import BaseGeneticExecuter
 
 
 class GeneticNDSExecuter(BaseGeneticExecuter):
