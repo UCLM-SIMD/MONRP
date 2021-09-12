@@ -36,6 +36,7 @@ class BaseGeneticExecuter(Executer):
 
         for i in range(0, executions):
             #print("Executing iteration: ", i + 1)
+            self.algorithm.reset()
             result = self.algorithm.run()
 
             time = str(result["time"]) if "time" in result else 'NaN'

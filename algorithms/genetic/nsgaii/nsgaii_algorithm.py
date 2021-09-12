@@ -68,11 +68,16 @@ class NSGAIIAlgorithm(BaseGeneticAlgorithm):# TODO NSGAIIALGORITHM -> NSGAII y r
         return "NSGA-II+"+str(self.population_length)+"+"+str(self.max_generations)+"+"+str(self.crossover_prob)\
             + "+"+str(self.mutation_scheme)+"+"+str(self.mutation_prob)
 
-    # RUN ALGORITHM------------------------------------------------------------------
-    def run(self):
-        start = time.time()
+    def reset(self):
         self.best_generation_avgValue = 0
         self.best_generation = 0
+        self.best_individual = None
+        self.population = None
+
+    # RUN ALGORITHM------------------------------------------------------------------
+    def run(self):
+        self.reset()
+        start = time.time()
         # inicializacion del nsgaii
         self.population = self.generate_starting_population()
         self.evaluate(self.population, self.best_individual)

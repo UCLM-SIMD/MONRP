@@ -135,6 +135,9 @@ class GRASP(Algorithm):
         PR = "+PR" if self.path_relinking_mode != "None" else ""
         return "GRASP+"+str(self.iterations)+"+"+str(self.solutions_per_iteration)+"+"+init+local+PR
 
+    def reset(self):
+        self.NDS = []
+
     def run(self):
         """
         Core code of GRASP: initiation + local search + NDS update, repeated self.iterations times.
@@ -145,6 +148,7 @@ class GRASP(Algorithm):
                 seconds is the time in seconds used to run all the GRASP iterations
 
         """
+        self.reset()
         start = time.time()
 
         for _ in np.arange(self.iterations):

@@ -157,14 +157,18 @@ class UMDAAlgorithm():  # Univariate Marginal Distribution Algorithm
             individual.evaluate_fitness()
             final_nds_formatted.append(individual)
         self.NDS = final_nds_formatted
-    # RUN ALGORITHM------------------------------------------------------------------
 
+    def reset(self):
+        self.NDS = []
+        self.best_individual = None
+        
+    # RUN ALGORITHM------------------------------------------------------------------
     def run(self):
+        self.reset()
         start = time.time()
 
         num_generations = 0
         returned_population = None
-        self.best_individual = None
         self.population = self.generate_starting_population()
         #print("STARTING")
         #for i in self.population:

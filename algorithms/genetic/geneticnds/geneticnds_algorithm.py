@@ -63,7 +63,9 @@ class GeneticNDSAlgorithm(BaseGeneticAlgorithm):
             "-"+str(mutation_prob)+"-"+str(replacement)+".txt"
 
     def get_name(self):
-        return "GeneticNDS "+self.replacement_scheme
+        return "GeneticNDS+"+str(self.population_length)+"+"+str(self.max_generations)+"+"+str(self.crossover_prob)\
+            + "+"+str(self.mutation_scheme)+"+"+str(self.mutation_prob)
+
 
     # UPDATE NDS------------------------------------------------------------------
     def is_non_dominated(self, ind, nds):
@@ -94,15 +96,20 @@ class GeneticNDSAlgorithm(BaseGeneticAlgorithm):
         new_nds = list(set(new_nds))
         self.nds = copy.deepcopy(new_nds)
 
-    # RUN ALGORITHM------------------------------------------------------------------
-    def run(self):
-        start = time.time()
 
-        num_generations = 0
-        returned_population = None
+    def reset(self):
+        self.nds = []
         self.best_generation_avgValue = 0
         self.best_generation = 0
+        self.best_individual = None
+        self.population = None
 
+    # RUN ALGORITHM------------------------------------------------------------------
+    def run(self):
+        self.reset()
+        start = time.time()
+        
+        num_generations = 0
         self.population = self.generate_starting_population()
         self.evaluate(self.population, self.best_individual)
         # print("Best individual score: ", self.best_individual.total_score)

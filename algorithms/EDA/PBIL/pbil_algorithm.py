@@ -123,10 +123,13 @@ class PBILAlgorithm():  # Population Based Incremental Learning
         self.NDS = final_nds_formatted
 
     # RUN ALGORITHM------------------------------------------------------------------
+    def reset(self):
+        self.NDS = []
+        self.best_individual = None
 
     def run(self):
         start = time.time()
-
+        self.reset()
         num_generations = 0
         returned_population = None
         self.best_individual = None
