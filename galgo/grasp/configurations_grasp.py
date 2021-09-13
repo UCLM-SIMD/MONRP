@@ -12,20 +12,27 @@ def generate_configurations():
         "grasp"
     ]
     iterations = [
-        #20, 50, 100, 200, 
-        300,
-        # 500
+        #20, 50, 
+        100, 
+        #200, 
+        #300,
+        #500
     ]
     solutions_per_iteration_list = [
-        #20, 40, 60, 80, 
-        100, 200, 500
+        #20,
+        #  40, 60, 80, 
+        100,
+        #  200,
+        #500
     ]
-    init_types=["stochastically","uniform"]
+    init_types=["stochastically"
+    #,"uniform"
+    ]
     local_search_types = [
         "None",
-        "best_first_neighbor_random",
-        "best_first_neighbor_sorted_score",
-        "best_first_neighbor_sorted_score_r",
+        #"best_first_neighbor_random",
+        #"best_first_neighbor_sorted_score",
+        #"best_first_neighbor_sorted_score_r",
         "best_first_neighbor_sorted_domination",
         "best_first_neighbor_random_domination",
     ]
