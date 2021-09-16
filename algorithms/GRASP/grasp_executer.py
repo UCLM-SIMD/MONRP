@@ -11,7 +11,7 @@ class GRASPExecuter(Executer):
         # print("Running...")
         f = open(file_path, "w")
         f.write("Dataset,Algorithm,Iterations,Solutions per Iteration,Initialization Type"
-                "Local Search Type,Path Relinking,Time(s),AvgValue,BestAvgValue,HV,Spread,NumSolutions,Spacing\n")
+                "Local Search Type,Path Relinking,Time(s),AvgValue,BestAvgValue,HV,Spread,NumSolutions,Spacing,Requirements per sol\n")
         f.close()
 
     def reset_file(self, file_path):
@@ -46,6 +46,7 @@ class GRASPExecuter(Executer):
             numSolutions = str(
                 metrics.calculate_numSolutions(result["population"]))
             spacing = str(metrics.calculate_spacing(result["population"]))
+            mean_bits_per_sol =  str(metrics.calculate_mean_bits_per_sol(result["population"]))
 
             f = open(file_path, "a")
             data = str(dataset_name) + "," + \
@@ -62,7 +63,8 @@ class GRASPExecuter(Executer):
                 str(spread) + "," + \
                 str(numSolutions) + "," + \
                 str(spacing) + "," + \
-                str(numGenerations) + \
+                str(numGenerations) + "," + \
+                str(mean_bits_per_sol) + \
                 "\n"
 
             f.write(data)

@@ -13,7 +13,8 @@ class BaseGeneticExecuter(Executer):
         f = open(file_path, "w")
         f.write("Dataset,Algorithm,Population Length,Generations,"
                 "Selection Scheme,Selection Candidates,Crossover Scheme,Crossover Probability,Mutation Scheme,"
-                "Mutation Probability,Replacement Scheme,Time(s),AvgValue,BestAvgValue,BestGeneration,HV,Spread,NumSolutions,Spacing,NumGenerations\n")
+                "Mutation Probability,Replacement Scheme,Time(s),AvgValue,BestAvgValue,BestGeneration,HV,Spread,NumSolutions,Spacing,"
+                "NumGenerations,Requirements per sol\n")
         f.close()
 
     def reset_file(self, file_path):
@@ -54,6 +55,7 @@ class BaseGeneticExecuter(Executer):
             numSolutions = str(
                 metrics.calculate_numSolutions(result["population"]))
             spacing = str(metrics.calculate_spacing(result["population"]))
+            mean_bits_per_sol =  str(metrics.calculate_mean_bits_per_sol(result["population"]))
 
             f = open(file_path, "a")
             data = str(dataset_name) + "," + \
@@ -75,7 +77,8 @@ class BaseGeneticExecuter(Executer):
                 str(spread) + "," + \
                 str(numSolutions) + "," + \
                 str(spacing) + "," + \
-                str(numGenerations) + \
+                str(numGenerations) + "," + \
+                str(mean_bits_per_sol) + \
                 "\n"
 
             f.write(data)

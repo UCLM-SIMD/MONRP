@@ -7,7 +7,8 @@ print(filenames)
 # Open file in write mode
 with open('merged_output_grasp.txt', 'w') as outfile:
 	outfile.write("Dataset,Algorithm,Population Length,Generations,"#TODO
-                "Selected Individuals,Time(s),AvgValue,BestAvgValue,BestGeneration,HV,Spread,NumSolutions,Spacing,NumGenerations\n")
+                "Selected Individuals,Time(s),AvgValue,BestAvgValue,BestGeneration,HV,Spread,NumSolutions,"
+				"Spacing,NumGenerations,Requirements per sol\n")
 	# Iterate through list
 	for names in filenames:
 		# Open each file in read mode

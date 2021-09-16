@@ -7,7 +7,8 @@ print(filenames)
 with open('merged_output_genetic.txt', 'w') as outfile:
 	outfile.write("Dataset,Algorithm,Population Length,Generations,"
 			"Selection Scheme,Selection Candidates,Crossover Scheme,Crossover Probability,Mutation Scheme,"
-			"Mutation Probability,Replacement Scheme,Time(s),AvgValue,BestAvgValue,BestGeneration,HV,Spread,NumSolutions,Spacing,NumGenerations\n")
+			"Mutation Probability,Replacement Scheme,Time(s),AvgValue,BestAvgValue,BestGeneration,HV,Spread,NumSolutions,"
+				"Spacing,NumGenerations,Requirements per sol\n")
 	# Iterate through list
 	for names in filenames:
 		# Open each file in read mode
