@@ -14,7 +14,7 @@ import numpy as np
 
 
 class PBILAlgorithm():  # Population Based Incremental Learning
-    def __init__(self, dataset_name="1", random_seed=None, population_length=20, max_generations=100,
+    def __init__(self, dataset_name="1", random_seed=None, population_length=20, max_generations=100, max_evaluations=0,
                  learning_rate=0.1, mutation_prob=0.1, mutation_shift=0.1):
 
         self.executer = PBILExecuter(algorithm=self)
@@ -26,6 +26,8 @@ class PBILAlgorithm():  # Population Based Incremental Learning
 
         self.population_length = population_length
         self.max_generations = max_generations
+        self.max_evaluations = max_evaluations
+
         self.learning_rate = learning_rate
         self.mutation_prob = mutation_prob
         self.mutation_shift = mutation_shift
@@ -122,20 +124,29 @@ class PBILAlgorithm():  # Population Based Incremental Learning
             final_nds_formatted.append(individual)
         self.NDS = final_nds_formatted
 
-    # RUN ALGORITHM------------------------------------------------------------------
     def reset(self):
         self.NDS = []
         self.best_individual = None
 
+    def stop_criterion(self, num_generations, num_evaluations):
+        if self.max_evaluations is 0:
+            return num_generations < self.max_generations
+        else:
+            return num_evaluations < self.max_evaluations
+
+# RUN ALGORITHM------------------------------------------------------------------
     def run(self):
         start = time.time()
         self.reset()
         num_generations = 0
+        num_evaluations = 0
+
         returned_population = None
         self.best_individual = None
         self.probability_vector = self.initialize_probability_vector()
 
-        while num_generations < self.max_generations:
+        #while num_generations < self.max_generations:
+        while (self.stop_criterion(num_generations, num_evaluations)):
             self.population = []
             for i in np.arange(self.population_length):
                 sample = self.generate_sample_from_probabilities(
@@ -167,4 +178,5 @@ class PBILAlgorithm():  # Population Based Incremental Learning
                 "time": end - start,
                 "numGenerations": num_generations,
                 "best_individual": self.best_individual,
+                "numEvaluations": num_evaluations
                 }

@@ -23,6 +23,7 @@ class PBILExecuter(Executer):
         dataset = self.algorithm.dataset_name
         population_length = self.algorithm.population_length
         generations = self.algorithm.max_generations
+        evaluations = self.algorithm.max_evaluations
         lr = self.algorithm.learning_rate
         mutation_prob = self.algorithm.mutation_prob
         mutation_shift = self.algorithm.mutation_shift
@@ -53,6 +54,7 @@ class PBILExecuter(Executer):
                 str(algorithm_name) + "," + \
                 str(population_length) + "," + \
                 str(generations) + "," + \
+                str(evaluations) + "," + \
                 str(lr) + "," + \
                 str(mutation_prob) + "," + \
                 str(mutation_shift) + "," + \

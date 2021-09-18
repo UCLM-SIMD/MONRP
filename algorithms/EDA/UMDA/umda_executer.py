@@ -23,6 +23,7 @@ class UMDAExecuter(Executer):
         dataset = self.algorithm.dataset_name
         population_length = self.algorithm.population_length
         generations = self.algorithm.max_generations
+        evaluations = self.algorithm.max_evaluations
         selected_individuals = self.algorithm.selected_individuals
         dataset = self.algorithm.dataset
 
@@ -51,6 +52,7 @@ class UMDAExecuter(Executer):
                 str(algorithm_name) + "," + \
                 str(population_length) + "," + \
                 str(generations) + "," + \
+                str(evaluations) + "," + \
                 str(selected_individuals) + "," + \
                 str(time) + "," + \
                 str(avgValue) + "," + \

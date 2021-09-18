@@ -18,6 +18,10 @@ def generate_configurations():
     max_generations = [
         20, 40, 60, 80, 100, 200, 500
     ]
+    evaluations = [
+        10000,
+        0
+    ]
     learning_rate = [
         #0.01, 0.05, 
         0.1, 0.2,# 0.5, 1
@@ -38,16 +42,18 @@ def generate_configurations():
         for algorithm in algorithms:
             for pop in population_length:
                 for max_generation in max_generations:
-                    for lea in learning_rate:
-                        for muprob in mutation_prob:
-                            for mushift in mutation_shift:
-                                returnStr = type + ' ' + str(algorithm) + " " + str(dataset_problem) + ' ' + \
-                                    str(seed) + ' ' + str(pop) + ' ' + \
-                                    str(max_generation) + ' ' + \
-                                    str(lea) + ' ' + \
-                                    str(muprob) + ' ' + \
-                                    str(mushift) + '\n'
-                                f.write(returnStr)
+                    for evaluation in evaluations:
+                        for lea in learning_rate:
+                            for muprob in mutation_prob:
+                                for mushift in mutation_shift:
+                                    returnStr = type + ' ' + str(algorithm) + " " + str(dataset_problem) + ' ' + \
+                                        str(seed) + ' ' + str(pop) + ' ' + \
+                                        str(max_generation) + ' ' + \
+                                        str(evaluation) + ' ' + \
+                                        str(lea) + ' ' + \
+                                        str(muprob) + ' ' + \
+                                        str(mushift) + '\n'
+                                    f.write(returnStr)
     f.close()
 
 

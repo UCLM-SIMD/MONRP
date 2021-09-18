@@ -14,7 +14,7 @@ import numpy as np
 
 
 class UMDAAlgorithm():  # Univariate Marginal Distribution Algorithm
-    def __init__(self, dataset_name="1", random_seed=None, population_length=100, max_generations=100,
+    def __init__(self, dataset_name="1", random_seed=None, population_length=100, max_generations=100, max_evaluations=0,
                  selected_individuals=60):
 
         self.executer = UMDAExecuter(algorithm=self)
@@ -26,6 +26,8 @@ class UMDAAlgorithm():  # Univariate Marginal Distribution Algorithm
 
         self.population_length = population_length
         self.max_generations = max_generations
+        self.max_evaluations = max_evaluations
+
         self.selected_individuals=selected_individuals
 
         self.NDS=[]
@@ -161,6 +163,12 @@ class UMDAAlgorithm():  # Univariate Marginal Distribution Algorithm
     def reset(self):
         self.NDS = []
         self.best_individual = None
+
+    def stop_criterion(self, num_generations, num_evaluations):
+        if self.max_evaluations is 0:
+            return num_generations < self.max_generations
+        else:
+            return num_evaluations < self.max_evaluations
         
     # RUN ALGORITHM------------------------------------------------------------------
     def run(self):
@@ -168,6 +176,8 @@ class UMDAAlgorithm():  # Univariate Marginal Distribution Algorithm
         start = time.time()
 
         num_generations = 0
+        num_evaluations = 0
+
         returned_population = None
         self.population = self.generate_starting_population()
         #print("STARTING")
@@ -175,7 +185,8 @@ class UMDAAlgorithm():  # Univariate Marginal Distribution Algorithm
         #    print(i)
         self.evaluate(self.population, self.best_individual)
 
-        while num_generations < self.max_generations:
+        #while num_generations < self.max_generations:
+        while (self.stop_criterion(num_generations, num_evaluations)):
             #print("--------------------------------")
             #("SELECT")
             individuals = self.select_individuals(self.population)
@@ -202,4 +213,5 @@ class UMDAAlgorithm():  # Univariate Marginal Distribution Algorithm
                 "time": end - start,
                 "numGenerations": num_generations,
                 "best_individual": self.best_individual,
+                "numEvaluations": num_evaluations
                 }

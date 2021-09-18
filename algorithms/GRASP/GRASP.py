@@ -85,7 +85,7 @@ class GRASP(Algorithm):
 
     """
 
-    def __init__(self, dataset="1", iterations=20, solutions_per_iteration=10, init_type="stochastically",
+    def __init__(self, dataset="1", iterations=20, solutions_per_iteration=10,max_evaluations=0, init_type="stochastically",
                  local_search_type="best_first_neighbor_random", path_relinking_mode="None", seed=None):
         """
         :param dataset: integer number: 1 or 2
@@ -99,7 +99,10 @@ class GRASP(Algorithm):
         self.dataset_name = dataset
         self.iterations = iterations
         self.solutions_per_iteration = solutions_per_iteration
+        self.max_evaluations = max_evaluations
+
         self.NDS = []
+        self.num_evaluations = 0
         self.init_type = init_type
         self.local_search_type = local_search_type
         self.path_relinking_mode = path_relinking_mode
@@ -126,7 +129,7 @@ class GRASP(Algorithm):
 
         self.executer = GRASPExecuter(algorithm=self)
         self.file = self.__class__.__name__+"-"+(str(dataset)+"-"+str(seed)+"-"+str(iterations)+"-"+str(solutions_per_iteration)
-                                                 + "-"+str(init_type) + "-"+str(local_search_type) + "-"+str(path_relinking_mode)+".txt")
+            + "-"+str(max_evaluations)+ "-"+str(init_type) + "-"+str(local_search_type) + "-"+str(path_relinking_mode)+".txt")
 
     def get_name(self):
         init = "stochastic" if self.init_type == "stochastically" else self.init_type
@@ -137,6 +140,13 @@ class GRASP(Algorithm):
 
     def reset(self):
         self.NDS = []
+        self.num_evaluations = 0
+
+    def stop_criterion(self, num_iterations, num_evaluations):
+        if self.max_evaluations is 0:
+            return num_iterations < self.iterations
+        else:
+            return num_evaluations < self.max_evaluations
 
     def run(self):
         """
@@ -151,7 +161,9 @@ class GRASP(Algorithm):
         self.reset()
         start = time.time()
 
-        for _ in np.arange(self.iterations):
+        #for _ in np.arange(self.iterations):
+        num_iterations = 0
+        while (self.stop_criterion(num_iterations,self.num_evaluations)):
             # construction phase
             initiated_solutions = self.initialize()
 
@@ -165,6 +177,8 @@ class GRASP(Algorithm):
             # update NDS with solutions constructed and evolved in this iteration
             self.update_nds(initiated_solutions)
 
+            num_iterations+=1
+
         seconds = time.time() - start
 
         print("\nNDS created has", self.NDS.__len__(), "solution(s)")
@@ -177,7 +191,7 @@ class GRASP(Algorithm):
 
         genes,_ = generate_dataset_genes(self.dataset.id)
 
-        return _results_in_victor_format(selected_list, seconds, self.iterations, genes)
+        return _results_in_victor_format(selected_list, seconds, self.iterations, genes, self.num_evaluations)
 
     def init_solutions_stochastically(self):
         """
@@ -249,6 +263,7 @@ class GRASP(Algorithm):
                 # compute new cost, satisfaction and mo_score flipping candidate i in sol
                 (c2, s2, mo2) = sol.try_flip(i, self.dataset.pbis_cost_scaled[i],
                                              self.dataset.pbis_satisfaction_scaled[i])
+                self.num_evaluations+=1                            
 
                 # no uso la dominancia porque cambiando solo 1 bit nunca se crea una solución dominante!
                 # if c2 < c1 and s2 > s1:  # if neighbor  dominates, then overwrite former solution with neighbor
@@ -258,6 +273,7 @@ class GRASP(Algorithm):
                         sol.selected) > 0:  # avoid solution with 0 cost due to 0 candidates selected
                     sol.flip(
                         i, self.dataset.pbis_cost_scaled[i], self.dataset.pbis_satisfaction_scaled[i])
+                    self.num_evaluations+=1 
 
         return initiated_solutions
 
@@ -298,7 +314,7 @@ class GRASP(Algorithm):
                 # compute new cost, satisfaction and mo_score flipping candidate i in sol
                 (c2, s2, mo2) = sol.try_flip(i, self.dataset.pbis_cost_scaled[i],
                                              self.dataset.pbis_satisfaction_scaled[i])
-
+                self.num_evaluations+=1 
                 # no uso la dominancia porque cambiando solo 1 bit nunca se crea una solución dominante!
                 # if c2 < c1 and s2 > s1:  # if neighbor  dominates, then overwrite former solution with neighbor
 
@@ -307,6 +323,7 @@ class GRASP(Algorithm):
                         sol.selected) > 0:  # avoid solution with 0 cost due to 0 candidates selected
                     sol.flip(
                         i, self.dataset.pbis_cost_scaled[i], self.dataset.pbis_satisfaction_scaled[i])
+                    self.num_evaluations+=1 
                 elif mo2 <= mo1 and np.count_nonzero(sol.selected) > 0:
                     # get selected pbi indexes
                     selected_pbis_indexes = np.where(sol.selected == 1)[
@@ -317,6 +334,7 @@ class GRASP(Algorithm):
                     for j in selected_pbis_indexes:
                         (c3, s3, mo3) = sol.try_flip(j, self.dataset.pbis_cost_scaled[j],
                                                      self.dataset.pbis_satisfaction_scaled[j])
+                        self.num_evaluations+=1 
                         if mo3 > mo1 and np.count_nonzero(
                                 sol.selected) > 0:
                             improving_indexes.append(j)
@@ -327,6 +345,7 @@ class GRASP(Algorithm):
                             improving_scores)]
                         sol.flip(
                             max_mo_index, self.dataset.pbis_cost_scaled[max_mo_index], self.dataset.pbis_satisfaction_scaled[max_mo_index])
+                        self.num_evaluations+=1 
 
         return initiated_solutions
 
@@ -356,7 +375,7 @@ class GRASP(Algorithm):
                 # compute new cost, satisfaction and mo_score flipping candidate i in sol
                 (c2, s2, mo2) = sol.try_flip(i, self.dataset.pbis_cost_scaled[i],
                                              self.dataset.pbis_satisfaction_scaled[i])
-
+                self.num_evaluations+=1 
                 # no uso la dominancia porque cambiando solo 1 bit nunca se crea una solución dominante!
                 # if c2 < c1 and s2 > s1:  # if neighbor  dominates, then overwrite former solution with neighbor
 
@@ -365,6 +384,7 @@ class GRASP(Algorithm):
                         sol.selected) > 0:  # avoid solution with 0 cost due to 0 candidates selected
                     sol.flip(
                         i, self.dataset.pbis_cost_scaled[i], self.dataset.pbis_satisfaction_scaled[i])
+                    self.num_evaluations+=1 
 
         return initiated_solutions
 
@@ -393,7 +413,7 @@ class GRASP(Algorithm):
                 # compute new cost, satisfaction and mo_score flipping candidate i in sol
                 (c2, s2, mo2) = sol.try_flip(i, self.dataset.pbis_cost_scaled[i],
                                              self.dataset.pbis_satisfaction_scaled[i])
-
+                self.num_evaluations+=1 
                 # no uso la dominancia porque cambiando solo 1 bit nunca se crea una solución dominante!
                 # if c2 < c1 and s2 > s1:  # if neighbor  dominates, then overwrite former solution with neighbor
 
@@ -402,6 +422,7 @@ class GRASP(Algorithm):
                         sol.selected) > 0:  # avoid solution with 0 cost due to 0 candidates selected
                     sol.flip(
                         i, self.dataset.pbis_cost_scaled[i], self.dataset.pbis_satisfaction_scaled[i])
+                    self.num_evaluations+=1 
 
         return initiated_solutions
 
@@ -431,7 +452,7 @@ class GRASP(Algorithm):
                 # compute new cost, satisfaction and mo_score flipping candidate i in sol
                 (c2, s2, mo2) = sol.try_flip(i, self.dataset.pbis_cost_scaled[i],
                                              self.dataset.pbis_satisfaction_scaled[i])
-
+                self.num_evaluations+=1 
                 # no uso la dominancia porque cambiando solo 1 bit nunca se crea una solución dominante!
                 # if c2 < c1 and s2 > s1:  # if neighbor  dominates, then overwrite former solution with neighbor
 
@@ -440,6 +461,7 @@ class GRASP(Algorithm):
                         sol.selected) > 0:  # avoid solution with 0 cost due to 0 candidates selected
                     sol.flip(
                         i, self.dataset.pbis_cost_scaled[i], self.dataset.pbis_satisfaction_scaled[i])
+                    self.num_evaluations+=1 
 
         return initiated_solutions
 
@@ -490,6 +512,7 @@ class GRASP(Algorithm):
                     # flip selected bit (best by monobjective or random) of the solution (copy created to not replace former)
                     init_sol.flip(
                         selected_flip, self.dataset.pbis_cost_scaled[selected_flip], self.dataset.pbis_satisfaction_scaled[selected_flip])
+                    self.num_evaluations+=1 
                     distance = distance - 1
 
                     # save intermediate solution of the path
@@ -547,7 +570,7 @@ class GRASP(Algorithm):
                     self.NDS.remove(dominated)
 
 
-def _results_in_victor_format(nds, seconds, num_iterations, genes):
+def _results_in_victor_format(nds, seconds, num_iterations, genes, num_evaluations):
     """
     esto será borrado cuando se programe un Evaluate que reciba el NDS (lista de listas de pbis) y el dataset usado,
     para calcular las métricas fuera del algoritmo.
@@ -555,6 +578,7 @@ def _results_in_victor_format(nds, seconds, num_iterations, genes):
     :param seconds:
     :param num_iterations:
     :param genes:
+    :param num_evaluations:
     :return:
     """
     # convertir solución al formato de las soluciones de Victor
@@ -571,6 +595,7 @@ def _results_in_victor_format(nds, seconds, num_iterations, genes):
         "population": final_nds_formatted,
         "time": seconds,
         "numGenerations": num_iterations,
+        "numEvaluations": num_evaluations
     }
 
 

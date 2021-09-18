@@ -13,3 +13,9 @@ class BaseGeneticAlgorithm(Algorithm):
     
     def get_name(self):
         pass
+
+    def stop_criterion(self, num_generations, num_evaluations):
+        if self.max_evaluations is 0:
+            return num_generations < self.max_generations
+        else:
+            return num_evaluations < self.max_evaluations

@@ -7,7 +7,7 @@ import time
 
 
 class GeneticAlgorithm(BaseGeneticAlgorithm):
-    def __init__(self, dataset_name="1", random_seed=None, population_length=20, max_generations=1000,
+    def __init__(self, dataset_name="1", random_seed=None, population_length=20, max_generations=1000, max_evaluations=0,
                  selection="tournament", selection_candidates=2,
                  crossover="onepoint", crossover_prob=0.9,
                  mutation="flipeachbit", mutation_prob=0.1,
@@ -16,12 +16,13 @@ class GeneticAlgorithm(BaseGeneticAlgorithm):
         self.utils = GeneticUtils(
             random_seed, population_length, selection_candidates, crossover_prob, mutation_prob)
         self.executer = GeneticExecuter(algorithm=self)
-        self.problem,self.dataset = self.utils.generate_dataset_problem(
+        self.problem, self.dataset = self.utils.generate_dataset_problem(
             dataset_name=dataset_name)
         self.dataset_name = dataset_name
 
         self.population_length = population_length
         self.max_generations = max_generations
+        self.max_evaluations = max_evaluations
         self.random_seed = random_seed
 
         self.selection_scheme = selection
@@ -65,20 +66,27 @@ class GeneticAlgorithm(BaseGeneticAlgorithm):
     def get_name(self):
         return "Genetic"
 
+    def reset(self):
+        self.best_generation_avgValue = 0
+        self.best_generation = 0
+        self.best_individual = None
+        self.population = None
+
     # RUN ALGORITHM------------------------------------------------------------------
 
     def run(self):
         start = time.time()
 
         num_generations = 0
+        num_evaluations = 0
         returned_population = None
-        self.best_generation_avgValue = 0
-        self.best_generation = 0
         self.population = self.generate_starting_population()
         self.evaluate(self.population, self.best_individual)
+        num_evaluations += len(self.population)
         #print("Best individual score: ", self.best_individual.total_score)
 
-        while num_generations < self.max_generations:
+        # while (num_generations < self.max_generations):
+        while (self.stop_criterion(num_generations, num_evaluations)):
             # selection
             new_population = self.selection(self.population)
 
@@ -90,6 +98,7 @@ class GeneticAlgorithm(BaseGeneticAlgorithm):
 
             # evaluation
             self.evaluate(self.population, self.best_individual)
+            num_evaluations += len(self.population)
             returned_population = copy.deepcopy(new_population)
 
             self.best_generation, self.best_generation_avgValue = self.calculate_last_generation_with_enhance(
@@ -112,5 +121,6 @@ class GeneticAlgorithm(BaseGeneticAlgorithm):
         return {"population": returned_population,
                 "time": end - start,
                 "numGenerations": num_generations,
-                "bestGeneration": self.best_generation
+                "bestGeneration": self.best_generation,
+                "numEvaluations": num_evaluations
                 }

@@ -21,3 +21,8 @@ class Algorithm(ABC):
 
     def get_name(self):
         return "Algorithm"
+
+    def stop_criterion(self):
+        pass
+
+

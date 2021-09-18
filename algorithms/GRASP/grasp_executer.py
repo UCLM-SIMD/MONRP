@@ -10,8 +10,9 @@ class GRASPExecuter(Executer):
     def initialize_file(self, file_path):
         # print("Running...")
         f = open(file_path, "w")
-        f.write("Dataset,Algorithm,Iterations,Solutions per Iteration,Initialization Type"
-                "Local Search Type,Path Relinking,Time(s),AvgValue,BestAvgValue,HV,Spread,NumSolutions,Spacing,Requirements per sol\n")
+        f.write("Dataset,Algorithm,Iterations,Solutions per Iteration,Evaluations,Initialization Type"
+                "Local Search Type,Path Relinking,Time(s),AvgValue,BestAvgValue,HV,Spread,NumSolutions,Spacing,"
+                "Requirements per sol,NumEvaluations\n")
         f.close()
 
     def reset_file(self, file_path):
@@ -23,6 +24,7 @@ class GRASPExecuter(Executer):
         dataset_name = self.algorithm.dataset_name
         iterations = self.algorithm.iterations
         solutions_per_iteration = self.algorithm.solutions_per_iteration
+        evaluations = self.algorithm.max_evaluations
         local_search_type = self.algorithm.local_search_type
         init_type = self.algorithm.init_type
         path_relinking = self.algorithm.path_relinking_mode
@@ -46,13 +48,17 @@ class GRASPExecuter(Executer):
             numSolutions = str(
                 metrics.calculate_numSolutions(result["population"]))
             spacing = str(metrics.calculate_spacing(result["population"]))
-            mean_bits_per_sol =  str(metrics.calculate_mean_bits_per_sol(result["population"]))
+            mean_bits_per_sol = str(
+                metrics.calculate_mean_bits_per_sol(result["population"]))
+            numEvaluations = str(
+                result["numEvaluations"]) if "numEvaluations" in result else 'NaN'
 
             f = open(file_path, "a")
             data = str(dataset_name) + "," + \
                 str(algorithm_name) + "," + \
                 str(iterations) + "," + \
                 str(solutions_per_iteration) + "," + \
+                str(evaluations) + "," + \
                 str(init_type) + "," + \
                 str(local_search_type) + "," + \
                 str(path_relinking) + "," + \
@@ -64,7 +70,8 @@ class GRASPExecuter(Executer):
                 str(numSolutions) + "," + \
                 str(spacing) + "," + \
                 str(numGenerations) + "," + \
-                str(mean_bits_per_sol) + \
+                str(mean_bits_per_sol) + "," + \
+                str(numEvaluations) + \
                 "\n"
 
             f.write(data)

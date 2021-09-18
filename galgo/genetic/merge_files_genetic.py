@@ -5,10 +5,10 @@ filenames = [f for f in os.listdir(os.getcwd()) if f.endswith('.txt') and "genet
 print(filenames)
 # Open file3 in write mode
 with open('merged_output_genetic.txt', 'w') as outfile:
-	outfile.write("Dataset,Algorithm,Population Length,Generations,"
+	outfile.write("Dataset,Algorithm,Population Length,Generations,Evaluations,"
 			"Selection Scheme,Selection Candidates,Crossover Scheme,Crossover Probability,Mutation Scheme,"
 			"Mutation Probability,Replacement Scheme,Time(s),AvgValue,BestAvgValue,BestGeneration,HV,Spread,NumSolutions,"
-				"Spacing,NumGenerations,Requirements per sol\n")
+				"Spacing,NumGenerations,Requirements per sol,NumEvaluations\n")
 	# Iterate through list
 	for names in filenames:
 		# Open each file in read mode

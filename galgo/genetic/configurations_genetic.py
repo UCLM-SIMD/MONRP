@@ -18,6 +18,10 @@ def generate_configurations():
                    #1000,
                    #2000,
                    ]
+    evaluations = [
+        10000,
+        0
+    ]
     dataset_problems = [
         "1",
         "2",
@@ -66,25 +70,27 @@ def generate_configurations():
         for selected_algorithm in algorithms:
             for population_length in population_lengths:
                 for generation in generations:
-                    for selection_scheme in selection_schemes:
-                        for selection_candidate in selection_candidates:
-                            for crossover_scheme in crossover_schemes:
-                                for crossover_prob in crossover_probs:
-                                    for mutation_scheme in mutation_schemes:
-                                        for mutation_prob in mutation_probs:
-                                            for replacement_scheme in replacement_schemes:
-                                                returnStr = type + " " + str(selected_algorithm) + ' ' + str(dataset_problem) + ' ' + str(seed) \
-                                                    + ' ' + str(population_length) + ' ' + str(generation) + \
-                                                    ' ' + str(selection_scheme) + ' ' + str(selection_candidate) + ' ' + str(crossover_scheme) + ' ' \
-                                                    + str(crossover_prob) + ' ' + str(mutation_scheme) + ' ' \
-                                                    + str(mutation_prob) + ' ' + \
-                                                    str(replacement_scheme) + '\n'
-                                                if(len(replacement_schemes) > 1 and len(algorithms) > 1):
-                                                    if (replacement_scheme == "elitismnds" and selected_algorithm == "geneticnds") or \
-                                                            (replacement_scheme != "elitismnds"):
+                    for evaluation in evaluations:
+                        for selection_scheme in selection_schemes:
+                            for selection_candidate in selection_candidates:
+                                for crossover_scheme in crossover_schemes:
+                                    for crossover_prob in crossover_probs:
+                                        for mutation_scheme in mutation_schemes:
+                                            for mutation_prob in mutation_probs:
+                                                for replacement_scheme in replacement_schemes:
+                                                    returnStr = type + " " + str(selected_algorithm) + ' ' + str(dataset_problem) + ' ' + str(seed) \
+                                                        + ' ' + str(population_length) + ' ' + str(generation) + \
+                                                        ' ' + str(evaluation) + \
+                                                        ' ' + str(selection_scheme) + ' ' + str(selection_candidate) + ' ' + str(crossover_scheme) + ' ' \
+                                                        + str(crossover_prob) + ' ' + str(mutation_scheme) + ' ' \
+                                                        + str(mutation_prob) + ' ' + \
+                                                        str(replacement_scheme) + '\n'
+                                                    if(len(replacement_schemes) > 1 and len(algorithms) > 1):
+                                                        if (replacement_scheme == "elitismnds" and selected_algorithm == "geneticnds") or \
+                                                                (replacement_scheme != "elitismnds"):
+                                                            f.write(returnStr)
+                                                    else:
                                                         f.write(returnStr)
-                                                else:
-                                                    f.write(returnStr)
 
     f.close()
 

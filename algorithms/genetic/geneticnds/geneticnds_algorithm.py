@@ -6,7 +6,7 @@ import time
 
 
 class GeneticNDSAlgorithm(BaseGeneticAlgorithm):
-    def __init__(self, dataset_name="1", random_seed=None, population_length=20, max_generations=1000,
+    def __init__(self, dataset_name="1", random_seed=None, population_length=20, max_generations=1000,max_evaluations=0,
                  selection="tournament", selection_candidates=2,
                  crossover="onepoint", crossover_prob=0.9,
                  mutation="flipeachbit", mutation_prob=0.1,
@@ -21,6 +21,7 @@ class GeneticNDSAlgorithm(BaseGeneticAlgorithm):
 
         self.population_length = population_length
         self.max_generations = max_generations
+        self.max_evaluations = max_evaluations
         self.random_seed = random_seed
 
         self.selection_scheme = selection
@@ -58,12 +59,13 @@ class GeneticNDSAlgorithm(BaseGeneticAlgorithm):
             self.replacement = self.utils.replacement_elitism
 
         self.file = str(self.__class__.__name__)+"-"+str(dataset_name)+"-"+str(random_seed)+"-"+str(population_length)+"-" +\
-            str(max_generations)+"-"+selection+"-"+str(selection_candidates)+"-" +\
+            str(max_generations)+ "-"+str(max_evaluations)+"-"+selection+"-"+str(selection_candidates)+"-" +\
             str(crossover)+"-"+str(crossover_prob)+"-"+str(mutation) + \
             "-"+str(mutation_prob)+"-"+str(replacement)+".txt"
 
     def get_name(self):
-        return "GeneticNDS+"+str(self.population_length)+"+"+str(self.max_generations)+"+"+str(self.crossover_prob)\
+        return "GeneticNDS+"+str(self.population_length)+"+"+str(self.max_generations)+ \
+            + "+"+str(self.max_evaluations)+"+"+str(self.crossover_prob)\
             + "+"+str(self.mutation_scheme)+"+"+str(self.mutation_prob)
 
 
@@ -110,12 +112,14 @@ class GeneticNDSAlgorithm(BaseGeneticAlgorithm):
         start = time.time()
         
         num_generations = 0
+        num_evaluations = 0
         self.population = self.generate_starting_population()
         self.evaluate(self.population, self.best_individual)
         # print("Best individual score: ", self.best_individual.total_score)
 
         # or not(num_generations > (self.best_generation+20)):
-        while (num_generations < self.max_generations):
+        #while (num_generations < self.max_generations):
+        while (self.stop_criterion(num_generations, num_evaluations)):
             # selection
             new_population = self.selection(self.population)
             # crossover
@@ -126,6 +130,7 @@ class GeneticNDSAlgorithm(BaseGeneticAlgorithm):
 
             # evaluation
             self.evaluate(self.population, self.best_individual)
+            num_evaluations+=len(self.population)
 
             # update NDS
             self.updateNDS(new_population)
@@ -158,4 +163,5 @@ class GeneticNDSAlgorithm(BaseGeneticAlgorithm):
             # "nds": self.nds,
             "bestGeneration": self.best_generation,
             "numGenerations": num_generations,
+            "numEvaluations":num_evaluations
         }
