@@ -86,7 +86,7 @@ class GeneticAlgorithm(BaseGeneticAlgorithm):
         #print("Best individual score: ", self.best_individual.total_score)
 
         # while (num_generations < self.max_generations):
-        while (self.stop_criterion(num_generations, num_evaluations)):
+        while (not self.stop_criterion(num_generations, num_evaluations)):
             # selection
             new_population = self.selection(self.population)
 

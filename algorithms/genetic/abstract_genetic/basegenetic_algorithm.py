@@ -1,3 +1,4 @@
+from algorithms.abstract_default.evaluation_exception import EvaluationLimit
 from algorithms.abstract_default.algorithm import Algorithm
 
 
@@ -15,7 +16,7 @@ class BaseGeneticAlgorithm(Algorithm):
         pass
 
     def stop_criterion(self, num_generations, num_evaluations):
-        if self.max_evaluations is 0:
-            return num_generations < self.max_generations
+        if self.max_evaluations == 0:
+            return num_generations >= self.max_generations
         else:
-            return num_evaluations < self.max_evaluations
+            return num_evaluations >= self.max_evaluations

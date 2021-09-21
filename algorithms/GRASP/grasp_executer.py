@@ -35,6 +35,8 @@ class GRASPExecuter(Executer):
             self.algorithm.reset()
             result = self.algorithm.run()
 
+            #print(result)
+
             time = str(result["time"]) if "time" in result else 'NaN'
             numGenerations = str(
                 result["numGenerations"]) if "numGenerations" in result else 'NaN'

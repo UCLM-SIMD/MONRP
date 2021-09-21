@@ -1,3 +1,4 @@
+import copy
 from algorithms.genetic.abstract_genetic.basegenetic_utils import BaseGeneticUtils
 import random
 from models.population import Population
@@ -18,7 +19,22 @@ class GeneticNDSUtils(BaseGeneticUtils):
 
     # EVALUATION------------------------------------------------------------------
     def evaluate(self, population, best_individual):
-        super().evaluate(population, best_individual)
+        #super().evaluate(population, best_individual)
+        best_score = 0
+        new_best_individual = None
+        for ind in population:
+            ind.evaluate_fitness()
+            if ind.total_score > best_score:
+                new_best_individual = copy.deepcopy(ind)
+                best_score = ind.total_score
+        if best_individual is not None:
+            if new_best_individual.total_score > best_individual.total_score:
+                best_individual = copy.deepcopy(new_best_individual)
+        else:
+            best_individual = copy.deepcopy(new_best_individual)
+
+
+
 
     # LAST GENERATION ENHANCE------------------------------------------------------------------
     def calculate_last_generation_with_enhance(self, best_generation, best_generation_avgValue, num_generation, population):
