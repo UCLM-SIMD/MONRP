@@ -13,10 +13,10 @@ def generate_configurations():
     ]
     population_length = [
         #20, 50, 
-        100, 200, 300, 500
+        100, 200, 500
     ]
     max_generations = [
-        20, 40, 60, 80, 100, 200, 500
+        100, 200, 500
     ]
     evaluations = [
         10000,
@@ -24,14 +24,16 @@ def generate_configurations():
     ]
     learning_rate = [
         #0.01, 0.05, 
-        0.1, 0.2,# 0.5, 1
+        0.1#, 0.2 
+        ,0.5#, 1
     ]
     mutation_prob = [
-        0, 0.1, 0.2,# 0.5, 1
+        0.1,# 0.2, 
+        0.5#, 1
     ]
     mutation_shift = [
-        #0.01, 0.05, 
-        0.1, 0.2,# 0.5, 1
+        0.1,# 0.2, 
+        0.5#, 1
     ]
     seed = 10
 

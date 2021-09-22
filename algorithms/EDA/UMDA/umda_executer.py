@@ -9,7 +9,7 @@ class UMDAExecuter(Executer):
     def initialize_file(self, file_path):
         # print("Running...")
         f = open(file_path, "w")
-        f.write("Dataset,Algorithm,Population Length,Generations,"#TODO
+        f.write("Dataset,Algorithm,Population Length,Generations,Evaluations,"
                 "Selected Individuals,Time(s),AvgValue,BestAvgValue,BestGeneration,HV,Spread,NumSolutions,Spacing,"
                 "NumGenerations,Requirements per sol\n")
         f.close()

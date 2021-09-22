@@ -133,7 +133,8 @@ class GRASP(Algorithm):
 
         self.executer = GRASPExecuter(algorithm=self)
         self.file = self.__class__.__name__+"-"+(str(dataset)+"-"+str(seed)+"-"+str(iterations)+"-"+str(solutions_per_iteration)
-            + "-"+str(max_evaluations)+ "-"+str(init_type) + "-"+str(local_search_type) + "-"+str(path_relinking_mode)+".txt")
+            + "-"+str(init_type) + "-"+str(local_search_type) + "-"+str(path_relinking_mode)+".txt")
+            # + "-"+str(max_evaluations) TODO
 
     def get_name(self):
         init = "stochastic" if self.init_type == "stochastically" else self.init_type

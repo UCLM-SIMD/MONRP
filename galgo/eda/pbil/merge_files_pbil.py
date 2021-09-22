@@ -5,10 +5,10 @@ filenames = [f for f in os.listdir(os.getcwd()) if f.endswith('.txt') and "grasp
 print(filenames)
 
 # Open file3 in write mode
-with open('merged_output_grasp.txt', 'w') as outfile:#TODO
-	outfile.write("Dataset,Algorithm,Iterations,Solutions per Iteration,Initialization Type,"
-                "Local Search Type,Time(s),AvgValue,BestAvgValue,HV,Spread,NumSolutions,"
-				"Spacing,NumGenerations,Requirements per sol\n")
+with open('merged_output_pbil.txt', 'w') as outfile:
+	outfile.write("Dataset,Algorithm,Population Length,Generations,Evaluations,"
+                "Learning Rate,Mutation Probability,Mutation Shift,Time(s),AvgValue,BestAvgValue,BestGeneration,HV,Spread,NumSolutions,Spacing,"
+                "NumGenerations,Requirements per sol\n")
 	# Iterate through list
 	for names in filenames:
 		# Open each file in read mode

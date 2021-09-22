@@ -1,3 +1,4 @@
+from algorithms.abstract_default.evaluation_exception import EvaluationLimit
 from models.solution import Solution
 from datasets.dataset_gen_generator import generate_dataset_genes
 from models.problem import Problem
@@ -32,7 +33,10 @@ class PBILAlgorithm():  # Population Based Incremental Learning
         self.mutation_prob = mutation_prob
         self.mutation_shift = mutation_shift
 
-        self.NDS = []
+        self.nds = []
+        self.best_individual = None
+        self.num_generations = 0
+        self.num_evaluations = 0
 
         self.random_seed = random_seed
         if random_seed is not None:
@@ -70,113 +74,127 @@ class PBILAlgorithm():  # Population Based Incremental Learning
             if ind.compute_mono_objective_score() > best_score:
                 new_best_individual = copy.deepcopy(ind)
                 best_score = ind.compute_mono_objective_score()
-
+            self.add_evaluation(population)
         if best_individual is not None:
             if new_best_individual.compute_mono_objective_score() > best_individual.compute_mono_objective_score():
                 best_individual = copy.deepcopy(new_best_individual)
         else:
             best_individual = copy.deepcopy(new_best_individual)
 
+    def add_evaluation(self,new_population):
+        self.num_evaluations+=1
+        #if(self.num_evaluations >= self.max_evaluations):
+        if (self.stop_criterion(self.num_generations, self.num_evaluations)):
+            self.update_nds(new_population)
+            raise EvaluationLimit
+
     def update_nds(self, solutions):
         """
         For each sol in solutions:
-            if no solution in self.NDS dominates sol:
-             insert sol in self.NDS
-             remove all solutions in self.NDS now dominated by sol
+            if no solution in self.nds dominates sol:
+             insert sol in self.nds
+             remove all solutions in self.nds now dominated by sol
         :param solutions: solutions created in current GRASP iteration and evolved with local search
         """
         for sol in solutions:
             insert = True
 
-            # find which solutions, if any, in self.NDS are dominated by sol
-            # if sol is dominated by any solution in self.NDS, then search is stopped and sol is discarded
+            # find which solutions, if any, in self.nds are dominated by sol
+            # if sol is dominated by any solution in self.nds, then search is stopped and sol is discarded
             now_dominated = []
-            for nds_sol in self.NDS:
+            for nds_sol in self.nds:
                 if np.array_equal(sol.selected, nds_sol.selected):
                     insert = False
                     break
                 else:
                     if sol.dominates(nds_sol):
                         now_dominated.append(nds_sol)
-                    # do not insert if sol is dominated by a solution in self.NDS
+                    # do not insert if sol is dominated by a solution in self.nds
                     if nds_sol.dominates(sol):
                         insert = False
                         break
 
-            # sol is inserted if it is not dominated by any solution in self.NDS,
-            # then all solutions in self.NDS dominated by sol are removed
+            # sol is inserted if it is not dominated by any solution in self.nds,
+            # then all solutions in self.nds dominated by sol are removed
             if insert:
-                self.NDS.append(sol)
+                self.nds.append(sol)
                 for dominated in now_dominated:
-                    self.NDS.remove(dominated)
+                    self.nds.remove(dominated)
 
-    def format(self):
+    def format(self, population):
         genes, _ = generate_dataset_genes(self.dataset.id)
         problem = Problem(genes, ["MAX", "MIN"])
         final_nds_formatted = []
 
-        for solution in self.NDS:
+        for solution in population:
             #print(solution)
             individual = Solution(problem.genes, problem.objectives)
             for b in np.arange(len(individual.genes)):
                 individual.genes[b].included = solution.selected[b]
             individual.evaluate_fitness()
             final_nds_formatted.append(individual)
-        self.NDS = final_nds_formatted
+        population = final_nds_formatted
+        return population
 
     def reset(self):
-        self.NDS = []
+        self.nds = []
         self.best_individual = None
+        self.num_generations = 0
+        self.num_evaluations = 0
 
     def stop_criterion(self, num_generations, num_evaluations):
-        if self.max_evaluations is 0:
-            return num_generations < self.max_generations
+        if self.max_evaluations == 0:
+            return num_generations >= self.max_generations
         else:
-            return num_evaluations < self.max_evaluations
+            return num_evaluations >= self.max_evaluations
 
 # RUN ALGORITHM------------------------------------------------------------------
     def run(self):
         start = time.time()
         self.reset()
-        num_generations = 0
-        num_evaluations = 0
+
 
         returned_population = None
-        self.best_individual = None
         self.probability_vector = self.initialize_probability_vector()
 
         #while num_generations < self.max_generations:
-        while (self.stop_criterion(num_generations, num_evaluations)):
-            self.population = []
-            for i in np.arange(self.population_length):
-                sample = self.generate_sample_from_probabilities(
-                    self.probability_vector)
-                self.population.append(sample)
+        try:
+            while (not self.stop_criterion(self.num_generations, self.num_evaluations)):
+                self.population = []
+                for i in np.arange(self.population_length):
+                    sample = self.generate_sample_from_probabilities(
+                        self.probability_vector)
+                    self.population.append(sample)
 
-            self.evaluate(self.population, self.best_individual)
+                self.evaluate(self.population, self.best_individual)
 
-            max_value, max_sample = self.find_max_sample(self.population)
+                max_value, max_sample = self.find_max_sample(self.population) # esto es muy monobjetivo
 
-            for i in np.arange(len(self.probability_vector)):
-                self.probability_vector[i] = self.probability_vector[i]*(
-                    1-self.learning_rate)+max_sample.selected[i]*(self.learning_rate)
-
-            for i in np.arange(len(self.probability_vector)):
-                prob = np.random.random_sample()
-                if prob < self.mutation_prob:
+                for i in np.arange(len(self.probability_vector)):
                     self.probability_vector[i] = self.probability_vector[i]*(
-                        1-self.mutation_shift) + (np.random.randint(2))*self.mutation_shift
+                        1-self.learning_rate)+max_sample.selected[i]*(self.learning_rate)
 
-            # update NDS with solutions constructed and evolved in this iteration
-            self.update_nds(self.population)
-            num_generations += 1
+                for i in np.arange(len(self.probability_vector)): # mutacion flip each bit
+                    prob = np.random.random_sample()
+                    if prob < self.mutation_prob:
+                        self.probability_vector[i] = self.probability_vector[i]*(
+                            1-self.mutation_shift) + (np.random.randint(2))*self.mutation_shift
 
-        self.format()
+                # update nds with solutions constructed and evolved in this iteration
+                self.update_nds(self.population)
+                self.num_generations += 1
+
+        except EvaluationLimit:
+            pass
+
+        self.nds = self.format(self.nds)
         end = time.time()
 
-        return {"population": self.NDS,
+        print("\nNDS created has", self.nds.__len__(), "solution(s)")
+
+        return {"population": self.nds,
                 "time": end - start,
-                "numGenerations": num_generations,
+                "numGenerations": self.num_generations,
                 "best_individual": self.best_individual,
-                "numEvaluations": num_evaluations
+                "numEvaluations": self.num_evaluations
                 }
