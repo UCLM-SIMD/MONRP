@@ -43,7 +43,7 @@ class PBILAlgorithm():  # Population Based Incremental Learning
             np.random.seed(random_seed)
 
         self.file = str(self.__class__.__name__)+"-"+str(dataset_name)+"-"+str(random_seed)+"-"+str(population_length)+"-" +\
-            str(max_generations)+"-"+str(learning_rate)+"-" + \
+            str(max_generations)+ "-"+str(max_evaluations)+"-"+str(learning_rate)+"-" + \
             str(mutation_prob)+"-"+str(mutation_shift)+".txt"
 
     def get_name(self):

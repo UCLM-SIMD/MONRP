@@ -37,12 +37,12 @@ def generate_configurations():
         #"best_first_neighbor_random",
         #"best_first_neighbor_sorted_score",
         #"best_first_neighbor_sorted_score_r",
-        "best_first_neighbor_sorted_domination",
-        "best_first_neighbor_random_domination",
+        #"best_first_neighbor_sorted_domination",
+        #"best_first_neighbor_random_domination",
     ]
     path_relinking_types=[
         #"None",
-        "after_local"
+        #"after_local"
     ]
     seed = 10
 

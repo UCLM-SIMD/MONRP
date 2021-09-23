@@ -5,10 +5,10 @@ filenames = [f for f in os.listdir(os.getcwd()) if f.endswith('.txt') and "umda"
 print(filenames)
 
 # Open file in write mode
-with open('merged_output_grasp.txt', 'w') as outfile:
+with open('merged_output_umda.txt', 'w') as outfile:
 	outfile.write("Dataset,Algorithm,Population Length,Generations,Evaluations,"
                 "Selected Individuals,Time(s),AvgValue,BestAvgValue,BestGeneration,HV,Spread,NumSolutions,Spacing,"
-                "NumGenerations,Requirements per sol\n")
+                "NumGenerations,Requirements per sol,NumEvaluations\n")
 	# Iterate through list
 	for names in filenames:
 		# Open each file in read mode

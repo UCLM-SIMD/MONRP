@@ -62,7 +62,7 @@ class GeneticNDSAlgorithm(BaseGeneticAlgorithm):
             self.replacement = self.utils.replacement_elitism
 
         self.file = str(self.__class__.__name__)+"-"+str(dataset_name)+"-"+str(random_seed)+"-"+str(population_length)+"-" +\
-            str(max_generations)+"-"+selection+"-"+str(selection_candidates)+"-" +\
+            str(max_generations)+ "-"+str(max_evaluations)+"-"+selection+"-"+str(selection_candidates)+"-" +\
             str(crossover)+"-"+str(crossover_prob)+"-"+str(mutation) + \
             "-"+str(mutation_prob)+"-"+str(replacement)+".txt"
             # + "-"+str(max_evaluations) TODO

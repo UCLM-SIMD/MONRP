@@ -20,7 +20,7 @@ class PBILExecuter(Executer):
 
     def execute(self, executions, file_path):
         algorithm_name = self.algorithm.__class__.__name__
-        dataset = self.algorithm.dataset_name
+        dataset_name = self.algorithm.dataset_name
         population_length = self.algorithm.population_length
         generations = self.algorithm.max_generations
         evaluations = self.algorithm.max_evaluations
@@ -48,9 +48,11 @@ class PBILExecuter(Executer):
                 metrics.calculate_numSolutions(result["population"]))
             spacing = str(metrics.calculate_spacing(result["population"]))
             mean_bits_per_sol =  str(metrics.calculate_mean_bits_per_sol(result["population"]))
+            numEvaluations = str(
+                result["numEvaluations"]) if "numEvaluations" in result else 'NaN'
 
             f = open(file_path, "a")
-            data = str(dataset) + "," + \
+            data = str(dataset_name) + "," + \
                 str(algorithm_name) + "," + \
                 str(population_length) + "," + \
                 str(generations) + "," + \
@@ -67,7 +69,8 @@ class PBILExecuter(Executer):
                 str(numSolutions) + "," + \
                 str(spacing) + "," + \
                 str(numGenerations) + "," + \
-                str(mean_bits_per_sol) + \
+                str(mean_bits_per_sol) + "," + \
+                str(numEvaluations) + \
                 "\n"
 
             f.write(data)

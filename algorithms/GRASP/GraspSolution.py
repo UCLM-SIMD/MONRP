@@ -30,7 +30,7 @@ class GraspSolution:
         it simulates the result of flip(i,cost_i,value_i) and returns the would-be new cost, value and mono_objective_score
     """
 
-    def __init__(self, probabilities, costs, values,selected=None):
+    def __init__(self, probabilities, costs, values,selected=None,uniform=False):
         """
         :param probabilities: numpy ndarray
             probabilities[i] is the probability in range [0-1] to set self.selected[i] to 1.
@@ -42,8 +42,13 @@ class GraspSolution:
             values[i] is the goodness metric of candidate i.
             when called from GRASP object, it is recommended to use scaled values such as self.dataset.pbis_satisfaction_scaled
         """
-
-        if selected is not None:
+        if uniform:
+            genes = np.random.choice(2, len(costs))
+            self.selected=genes
+            indexes = np.array(self.selected).nonzero()
+            self.total_cost = costs[indexes].sum()
+            self.total_satisfaction = values[indexes].sum()
+        elif selected is not None:
             self.selected=np.array(selected)
             indexes = np.array(self.selected).nonzero()
             self.total_cost = costs[indexes].sum()
