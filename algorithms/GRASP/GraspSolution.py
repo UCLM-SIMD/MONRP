@@ -43,7 +43,7 @@ class GraspSolution:
             when called from GRASP object, it is recommended to use scaled values such as self.dataset.pbis_satisfaction_scaled
         """
         if uniform:
-            genes = np.random.choice(2, len(costs))
+            genes = np.random.choice(2,len(costs))# TODO PROBAR UMDA ,replace=False
             self.selected=genes
             indexes = np.array(self.selected).nonzero()
             self.total_cost = costs[indexes].sum()

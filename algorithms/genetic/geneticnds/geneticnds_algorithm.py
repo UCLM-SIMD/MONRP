@@ -1,3 +1,4 @@
+from evaluation.format_population import format_population
 from algorithms.abstract_default.evaluation_exception import EvaluationLimit
 from algorithms.genetic.abstract_genetic.basegenetic_algorithm import BaseGeneticAlgorithm
 from algorithms.genetic.geneticnds.geneticnds_executer import GeneticNDSExecuter
@@ -11,7 +12,7 @@ class GeneticNDSAlgorithm(BaseGeneticAlgorithm):
                  selection="tournament", selection_candidates=2,
                  crossover="onepoint", crossover_prob=0.9,
                  mutation="flipeachbit", mutation_prob=0.1,
-                 replacement="elitism"):
+                 replacement="elitism",debug_mode=False):
 
         self.utils = GeneticNDSUtils(
             random_seed, population_length, selection_candidates, crossover_prob, mutation_prob)
@@ -40,6 +41,8 @@ class GeneticNDSAlgorithm(BaseGeneticAlgorithm):
         self.nds = []
         self.num_evaluations = 0
         self.num_generations = 0
+
+        self.debug_mode = debug_mode
 
         #self.evaluate = self.utils.evaluate
         self.calculate_last_generation_with_enhance = self.utils.calculate_last_generation_with_enhance
@@ -143,6 +146,7 @@ class GeneticNDSAlgorithm(BaseGeneticAlgorithm):
     # RUN ALGORITHM------------------------------------------------------------------
     def run(self):
         self.reset()
+        paretos = []
         start = time.time()
         
         self.num_generations = 0
@@ -182,6 +186,9 @@ class GeneticNDSAlgorithm(BaseGeneticAlgorithm):
                         self.population, new_population)
 
                 self.num_generations += 1
+                if self.debug_mode:
+                    paretos.append(format_population(self.nds,self.dataset))
+
                 # mostrar por pantalla
                 # if num_generations % 100 == 0:
                 # print("Nº Generations: ", num_generations)
@@ -201,5 +208,6 @@ class GeneticNDSAlgorithm(BaseGeneticAlgorithm):
             # "nds": self.nds,
             "bestGeneration": self.best_generation,
             "numGenerations": self.num_generations,
-            "numEvaluations": self.num_evaluations
+            "numEvaluations": self.num_evaluations,
+                "paretos": paretos
         }

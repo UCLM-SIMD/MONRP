@@ -1,3 +1,4 @@
+from evaluation.format_population import format_population
 from algorithms.abstract_default.evaluation_exception import EvaluationLimit
 from models.solution import Solution
 from models.problem import Problem
@@ -16,7 +17,7 @@ import numpy as np
 
 class UMDAAlgorithm():  # Univariate Marginal Distribution Algorithm
     def __init__(self, dataset_name="1", random_seed=None, population_length=100, max_generations=100, max_evaluations=0,
-                 selected_individuals=60):
+                 selected_individuals=60, debug_mode=False, selection_scheme="nds", replacement_scheme = "replacement"):
 
         self.executer = UMDAExecuter(algorithm=self)
         # self.problem, self.dataset = self.utils.generate_dataset_problem(
@@ -31,10 +32,15 @@ class UMDAAlgorithm():  # Univariate Marginal Distribution Algorithm
 
         self.selected_individuals = selected_individuals
 
+        self.selection_scheme = selection_scheme
+        self.replacement_scheme = replacement_scheme
+
         self.nds = []
         self.num_evaluations = 0
         self.num_generations = 0
         self.best_individual = None
+
+        self.debug_mode = debug_mode
 
         # TODO los utils no se usan y estan mal los super()
 
@@ -43,13 +49,15 @@ class UMDAAlgorithm():  # Univariate Marginal Distribution Algorithm
             np.random.seed(random_seed)
 
         self.file = str(self.__class__.__name__)+"-"+str(dataset_name)+"-"+str(random_seed)+"-"+str(population_length)+"-" +\
-            str(max_generations)+ "-"+str(max_evaluations)+".txt"
+            str(max_generations) + "-"+str(max_evaluations)+".txt"
 
     def get_name(self):
-        return "UMDA"
+        return f"UMDA selection{self.selection_scheme} {self.replacement_scheme}"
 
     def generate_starting_population(self):
         population = []
+        candidates_score_scaled = np.full(
+            self.dataset.pbis_score.size, 1/self.dataset.pbis_score.size)
         for i in np.arange(self.population_length):
             #candidates_score_scaled = self.dataset.pbis_score / self.dataset.pbis_score.sum()
 
@@ -58,11 +66,11 @@ class UMDAAlgorithm():  # Univariate Marginal Distribution Algorithm
             # ind = GraspSolution(probs, costs=self.dataset.pbis_cost_scaled,
             #                    values=self.dataset.pbis_satisfaction_scaled)
 
-            # ind = GraspSolution(candidates_score_scaled, costs=self.dataset.pbis_cost_scaled,
-            #                    values=self.dataset.pbis_satisfaction_scaled)
+            ind = GraspSolution(candidates_score_scaled, costs=self.dataset.pbis_cost_scaled,
+                                values=self.dataset.pbis_satisfaction_scaled)
 
-            ind = GraspSolution(None, costs=self.dataset.pbis_cost_scaled,
-                                values=self.dataset.pbis_satisfaction_scaled,uniform=True)
+            # ind = GraspSolution(None, costs=self.dataset.pbis_cost_scaled,
+            #                    values=self.dataset.pbis_satisfaction_scaled,uniform=True)
 
             population.append(ind)
 
@@ -97,12 +105,21 @@ class UMDAAlgorithm():  # Univariate Marginal Distribution Algorithm
         return probability_model
 
     def generate_sample_from_probabilities(self, probabilities):
+        #probs = probabilities/len(probabilities)
         sample_selected = np.random.binomial(1, probabilities)
         sample = GraspSolution(None, costs=self.dataset.pbis_cost_scaled,
                                values=self.dataset.pbis_satisfaction_scaled, selected=sample_selected)
         return sample
 
-    def replace_population_from_probabilities(self, probability_model, population):
+    def generate_sample_from_probabilities_v2(self, probabilities):
+        probs = [prob * 10 for prob in probabilities]
+        sum_probs = np.sum(probs)
+        scaled_probs = probs / sum_probs
+        sample = GraspSolution(scaled_probs, costs=self.dataset.pbis_cost_scaled,
+                               values=self.dataset.pbis_satisfaction_scaled)
+        return sample
+
+    def replace_population_from_probabilities_elitism(self, probability_model, population):
         new_population = []
 
         # elitist R-1 inds
@@ -112,6 +129,8 @@ class UMDAAlgorithm():  # Univariate Marginal Distribution Algorithm
             #new_individual= np.random.choice([0, 1], size=len(self.dataset.pbis_cost_scaled), p=probability_model)
             new_individual = self.generate_sample_from_probabilities(
                 probability_model)
+            #new_individual = self.generate_sample_from_probabilities_v2(
+            #    probability_model)
             new_population.append(new_individual)
 
         # elitism -> add best individual from old population
@@ -121,11 +140,13 @@ class UMDAAlgorithm():  # Univariate Marginal Distribution Algorithm
 
         return new_population
 
-    def replace_population_from_probabilities_elitism(self, probability_model, population):
+    def replace_population_from_probabilities(self, probability_model):
         new_population = []
         for i in np.arange(self.population_length):
             new_individual = self.generate_sample_from_probabilities(
                 probability_model)
+            #new_individual = self.generate_sample_from_probabilities_v2(
+            #    probability_model)
             new_population.append(new_individual)
 
         return new_population
@@ -216,10 +237,15 @@ class UMDAAlgorithm():  # Univariate Marginal Distribution Algorithm
     # RUN ALGORITHM------------------------------------------------------------------
     def run(self):
         self.reset()
+        paretos = []
         start = time.time()
 
         returned_population = None
         self.population = self.generate_starting_population()
+        #reqs = 0
+        # for ind in self.population:
+        #    reqs+=np.count_nonzero(ind.selected)
+        # print(reqs/len(self.population))
         # print("STARTING")
         # for i in self.population:
         #    print(i)
@@ -228,27 +254,26 @@ class UMDAAlgorithm():  # Univariate Marginal Distribution Algorithm
         # while num_generations < self.max_generations:
         try:
             while (not self.stop_criterion(self.num_generations, self.num_evaluations)):
-                # print("--------------------------------")
-                # ("SELECT")
-                #individuals = self.select_individuals(self.population)
-                individuals = self.select_nondominated_individuals(
+                # selection
+                if self.selection_scheme == "nds":
+                    individuals = self.select_nondominated_individuals(
                     self.population)
+                elif self.selection_scheme == "monoscore":
+                    individuals = self.select_individuals(self.population)
 
-                # for i in individuals:
-                #    print(i)
+                # generate probabilities
                 probability_model = self.calculate_probabilities(
                     individuals)
-                #print("PROB MODEL")
-                # print(probability_model)
-                self.population = self.replace_population_from_probabilities(
-                    probability_model, self.population) 
+                    
+                # replacement
+                if self.replacement_scheme == "replacement":
+                    self.population = self.replace_population_from_probabilities(
+                    probability_model)
+                elif self.replacement_scheme == "elitism":
+                    self.population = self.replace_population_from_probabilities_elitism(
+                    probability_model, self.population)
 
-                #self.population = self.replace_population_from_probabilities_elitism(
-                #    probability_model, self.population) 
-
-                # print("REPLACEMENT")
-                # for i in self.population:
-                #    print(i)
+                # evaluation
                 self.evaluate(self.population, self.best_individual)
 
                 # update nds with solutions constructed and evolved in this iteration
@@ -256,10 +281,13 @@ class UMDAAlgorithm():  # Univariate Marginal Distribution Algorithm
 
                 self.num_generations += 1
 
+                if self.debug_mode:
+                    paretos.append(format_population(self.nds, self.dataset))
+
         except EvaluationLimit:
             pass
 
-        self.nds = self.format(self.nds)
+        self.nds = format_population(self.nds, self.dataset)
         end = time.time()
 
         print("\nNDS created has", self.nds.__len__(), "solution(s)")
@@ -268,5 +296,6 @@ class UMDAAlgorithm():  # Univariate Marginal Distribution Algorithm
                 "time": end - start,
                 "numGenerations": self.num_generations,
                 "best_individual": self.best_individual,
-                "numEvaluations": self.num_evaluations
+                "numEvaluations": self.num_evaluations,
+                "paretos": paretos
                 }

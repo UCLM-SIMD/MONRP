@@ -1,3 +1,5 @@
+from evaluation.format_population import format_population
+from evaluation.update_nds import get_nondominated_solutions
 from algorithms.abstract_default.evaluation_exception import EvaluationLimit
 from models.solution import Solution
 from datasets.dataset_gen_generator import generate_dataset_genes
@@ -16,7 +18,7 @@ import numpy as np
 
 class PBILAlgorithm():  # Population Based Incremental Learning
     def __init__(self, dataset_name="1", random_seed=None, population_length=20, max_generations=100, max_evaluations=0,
-                 learning_rate=0.1, mutation_prob=0.1, mutation_shift=0.1):
+                 learning_rate=0.1, mutation_prob=0.1, mutation_shift=0.1,debug_mode=False):
 
         self.executer = PBILExecuter(algorithm=self)
         # self.problem, self.dataset = self.utils.generate_dataset_problem(
@@ -38,34 +40,53 @@ class PBILAlgorithm():  # Population Based Incremental Learning
         self.num_generations = 0
         self.num_evaluations = 0
 
+        self.debug_mode = debug_mode
+
         self.random_seed = random_seed
         if random_seed is not None:
             np.random.seed(random_seed)
 
         self.file = str(self.__class__.__name__)+"-"+str(dataset_name)+"-"+str(random_seed)+"-"+str(population_length)+"-" +\
-            str(max_generations)+ "-"+str(max_evaluations)+"-"+str(learning_rate)+"-" + \
+            str(max_generations) + "-"+str(max_evaluations)+"-"+str(learning_rate)+"-" + \
             str(mutation_prob)+"-"+str(mutation_shift)+".txt"
 
     def get_name(self):
-        return "PBIL"
+        return f"PBIL+{self.population_length}+{self.max_generations}+{self.max_evaluations}+{self.learning_rate}+{self.mutation_prob}+{self.mutation_shift}"
 
     def initialize_probability_vector(self):
         probabilities = np.full(self.dataset.pbis_score.size, 0.5)
+        #probabilities = np.full(self.dataset.pbis_score.size, 1/self.dataset.pbis_score.size)
+
         return probabilities
 
     def generate_sample_from_probabilities(self, probabilities):
         sample_selected = np.random.binomial(1, probabilities)
+
         sample = GraspSolution(None, costs=self.dataset.pbis_cost_scaled,
                                values=self.dataset.pbis_satisfaction_scaled, selected=sample_selected)
         return sample
 
-    def find_max_sample(self, population):
+    def find_max_sample_monoscore(self, population):
         population.sort(
             key=lambda x: x.compute_mono_objective_score(), reverse=True)
         max_score = population[0].compute_mono_objective_score()
         max_sample = population[0]
 
         return max_score, max_sample
+
+    def find_max_sample_nds(self, population, nds):
+        if len(nds) > 0:
+            random_index = np.random.randint(len(nds))
+            return nds[random_index]
+        else:
+            random_index = np.random.randint(len(population))
+            return population[random_index]
+
+    def find_max_sample_pop(self, population):
+        nds_pop = get_nondominated_solutions(population, [])
+        #nds_pop = population
+        random_index = np.random.randint(len(nds_pop))
+        return nds_pop[random_index]
 
     def evaluate(self, population, best_individual):
         best_score = 0
@@ -81,9 +102,9 @@ class PBILAlgorithm():  # Population Based Incremental Learning
         else:
             best_individual = copy.deepcopy(new_best_individual)
 
-    def add_evaluation(self,new_population):
-        self.num_evaluations+=1
-        #if(self.num_evaluations >= self.max_evaluations):
+    def add_evaluation(self, new_population):
+        self.num_evaluations += 1
+        # if(self.num_evaluations >= self.max_evaluations):
         if (self.stop_criterion(self.num_generations, self.num_evaluations)):
             self.update_nds(new_population)
             raise EvaluationLimit
@@ -121,20 +142,20 @@ class PBILAlgorithm():  # Population Based Incremental Learning
                 for dominated in now_dominated:
                     self.nds.remove(dominated)
 
-    def format(self, population):
-        genes, _ = generate_dataset_genes(self.dataset.id)
-        problem = Problem(genes, ["MAX", "MIN"])
-        final_nds_formatted = []
-
-        for solution in population:
-            #print(solution)
-            individual = Solution(problem.genes, problem.objectives)
-            for b in np.arange(len(individual.genes)):
-                individual.genes[b].included = solution.selected[b]
-            individual.evaluate_fitness()
-            final_nds_formatted.append(individual)
-        population = final_nds_formatted
-        return population
+    #def format(self, population):
+    #    genes, _ = generate_dataset_genes(self.dataset.id)
+    #    problem = Problem(genes, ["MAX", "MIN"])
+    #    final_nds_formatted = []
+#
+    #    for solution in population:
+    #        # print(solution)
+    #        individual = Solution(problem.genes, problem.objectives)
+    #        for b in np.arange(len(individual.genes)):
+    #            individual.genes[b].included = solution.selected[b]
+    #        individual.evaluate_fitness()
+    #        final_nds_formatted.append(individual)
+    #    population = final_nds_formatted
+    #    return population
 
     def reset(self):
         self.nds = []
@@ -153,11 +174,12 @@ class PBILAlgorithm():  # Population Based Incremental Learning
         start = time.time()
         self.reset()
 
+        paretos = []
 
         returned_population = None
         self.probability_vector = self.initialize_probability_vector()
 
-        #while num_generations < self.max_generations:
+        # while num_generations < self.max_generations:
         try:
             while (not self.stop_criterion(self.num_generations, self.num_evaluations)):
                 self.population = []
@@ -168,13 +190,19 @@ class PBILAlgorithm():  # Population Based Incremental Learning
 
                 self.evaluate(self.population, self.best_individual)
 
-                max_value, max_sample = self.find_max_sample(self.population) # esto es muy monobjetivo
+                #max_value, max_sample = self.find_max_sample(self.population) # esto es muy monobjetivo
+
+                max_sample = self.find_max_sample_nds(
+                    self.population, self.nds)
+
+                #max_sample = self.find_max_sample_pop(
+                #    self.population)
 
                 for i in np.arange(len(self.probability_vector)):
                     self.probability_vector[i] = self.probability_vector[i]*(
                         1-self.learning_rate)+max_sample.selected[i]*(self.learning_rate)
 
-                for i in np.arange(len(self.probability_vector)): # mutacion flip each bit
+                for i in np.arange(len(self.probability_vector)):  # mutacion flip each bit
                     prob = np.random.random_sample()
                     if prob < self.mutation_prob:
                         self.probability_vector[i] = self.probability_vector[i]*(
@@ -183,12 +211,15 @@ class PBILAlgorithm():  # Population Based Incremental Learning
                 # update nds with solutions constructed and evolved in this iteration
                 self.update_nds(self.population)
                 self.num_generations += 1
+                if self.debug_mode:
+                    paretos.append(format_population(self.nds,self.dataset))
 
         except EvaluationLimit:
             pass
 
-        self.nds = self.format(self.nds)
         end = time.time()
+
+        self.nds = format_population(self.nds,self.dataset)
 
         print("\nNDS created has", self.nds.__len__(), "solution(s)")
 
@@ -196,5 +227,6 @@ class PBILAlgorithm():  # Population Based Incremental Learning
                 "time": end - start,
                 "numGenerations": self.num_generations,
                 "best_individual": self.best_individual,
-                "numEvaluations": self.num_evaluations
+                "numEvaluations": self.num_evaluations,
+                "paretos": paretos
                 }

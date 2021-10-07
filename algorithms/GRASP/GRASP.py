@@ -1,3 +1,4 @@
+from evaluation.format_population import format_population
 from algorithms.abstract_default.evaluation_exception import EvaluationLimit
 import copy
 from datasets.dataset_gen_generator import generate_dataset_genes
@@ -81,13 +82,13 @@ class GRASP(Algorithm):
     phase, running an incremental best first search over each solution, using domination as goodness metric and sorting
     candidates of each solution by score.
 
-    update_nds(solutions): at the end of each GRASP iteration, the global self.NDS list of solutions is updated based on the
+    update_nds(solutions): at the end of each GRASP iteration, the global self.nds list of solutions is updated based on the
         constructed and evolved solutions in such iteration.
 
     """
 
     def __init__(self, dataset="1", iterations=20, solutions_per_iteration=10,max_evaluations=0, init_type="stochastically",
-                 local_search_type="best_first_neighbor_random", path_relinking_mode="None", seed=None):
+                 local_search_type="best_first_neighbor_random", path_relinking_mode="None", seed=None,debug_mode=False):
         """
         :param dataset: integer number: 1 or 2
         :param iterations: integer (default 20), number of GRASP construct+local_search repetitions
@@ -102,10 +103,12 @@ class GRASP(Algorithm):
         self.solutions_per_iteration = solutions_per_iteration
         self.max_evaluations = max_evaluations
 
-        self.NDS = []
+        self.nds = []
         self.num_evaluations = 0
         self.num_iterations = 0
         self.start = 0
+
+        self.debug_mode = debug_mode
 
         self.init_type = init_type
         self.local_search_type = local_search_type
@@ -141,10 +144,10 @@ class GRASP(Algorithm):
         local = "+"+self.local_search_type.replace(
             'best_first_neighbor_', '') if self.local_search_type != "None" else ""
         PR = "+PR" if self.path_relinking_mode != "None" else ""
-        return "GRASP+"+str(self.iterations)+"+"+str(self.solutions_per_iteration)+"+"+init+local+PR
+        return "GRASP+"+str(self.iterations)+"+"+str(self.solutions_per_iteration)+"+"+str(self.max_evaluations)+"+"+init+local+PR
 
     def reset(self):
-        self.NDS = []
+        self.nds = []
         self.num_evaluations = 0
         self.num_iterations = 0
         self.start = 0
@@ -168,13 +171,14 @@ class GRASP(Algorithm):
         """
         Core code of GRASP: initiation + local search + NDS update, repeated self.iterations times.
         :return (selected_list, seconds) list of ndarray and double.
-                shape of selected is (len(self.NDS), GraspSolution.dataset.num_pbis)
+                shape of selected is (len(self.nds), GraspSolution.dataset.num_pbis)
                     position ij==0 if solution i does not select candidate j
                     position ij==1 if solution i selects candidate j
                 seconds is the time in seconds used to run all the GRASP iterations
 
         """
         self.reset()
+        paretos = []
         self.start = time.time()
 
         #for _ in np.arange(self.iterations):
@@ -196,6 +200,10 @@ class GRASP(Algorithm):
 
                 self.num_iterations+=1
 
+                if self.debug_mode:
+                    paretos.append(format_population(self.nds,self.dataset))
+
+
         except EvaluationLimit:
             pass
 
@@ -204,28 +212,36 @@ class GRASP(Algorithm):
 
 
         seconds = time.time() - self.start
-        print("\nNDS created has", self.NDS.__len__(), "solution(s)")
-        selected_list = []
-        for sol in self.NDS:
-            #   print("\n-----------------------")
-            #   print(sol)
-            selected_list.append(sol.selected)
-        # return selected_list, seconds
-        genes,_ = generate_dataset_genes(self.dataset.id)
-        return _results_in_victor_format(selected_list, seconds, self.iterations, genes, self.num_evaluations)
+        print("\nNDS created has", self.nds.__len__(), "solution(s)")
+        #selected_list = []
+        #for sol in self.nds:
+        #    #   print("\n-----------------------")
+        #    #   print(sol)
+        #    selected_list.append(sol.selected)
+        ## return selected_list, seconds
+        #genes,_ = generate_dataset_genes(self.dataset.id)
 
-    def return_values(self):
-        seconds = time.time() - self.start
-        print("\nNDS created has", self.NDS.__len__(), "solution(s)")
-        selected_list = []
-        for sol in self.NDS:
-            #   print("\n-----------------------")
-            #   print(sol)
-            selected_list.append(sol.selected)
-        # return selected_list, seconds
+        return {
+            "population": format_population(self.nds,self.dataset),
+            "time": seconds,
+            "numGenerations": self.num_iterations,
+            "numEvaluations": self.num_evaluations,
+            "paretos": paretos
+        }
+        #return _results_in_victor_format(selected_list, seconds, self.num_iterations, genes, self.num_evaluations,paretos)
 
-        genes,_ = generate_dataset_genes(self.dataset.id)
-        return _results_in_victor_format(selected_list, seconds, self.iterations, genes, self.num_evaluations)
+    #def return_values(self):
+    #    seconds = time.time() - self.start
+    #    print("\nNDS created has", self.nds.__len__(), "solution(s)")
+    #    selected_list = []
+    #    for sol in self.nds:
+    #        #   print("\n-----------------------")
+    #        #   print(sol)
+    #        selected_list.append(sol.selected)
+    #    # return selected_list, seconds
+    #
+    #    genes,_ = generate_dataset_genes(self.dataset.id)
+    #    return _results_in_victor_format(selected_list, seconds, self.iterations, genes, self.num_evaluations)
 
 
 
@@ -503,11 +519,11 @@ class GRASP(Algorithm):
 
     def path_relinking(self, solutions):
         new_sols=[]
-        if len(self.NDS) > 0:
+        if len(self.nds) > 0:
             for solution in solutions:
                 new_sols_path=[]
                 # get random solution from non dominated set
-                random_nds_solution = random.choice(self.NDS)
+                random_nds_solution = random.choice(self.nds)
                 # print("random",random_nds_solution.selected)
                 # print("sol",solution.selected)
                 # calculate distance from solution to goal random solution
@@ -575,38 +591,38 @@ class GRASP(Algorithm):
     def update_nds(self, solutions):
         """
         For each sol in solutions:
-            if no solution in self.NDS dominates sol:
-             insert sol in self.NDS
-             remove all solutions in self.NDS now dominated by sol
+            if no solution in self.nds dominates sol:
+             insert sol in self.nds
+             remove all solutions in self.nds now dominated by sol
         :param solutions: solutions created in current GRASP iteration and evolved with local search
         """
         for sol in solutions:
             insert = True
 
-            # find which solutions, if any, in self.NDS are dominated by sol
-            # if sol is dominated by any solution in self.NDS, then search is stopped and sol is discarded
+            # find which solutions, if any, in self.nds are dominated by sol
+            # if sol is dominated by any solution in self.nds, then search is stopped and sol is discarded
             now_dominated = []
-            for nds_sol in self.NDS:
+            for nds_sol in self.nds:
                 if np.array_equal(sol.selected, nds_sol.selected):
                     insert = False
                     break
                 else:
                     if sol.dominates(nds_sol):
                         now_dominated.append(nds_sol)
-                    # do not insert if sol is dominated by a solution in self.NDS
+                    # do not insert if sol is dominated by a solution in self.nds
                     if nds_sol.dominates(sol):
                         insert = False
                         break
 
-            # sol is inserted if it is not dominated by any solution in self.NDS,
-            # then all solutions in self.NDS dominated by sol are removed
+            # sol is inserted if it is not dominated by any solution in self.nds,
+            # then all solutions in self.nds dominated by sol are removed
             if insert:
-                self.NDS.append(sol)
+                self.nds.append(sol)
                 for dominated in now_dominated:
-                    self.NDS.remove(dominated)
+                    self.nds.remove(dominated)
 
 
-def _results_in_victor_format(nds, seconds, num_iterations, genes, num_evaluations):
+def _results_in_victor_format(nds, seconds, num_iterations, genes, num_evaluations,paretos):
     """
     esto será borrado cuando se programe un Evaluate que reciba el NDS (lista de listas de pbis) y el dataset usado,
     para calcular las métricas fuera del algoritmo.
@@ -631,7 +647,8 @@ def _results_in_victor_format(nds, seconds, num_iterations, genes, num_evaluatio
         "population": final_nds_formatted,
         "time": seconds,
         "numGenerations": num_iterations,
-        "numEvaluations": num_evaluations
+        "numEvaluations": num_evaluations,
+        "paretos": paretos
     }
 
 

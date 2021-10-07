@@ -1,3 +1,4 @@
+from evaluation.format_population import format_population
 from algorithms.abstract_default.evaluation_exception import EvaluationLimit
 from algorithms.genetic.abstract_genetic.basegenetic_algorithm import BaseGeneticAlgorithm
 from algorithms.genetic.nsgaii.nsgaii_executer import NSGAIIExecuter
@@ -12,7 +13,7 @@ class NSGAIIAlgorithm(BaseGeneticAlgorithm):# TODO NSGAIIALGORITHM -> NSGAII y r
                  selection="tournament", selection_candidates=2,
                  crossover="onepoint", crossover_prob=0.9,
                  mutation="flipeachbit", mutation_prob=0.1,
-                 replacement="elitism"):
+                 replacement="elitism",debug_mode=False):
 
         self.utils = NSGAIIUtils(
             random_seed, population_length, selection_candidates, crossover_prob, mutation_prob)
@@ -40,6 +41,8 @@ class NSGAIIAlgorithm(BaseGeneticAlgorithm):# TODO NSGAIIALGORITHM -> NSGAII y r
         self.mutation_scheme = mutation
         self.mutation_prob = mutation_prob
         self.replacement_scheme = replacement
+
+        self.debug_mode = debug_mode
 
         self.fast_nondominated_sort = self.utils.fast_nondominated_sort
         self.calculate_crowding_distance = self.utils.calculate_crowding_distance
@@ -123,6 +126,7 @@ class NSGAIIAlgorithm(BaseGeneticAlgorithm):# TODO NSGAIIALGORITHM -> NSGAII y r
     # RUN ALGORITHM------------------------------------------------------------------
     def run(self):
         self.reset()
+        paretos = []
         start = time.time()
 
         # inicializacion del nsgaii
@@ -190,6 +194,10 @@ class NSGAIIAlgorithm(BaseGeneticAlgorithm):# TODO NSGAIIALGORITHM -> NSGAII y r
                     self.best_generation, self.best_generation_avgValue, self.num_generations, self.returned_population)
 
                 self.num_generations += 1
+
+                if self.debug_mode:
+                    paretos.append(format_population(self.nds,self.dataset))
+
                 # mostrar por pantalla
                 # if num_generations % 100 == 0:
                 #	print("Nº Generations: ", num_generations)
@@ -204,5 +212,6 @@ class NSGAIIAlgorithm(BaseGeneticAlgorithm):# TODO NSGAIIALGORITHM -> NSGAII y r
                 "best_individual": self.best_individual,
                 "bestGeneration": self.best_generation,
                 "numGenerations": self.num_generations,
-                "numEvaluations": self.num_evaluations
+                "numEvaluations": self.num_evaluations,
+                "paretos": paretos
                 }
