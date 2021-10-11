@@ -1,5 +1,7 @@
+from algorithms.EDA.eda_algorithm import EDAAlgorithm
 from evaluation.format_population import format_population
 from algorithms.abstract_default.evaluation_exception import EvaluationLimit
+from evaluation.update_nds import get_nondominated_solutions
 from models.solution import Solution
 from models.problem import Problem
 from datasets.dataset_gen_generator import generate_dataset_genes
@@ -15,9 +17,9 @@ import time
 import numpy as np
 
 
-class UMDAAlgorithm():  # Univariate Marginal Distribution Algorithm
+class UMDAAlgorithm(EDAAlgorithm):  # Univariate Marginal Distribution Algorithm
     def __init__(self, dataset_name="1", random_seed=None, population_length=100, max_generations=100, max_evaluations=0,
-                 selected_individuals=60, debug_mode=False, selection_scheme="nds", replacement_scheme = "replacement"):
+                 selected_individuals=60, debug_mode=False, selection_scheme="nds", replacement_scheme="replacement"):
 
         self.executer = UMDAExecuter(algorithm=self)
         # self.problem, self.dataset = self.utils.generate_dataset_problem(
@@ -54,43 +56,12 @@ class UMDAAlgorithm():  # Univariate Marginal Distribution Algorithm
     def get_name(self):
         return f"UMDA selection{self.selection_scheme} {self.replacement_scheme}"
 
-    def generate_starting_population(self):
-        population = []
-        candidates_score_scaled = np.full(
-            self.dataset.pbis_score.size, 1/self.dataset.pbis_score.size)
-        for i in np.arange(self.population_length):
-            #candidates_score_scaled = self.dataset.pbis_score / self.dataset.pbis_score.sum()
 
-            # probs = np.full(
-            # self.dataset.pbis_score.size, 1/self.dataset.pbis_score.size)  # 0.5 ?
-            # ind = GraspSolution(probs, costs=self.dataset.pbis_cost_scaled,
-            #                    values=self.dataset.pbis_satisfaction_scaled)
+    ''' 
+    LEARN PROBABILITY MODEL
+    '''
 
-            ind = GraspSolution(candidates_score_scaled, costs=self.dataset.pbis_cost_scaled,
-                                values=self.dataset.pbis_satisfaction_scaled)
-
-            # ind = GraspSolution(None, costs=self.dataset.pbis_cost_scaled,
-            #                    values=self.dataset.pbis_satisfaction_scaled,uniform=True)
-
-            population.append(ind)
-
-        return population
-
-    def select_individuals(self, population):
-        individuals = []
-        population.sort(
-            key=lambda x: x.compute_mono_objective_score(), reverse=True)
-
-        for i in np.arange(self.selected_individuals):
-            individuals.append(population[i])
-
-        return individuals
-
-    def select_nondominated_individuals(self, population):
-        selected_individuals = self.update_nds(population, [])
-        return selected_individuals
-
-    def calculate_probabilities(self, population):  # suavizar con laplace(?)
+    def learn_probability_model(self, population):  # suavizar con laplace(?)
         probability_model = []
         # para cada gen:
         for index in np.arange(len(self.dataset.pbis_cost_scaled)):
@@ -104,14 +75,18 @@ class UMDAAlgorithm():  # Univariate Marginal Distribution Algorithm
 
         return probability_model
 
-    def generate_sample_from_probabilities(self, probabilities):
+    ''' 
+    SAMPLE NEW POPULATION
+    '''
+
+    def generate_sample_from_probabilities_binomial(self, probabilities):
         #probs = probabilities/len(probabilities)
         sample_selected = np.random.binomial(1, probabilities)
         sample = GraspSolution(None, costs=self.dataset.pbis_cost_scaled,
                                values=self.dataset.pbis_satisfaction_scaled, selected=sample_selected)
         return sample
 
-    def generate_sample_from_probabilities_v2(self, probabilities):
+    def generate_sample_from_probabilities(self, probabilities):
         probs = [prob * 10 for prob in probabilities]
         sum_probs = np.sum(probs)
         scaled_probs = probs / sum_probs
@@ -121,15 +96,14 @@ class UMDAAlgorithm():  # Univariate Marginal Distribution Algorithm
 
     def replace_population_from_probabilities_elitism(self, probability_model, population):
         new_population = []
-
         # elitist R-1 inds
         for i in np.arange(self.population_length-1):
             # new_individual = GraspSolution(probability_model, costs=self.dataset.pbis_cost_scaled,
             #                               values=self.dataset.pbis_satisfaction_scaled)
             #new_individual= np.random.choice([0, 1], size=len(self.dataset.pbis_cost_scaled), p=probability_model)
-            new_individual = self.generate_sample_from_probabilities(
+            new_individual = self.generate_sample_from_probabilities_binomial(
                 probability_model)
-            #new_individual = self.generate_sample_from_probabilities_v2(
+            # new_individual = self.generate_sample_from_probabilities(
             #    probability_model)
             new_population.append(new_individual)
 
@@ -143,141 +117,52 @@ class UMDAAlgorithm():  # Univariate Marginal Distribution Algorithm
     def replace_population_from_probabilities(self, probability_model):
         new_population = []
         for i in np.arange(self.population_length):
-            new_individual = self.generate_sample_from_probabilities(
+            new_individual = self.generate_sample_from_probabilities_binomial(
                 probability_model)
-            #new_individual = self.generate_sample_from_probabilities_v2(
+            # new_individual = self.generate_sample_from_probabilities(
             #    probability_model)
             new_population.append(new_individual)
 
         return new_population
 
-    def evaluate(self, population, best_individual):
-        best_score = 0
-        new_best_individual = None
-        for ind in population:
-            if ind.compute_mono_objective_score() > best_score:
-                new_best_individual = copy.deepcopy(ind)
-                best_score = ind.compute_mono_objective_score()
-            self.add_evaluation(population)
-        if best_individual is not None:
-            if new_best_individual.compute_mono_objective_score() > best_individual.compute_mono_objective_score():
-                best_individual = copy.deepcopy(new_best_individual)
-        else:
-            best_individual = copy.deepcopy(new_best_individual)
-
-    def add_evaluation(self, new_population):
-        self.num_evaluations += 1
-        # if(self.num_evaluations >= self.max_evaluations):
-        if (self.stop_criterion(self.num_generations, self.num_evaluations)):
-            self.update_nds(new_population, self.nds)
-            raise EvaluationLimit
-
-    def update_nds(self, solutions, nds):
-        """
-        For each sol in solutions:
-            if no solution in nds dominates sol:
-             insert sol in nds
-             remove all solutions in self.nds now dominated by sol
-        :param solutions: solutions created in current GRASP iteration and evolved with local search
-        """
-        for sol in solutions:
-            insert = True
-
-            # find which solutions, if any, in self.nds are dominated by sol
-            # if sol is dominated by any solution in self.nds, then search is stopped and sol is discarded
-            now_dominated = []
-            for nds_sol in nds:
-                if np.array_equal(sol.selected, nds_sol.selected):
-                    insert = False
-                    break
-                else:
-                    if sol.dominates(nds_sol):
-                        now_dominated.append(nds_sol)
-                    # do not insert if sol is dominated by a solution in self.nds
-                    if nds_sol.dominates(sol):
-                        insert = False
-                        break
-
-            # sol is inserted if it is not dominated by any solution in self.nds,
-            # then all solutions in self.nds dominated by sol are removed
-            if insert:
-                nds.append(sol)
-                for dominated in now_dominated:
-                    nds.remove(dominated)
-
-        return nds
-
-    def format(self, population):
-        genes, _ = generate_dataset_genes(self.dataset.id)
-        problem = Problem(genes, ["MAX", "MIN"])
-        final_nds_formatted = []
-
-        for solution in population:
-            # print(solution)
-            individual = Solution(problem.genes, problem.objectives)
-            for b in np.arange(len(individual.genes)):
-                individual.genes[b].included = solution.selected[b]
-            individual.evaluate_fitness()
-            final_nds_formatted.append(individual)
-        population = final_nds_formatted
+    def sample_new_population(self, probability_model):
+        if self.replacement_scheme == "replacement":
+            population = self.replace_population_from_probabilities(
+                probability_model)
+        elif self.replacement_scheme == "elitism":
+            population = self.replace_population_from_probabilities_elitism(
+                probability_model, self.population)
         return population
 
-    def reset(self):
-        self.nds = []
-        self.best_individual = None
-        self.num_generations = 0
-        self.num_evaluations = 0
-
-    def stop_criterion(self, num_generations, num_evaluations):
-        if self.max_evaluations == 0:
-            return num_generations >= self.max_generations
-        else:
-            return num_evaluations >= self.max_evaluations
-
     # RUN ALGORITHM------------------------------------------------------------------
+
     def run(self):
         self.reset()
         paretos = []
         start = time.time()
 
         returned_population = None
-        self.population = self.generate_starting_population()
-        #reqs = 0
-        # for ind in self.population:
-        #    reqs+=np.count_nonzero(ind.selected)
-        # print(reqs/len(self.population))
-        # print("STARTING")
-        # for i in self.population:
-        #    print(i)
+        self.population = self.generate_initial_population()
         self.evaluate(self.population, self.best_individual)
 
-        # while num_generations < self.max_generations:
         try:
             while (not self.stop_criterion(self.num_generations, self.num_evaluations)):
                 # selection
-                if self.selection_scheme == "nds":
-                    individuals = self.select_nondominated_individuals(
-                    self.population)
-                elif self.selection_scheme == "monoscore":
-                    individuals = self.select_individuals(self.population)
+                individuals = self.select_individuals(self.population)
 
-                # generate probabilities
-                probability_model = self.calculate_probabilities(
+                # learning
+                probability_model = self.learn_probability_model(
                     individuals)
-                    
+
                 # replacement
-                if self.replacement_scheme == "replacement":
-                    self.population = self.replace_population_from_probabilities(
-                    probability_model)
-                elif self.replacement_scheme == "elitism":
-                    self.population = self.replace_population_from_probabilities_elitism(
-                    probability_model, self.population)
+                self.population = self.sample_new_population(probability_model)
 
                 # evaluation
                 self.evaluate(self.population, self.best_individual)
 
                 # update nds with solutions constructed and evolved in this iteration
-                self.update_nds(self.population, self.nds)
+                #self.update_nds(self.population, self.nds)
+                get_nondominated_solutions(self.population, self.nds)
 
                 self.num_generations += 1
 
