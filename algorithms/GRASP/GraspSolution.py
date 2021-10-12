@@ -44,18 +44,18 @@ class GraspSolution:
         """
         if uniform:
             genes = np.random.choice(2,len(costs))# TODO PROBAR UMDA ,replace=False
-            self.selected=genes
+            self.selected=np.array(genes,dtype=int)
             indexes = np.array(self.selected).nonzero()
             self.total_cost = costs[indexes].sum()
             self.total_satisfaction = values[indexes].sum()
         elif selected is not None:
-            self.selected=np.array(selected)
+            self.selected=np.array(selected,dtype=int)
             indexes = np.array(self.selected).nonzero()
             self.total_cost = costs[indexes].sum()
             self.total_satisfaction = values[indexes].sum()
         else:
             num_candidates = len(probabilities)
-            self.selected = np.zeros(num_candidates)
+            self.selected = np.zeros(num_candidates,dtype=int)
             # samples a random number of candidates. prob of each candidate to be chosen in received in probabilities
             sampled = np.random.choice(np.arange(num_candidates), size=np.random.randint(num_candidates),
                                     replace=False, p=probabilities)

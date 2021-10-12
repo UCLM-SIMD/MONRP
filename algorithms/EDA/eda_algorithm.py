@@ -1,11 +1,13 @@
-from copy import copy
+import copy
 
 import numpy as np
 from algorithms.GRASP.GraspSolution import GraspSolution
 from algorithms.abstract_default.algorithm import Algorithm
 from algorithms.abstract_default.evaluation_exception import EvaluationLimit
+from evaluation.update_nds import get_nondominated_solutions
 
-class EDAAlgorithm(Algorithm): # Estimation of Distribution Algorithm
+
+class EDAAlgorithm(Algorithm):  # Estimation of Distribution Algorithm
     ''' 
     GENERATE INITIAL POPULATION
     '''
@@ -54,7 +56,7 @@ class EDAAlgorithm(Algorithm): # Estimation of Distribution Algorithm
         return individuals
 
     def select_nondominated_individuals(self, population):
-        selected_individuals = self.update_nds(population, [])
+        selected_individuals = get_nondominated_solutions(population, [])
         return selected_individuals
 
     ''' 
@@ -67,7 +69,7 @@ class EDAAlgorithm(Algorithm): # Estimation of Distribution Algorithm
     ''' 
     SAMPLE NEW POPULATION
     '''
-    
+
     def sample_new_population(self):
         pass
 

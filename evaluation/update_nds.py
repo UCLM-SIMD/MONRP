@@ -1,5 +1,5 @@
 import numpy as np
-def get_nondominated_solutions(solutions,nds):
+def get_nondominated_solutions(solutions,nds=[]):
     """
     For each sol in solutions:
         if no solution in self.NDS dominates sol:

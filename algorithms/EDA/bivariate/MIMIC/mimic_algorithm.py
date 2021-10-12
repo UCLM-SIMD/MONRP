@@ -17,7 +17,7 @@ import copy
 import time
 import numpy as np
 import math
-import scipy
+from scipy import stats as scipy_stats
 
 
 class MIMICAlgorithm(EDAAlgorithm):
@@ -64,17 +64,18 @@ class MIMICAlgorithm(EDAAlgorithm):
 
     def learn_probability_model(self, population, selected_individuals):
         # init structures
-        parents = np.zeros(self.gene_size)
+        parents = np.zeros(self.gene_size, dtype=int)
         used = np.full(self.gene_size, False)
-        variables = np.zeros(self.gene_size)
-        conditionals = np.zeros((self.gene_size, 2))
+        variables = np.zeros(self.gene_size, dtype=int)
+        conditionals = np.zeros((self.gene_size, 2), dtype=float)
 
         marginals = self.learn_marginals(population, selected_individuals)
 
         # Obtain entropies.
-        entropies = []
+        entropies = np.zeros(self.gene_size)
         for i in range(self.gene_size):
-            entropies[i] = self.get_entropy(self.population, i)
+            entropies[i] = self.get_entropy(
+                population, i, selected_individuals)
 
         # Takes the variable with less entropy as the first.
         current_var = np.argmin(entropies)
@@ -85,16 +86,17 @@ class MIMICAlgorithm(EDAAlgorithm):
         used[current_var] = True
 
         # Adds iteratively the variable with less conditional entropy.
-        for i in range(self.gene_size):
+        for i in range(1,self.gene_size):
             # Chooses the next variable.
             parents[i] = current_var
             current_var = self.get_lower_conditional_entropy(
-                current_var, used)
+                population, current_var, used, selected_individuals)
             variables[i] = current_var
             used[current_var] = True
-            aux = self.get_distributions(population, current_var, parents[i])
-            conditionals[i][0] = aux[1][0]
-            conditionals[i][1] = aux[1][1]
+            prob_x, prob_y, prob_xy = self.get_distributions(
+                population, current_var, parents[i], selected_individuals)
+            conditionals[i][0] = prob_xy[1][0]
+            conditionals[i][1] = prob_xy[1][1]
 
         return marginals, parents, variables, conditionals
 
@@ -116,22 +118,23 @@ class MIMICAlgorithm(EDAAlgorithm):
                     marginals[j]=(marginals[j]+laplace)/(selected+(2*laplace));
             }
         '''
-        gene_size = len(self.dataset.pbis_cost)
-        marginals = np.zeros(gene_size)
+        marginals = np.zeros(self.gene_size)
+        # if fixed number -> self.selected_individuals. if selection by NDS ->unknown ->len
+        #selected_individuals = len(population)
         for i in range(selected_individuals):
-            for j in range(gene_size):
+            for j in range(self.gene_size):
                 if population[i].selected[j] == 1:
                     marginals[j] += 1
-        for j in range(gene_size):
+        for j in range(self.gene_size):
             marginals[j] = (marginals[j]+laplace) / \
                 (selected_individuals+(2*laplace))
         return marginals
 
-    def get_probability_distribution(self, elements, v1, laplace=1):
+    def get_probability_distribution(self, elements, v1, N, laplace=1):
         prob = np.zeros(2)
-        N = len(elements)
+        #N = len(elements)
         for i in range(N):
-            prob[elements[i][v1]] += 1.0
+            prob[elements[i].selected[v1]] += 1.0
         for i in range(2):
             if laplace == 1:
                 prob[i] = (prob[i]+1)/N+2
@@ -139,7 +142,7 @@ class MIMICAlgorithm(EDAAlgorithm):
                 prob[i] = (prob[i])/N
         return prob
 
-    def get_entropy(self, elements, var1):
+    def get_entropy(self, elements, var1, N):
         '''
            public double getEntropy(int var1,int N){
             int i;
@@ -153,16 +156,16 @@ class MIMICAlgorithm(EDAAlgorithm):
         }
         '''
         # entropy = 0
-        probs = self.get_probability_distribution(elements, var1, 0)
+        probs = self.get_probability_distribution(elements, var1, N, 0)
         # for i in range(2):
         #    if probs[i] > 0.0:
         #        entropy += probs[i]*math.log2(probs[i])
         #    if entropy != 0.0:
         #        entropy *= -1.0
         # return entropy
-        return scipy.stats.entropy(probs, base=2)
+        return scipy_stats.entropy(probs, base=2)
 
-    def get_conditional_entropy(self, elements, var1, var2):
+    def get_conditional_entropy(self, population, var1, var2, N):
         '''
            public double getConditionalEntropy(int var1,int var2,int N){
             int i,j,valueI,valueJ;
@@ -185,7 +188,8 @@ class MIMICAlgorithm(EDAAlgorithm):
         }
         '''
         entropy = 0
-        prob_x, prob_y, prob_xy = self.get_distributions(var1, var2, 0)
+        prob_x, prob_y, prob_xy = self.get_distributions(
+            population, var1, var2, N, 1)
         for j in range(2):
             entropy2 = 0.0
             for i in range(2):
@@ -196,7 +200,7 @@ class MIMICAlgorithm(EDAAlgorithm):
             entropy += prob_y[j]*entropy2
         return entropy
 
-    def get_lower_conditional_entropy(self, parent, used):
+    def get_lower_conditional_entropy(self, population, parent, used, N):
         '''
         private int getLowerConditionalEntropy(int parent, boolean[] used){
             int index = -1;
@@ -218,13 +222,13 @@ class MIMICAlgorithm(EDAAlgorithm):
         for i in range(self.gene_size):
             if(used[i]):
                 continue
-            ce = self.get_conditional_entropy(parent, i)
+            ce = self.get_conditional_entropy(population, parent, i, N)
             if(ce < min_ce):
                 min_ce = ce
                 index = i
         return index
 
-    def get_distributions(self, population, X, Y, laplace=1):
+    def get_distributions(self, population, X, Y, N, laplace=1):
         '''
         public ThreeProbs getDistributionsOf(int X,int Y, int N, int Laplace){
             double[][] probXY = new double[2][2];
@@ -270,28 +274,29 @@ class MIMICAlgorithm(EDAAlgorithm):
         prob_y = np.zeros(2)
         prob_x = np.zeros(2)
         prob_xy = np.zeros((2, 2))
-        for row in range(self.gene_size):
-            prob_x[population[row][X]] += 1
-            prob_y[population[row][Y]] += 1
-            prob_xy[population[row][X]][population[row][Y]] += 1
-            num_y[population[row][Y]] += 1
+        for row in range(N):
+            prob_x[population[row].selected[X]] += 1
+            prob_y[population[row].selected[Y]] += 1
+            prob_xy[population[row].selected[X]
+                    ][population[row].selected[Y]] += 1
+            num_y[population[row].selected[Y]] += 1
 
         for i in range(2):
             if laplace == 1:
-                prob_x[i] = (prob_x[i]+1.0)/(self.gene_size+2)
+                prob_x[i] = (prob_x[i]+1.0)/(N+2)
             else:
-                prob_x[i] = prob_x[i]/self.gene_size
+                prob_x[i] = prob_x[i]/N
             for j in range(2):
                 if laplace == 1:
-                    prob_xy[i][j] = (prob_x[i][j]+1.0)/(num_y[j]+2)
+                    prob_xy[i][j] = (prob_xy[i][j]+1.0)/(num_y[j]+2)
                 else:
-                    prob_x[i][j] = prob_x[i][j]/num_y[j]
+                    prob_xy[i][j] = prob_xy[i][j]/num_y[j]
 
         for i in range(2):
             if laplace == 1:
-                prob_y[i] = (prob_y[i]+1.0)/(self.gene_size+2)
+                prob_y[i] = (prob_y[i]+1.0)/(N+2)
             else:
-                prob_y[i] = prob_y[i]/self.gene_size
+                prob_y[i] = prob_y[i]/N
 
         return prob_x, prob_y, prob_xy
 
@@ -339,7 +344,7 @@ class MIMICAlgorithm(EDAAlgorithm):
             return sample;
         }
         '''
-        sample = np.zeros(self.gene_size)
+        sample = np.zeros(self.gene_size, dtype=int)
         for j in range(self.gene_size):
             if(parents[j] == -1):
                 if(random.random() < marginals[variables[j]]):
@@ -364,21 +369,21 @@ class MIMICAlgorithm(EDAAlgorithm):
         start = time.time()
 
         returned_population = None
-        self.population = self.generate_starting_population()
+        self.population = self.generate_initial_population()
         self.evaluate(self.population, self.best_individual)
         try:
             while (not self.stop_criterion(self.num_generations, self.num_evaluations)):
                 # selection
                 individuals = self.select_individuals(self.population)
-
                 # learning
+                # guardar el num individuos seleccionados porque puede variar
                 marginals, parents, variables, conditionals = self.learn_probability_model(
-                    individuals, self.selected_individuals)
+                    individuals, len(individuals))
+
 
                 # replacement
                 self.population = self.sample_new_population(
                     marginals, parents, variables, conditionals)
-
                 # evaluation
                 self.evaluate(self.population, self.best_individual)
 
@@ -405,3 +410,9 @@ class MIMICAlgorithm(EDAAlgorithm):
                 "numEvaluations": self.num_evaluations,
                 "paretos": paretos
                 }
+
+
+if __name__ == '__main__':
+    algorithm = MIMICAlgorithm(dataset_name="1", population_length=4, max_generations=3,
+                               max_evaluations=0, selected_individuals=4, selection_scheme="nds", replacement_scheme="replacement")
+    result = algorithm.run()
