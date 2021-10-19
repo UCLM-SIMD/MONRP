@@ -18,36 +18,42 @@ import numpy as np
 
 
 class PBILAlgorithm(EDAAlgorithm):  # Population Based Incremental Learning
-    def __init__(self, dataset_name="1", random_seed=None, population_length=20, max_generations=100, max_evaluations=0,
-                 learning_rate=0.1, mutation_prob=0.1, mutation_shift=0.1, debug_mode=False):
+    def __init__(self, dataset_name:str="1", random_seed:int=None, debug_mode:bool=False, tackle_dependencies:bool=False,
+                population_length:int=100, max_generations:int=100, max_evaluations:int=0,
+                 learning_rate:float=0.1, mutation_prob:float=0.1, mutation_shift:float=0.1):
+
+        
+        super().__init__(dataset_name, random_seed, debug_mode, tackle_dependencies,
+            population_length, max_generations, max_evaluations)
 
         self.executer = PBILExecuter(algorithm=self)
         # self.problem, self.dataset = self.utils.generate_dataset_problem(
         #    dataset_name=dataset_name)
 
-        self.dataset = Dataset(dataset_name)
-        self.dataset_name = dataset_name
+        #self.dataset = Dataset(dataset_name)
+        #self.dataset_name = dataset_name
 
-        self.population_length = population_length
-        self.max_generations = max_generations
-        self.max_evaluations = max_evaluations
+        #self.population_length = population_length
+        #self.max_generations = max_generations
+        #self.max_evaluations = max_evaluations
 
-        self.learning_rate = learning_rate
-        self.mutation_prob = mutation_prob
-        self.mutation_shift = mutation_shift
+        self.learning_rate:float = learning_rate
+        self.mutation_prob:float = mutation_prob
+        self.mutation_shift:float = mutation_shift
 
-        self.nds = []
-        self.best_individual = None
-        self.num_generations = 0
-        self.num_evaluations = 0
+        #self.nds = []
+        #self.best_individual = None
+        #self.num_generations = 0
+        #self.num_evaluations = 0
 
-        self.debug_mode = debug_mode
+        #self.debug_mode = debug_mode
+        #self.tackle_dependencies = tackle_dependencies
 
-        self.random_seed = random_seed
-        if random_seed is not None:
-            np.random.seed(random_seed)
+        #self.random_seed = random_seed
+        #if random_seed is not None:
+        #    np.random.seed(random_seed)
 
-        self.file = str(self.__class__.__name__)+"-"+str(dataset_name)+"-"+str(random_seed)+"-"+str(population_length)+"-" +\
+        self.file:str = str(self.__class__.__name__)+"-"+str(dataset_name)+"-"+str(random_seed)+"-"+str(population_length)+"-" +\
             str(max_generations) + "-"+str(max_evaluations)+"-"+str(learning_rate)+"-" + \
             str(mutation_prob)+"-"+str(mutation_shift)+".txt"
 
@@ -146,6 +152,11 @@ class PBILAlgorithm(EDAAlgorithm):  # Population Based Incremental Learning
                 self.population = []
 
                 self.population = self.sample_new_population(self.probability_vector)
+
+                # repair population if dependencies tackled:
+                if(self.tackle_dependencies):
+                    self.population = self.repair_population_dependencies(
+                        self.population)
 
                 self.evaluate(self.population, self.best_individual)
 

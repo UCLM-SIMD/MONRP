@@ -13,12 +13,13 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-d', '--dataset', nargs="+",
                     help='<Required> configuration', required=False)
 
-#params = parser.parse_args().config[0].split()  # sh galgo
+# params = parser.parse_args().config[0].split()  # sh galgo
 print(parser.parse_args())
-params = parser.parse_args().dataset # local
+params = parser.parse_args().dataset  # local
 
 print(params)
 dataset = params[0]
+
 
 class BacktrackingAlgorithm(Algorithm):
     def __init__(self, dataset, seed=None):
@@ -32,20 +33,20 @@ class BacktrackingAlgorithm(Algorithm):
         num_candidates = len(self.dataset.pbis_cost_scaled)
         probs = np.zeros(num_candidates, dtype="int")
         solution = BacktrackingSolution(probs, costs=self.dataset.pbis_cost_scaled,
-                            values=self.dataset.pbis_satisfaction_scaled)
+                                        values=self.dataset.pbis_satisfaction_scaled)
 
         solutions = np.array(
             list(itertools.product([0, 1], repeat=num_candidates)))
-        #print(solutions[0])
+        # print(solutions[0])
         solutions = np.delete(solutions, [0], axis=0)
-        #print(solutions[0])
+        # print(solutions[0])
         counter = 0
         sol_set = []
-        #print(len(solutions))
+        # print(len(solutions))
         np.random.shuffle(solutions)
         for sol in solutions:
             solution = BacktrackingSolution(sol, costs=self.dataset.pbis_cost_scaled,
-                                values=self.dataset.pbis_satisfaction_scaled)
+                                            values=self.dataset.pbis_satisfaction_scaled)
             # print(solution.selected)
             counter += 1
             sol_set.append(solution)
@@ -55,19 +56,20 @@ class BacktrackingAlgorithm(Algorithm):
                 self.write_nds()
                 sol_set = []
                 # print("--")
-                #print(counter, len(self.NDS), solution.selected,
+                # print(counter, len(self.NDS), solution.selected,
                 #      solution.total_cost, solution.total_satisfaction)
-                #print(self.NDS[0].total_cost,
+                # print(self.NDS[0].total_cost,
                 #      self.NDS[0].total_satisfaction, self.NDS[0].selected)
-            
+
         self.update_nds(sol_set)
-        
-        genes = generate_dataset_genes(self.dataset.id)
+
+        genes, dataset_obj = generate_dataset_genes(dataset.id)
         problem = Problem(genes, ["MAX", "MIN"])
         final_nds_formatted = []
         for solution in self.NDS:
-            #print(solution)
-            individual = Solution(problem.genes, problem.objectives)
+            # print(solution)
+            individual = Solution(
+                problem.genes, problem.objectives, dataset_obj.dependencies)
             for b in np.arange(len(individual.genes)):
                 individual.genes[b].included = solution.selected[b]
             individual.evaluate_fitness()
@@ -131,8 +133,8 @@ class BacktrackingAlgorithm(Algorithm):
         f = open("../../output/backtracking.txt", "w")
         for ind in self.NDS:
             f.write(str(ind.total_cost)+","+str(ind.total_satisfaction)+"\n")
-        f.close()    
+        f.close()
+
 
 algorithm = BacktrackingAlgorithm(dataset=dataset)
 algorithm.run()
-    

@@ -7,3 +7,6 @@ class Gen:
 
   def __str__(self):
     return 'idpbi: '+str(self.idpbi)+', value: '+str(self.value)+', estimation: '+str(self.estimation)+', included: '+str(self.included)
+
+  def __repr__(self):
+    return 'idpbi: '+str(self.idpbi)+', value: '+str(self.value)+', estimation: '+str(self.estimation)+', included: '+str(self.included)

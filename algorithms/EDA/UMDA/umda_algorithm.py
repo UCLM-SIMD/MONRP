@@ -18,39 +18,43 @@ import numpy as np
 
 
 class UMDAAlgorithm(EDAAlgorithm):  # Univariate Marginal Distribution Algorithm
-    def __init__(self, dataset_name="1", random_seed=None, population_length=100, max_generations=100, max_evaluations=0,
-                 selected_individuals=60, debug_mode=False, selection_scheme="nds", replacement_scheme="replacement"):
+    def __init__(self, dataset_name:str="1", random_seed:int=None, debug_mode:bool=False, tackle_dependencies:bool=False,
+                population_length:int=100, max_generations:int=100, max_evaluations:int=0,
+                 selected_individuals:int=60, selection_scheme:str="nds", replacement_scheme:str="replacement"):
 
+
+        super().__init__(dataset_name, random_seed, debug_mode, tackle_dependencies,
+            population_length, max_generations, max_evaluations)
         self.executer = UMDAExecuter(algorithm=self)
         # self.problem, self.dataset = self.utils.generate_dataset_problem(
         #    dataset_name=dataset_name)
 
-        self.dataset = Dataset(dataset_name)
-        self.dataset_name = dataset_name
+        #self.dataset = Dataset(dataset_name)
+        #self.dataset_name = dataset_name
 
-        self.population_length = population_length
-        self.max_generations = max_generations
-        self.max_evaluations = max_evaluations
+        #self.population_length = population_length
+        #self.max_generations = max_generations
+        #self.max_evaluations = max_evaluations
 
-        self.selected_individuals = selected_individuals
+        self.selected_individuals:int = selected_individuals
 
-        self.selection_scheme = selection_scheme
-        self.replacement_scheme = replacement_scheme
+        self.selection_scheme:str = selection_scheme
+        self.replacement_scheme:str = replacement_scheme
 
-        self.nds = []
-        self.num_evaluations = 0
-        self.num_generations = 0
-        self.best_individual = None
-
-        self.debug_mode = debug_mode
+        #self.nds = []
+        #self.num_evaluations = 0
+        #self.num_generations = 0
+        #self.best_individual = None
+        #self.debug_mode = debug_mode
+        #self.tackle_dependencies = tackle_dependencies
 
         # TODO los utils no se usan y estan mal los super()
 
-        self.random_seed = random_seed
-        if random_seed is not None:
-            np.random.seed(random_seed)
+        #self.random_seed = random_seed
+        #if random_seed is not None:
+        #    np.random.seed(random_seed)
 
-        self.file = str(self.__class__.__name__)+"-"+str(dataset_name)+"-"+str(random_seed)+"-"+str(population_length)+"-" +\
+        self.file:str = str(self.__class__.__name__)+"-"+str(dataset_name)+"-"+str(random_seed)+"-"+str(population_length)+"-" +\
             str(max_generations) + "-"+str(max_evaluations)+".txt"
 
     def get_name(self):
@@ -156,6 +160,11 @@ class UMDAAlgorithm(EDAAlgorithm):  # Univariate Marginal Distribution Algorithm
 
                 # replacement
                 self.population = self.sample_new_population(probability_model)
+
+                # repair population if dependencies tackled:
+                if(self.tackle_dependencies):
+                    self.population = self.repair_population_dependencies(
+                        self.population)
 
                 # evaluation
                 self.evaluate(self.population, self.best_individual)

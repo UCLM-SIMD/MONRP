@@ -8,8 +8,6 @@ from models.population import Population
 import math
 import evaluation.metrics as metrics
 import copy
-from datasets.dataset1 import generate_dataset1_genes
-from datasets.dataset2 import generate_dataset2_genes
 from models.problem import Problem
 
 
@@ -30,7 +28,7 @@ class BaseGeneticUtils(Utils):
         problem = Problem(genes, self.objectives_minimization)
         self.problem = problem
         self.dataset = dataset
-        return self.problem,self.dataset
+        return self.problem, self.dataset
 
     # EVALUATION------------------------------------------------------------------
     def evaluate(self, population, best_individual):
@@ -55,7 +53,7 @@ class BaseGeneticUtils(Utils):
         population = Population()
         for i in range(0, self.population_length):
             individual = Solution(self.problem.genes,
-                                  self.problem.objectives)
+                                  self.problem.objectives, self.dataset.dependencies)
             individual.initRandom()
             population.append(individual)
         return population
@@ -67,3 +65,8 @@ class BaseGeneticUtils(Utils):
             best_generation_avgValue = bestAvgValue
             best_generation = num_generation
         return best_generation, best_generation_avgValue
+
+    def repair_population_dependencies(self,population):
+        for ind in population:
+            ind.correct_dependencies()
+        return population

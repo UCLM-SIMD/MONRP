@@ -103,8 +103,10 @@ class GeneticUtils(BaseGeneticUtils):
         # for o in offspring_genes2:
         # print("gen: ",o)
 
-        offspring1 = self.problem.generate_individual(offspring_genes1)
-        offspring2 = self.problem.generate_individual(offspring_genes2)
+        offspring1 = self.problem.generate_individual(
+            offspring_genes1, self.dataset.dependencies)
+        offspring2 = self.problem.generate_individual(
+            offspring_genes2, self.dataset.dependencies)
 
         # print("-----------OFFSPRINGS:")
         # print(offspring1)

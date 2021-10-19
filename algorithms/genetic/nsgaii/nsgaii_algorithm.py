@@ -13,7 +13,7 @@ class NSGAIIAlgorithm(BaseGeneticAlgorithm):# TODO NSGAIIALGORITHM -> NSGAII y r
                  selection="tournament", selection_candidates=2,
                  crossover="onepoint", crossover_prob=0.9,
                  mutation="flipeachbit", mutation_prob=0.1,
-                 replacement="elitism",debug_mode=False):
+                 replacement="elitism",debug_mode=False,tackle_dependencies=False):
 
         self.utils = NSGAIIUtils(
             random_seed, population_length, selection_candidates, crossover_prob, mutation_prob)
@@ -43,6 +43,7 @@ class NSGAIIAlgorithm(BaseGeneticAlgorithm):# TODO NSGAIIALGORITHM -> NSGAII y r
         self.replacement_scheme = replacement
 
         self.debug_mode = debug_mode
+        self.tackle_dependencies = tackle_dependencies
 
         self.fast_nondominated_sort = self.utils.fast_nondominated_sort
         self.calculate_crowding_distance = self.utils.calculate_crowding_distance
@@ -50,6 +51,9 @@ class NSGAIIAlgorithm(BaseGeneticAlgorithm):# TODO NSGAIIALGORITHM -> NSGAII y r
         #self.evaluate = self.utils.evaluate
         self.calculate_last_generation_with_enhance = self.utils.calculate_last_generation_with_enhance
         self.generate_starting_population = self.utils.generate_starting_population
+
+        self.repair_population_dependencies = self.utils.repair_population_dependencies
+
 
         if selection == "tournament":
             self.selection = self.utils.selection_tournament
@@ -68,7 +72,7 @@ class NSGAIIAlgorithm(BaseGeneticAlgorithm):# TODO NSGAIIALGORITHM -> NSGAII y r
             self.replacement = self.utils.replacement_elitism
 
         self.file = str(self.__class__.__name__)+"-"+str(dataset_name)+"-"+str(random_seed)+"-"+str(population_length)+"-" +\
-            str(max_generations)+ "-"+str(max_evaluations)+ "-"+selection+"-"+str(selection_candidates)+"-" +\
+            str(max_generations)+ "-"+selection+"-"+str(selection_candidates)+"-" +\
             str(crossover)+"-"+str(crossover_prob)+"-"+str(mutation) + \
             "-"+str(mutation_prob)+"-"+str(replacement)+".txt"
             # + "-"+str(max_evaluations) TODO
@@ -188,6 +192,13 @@ class NSGAIIAlgorithm(BaseGeneticAlgorithm):# TODO NSGAIIALGORITHM -> NSGAII y r
                 offsprings = self.crossover(offsprings)
                 offsprings = self.mutation(offsprings)
                 # offsprings = self.replacement(self.population, offsprings)
+
+                # repair population if dependencies tackled:
+                if(self.tackle_dependencies):
+                    #offsprings = self.repair_population_dependencies(
+                    #    offsprings)
+                    self.population = self.repair_population_dependencies(
+                        self.population)
 
                 self.returned_population = copy.deepcopy(self.population)
                 self.best_generation, self.best_generation_avgValue = self.calculate_last_generation_with_enhance(

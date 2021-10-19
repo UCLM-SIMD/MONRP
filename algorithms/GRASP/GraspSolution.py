@@ -1,5 +1,7 @@
 import numpy as np
 
+from algorithms.GRASP.Dataset import Dataset
+
 
 class GraspSolution:
     """
@@ -30,7 +32,7 @@ class GraspSolution:
         it simulates the result of flip(i,cost_i,value_i) and returns the would-be new cost, value and mono_objective_score
     """
 
-    def __init__(self, probabilities, costs, values,selected=None,uniform=False):
+    def __init__(self, probabilities, costs, values, selected=None, uniform=False):
         """
         :param probabilities: numpy ndarray
             probabilities[i] is the probability in range [0-1] to set self.selected[i] to 1.
@@ -43,22 +45,23 @@ class GraspSolution:
             when called from GRASP object, it is recommended to use scaled values such as self.dataset.pbis_satisfaction_scaled
         """
         if uniform:
-            genes = np.random.choice(2,len(costs))# TODO PROBAR UMDA ,replace=False
-            self.selected=np.array(genes,dtype=int)
+            # TODO PROBAR UMDA ,replace=False
+            genes = np.random.choice(2, len(costs))
+            self.selected = np.array(genes, dtype=int)
             indexes = np.array(self.selected).nonzero()
             self.total_cost = costs[indexes].sum()
             self.total_satisfaction = values[indexes].sum()
         elif selected is not None:
-            self.selected=np.array(selected,dtype=int)
+            self.selected = np.array(selected, dtype=int)
             indexes = np.array(self.selected).nonzero()
             self.total_cost = costs[indexes].sum()
             self.total_satisfaction = values[indexes].sum()
         else:
             num_candidates = len(probabilities)
-            self.selected = np.zeros(num_candidates,dtype=int)
+            self.selected = np.zeros(num_candidates, dtype=int)
             # samples a random number of candidates. prob of each candidate to be chosen in received in probabilities
             sampled = np.random.choice(np.arange(num_candidates), size=np.random.randint(num_candidates),
-                                    replace=False, p=probabilities)
+                                       replace=False, p=probabilities)
             self.selected[sampled] = 1
 
             self.total_cost = costs[sampled].sum()
@@ -127,7 +130,7 @@ class GraspSolution:
 
         dominates = dominates or (
             self.total_cost < solution.total_cost and self.total_satisfaction == solution.total_satisfaction)
-        
+
         return dominates
 
     def is_dominated_by_value(self, cost, satisfaction):
@@ -144,7 +147,7 @@ class GraspSolution:
 
         dominated = dominated or (
             self.total_cost > cost and self.total_satisfaction == satisfaction)
-        #print(self.total_cost,self.total_satisfaction,dominated,cost,satisfaction)
+        # print(self.total_cost,self.total_satisfaction,dominated,cost,satisfaction)
         return dominated
 
     def dominates_all_in(self, solutions):
@@ -167,6 +170,25 @@ class GraspSolution:
             if sol.dominates(self):
                 return True
         return False
+
+    def set_bit(self, index, value, dataset: Dataset):
+        self.selected[index] = value
+        i_cost = dataset.pbis_cost_scaled[index]
+        i_value = dataset.pbis_satisfaction_scaled[index]
+        mult = 1 if value == 1 else -1
+        self.total_cost += i_cost*mult
+        self.total_satisfaction += i_value*mult
+
+    def correct_dependencies(self, dataset):
+        # for each included gene
+        for gene_index in range(len(self.selected)):
+            if(self.selected[gene_index] == 1):
+                # if has dependencies -> include all genes
+                if dataset.dependencies[gene_index] is None:
+                    continue
+                for other_gene in dataset.dependencies[gene_index]:
+                    #self.selected[other_gene-1] = 1
+                    self.set_bit((other_gene-1), 1, dataset)
 
     def __str__(self):
         string = "PBIs selected in this Solution: "

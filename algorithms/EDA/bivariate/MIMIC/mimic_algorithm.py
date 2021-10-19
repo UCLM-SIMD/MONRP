@@ -1,4 +1,5 @@
 import random
+from typing import List
 from algorithms.EDA.eda_algorithm import EDAAlgorithm
 from evaluation.format_population import format_population
 from algorithms.abstract_default.evaluation_exception import EvaluationLimit
@@ -21,38 +22,42 @@ from scipy import stats as scipy_stats
 
 
 class MIMICAlgorithm(EDAAlgorithm):
-    def __init__(self, dataset_name="1", random_seed=None, population_length=100, max_generations=100, max_evaluations=0,
-                 selected_individuals=60, debug_mode=False, selection_scheme="nds", replacement_scheme="replacement"):
+    def __init__(self, dataset_name:str="1", random_seed:int=None, debug_mode:bool=False, tackle_dependencies:bool=False,
+                population_length:int=100, max_generations:int=100, max_evaluations:int=0,
+                selected_individuals:int=60, selection_scheme:str="nds", replacement_scheme:str="replacement"):
 
         # self.executer = UMDAExecuter(algorithm=self)
+        super().__init__(dataset_name, random_seed, debug_mode, tackle_dependencies,
+            population_length, max_generations, max_evaluations)
 
-        self.dataset = Dataset(dataset_name)
-        self.dataset_name = dataset_name
+        #self.dataset = Dataset(dataset_name)
+        #self.dataset_name = dataset_name
         self.gene_size: int = len(self.dataset.pbis_cost)
 
-        self.population_length: int = population_length
-        self.max_generations: int = max_generations
-        self.max_evaluations: int = max_evaluations
+        #self.population_length: int = population_length
+        #self.max_generations: int = max_generations
+        #self.max_evaluations: int = max_evaluations
 
         self.selected_individuals: int = selected_individuals
 
-        self.selection_scheme = selection_scheme
-        self.replacement_scheme = replacement_scheme
+        self.selection_scheme:str = selection_scheme
+        self.replacement_scheme:str = replacement_scheme
 
-        self.nds = []
-        self.num_evaluations: int = 0
-        self.num_generations: int = 0
-        self.best_individual = None
+        #self.nds = []
+        #self.num_evaluations: int = 0
+        #self.num_generations: int = 0
+        #self.best_individual = None
 
-        self.population = []
+        self.population:List[GraspSolution] = []
 
-        self.debug_mode = debug_mode
+        #self.debug_mode = debug_mode
+        #self.tackle_dependencies = tackle_dependencies
 
-        self.random_seed = random_seed
-        if random_seed is not None:
-            np.random.seed(random_seed)
+        #self.random_seed = random_seed
+        #if random_seed is not None:
+        #    np.random.seed(random_seed)
 
-        self.file = str(self.__class__.__name__)+"-"+str(dataset_name)+"-"+str(random_seed)+"-"+str(population_length)+"-" +\
+        self.file:str = str(self.__class__.__name__)+"-"+str(dataset_name)+"-"+str(random_seed)+"-"+str(population_length)+"-" +\
             str(max_generations) + "-"+str(max_evaluations)+".txt"
 
     def get_name(self):
@@ -380,10 +385,15 @@ class MIMICAlgorithm(EDAAlgorithm):
                 marginals, parents, variables, conditionals = self.learn_probability_model(
                     individuals, len(individuals))
 
-
                 # replacement
                 self.population = self.sample_new_population(
                     marginals, parents, variables, conditionals)
+
+                # repair population if dependencies tackled:
+                if(self.tackle_dependencies):
+                    self.population = self.repair_population_dependencies(
+                        self.population)
+
                 # evaluation
                 self.evaluate(self.population, self.best_individual)
 
@@ -412,7 +422,7 @@ class MIMICAlgorithm(EDAAlgorithm):
                 }
 
 
-if __name__ == '__main__':
-    algorithm = MIMICAlgorithm(dataset_name="1", population_length=4, max_generations=3,
-                               max_evaluations=0, selected_individuals=4, selection_scheme="nds", replacement_scheme="replacement")
-    result = algorithm.run()
+#if __name__ == '__main__':
+#    algorithm = MIMICAlgorithm(dataset_name="1", population_length=4, max_generations=3,
+#                               max_evaluations=0, selected_individuals=4, selection_scheme="nds", replacement_scheme="replacement")
+#    result = algorithm.run()

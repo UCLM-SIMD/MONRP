@@ -85,8 +85,8 @@ class NSGAIIUtils(BaseGeneticUtils):
         offspring_genes2 = parent2.genes[0:crossover_point] + \
             parent1.genes[crossover_point:]
 
-        offspring1 = self.problem.generate_individual(offspring_genes1)
-        offspring2 = self.problem.generate_individual(offspring_genes2)
+        offspring1 = self.problem.generate_individual(offspring_genes1,self.dataset.dependencies)
+        offspring2 = self.problem.generate_individual(offspring_genes2,self.dataset.dependencies)
 
         return offspring1, offspring2
 

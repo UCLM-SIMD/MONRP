@@ -50,7 +50,18 @@ class Dataset:
 
         self.id = dataset
 
-        if dataset == "1": # 5 clientes 20 reqs 10 ints
+        if dataset == "example":  # 2 clientes 5 reqs 2 ints: 1-2-3-4-5; 1->2; 4->1
+            self.pbis_cost = np.array(
+                [3, 3, 3, 3, 3])
+            self.stakeholders_importances = np.array([1, 3])
+            self.stakeholders_pbis_priorities = np.array(
+                [4, 2, 1, 2, 5])
+            self.stakeholders_pbis_priorities = np.vstack((self.stakeholders_pbis_priorities,
+                                                           [4, 2, 1, 2, 5]))
+            self.dependencies = np.array(
+                [[2], None, None, [1], None], dtype=object)
+
+        elif dataset == "1":  # 5 clientes 20 reqs 10 ints
             self.pbis_cost = np.array(
                 [1, 4, 2, 3, 4, 7, 10, 2, 1, 3, 2, 5, 8, 2, 1, 4, 10, 4, 8, 4])
             self.stakeholders_importances = np.array([1, 4, 2, 3, 4])
@@ -68,14 +79,14 @@ class Dataset:
             self.stakeholders_pbis_priorities = np.vstack((self.stakeholders_pbis_priorities,
                                                            [5, 4, 2, 4, 5, 4, 2, 4, 5, 2, 4, 5, 3, 4, 4, 1, 1, 2, 4,
                                                             1]))
-            self.dependencies = np.array(
-                [None,None,[["combination",12]],[["implication",8],["implication",17]],None,None,None,[["implication",17]],
-                [["implication",3],["implication",6],["implication",12]
-                ,["implication",19]],None,[["implication",19],["combination",13]],None,None,None,None,None,None,None,None,None],dtype=object) 
-            self.dependencies = np.array([None,None,[12],[8,17],None,None,None,[17],[3,6,12,19],None,
-                                          [19,13],[3],[11],None,None,None,None,None,None,None,])                                           
+            # self.dependencies = np.array(
+            #    [None,None,[["combination",12]],[["implication",8],["implication",17]],None,None,None,[["implication",17]],
+            #    [["implication",3],["implication",6],["implication",12]
+            #    ,["implication",19]],None,[["implication",19],["combination",13]],None,None,None,None,None,None,None,None,None],dtype=object)
+            self.dependencies = np.array([None, None, [12], [8, 17], None, None, None, [17], [3, 6, 12, 19], None,
+                                          [19, 13], [3], [11], None, None, None, None, None, None, None, ], dtype=object)
 
-        elif dataset == "2": # 5 clientes 100 reqs 44ints
+        elif dataset == "2":  # 5 clientes 100 reqs 44ints
             self.pbis_cost = np.array([16, 19, 16, 7, 19, 15, 8, 10, 6, 18, 15, 12, 16, 20, 9, 4, 16, 2, 9, 3,
                                        2, 10, 4, 2, 7, 15, 8, 20, 9, 11, 5, 1, 17, 6, 2, 16, 8, 12, 18, 5, 6,
                                        14, 15, 20, 14, 9, 16, 6, 6, 6, 6, 2, 17, 8, 1, 3, 14, 16, 18, 7, 10, 7,
@@ -94,31 +105,35 @@ class Dataset:
                                                            [3, 2, 2, 1, 3, 1, 3, 2, 3, 2, 3, 2, 1, 3, 2, 3, 2, 1, 3, 3, 1, 1, 1, 2, 3, 3, 2, 1, 1, 1, 1, 2, 2, 2, 3, 2, 2, 3, 1, 1, 3, 1, 1, 3, 1, 2, 1, 1, 3, 2, 2, 1, 3, 2, 1, 3, 3, 1, 2, 3, 2, 2, 3, 3, 3, 1, 2, 1, 2, 1, 2, 3, 3, 2, 2, 2, 1, 3, 3, 1, 3, 1, 2, 2, 2, 1, 1, 1, 3, 1, 1, 3, 3, 1, 2, 1, 2, 3, 1, 3]))
             self.stakeholders_pbis_priorities = np.vstack((self.stakeholders_pbis_priorities,
                                                            [1, 2, 3, 1, 3, 1, 2, 3, 1, 1, 2, 2, 3, 1, 2, 1, 1, 1, 1, 3, 1, 1, 3, 3, 3, 2, 2, 3, 2, 3, 1, 1, 3, 3, 2, 2, 1, 1, 2, 1, 3, 1, 1, 2, 1, 2, 3, 3, 2, 2, 1, 3, 3, 2, 3, 1, 2, 1, 3, 2, 2, 2, 1, 2, 1, 3, 2, 1, 2, 1, 2, 2, 3, 2, 1, 3, 2, 3, 1, 3, 3, 2, 1, 2, 2, 2, 2, 1, 3, 3, 3, 1, 1, 3, 1, 3, 3, 3, 3, 3]))
-            self.dependencies = np.array([
-                None,[["implication",24]],[["implication",26],["implication",27],["implication",28],["implication",29]],["implication",5],None,
-                [["implication",7]],[["implication",30]],None,None,[["implication",32],["implication",33]],None,None,None,[["implication",32],
-                ["implication",34],["implication",37],["implication",38]],None,[["implication",39],["implication",40]],[["implication",43]],None,None,None,
-                [["combination",22]],None,None,None,None,None,None,None,[["implication",49],["implication",50],["implication",51]],[["implication",52],["implication",53]],
-                [["implication",55]],[["implication",56],["implication",57]],[["implication",58]],None,None,[["implication",61]],None,None,[["implication",63]],
-                [["implication",64]],[["combination",33]],None,[["implication",65]],None,None,[["implication",68]],[["implication",70]],None,None,None,
-                None,None,None,None,[["implication",79],["combination",47]],[["implication",80]],[["implication",80]],None,None,None,
-                None,[["implication",83],["implication",84]],None,[["implication",87]],[["combination",66]],None,None,None,None,None,None,None,None,
-                [["combination",65]],None,None,None,None,None,None,
-                None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,
-            ],dtype=object)
-            self.dependencies = np.array([None,[24],[26,27,28,29],[5],None,[7],[30],None,None,[32,33],#1-10
-                                          None,None,None,[32,34,37,38],None,[39,40],[43],None,None,None,#11-20
-                                          [22],[21],None,None,None,None,None,None,[49,50,51],[52,53],#21-30
-                                          [55],[56,57,33],[58,32],None,None,[61],None,None,[63],[64],
-                                          None,None,[65],None,None,[68,47],[70,46],None,None,None,
-                                          None,None,None,None,[79],[80],[80],None,None,None,
-                                          None,[83,84],None,[87],[66],[65],None,None,None,None,
-                                          None,None,None,None,None,None,None,None,None,None,
-                                          None,None,None,None,None,None,None,None,None,None,
-                                          None,None,None,None,None,None,None,None,None,None,
-                                          ])
-
-
+            # self.dependencies = np.array([
+            #    None,[["implication",24]],[["implication",26],["implication",27],["implication",28],["implication",29]],["implication",5],None,
+            #    [["implication",7]],[["implication",30]],None,None,[["implication",32],["implication",33]],None,None,None,[["implication",32],
+            #    ["implication",34],["implication",37],["implication",38]],None,[["implication",39],["implication",40]],[["implication",43]],None,None,None,
+            #    [["combination",22]],None,None,None,None,None,None,None,[["implication",49],["implication",50],["implication",51]],[["implication",52],["implication",53]],
+            #    [["implication",55]],[["implication",56],["implication",57]],[["implication",58]],None,None,[["implication",61]],None,None,[["implication",63]],
+            #    [["implication",64]],[["combination",33]],None,[["implication",65]],None,None,[["implication",68]],[["implication",70]],None,None,None,
+            #    None,None,None,None,[["implication",79],["combination",47]],[["implication",80]],[["implication",80]],None,None,None,
+            #    None,[["implication",83],["implication",84]],None,[["implication",87]],[["combination",66]],None,None,None,None,None,None,None,None,
+            #    [["combination",65]],None,None,None,None,None,None,
+            #    None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,
+            # ],dtype=object)
+            self.dependencies = np.array([None, [24], [26, 27, 28, 29], [5], None, [7], [30], None, None, [32, 33],  # 1-10
+                                          None, None, None, [32, 34, 37, 38], None, [
+                                              39, 40], [43], None, None, None,  # 11-20
+                                          [22], [21], None, None, None, None, None, None, [
+                                              49, 50, 51], [52, 53],  # 21-30
+                                          [55], [56, 57, 33], [58, 32], None, None, [
+                                              61], None, None, [63], [64],
+                                          None, None, [65], None, None, [
+                                              68, 47], [70, 46], None, None, None,
+                                          None, None, None, None, [79], [
+                                              80], [80], None, None, None,
+                                          None, [83, 84], None, [87], [66], [
+                                              65], None, None, None, None,
+                                          None, None, None, None, None, None, None, None, None, None,
+                                          None, None, None, None, None, None, None, None, None, None,
+                                          None, None, None, None, None, None, None, None, None, None,
+                                          ], dtype=object)
 
         elif dataset == "3":
             self.pbis_cost = np.array([36, 10, 26, 15, 25, 3, 23, 5, 39, 37, 23, 30, 36, 22, 15, 31, 27, 30, 25, 26, 30, 10,
@@ -152,7 +167,7 @@ class Dataset:
 
             self.stakeholders_pbis_priorities = np.vstack((self.stakeholders_pbis_priorities,
                                                            [3, 2, 1, 1, 2, 2, 1, 1, 0, 0, 0, 2, 1, 3, 2, 2, 0, 0, 1, 4, 3, 4, 4, 4, 4, 2, 2, 4, 1, 1, 4, 3, 0, 4, 2, 1, 4, 3, 1, 2, 1, 2, 1, 1, 2, 0, 3, 1, 4, 4, 0, 1, 2, 1, 2, 3, 0, 0, 3, 2, 1, 4, 2, 3, 2, 4, 2, 2, 4, 4, 0, 0, 4, 1, 0, 1, 0, 2, 1, 3, 0, 0, 2, 4, 4, 0, 2, 1, 3, 3, 4, 1, 4, 1, 3, 2, 3, 2, 4, 1]))
-
+            self.dependencies = None
         elif dataset == "s1":  # 15 customers 40 reqs
             self.pbis_cost = np.array([16, 27, 35, 18, 38, 14, 18,  7,  4, 30, 17, 18,  6, 37, 27, 18,  3,
                                        3, 11,  9,  1, 24, 38, 39, 25, 28, 28, 32, 26, 19, 30, 37, 17,  6,
@@ -190,7 +205,7 @@ class Dataset:
                                                            0, 5, 4, 3],
                                                           [0, 2, 2, 0, 1, 1, 2, 5, 2, 5, 3, 0, 2, 3, 0, 2, 2, 4, 0, 0, 5, 0, 2, 4, 0, 4, 3, 2, 0, 2, 0, 1, 1, 3, 1, 5,
                                                            4, 5, 1, 1]])
-
+            self.dependencies = None
         elif dataset == "s2":  # 50 customers 80 reqs
             self.pbis_cost = np.array([13,  1, 20, 19, 24, 28, 39, 38, 23, 15, 39, 36, 34, 35,  6, 21,  9,
                                        26,  2, 24, 38, 12,  7, 35, 19, 38, 35, 14, 33, 12, 11, 10, 34, 34,
@@ -352,6 +367,7 @@ class Dataset:
                                                           [3, 1, 2, 1, 4, 5, 5, 2, 1, 1, 5, 2, 2, 4, 0, 0, 0, 4, 4, 3, 1, 2, 5, 4, 0, 4, 5, 0, 3, 3, 1, 1, 3, 4, 2, 2,
                                                            0, 3, 2, 3, 2, 2, 5, 1, 5, 0, 2, 1, 5, 1, 1, 5, 3, 0, 3, 1, 0, 2, 1, 2, 2, 1, 3, 3, 2, 4, 3, 2, 2, 3, 2, 1,
                                                            1, 4, 1, 0, 1, 5, 3, 3]])
+            self.dependencies = None
         elif dataset == "s3":  # 100 customers 140 reqs
             self.pbis_cost = np.array([8, 22, 13, 12, 29, 14, 18,  9, 13,  2, 36,  5,  3, 15,  6, 25,  2,
                                        12, 37, 19, 36, 28,  5, 25, 20,  1, 28, 13, 26, 12,  8, 15,  7, 13,
@@ -769,6 +785,7 @@ class Dataset:
                                                            1, 4, 5, 0, 3, 3, 1, 2, 4, 4, 0, 3, 3, 3, 4, 1, 1, 0, 1, 0, 5, 0, 1, 2, 1, 5, 1, 3, 1, 5, 4, 1, 0, 3, 5, 4,
                                                            3, 1, 5, 1, 2, 4, 5, 4, 4, 3, 5, 0, 4, 2, 5, 5, 3, 1, 1, 5, 4, 5, 2, 1, 2, 5, 1, 5, 3, 0, 2, 2, 1, 2, 1, 4,
                                                            2, 2, 0, 0, 5, 4, 1, 3, 2, 4, 0, 3, 2, 3, 2, 5, 1, 3, 3, 3, 0, 5, 0, 2, 0, 4, 2, 5, 1, 4, 3, 2]])
+            self.dependencies = None                                               
         else:
             raise Exception("Sorry, dataset with id=", id, " not found.")
 
@@ -794,3 +811,54 @@ class Dataset:
 
         self.pbis_cost_scaled, self.pbis_satisfaction_scaled, self.pbis_score = normalize_dataset_sum(
             self.pbis_cost, self.pbis_satisfaction, self.stakeholders_importances, self.stakeholders_pbis_priorities)
+
+        # simplify dependencies:
+        if (self.dependencies is not None):
+            self.calculate_dependencies()
+
+    # TODO CALCULAR DEPENDENCIAS TOTALES DEL DATASET
+    def calculate_dependencies(self):
+        self.new_dependencies = {}
+        # dependency = index_dependency+1 (starts from 1)
+        for dep in range(1,len(self.dependencies)+1):
+            if self.dependencies[dep-1] is not None:
+                # if req has dependencies -> add them and launch aux fun
+                for dep2 in self.dependencies[dep-1]:
+                    self.new_dependencies.setdefault(dep, []).append(dep2)
+                    self.aux_dependencies(dep, dep2)
+
+        # store new dependencies non repeatedly:
+        self.dependencies = np.empty(len(self.dependencies),dtype=object)
+        for i in range(1,len(self.dependencies)+1):
+            if i not in self.new_dependencies:
+                self.dependencies[i-1]=None
+            else:
+                self.dependencies[i-1]= list( dict.fromkeys(self.new_dependencies[i]) ) 
+
+    def aux_dependencies(self, parent, child):
+        # if no dependencies in child -> stop
+        if self.dependencies[child-1] is None:
+            return
+        # for each dependency in child -> if it is already the parent or contained in parent -> stop
+        for d in self.dependencies[child-1]:
+            if (d == parent) or (d in self.new_dependencies[parent]):
+                continue
+            # if not -> add new dependency to parent list and recursively launch aux fun
+            self.new_dependencies.setdefault(parent, []).append(d)
+            self.aux_dependencies(parent, d)
+    """ 
+    def check_deps()
+        self.new_deps=set()
+        for dep in deps:
+            if dep is not None:
+                for d2 in dep:
+                    self.new_deps[dep].append(d2)#modo que no se repitan si ya hay uno tipo set()
+                    aux_deps(dep,d2)
+
+    def aux_deps(padre,hijo):
+        if padre!=hijo and hijo not in self.new_deps[padre]: # evitar ciclos
+            for d in deps[hijo]:
+                self.new_deps[padre].append(d)
+                    self.auxdeps(padre,d)
+    
+    """

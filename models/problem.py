@@ -13,14 +13,14 @@ class Problem:
             self.objectives.append(Objective(None, minimize=True))
 
   # GENERATE INDIVIDUAL------------------------------------------------------------------
-  def generate_individual(self, genes):
-    individual=Solution(genes, self.objectives)
+  def generate_individual(self, genes, dependencies):
+    individual=Solution(genes, self.objectives, dependencies)
     individual.initRandom()
     return individual
 
   # GENERATE STARTING INDIVIDUAL------------------------------------------------------------------
-  def generate_starting_individual(self):
-    individual=Solution(self.genes, self.objectives)
+  def generate_starting_individual(self, dependencies):
+    individual=Solution(self.genes, self.objectives, dependencies)
     individual.initRandom()
     return individual
 

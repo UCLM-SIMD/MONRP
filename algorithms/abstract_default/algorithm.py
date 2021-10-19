@@ -1,9 +1,21 @@
 from abc import ABC
 
+from algorithms.GRASP.Dataset import Dataset
+import numpy as np
 
 class Algorithm(ABC):
-    def __init__(self):
-        pass
+
+    def __init__(self, dataset_name:str="1", random_seed:int=None, debug_mode:bool=False, tackle_dependencies:bool=False):
+
+        self.dataset:Dataset = Dataset(dataset_name)
+        self.dataset_name:str = dataset_name
+
+        self.debug_mode:bool = debug_mode
+        self.tackle_dependencies:bool = tackle_dependencies
+
+        self.random_seed:int = random_seed
+        if random_seed is not None:
+            np.random.seed(random_seed)
 
     def reset(self):
         pass
