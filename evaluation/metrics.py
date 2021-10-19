@@ -132,3 +132,13 @@ def calculate_spread(population, dataset):
 	# formula spread
 	spread = (df + dl + sum_dist) / (df + dl + (N - 1) * davg)
 	return spread
+
+def calculate_mean_bits_per_sol(solutions):
+	genes=0
+	n_sols=len(solutions)
+
+	for sol in solutions:
+		for gen in sol.genes:
+			genes+=gen.included
+
+	return genes/n_sols

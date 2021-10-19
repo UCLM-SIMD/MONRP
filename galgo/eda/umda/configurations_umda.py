@@ -12,13 +12,18 @@ def generate_configurations():
         "umda"
     ]
     population_length = [
-        20, 50, 100, 200, 300, 500
+        #20, 50, 
+        100, 200, 500
     ]
     max_generations = [
-        20, 40, 60, 80, 100, 200, 500
+        100, 200, 500
+    ]
+    evaluations = [
+        10000,
+        0
     ]
     selected_individuals = [
-        20, 40, 60, 80, 100, 200, 500
+        20
     ]
     seed = 10
 
@@ -29,12 +34,14 @@ def generate_configurations():
         for algorithm in algorithms:
             for pop in population_length:
                 for max_generation in max_generations:
-                    for selected_individual in selected_individuals:
-                        returnStr = type + ' ' + str(algorithm) + " " + str(dataset_problem) + ' ' + \
-                            str(seed) + ' ' + str(pop) + ' ' + \
-                            str(max_generation) + ' ' + \
-                            str(selected_individual) + '\n'
-                        f.write(returnStr)
+                    for evaluation in evaluations:
+                        for selected_individual in selected_individuals:
+                            returnStr = type + ' ' + str(algorithm) + " " + str(dataset_problem) + ' ' + \
+                                str(seed) + ' ' + str(pop) + ' ' + \
+                                str(max_generation) + ' ' + \
+                                str(evaluation) + ' ' + \
+                                str(selected_individual) + '\n'
+                            f.write(returnStr)
     f.close()
 
 

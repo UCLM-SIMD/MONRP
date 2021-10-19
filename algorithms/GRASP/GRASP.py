@@ -1,3 +1,5 @@
+from evaluation.format_population import format_population
+from algorithms.abstract_default.evaluation_exception import EvaluationLimit
 import copy
 from datasets.dataset_gen_generator import generate_dataset_genes
 from numpy.lib.function_base import diff
@@ -13,6 +15,7 @@ import random
 
 from algorithms.GRASP.GraspSolution import GraspSolution
 from datasets import dataset1, dataset2, dataset3
+from evaluation.update_nds import get_nondominated_solutions
 from models.solution import Solution
 from models.problem import Problem
 
@@ -80,13 +83,14 @@ class GRASP(Algorithm):
     phase, running an incremental best first search over each solution, using domination as goodness metric and sorting
     candidates of each solution by score.
 
-    update_nds(solutions): at the end of each GRASP iteration, the global self.NDS list of solutions is updated based on the
+    update_nds(solutions): at the end of each GRASP iteration, the global self.nds list of solutions is updated based on the
         constructed and evolved solutions in such iteration.
 
     """
 
-    def __init__(self, dataset="1", iterations=20, solutions_per_iteration=10, init_type="stochastically",
-                 local_search_type="best_first_neighbor_random", path_relinking_mode="None", seed=None):
+    def __init__(self, dataset="1", iterations=20, solutions_per_iteration=10, max_evaluations=0, init_type="stochastically",
+                 local_search_type="best_first_neighbor_random", path_relinking_mode="None", seed=None, debug_mode=False,
+                 tackle_dependencies=False):
         """
         :param dataset: integer number: 1 or 2
         :param iterations: integer (default 20), number of GRASP construct+local_search repetitions
@@ -99,7 +103,16 @@ class GRASP(Algorithm):
         self.dataset_name = dataset
         self.iterations = iterations
         self.solutions_per_iteration = solutions_per_iteration
-        self.NDS = []
+        self.max_evaluations = max_evaluations
+
+        self.nds = []
+        self.num_evaluations = 0
+        self.num_iterations = 0
+        self.start = 0
+
+        self.debug_mode = debug_mode
+        self.tackle_dependencies = tackle_dependencies
+
         self.init_type = init_type
         self.local_search_type = local_search_type
         self.path_relinking_mode = path_relinking_mode
@@ -127,57 +140,120 @@ class GRASP(Algorithm):
         self.executer = GRASPExecuter(algorithm=self)
         self.file = self.__class__.__name__+"-"+(str(dataset)+"-"+str(seed)+"-"+str(iterations)+"-"+str(solutions_per_iteration)
                                                  + "-"+str(init_type) + "-"+str(local_search_type) + "-"+str(path_relinking_mode)+".txt")
+        # + "-"+str(max_evaluations) TODO
 
     def get_name(self):
         init = "stochastic" if self.init_type == "stochastically" else self.init_type
         local = "+"+self.local_search_type.replace(
             'best_first_neighbor_', '') if self.local_search_type != "None" else ""
         PR = "+PR" if self.path_relinking_mode != "None" else ""
-        return "GRASP+"+str(self.iterations)+"+"+str(self.solutions_per_iteration)+"+"+init+local+PR
+        return "GRASP+"+str(self.iterations)+"+"+str(self.solutions_per_iteration)+"+"+str(self.max_evaluations)+"+"+init+local+PR
 
     def reset(self):
-        self.NDS = []
+        self.nds = []
+        self.num_evaluations = 0
+        self.num_iterations = 0
+        self.start = 0
+
+    def stop_criterion(self, num_iterations, num_evaluations):
+        if self.max_evaluations == 0:
+            return num_iterations >= self.iterations
+        else:
+            return num_evaluations >= self.max_evaluations
+
+    def add_evaluation(self, initiated_solutions):
+        self.num_evaluations += 1
+        # if(self.num_evaluations >= self.max_evaluations):
+        if self.stop_criterion(self.num_iterations, self.num_evaluations):
+            # self.update_nds(initiated_solutions)
+            get_nondominated_solutions(initiated_solutions, self.nds)
+            raise EvaluationLimit
 
     def run(self):
         """
         Core code of GRASP: initiation + local search + NDS update, repeated self.iterations times.
         :return (selected_list, seconds) list of ndarray and double.
-                shape of selected is (len(self.NDS), GraspSolution.dataset.num_pbis)
+                shape of selected is (len(self.nds), GraspSolution.dataset.num_pbis)
                     position ij==0 if solution i does not select candidate j
                     position ij==1 if solution i selects candidate j
                 seconds is the time in seconds used to run all the GRASP iterations
 
         """
         self.reset()
-        start = time.time()
+        paretos = []
+        self.start = time.time()
 
-        for _ in np.arange(self.iterations):
-            # construction phase
-            initiated_solutions = self.initialize()
+        # for _ in np.arange(self.iterations):
+        self.num_iterations = 0
+        try:
+            while (not self.stop_criterion(self.num_iterations, self.num_evaluations)):
+                # construction phase
+                initiated_solutions = self.initialize()
 
-            # local search phase
-            if self.local_search != "None":
-                initiated_solutions = self.local_search(initiated_solutions)
+                # local search phase
+                if self.local_search != "None":
+                    initiated_solutions = self.local_search(
+                        initiated_solutions)
 
-            if self.path_relinking_mode == "after_local":
-                initiated_solutions = self.path_relinking(initiated_solutions)
+                if self.path_relinking_mode == "after_local":
+                    initiated_solutions = self.path_relinking(
+                        initiated_solutions)
 
-            # update NDS with solutions constructed and evolved in this iteration
-            self.update_nds(initiated_solutions)
+                # repair population if dependencies tackled:
+                if(self.tackle_dependencies):
+                    initiated_solutions = self.repair_population_dependencies(
+                        initiated_solutions)
 
-        seconds = time.time() - start
+                # update NDS with solutions constructed and evolved in this iteration
+                # self.update_nds(initiated_solutions)
+                get_nondominated_solutions(initiated_solutions, self.nds)
 
-        print("\nNDS created has", self.NDS.__len__(), "solution(s)")
-        selected_list = []
-        for sol in self.NDS:
-            #   print("\n-----------------------")
-            #   print(sol)
-            selected_list.append(sol.selected)
+                self.num_iterations += 1
+
+                if self.debug_mode:
+                    paretos.append(format_population(self.nds, self.dataset))
+
+        except EvaluationLimit:
+            pass
+
+        # return self.return_values()
+
+        seconds = time.time() - self.start
+        print("\nNDS created has", self.nds.__len__(), "solution(s)")
+        #selected_list = []
+        # for sol in self.nds:
+        #    #   print("\n-----------------------")
+        #    #   print(sol)
+        #    selected_list.append(sol.selected)
         # return selected_list, seconds
+        #genes,_ = generate_dataset_genes(self.dataset.id)
 
-        genes,_ = generate_dataset_genes(self.dataset.id)
+        return {
+            "population": format_population(self.nds, self.dataset),
+            "time": seconds,
+            "numGenerations": self.num_iterations,
+            "numEvaluations": self.num_evaluations,
+            "paretos": paretos
+        }
+        # return _results_in_victor_format(selected_list, seconds, self.num_iterations, genes, self.num_evaluations,paretos)
 
-        return _results_in_victor_format(selected_list, seconds, self.iterations, genes)
+    # def return_values(self):
+    #    seconds = time.time() - self.start
+    #    print("\nNDS created has", self.nds.__len__(), "solution(s)")
+    #    selected_list = []
+    #    for sol in self.nds:
+    #        #   print("\n-----------------------")
+    #        #   print(sol)
+    #        selected_list.append(sol.selected)
+    #    # return selected_list, seconds
+    #
+    #    genes,_ = generate_dataset_genes(self.dataset.id)
+    #    return _results_in_victor_format(selected_list, seconds, self.iterations, genes, self.num_evaluations)
+
+    def repair_population_dependencies(self, solutions):
+        for sol in solutions:
+            sol.correct_dependencies(self.dataset)
+        return solutions
 
     def init_solutions_stochastically(self):
         """
@@ -197,7 +273,7 @@ class GRASP(Algorithm):
             # avoid solution with 0 cost due to 0 candidates selected
             if np.count_nonzero(sol.selected) > 0:
                 solutions.append(sol)
-                i -= 1
+                i -= 1  # TODO ESTO NO DEBERIA SER EN EL ELSE?
         return solutions
 
     def init_solutions_uniform(self):
@@ -249,6 +325,7 @@ class GRASP(Algorithm):
                 # compute new cost, satisfaction and mo_score flipping candidate i in sol
                 (c2, s2, mo2) = sol.try_flip(i, self.dataset.pbis_cost_scaled[i],
                                              self.dataset.pbis_satisfaction_scaled[i])
+                self.add_evaluation(initiated_solutions)
 
                 # no uso la dominancia porque cambiando solo 1 bit nunca se crea una solución dominante!
                 # if c2 < c1 and s2 > s1:  # if neighbor  dominates, then overwrite former solution with neighbor
@@ -258,6 +335,7 @@ class GRASP(Algorithm):
                         sol.selected) > 0:  # avoid solution with 0 cost due to 0 candidates selected
                     sol.flip(
                         i, self.dataset.pbis_cost_scaled[i], self.dataset.pbis_satisfaction_scaled[i])
+                    self.add_evaluation(initiated_solutions)
 
         return initiated_solutions
 
@@ -298,7 +376,7 @@ class GRASP(Algorithm):
                 # compute new cost, satisfaction and mo_score flipping candidate i in sol
                 (c2, s2, mo2) = sol.try_flip(i, self.dataset.pbis_cost_scaled[i],
                                              self.dataset.pbis_satisfaction_scaled[i])
-
+                self.add_evaluation(initiated_solutions)
                 # no uso la dominancia porque cambiando solo 1 bit nunca se crea una solución dominante!
                 # if c2 < c1 and s2 > s1:  # if neighbor  dominates, then overwrite former solution with neighbor
 
@@ -307,6 +385,7 @@ class GRASP(Algorithm):
                         sol.selected) > 0:  # avoid solution with 0 cost due to 0 candidates selected
                     sol.flip(
                         i, self.dataset.pbis_cost_scaled[i], self.dataset.pbis_satisfaction_scaled[i])
+                    self.add_evaluation(initiated_solutions)
                 elif mo2 <= mo1 and np.count_nonzero(sol.selected) > 0:
                     # get selected pbi indexes
                     selected_pbis_indexes = np.where(sol.selected == 1)[
@@ -317,6 +396,7 @@ class GRASP(Algorithm):
                     for j in selected_pbis_indexes:
                         (c3, s3, mo3) = sol.try_flip(j, self.dataset.pbis_cost_scaled[j],
                                                      self.dataset.pbis_satisfaction_scaled[j])
+                        self.add_evaluation(initiated_solutions)
                         if mo3 > mo1 and np.count_nonzero(
                                 sol.selected) > 0:
                             improving_indexes.append(j)
@@ -327,6 +407,7 @@ class GRASP(Algorithm):
                             improving_scores)]
                         sol.flip(
                             max_mo_index, self.dataset.pbis_cost_scaled[max_mo_index], self.dataset.pbis_satisfaction_scaled[max_mo_index])
+                        self.add_evaluation(initiated_solutions)
 
         return initiated_solutions
 
@@ -356,7 +437,7 @@ class GRASP(Algorithm):
                 # compute new cost, satisfaction and mo_score flipping candidate i in sol
                 (c2, s2, mo2) = sol.try_flip(i, self.dataset.pbis_cost_scaled[i],
                                              self.dataset.pbis_satisfaction_scaled[i])
-
+                self.add_evaluation(initiated_solutions)
                 # no uso la dominancia porque cambiando solo 1 bit nunca se crea una solución dominante!
                 # if c2 < c1 and s2 > s1:  # if neighbor  dominates, then overwrite former solution with neighbor
 
@@ -365,6 +446,7 @@ class GRASP(Algorithm):
                         sol.selected) > 0:  # avoid solution with 0 cost due to 0 candidates selected
                     sol.flip(
                         i, self.dataset.pbis_cost_scaled[i], self.dataset.pbis_satisfaction_scaled[i])
+                    self.add_evaluation(initiated_solutions)
 
         return initiated_solutions
 
@@ -393,7 +475,7 @@ class GRASP(Algorithm):
                 # compute new cost, satisfaction and mo_score flipping candidate i in sol
                 (c2, s2, mo2) = sol.try_flip(i, self.dataset.pbis_cost_scaled[i],
                                              self.dataset.pbis_satisfaction_scaled[i])
-
+                self.add_evaluation(initiated_solutions)
                 # no uso la dominancia porque cambiando solo 1 bit nunca se crea una solución dominante!
                 # if c2 < c1 and s2 > s1:  # if neighbor  dominates, then overwrite former solution with neighbor
 
@@ -402,6 +484,7 @@ class GRASP(Algorithm):
                         sol.selected) > 0:  # avoid solution with 0 cost due to 0 candidates selected
                     sol.flip(
                         i, self.dataset.pbis_cost_scaled[i], self.dataset.pbis_satisfaction_scaled[i])
+                    self.add_evaluation(initiated_solutions)
 
         return initiated_solutions
 
@@ -431,7 +514,7 @@ class GRASP(Algorithm):
                 # compute new cost, satisfaction and mo_score flipping candidate i in sol
                 (c2, s2, mo2) = sol.try_flip(i, self.dataset.pbis_cost_scaled[i],
                                              self.dataset.pbis_satisfaction_scaled[i])
-
+                self.add_evaluation(initiated_solutions)
                 # no uso la dominancia porque cambiando solo 1 bit nunca se crea una solución dominante!
                 # if c2 < c1 and s2 > s1:  # if neighbor  dominates, then overwrite former solution with neighbor
 
@@ -440,20 +523,21 @@ class GRASP(Algorithm):
                         sol.selected) > 0:  # avoid solution with 0 cost due to 0 candidates selected
                     sol.flip(
                         i, self.dataset.pbis_cost_scaled[i], self.dataset.pbis_satisfaction_scaled[i])
+                    self.add_evaluation(initiated_solutions)
 
         return initiated_solutions
 
     def path_relinking(self, solutions):
-        new_sols=[]
-        if len(self.NDS) > 0:
+        new_sols = []
+        if len(self.nds) > 0:
             for solution in solutions:
-                new_sols_path=[]
+                new_sols_path = []
                 # get random solution from non dominated set
-                random_nds_solution = random.choice(self.NDS)
+                random_nds_solution = random.choice(self.nds)
                 # print("random",random_nds_solution.selected)
                 # print("sol",solution.selected)
                 # calculate distance from solution to goal random solution
-                init_sol=copy.deepcopy(solution)
+                init_sol = copy.deepcopy(solution)
                 distance = np.count_nonzero(
                     solution.selected != random_nds_solution.selected)
                 # while distance greater than 0
@@ -480,8 +564,8 @@ class GRASP(Algorithm):
                             selected_flip = i
                     # if it does not improves monoscore: select random
                     if mono_score >= best_mo:
-                        selected_flip=np.random.choice(diff_bits)
-                        #selected_flip = np.random.randint(
+                        selected_flip = np.random.choice(diff_bits)
+                        # selected_flip = np.random.randint(
                         #    0, self.dataset.pbis_cost_scaled.size)
 
                     # print("selected",selected_flip)
@@ -490,88 +574,59 @@ class GRASP(Algorithm):
                     # flip selected bit (best by monobjective or random) of the solution (copy created to not replace former)
                     init_sol.flip(
                         selected_flip, self.dataset.pbis_cost_scaled[selected_flip], self.dataset.pbis_satisfaction_scaled[selected_flip])
+                    self.add_evaluation(solutions+new_sols)
                     distance = distance - 1
 
                     # save intermediate solution of the path
                     new_sols_path.append(init_sol)
                     # print("sol",solution.selected)
 
-                    #TODO actualizar NDS con soluciones intermedias(?)
-                    #new_sols.append(solution)
+                    # TODO actualizar NDS con soluciones intermedias(?)
+                    # new_sols.append(solution)
 
-                # after ending, select best path solution by monoscore 
-                if len(new_sols_path)>0:
-                    best_sol_path=max(new_sols_path,key=lambda x:x.compute_mono_objective_score())
+                # after ending, select best path solution by monoscore
+                if len(new_sols_path) > 0:
+                    best_sol_path = max(
+                        new_sols_path, key=lambda x: x.compute_mono_objective_score())
                     new_sols.append(best_sol_path)
-                #best_sol_path=new_sols_path[0]
+                # best_sol_path=new_sols_path[0]
 
                 # append it to new list of solutions
-                
-            
+
             # add best path solutions to old solution list
-            solutions+=new_sols
+            solutions += new_sols
 
         return solutions
 
-    def update_nds(self, solutions):
-        """
-        For each sol in solutions:
-            if no solution in self.NDS dominates sol:
-             insert sol in self.NDS
-             remove all solutions in self.NDS now dominated by sol
-        :param solutions: solutions created in current GRASP iteration and evolved with local search
-        """
-        for sol in solutions:
-            insert = True
 
-            # find which solutions, if any, in self.NDS are dominated by sol
-            # if sol is dominated by any solution in self.NDS, then search is stopped and sol is discarded
-            now_dominated = []
-            for nds_sol in self.NDS:
-                if np.array_equal(sol.selected, nds_sol.selected):
-                    insert = False
-                    break
-                else:
-                    if sol.dominates(nds_sol):
-                        now_dominated.append(nds_sol)
-                    # do not insert if sol is dominated by a solution in self.NDS
-                    if nds_sol.dominates(sol):
-                        insert = False
-                        break
-
-            # sol is inserted if it is not dominated by any solution in self.NDS,
-            # then all solutions in self.NDS dominated by sol are removed
-            if insert:
-                self.NDS.append(sol)
-                for dominated in now_dominated:
-                    self.NDS.remove(dominated)
-
-
-def _results_in_victor_format(nds, seconds, num_iterations, genes):
-    """
-    esto será borrado cuando se programe un Evaluate que reciba el NDS (lista de listas de pbis) y el dataset usado,
-    para calcular las métricas fuera del algoritmo.
-    :param nds:
-    :param seconds:
-    :param num_iterations:
-    :param genes:
-    :return:
-    """
-    # convertir solución al formato de las soluciones de Victor
-    problem = Problem(genes, ["MAX", "MIN"])
-    final_nds_formatted = []
-    for solution in nds:
-        individual = Solution(problem.genes, problem.objectives)
-        for b in np.arange(len(individual.genes)):
-            individual.genes[b].included = solution[b]
-        individual.evaluate_fitness()
-        final_nds_formatted.append(individual)
-
-    return {
-        "population": final_nds_formatted,
-        "time": seconds,
-        "numGenerations": num_iterations,
-    }
+# def _results_in_victor_format(nds, seconds, num_iterations, genes, num_evaluations,paretos):
+#    """
+#    esto será borrado cuando se programe un Evaluate que reciba el NDS (lista de listas de pbis) y el dataset usado,
+#    para calcular las métricas fuera del algoritmo.
+#    :param nds:
+#    :param seconds:
+#    :param num_iterations:
+#    :param genes:
+#    :param num_evaluations:
+#    :return:
+#    """
+#    # convertir solución al formato de las soluciones de Victor
+#    problem = Problem(genes, ["MAX", "MIN"])
+#    final_nds_formatted = []
+#    for solution in nds:
+#        individual = Solution(problem.genes, problem.objectives, DEPENDENCIES)
+#        for b in np.arange(len(individual.genes)):
+#            individual.genes[b].included = solution[b]
+#        individual.evaluate_fitness()
+#        final_nds_formatted.append(individual)
+#    print(seconds)
+#    return {
+#        "population": final_nds_formatted,
+#        "time": seconds,
+#        "numGenerations": num_iterations,
+#        "numEvaluations": num_evaluations,
+#        "paretos": paretos
+#    }
 
 
 def _get_options(argv=None):

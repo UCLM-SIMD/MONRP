@@ -11,9 +11,10 @@ class BaseGeneticExecuter(Executer):
     def initialize_file(self, file_path):
         # print("Running...")
         f = open(file_path, "w")
-        f.write("Dataset,Algorithm,Population Length,Generations,"
+        f.write("Dataset,Algorithm,Population Length,Generations,Evaluations,"
                 "Selection Scheme,Selection Candidates,Crossover Scheme,Crossover Probability,Mutation Scheme,"
-                "Mutation Probability,Replacement Scheme,Time(s),AvgValue,BestAvgValue,BestGeneration,HV,Spread,NumSolutions,Spacing,NumGenerations\n")
+                "Mutation Probability,Replacement Scheme,Time(s),AvgValue,BestAvgValue,BestGeneration,HV,Spread,NumSolutions,Spacing,"
+                "NumGenerations,Requirements per sol,NumEvaluations\n")
         f.close()
 
     def reset_file(self, file_path):
@@ -25,6 +26,7 @@ class BaseGeneticExecuter(Executer):
         dataset_name = self.algorithm.dataset_name
         population_length = self.algorithm.population_length
         generations = self.algorithm.max_generations
+        evaluations = self.algorithm.max_evaluations
         selection = self.algorithm.selection_scheme
         selection_candidates = self.algorithm.selection_candidates
         crossover = self.algorithm.crossover_scheme
@@ -54,12 +56,17 @@ class BaseGeneticExecuter(Executer):
             numSolutions = str(
                 metrics.calculate_numSolutions(result["population"]))
             spacing = str(metrics.calculate_spacing(result["population"]))
+            mean_bits_per_sol =  str(metrics.calculate_mean_bits_per_sol(result["population"]))
+
+            numEvaluations = str(
+                result["numEvaluations"]) if "numEvaluations" in result else 'NaN'
 
             f = open(file_path, "a")
             data = str(dataset_name) + "," + \
                 str(algorithm_name) + "," + \
                 str(population_length) + "," + \
                 str(generations) + "," + \
+                str(evaluations) + "," + \
                 str(selection) + "," + \
                 str(selection_candidates) + "," + \
                 str(crossover) + "," + \
@@ -75,7 +82,9 @@ class BaseGeneticExecuter(Executer):
                 str(spread) + "," + \
                 str(numSolutions) + "," + \
                 str(spacing) + "," + \
-                str(numGenerations) + \
+                str(numGenerations) + "," + \
+                str(mean_bits_per_sol) + "," + \
+                str(numEvaluations) + \
                 "\n"
 
             f.write(data)

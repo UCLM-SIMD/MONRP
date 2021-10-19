@@ -1,3 +1,5 @@
+from evaluation.format_population import format_population
+from algorithms.abstract_default.evaluation_exception import EvaluationLimit
 from algorithms.genetic.abstract_genetic.basegenetic_algorithm import BaseGeneticAlgorithm
 from algorithms.genetic.nsgaii.nsgaii_executer import NSGAIIExecuter
 from algorithms.genetic.nsgaii.nsgaii_utils import NSGAIIUtils
@@ -7,11 +9,11 @@ import time
 
 
 class NSGAIIAlgorithm(BaseGeneticAlgorithm):# TODO NSGAIIALGORITHM -> NSGAII y reescribir ficheros output
-    def __init__(self, dataset_name="1", random_seed=None, population_length=20, max_generations=1000,
+    def __init__(self, dataset_name="1", random_seed=None, population_length=20, max_generations=1000,max_evaluations=0,
                  selection="tournament", selection_candidates=2,
                  crossover="onepoint", crossover_prob=0.9,
                  mutation="flipeachbit", mutation_prob=0.1,
-                 replacement="elitism"):
+                 replacement="elitism",debug_mode=False,tackle_dependencies=False):
 
         self.utils = NSGAIIUtils(
             random_seed, population_length, selection_candidates, crossover_prob, mutation_prob)
@@ -23,10 +25,14 @@ class NSGAIIAlgorithm(BaseGeneticAlgorithm):# TODO NSGAIIALGORITHM -> NSGAII y r
         self.random_seed = random_seed
         self.population_length = population_length
         self.max_generations = max_generations
+        self.max_evaluations = max_evaluations
+
         self.population = None
         self.best_generation_avgValue = None
         self.best_generation = None
         self.best_individual = None
+        self.num_evaluations = 0
+        self.num_generations = 0
 
         self.selection_scheme = selection
         self.selection_candidates = selection_candidates
@@ -36,12 +42,18 @@ class NSGAIIAlgorithm(BaseGeneticAlgorithm):# TODO NSGAIIALGORITHM -> NSGAII y r
         self.mutation_prob = mutation_prob
         self.replacement_scheme = replacement
 
+        self.debug_mode = debug_mode
+        self.tackle_dependencies = tackle_dependencies
+
         self.fast_nondominated_sort = self.utils.fast_nondominated_sort
         self.calculate_crowding_distance = self.utils.calculate_crowding_distance
         self.crowding_operator = self.utils.crowding_operator
-        self.evaluate = self.utils.evaluate
+        #self.evaluate = self.utils.evaluate
         self.calculate_last_generation_with_enhance = self.utils.calculate_last_generation_with_enhance
         self.generate_starting_population = self.utils.generate_starting_population
+
+        self.repair_population_dependencies = self.utils.repair_population_dependencies
+
 
         if selection == "tournament":
             self.selection = self.utils.selection_tournament
@@ -60,27 +72,73 @@ class NSGAIIAlgorithm(BaseGeneticAlgorithm):# TODO NSGAIIALGORITHM -> NSGAII y r
             self.replacement = self.utils.replacement_elitism
 
         self.file = str(self.__class__.__name__)+"-"+str(dataset_name)+"-"+str(random_seed)+"-"+str(population_length)+"-" +\
-            str(max_generations)+"-"+selection+"-"+str(selection_candidates)+"-" +\
+            str(max_generations)+ "-"+selection+"-"+str(selection_candidates)+"-" +\
             str(crossover)+"-"+str(crossover_prob)+"-"+str(mutation) + \
             "-"+str(mutation_prob)+"-"+str(replacement)+".txt"
+            # + "-"+str(max_evaluations) TODO
 
     def get_name(self):
-        return "NSGA-II+"+str(self.population_length)+"+"+str(self.max_generations)+"+"+str(self.crossover_prob)\
+        return "NSGA-II+"+str(self.population_length)+"+"+str(self.max_generations)+"+"+str(self.max_evaluations)\
+        +"+"+str(self.crossover_prob)\
             + "+"+str(self.mutation_scheme)+"+"+str(self.mutation_prob)
+
+            
+
+    def evaluate(self, population, best_individual):
+        #super().evaluate(population, best_individual)
+        try:
+            best_score = 0
+            new_best_individual = None
+            for ind in population:
+                ind.evaluate_fitness()
+                self.add_evaluation(population)#############
+                if ind.total_score > best_score:
+                    new_best_individual = copy.deepcopy(ind)
+                    best_score = ind.total_score
+            if best_individual is not None:
+                if new_best_individual.total_score > best_individual.total_score:
+                    best_individual = copy.deepcopy(new_best_individual)
+            else:
+                best_individual = copy.deepcopy(new_best_individual)
+        except EvaluationLimit:
+            pass
+
+
+    def add_evaluation(self,new_population):
+        self.num_evaluations+=1
+        #if(self.num_evaluations >= self.max_evaluations):
+        if (self.stop_criterion(self.num_generations, self.num_evaluations)):
+            # acciones:
+            self.returned_population = copy.deepcopy(new_population)
+            self.fast_nondominated_sort(self.returned_population)
+            self.best_generation, self.best_generation_avgValue = self.calculate_last_generation_with_enhance(
+                    self.best_generation, self.best_generation_avgValue, self.num_generations, self.returned_population)
+            raise EvaluationLimit
+
+
+
 
     def reset(self):
         self.best_generation_avgValue = 0
         self.best_generation = 0
         self.best_individual = None
         self.population = None
+        self.num_generations = 0
+        self.num_evaluations = 0
+        self.returned_population = None
 
     # RUN ALGORITHM------------------------------------------------------------------
     def run(self):
         self.reset()
+        paretos = []
         start = time.time()
+
         # inicializacion del nsgaii
         self.population = self.generate_starting_population()
+        self.returned_population = copy.deepcopy(self.population)
         self.evaluate(self.population, self.best_individual)
+        #self.num_evaluations+=len(self.population)
+
         # ordenar por NDS y crowding distance
         self.fast_nondominated_sort(self.population)
         for front in self.population.fronts:
@@ -92,60 +150,79 @@ class NSGAIIAlgorithm(BaseGeneticAlgorithm):# TODO NSGAIIALGORITHM -> NSGAII y r
         offsprings = self.mutation(offsprings)
         # offsprings = self.replacement(self.population, offsprings)
 
-        # iteraciones del nsgaii
-        num_generations = 0
-        returned_population = None
+        
+
         # or not(num_generations > (self.best_generation+20)):
-        while (num_generations < self.max_generations):
-            self.population.extend(offsprings)
-            self.evaluate(self.population, self.best_individual)
-            self.fast_nondominated_sort(self.population)
-            new_population = Population()
-            front_num = 0
+        # while (num_generations < self.max_generations):
+        try:
+            while (not self.stop_criterion(self.num_generations, self.num_evaluations)):
+                self.population.extend(offsprings)
+                self.evaluate(self.population, self.best_individual)
+                #self.num_evaluations+=len(self.population)
 
-            # till parent population is filled, calculate crowding distance in Fi, include i-th non-dominated front in parent pop
-            while len(new_population) + len(self.population.fronts[front_num]) <= self.population_length:
-                self.calculate_crowding_distance(
-                    self.population.fronts[front_num])
-                new_population.extend(self.population.fronts[front_num])
-                front_num += 1
+                self.fast_nondominated_sort(self.population)
+                new_population = Population()
+                front_num = 0
 
-            # ordenar los individuos del ultimo front por crowding distance y agregar los X que falten para completar la poblacion
-            self.calculate_crowding_distance(self.population.fronts[front_num])
+                # till parent population is filled, calculate crowding distance in Fi, include i-th non-dominated front in parent pop
+                while len(new_population) + len(self.population.fronts[front_num]) <= self.population_length:
+                    self.calculate_crowding_distance(
+                        self.population.fronts[front_num])
+                    new_population.extend(self.population.fronts[front_num])
+                    front_num += 1
 
-            # sort in descending order using >=n
-            self.population.fronts[front_num].sort(
-                key=lambda individual: individual.crowding_distance, reverse=True)
+                # ordenar los individuos del ultimo front por crowding distance y agregar los X que falten para completar la poblacion
+                self.calculate_crowding_distance(self.population.fronts[front_num])
 
-            # choose first N elements of Pt+1
-            new_population.extend(
-                self.population.fronts[front_num][0:self.population_length - len(new_population)])
-            self.population = copy.deepcopy(new_population)
-            # ordenar por NDS y crowding distance
-            self.fast_nondominated_sort(self.population)
-            for front in self.population.fronts:
-                self.calculate_crowding_distance(front)
+                # sort in descending order using >=n
+                self.population.fronts[front_num].sort(
+                    key=lambda individual: individual.crowding_distance, reverse=True)
 
-            # use selection,crossover and mutation to create a new population Qt+1
-            offsprings = self.selection(self.population)
-            offsprings = self.crossover(offsprings)
-            offsprings = self.mutation(offsprings)
-            # offsprings = self.replacement(self.population, offsprings)
+                # choose first N elements of Pt+1
+                new_population.extend(
+                    self.population.fronts[front_num][0:self.population_length - len(new_population)])
+                self.population = copy.deepcopy(new_population)
+                # ordenar por NDS y crowding distance
+                self.fast_nondominated_sort(self.population)
+                for front in self.population.fronts:
+                    self.calculate_crowding_distance(front)
 
-            returned_population = copy.deepcopy(self.population)
-            self.best_generation, self.best_generation_avgValue = self.calculate_last_generation_with_enhance(
-                self.best_generation, self.best_generation_avgValue, num_generations, returned_population)
+                # use selection,crossover and mutation to create a new population Qt+1
+                offsprings = self.selection(self.population)
+                offsprings = self.crossover(offsprings)
+                offsprings = self.mutation(offsprings)
+                # offsprings = self.replacement(self.population, offsprings)
 
-            num_generations += 1
-            # mostrar por pantalla
-            # if num_generations % 100 == 0:
-            #	print("Nº Generations: ", num_generations)
+                # repair population if dependencies tackled:
+                if(self.tackle_dependencies):
+                    #offsprings = self.repair_population_dependencies(
+                    #    offsprings)
+                    self.population = self.repair_population_dependencies(
+                        self.population)
+
+                self.returned_population = copy.deepcopy(self.population)
+                self.best_generation, self.best_generation_avgValue = self.calculate_last_generation_with_enhance(
+                    self.best_generation, self.best_generation_avgValue, self.num_generations, self.returned_population)
+
+                self.num_generations += 1
+
+                if self.debug_mode:
+                    paretos.append(format_population(self.nds,self.dataset))
+
+                # mostrar por pantalla
+                # if num_generations % 100 == 0:
+                #	print("Nº Generations: ", num_generations)
+
+        except EvaluationLimit:
+            pass
 
         end = time.time()
 
-        return {"population": returned_population.fronts[0],
+        return {"population": self.returned_population.fronts[0],
                 "time": end - start,
                 "best_individual": self.best_individual,
                 "bestGeneration": self.best_generation,
-                "numGenerations": num_generations,
+                "numGenerations": self.num_generations,
+                "numEvaluations": self.num_evaluations,
+                "paretos": paretos
                 }

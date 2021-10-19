@@ -83,6 +83,8 @@ celerybeat-schedule
 
 # virtualenv
 venv/
+venv1/
+venv2/
 ENV/
 
 # Spyder project settings
@@ -154,7 +156,7 @@ fabric.properties
 
 
 # output
-
+output
 .idea/misc.xml
 plots
 temp-plot.*
