@@ -22,7 +22,7 @@ from scipy import stats as scipy_stats
 
 
 class MIMICAlgorithm(EDAAlgorithm):
-    def __init__(self, dataset_name:str="test", random_seed:int=None, debug_mode:bool=False, tackle_dependencies:bool=False,
+    def __init__(self, dataset_name:str="1", random_seed:int=None, debug_mode:bool=False, tackle_dependencies:bool=False,
                 population_length:int=100, max_generations:int=100, max_evaluations:int=0,
                 selected_individuals:int=60, selection_scheme:str="nds", replacement_scheme:str="replacement"):
 
@@ -363,7 +363,8 @@ class MIMICAlgorithm(EDAAlgorithm):
                 else:
                     sample[variables[j]] = 0
 
-        sample_ind = GraspSolution(self.dataset,None, selected=sample)
+        sample_ind = GraspSolution(None, costs=self.dataset.pbis_cost_scaled,
+                                   values=self.dataset.pbis_satisfaction_scaled, selected=sample)
         return sample_ind
 
     # RUN ALGORITHM------------------------------------------------------------------
@@ -407,7 +408,7 @@ class MIMICAlgorithm(EDAAlgorithm):
         except EvaluationLimit:
             pass
 
-        #self.nds = format_population(self.nds, self.dataset)
+        self.nds = format_population(self.nds, self.dataset)
         end = time.time()
 
         print("\nNDS created has", self.nds.__len__(), "solution(s)")

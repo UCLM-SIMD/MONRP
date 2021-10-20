@@ -88,9 +88,9 @@ class GRASP(Algorithm):
 
     """
 
-    def __init__(self, dataset:str="test", iterations:int=20, solutions_per_iteration:int=10, max_evaluations:int=0, init_type:str="stochastically",
-                 local_search_type:str="best_first_neighbor_random", path_relinking_mode:str="None", seed:int=None, debug_mode:bool=False,
-                 tackle_dependencies:bool=False):
+    def __init__(self, dataset="1", iterations=20, solutions_per_iteration=10, max_evaluations=0, init_type="stochastically",
+                 local_search_type="best_first_neighbor_random", path_relinking_mode="None", seed=None, debug_mode=False,
+                 tackle_dependencies=False):
         """
         :param dataset: integer number: 1 or 2
         :param iterations: integer (default 20), number of GRASP construct+local_search repetitions
@@ -99,30 +99,25 @@ class GRASP(Algorithm):
         :param local_search_type: type of search to evolve initiated solutions
         :param seed: int. seed for random generation of solutions in the first phase of each GRASP iteration
         """
-
-        super().__init__(dataset, seed, debug_mode, tackle_dependencies)
-
-        #self.dataset = Dataset(dataset)
-        #self.dataset_name = dataset
-
-        self.iterations:int = iterations
-        self.solutions_per_iteration:int = solutions_per_iteration
-        self.max_evaluations:int = max_evaluations
+        self.dataset = Dataset(dataset)
+        self.dataset_name = dataset
+        self.iterations = iterations
+        self.solutions_per_iteration = solutions_per_iteration
+        self.max_evaluations = max_evaluations
 
         self.nds = []
-        self.num_evaluations:int = 0
-        self.num_iterations:int = 0
-        self.start:int = 0
+        self.num_evaluations = 0
+        self.num_iterations = 0
+        self.start = 0
 
-        self.init_type:str = init_type
-        self.local_search_type:str = local_search_type
-        self.path_relinking_mode:str = path_relinking_mode
+        self.debug_mode = debug_mode
+        self.tackle_dependencies = tackle_dependencies
 
-        #self.debug_mode = debug_mode
-        #self.tackle_dependencies = tackle_dependencies
-
-        #if seed is not None:
-        #    np.random.seed(seed)
+        self.init_type = init_type
+        self.local_search_type = local_search_type
+        self.path_relinking_mode = path_relinking_mode
+        if seed is not None:
+            np.random.seed(seed)
 
         if self.init_type == "stochastically":
             self.initialize = self.init_solutions_stochastically
@@ -143,7 +138,7 @@ class GRASP(Algorithm):
             self.local_search = "None"
 
         self.executer = GRASPExecuter(algorithm=self)
-        self.file:str = self.__class__.__name__+"-"+(str(dataset)+"-"+str(seed)+"-"+str(iterations)+"-"+str(solutions_per_iteration)
+        self.file = self.__class__.__name__+"-"+(str(dataset)+"-"+str(seed)+"-"+str(iterations)+"-"+str(solutions_per_iteration)
                                                  + "-"+str(init_type) + "-"+str(local_search_type) + "-"+str(path_relinking_mode)+".txt")
         # + "-"+str(max_evaluations) TODO
 
@@ -233,10 +228,8 @@ class GRASP(Algorithm):
         # return selected_list, seconds
         #genes,_ = generate_dataset_genes(self.dataset.id)
 
-
-        #self.nds = format_population(self.nds, self.dataset)
         return {
-            "population": self.nds,
+            "population": format_population(self.nds, self.dataset),
             "time": seconds,
             "numGenerations": self.num_iterations,
             "numEvaluations": self.num_evaluations,
@@ -275,7 +268,8 @@ class GRASP(Algorithm):
 
         solutions = []
         for i in np.arange(self.solutions_per_iteration):
-            sol = GraspSolution(self.dataset,candidates_score_scaled)
+            sol = GraspSolution(candidates_score_scaled, costs=self.dataset.pbis_cost_scaled,
+                                values=self.dataset.pbis_satisfaction_scaled)
             # avoid solution with 0 cost due to 0 candidates selected
             if np.count_nonzero(sol.selected) > 0:
                 solutions.append(sol)
@@ -294,7 +288,8 @@ class GRASP(Algorithm):
         # create GraspSolutions
         solutions = []
         for i in np.arange(self.solutions_per_iteration):
-            sol = GraspSolution(self.dataset,candidates_score_scaled)
+            sol = GraspSolution(candidates_score_scaled, costs=self.dataset.pbis_cost_scaled,
+                                values=self.dataset.pbis_satisfaction_scaled)
             # avoid solution with 0 cost due to 0 candidates selected
             if np.count_nonzero(sol.selected) > 0:
                 solutions.append(sol)

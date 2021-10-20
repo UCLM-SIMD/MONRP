@@ -15,9 +15,6 @@ class NSGAIIAlgorithm(BaseGeneticAlgorithm):# TODO NSGAIIALGORITHM -> NSGAII y r
                  mutation="flipeachbit", mutation_prob=0.1,
                  replacement="elitism",debug_mode=False,tackle_dependencies=False):
 
-        super().__init__(dataset_name, random_seed, debug_mode, tackle_dependencies,
-            population_length, max_generations, max_evaluations)
-
         self.utils = NSGAIIUtils(
             random_seed, population_length, selection_candidates, crossover_prob, mutation_prob)
         self.executer = NSGAIIExecuter(algorithm=self)
@@ -25,10 +22,17 @@ class NSGAIIAlgorithm(BaseGeneticAlgorithm):# TODO NSGAIIALGORITHM -> NSGAII y r
             dataset_name=dataset_name)
         self.dataset_name = dataset_name
 
-        #self.random_seed = random_seed
-        #self.population_length = population_length
-        #self.max_generations = max_generations
-        #self.max_evaluations = max_evaluations
+        self.random_seed = random_seed
+        self.population_length = population_length
+        self.max_generations = max_generations
+        self.max_evaluations = max_evaluations
+
+        self.population = None
+        self.best_generation_avgValue = None
+        self.best_generation = None
+        self.best_individual = None
+        self.num_evaluations = 0
+        self.num_generations = 0
 
         self.selection_scheme = selection
         self.selection_candidates = selection_candidates
@@ -38,16 +42,8 @@ class NSGAIIAlgorithm(BaseGeneticAlgorithm):# TODO NSGAIIALGORITHM -> NSGAII y r
         self.mutation_prob = mutation_prob
         self.replacement_scheme = replacement
 
-        self.population = None
-        self.best_generation_avgValue = None
-        self.best_generation = None
-
-        self.num_evaluations:int = 0
-        self.num_generations:int = 0
-        self.best_individual = None
-
-        #self.debug_mode = debug_mode
-        #self.tackle_dependencies = tackle_dependencies
+        self.debug_mode = debug_mode
+        self.tackle_dependencies = tackle_dependencies
 
         self.fast_nondominated_sort = self.utils.fast_nondominated_sort
         self.calculate_crowding_distance = self.utils.calculate_crowding_distance
@@ -75,7 +71,7 @@ class NSGAIIAlgorithm(BaseGeneticAlgorithm):# TODO NSGAIIALGORITHM -> NSGAII y r
         else:
             self.replacement = self.utils.replacement_elitism
 
-        self.file:str = str(self.__class__.__name__)+"-"+str(dataset_name)+"-"+str(random_seed)+"-"+str(population_length)+"-" +\
+        self.file = str(self.__class__.__name__)+"-"+str(dataset_name)+"-"+str(random_seed)+"-"+str(population_length)+"-" +\
             str(max_generations)+ "-"+selection+"-"+str(selection_candidates)+"-" +\
             str(crossover)+"-"+str(crossover_prob)+"-"+str(mutation) + \
             "-"+str(mutation_prob)+"-"+str(replacement)+".txt"
