@@ -15,8 +15,8 @@ class EDAAlgorithm(Algorithm):  # Estimation of Distribution Algorithm
 
         super().__init__(dataset_name, random_seed, debug_mode, tackle_dependencies)
 
-        self.dataset:Dataset = Dataset(dataset_name)
-        self.dataset_name:str = dataset_name
+        #self.dataset:Dataset = Dataset(dataset_name)
+        #self.dataset_name:str = dataset_name
 
         self.nds = []
         self.num_evaluations:int = 0
@@ -47,14 +47,11 @@ class EDAAlgorithm(Algorithm):  # Estimation of Distribution Algorithm
 
             # probs = np.full(
             # self.dataset.pbis_score.size, 1/self.dataset.pbis_score.size)  # 0.5 ?
-            # ind = GraspSolution(probs, costs=self.dataset.pbis_cost_scaled,
-            #                    values=self.dataset.pbis_satisfaction_scaled)
+            # ind = GraspSolution(self.dataset,probs)
 
-            ind = GraspSolution(candidates_score_scaled, costs=self.dataset.pbis_cost_scaled,
-                                values=self.dataset.pbis_satisfaction_scaled)
+            ind = GraspSolution(self.dataset,candidates_score_scaled)
 
-            # ind = GraspSolution(None, costs=self.dataset.pbis_cost_scaled,
-            #                    values=self.dataset.pbis_satisfaction_scaled,uniform=True)
+            # ind = GraspSolution(self.dataset,None,uniform=True)
 
             population.append(ind)
         return population

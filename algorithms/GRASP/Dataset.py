@@ -50,7 +50,7 @@ class Dataset:
 
         self.id = dataset
 
-        if dataset == "example":  # 2 clientes 5 reqs 2 ints: 1-2-3-4-5; 1->2; 4->1
+        if dataset == "test":  # 2 clientes 5 reqs 2 ints: 1-2-3-4-5; 1->2; 4->1
             self.pbis_cost = np.array(
                 [3, 3, 3, 3, 3])
             self.stakeholders_importances = np.array([1, 3])

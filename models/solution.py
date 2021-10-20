@@ -2,8 +2,6 @@ import random
 import uuid
 import copy
 
-from evaluation.topological_sorting import Graph
-
 
 class Solution:
     def __init__(self, genes, objectives, dependencies):
@@ -130,7 +128,7 @@ class Solution:
     def print_genes(self):
         return_genes = ""
         for i in range(0, len(self.genes)):
-            return_genes += str(self.genes[i].included)+","
+            return_genes += str(self.genes[i].included)#+","
         return return_genes
 
     def print_genes_indexes(self):

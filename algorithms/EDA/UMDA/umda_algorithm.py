@@ -18,7 +18,7 @@ import numpy as np
 
 
 class UMDAAlgorithm(EDAAlgorithm):  # Univariate Marginal Distribution Algorithm
-    def __init__(self, dataset_name:str="1", random_seed:int=None, debug_mode:bool=False, tackle_dependencies:bool=False,
+    def __init__(self, dataset_name:str="test", random_seed:int=None, debug_mode:bool=False, tackle_dependencies:bool=False,
                 population_length:int=100, max_generations:int=100, max_evaluations:int=0,
                  selected_individuals:int=60, selection_scheme:str="nds", replacement_scheme:str="replacement"):
 
@@ -86,24 +86,21 @@ class UMDAAlgorithm(EDAAlgorithm):  # Univariate Marginal Distribution Algorithm
     def generate_sample_from_probabilities_binomial(self, probabilities):
         #probs = probabilities/len(probabilities)
         sample_selected = np.random.binomial(1, probabilities)
-        sample = GraspSolution(None, costs=self.dataset.pbis_cost_scaled,
-                               values=self.dataset.pbis_satisfaction_scaled, selected=sample_selected)
+        sample = GraspSolution(self.dataset, None, selected=sample_selected)
         return sample
 
     def generate_sample_from_probabilities(self, probabilities):
         probs = [prob * 10 for prob in probabilities]
         sum_probs = np.sum(probs)
         scaled_probs = probs / sum_probs
-        sample = GraspSolution(scaled_probs, costs=self.dataset.pbis_cost_scaled,
-                               values=self.dataset.pbis_satisfaction_scaled)
+        sample = GraspSolution(self.dataset, scaled_probs)
         return sample
 
     def replace_population_from_probabilities_elitism(self, probability_model, population):
         new_population = []
         # elitist R-1 inds
         for i in np.arange(self.population_length-1):
-            # new_individual = GraspSolution(probability_model, costs=self.dataset.pbis_cost_scaled,
-            #                               values=self.dataset.pbis_satisfaction_scaled)
+            # new_individual = GraspSolution(self.dataset,probability_model, )
             #new_individual= np.random.choice([0, 1], size=len(self.dataset.pbis_cost_scaled), p=probability_model)
             new_individual = self.generate_sample_from_probabilities_binomial(
                 probability_model)
@@ -181,7 +178,7 @@ class UMDAAlgorithm(EDAAlgorithm):  # Univariate Marginal Distribution Algorithm
         except EvaluationLimit:
             pass
 
-        self.nds = format_population(self.nds, self.dataset)
+        #self.nds = format_population(self.nds, self.dataset)
         end = time.time()
 
         print("\nNDS created has", self.nds.__len__(), "solution(s)")

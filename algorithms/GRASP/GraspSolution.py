@@ -32,7 +32,7 @@ class GraspSolution:
         it simulates the result of flip(i,cost_i,value_i) and returns the would-be new cost, value and mono_objective_score
     """
 
-    def __init__(self, probabilities, costs, values, selected=None, uniform=False):
+    def __init__(self, dataset: Dataset, probabilities, selected=None, uniform=False):
         """
         :param probabilities: numpy ndarray
             probabilities[i] is the probability in range [0-1] to set self.selected[i] to 1.
@@ -44,6 +44,9 @@ class GraspSolution:
             values[i] is the goodness metric of candidate i.
             when called from GRASP object, it is recommended to use scaled values such as self.dataset.pbis_satisfaction_scaled
         """
+        self.dataset:Dataset = dataset
+        costs = dataset.pbis_cost_scaled
+        values = dataset.pbis_satisfaction_scaled
         if uniform:
             # TODO PROBAR UMDA ,replace=False
             genes = np.random.choice(2, len(costs))
@@ -173,8 +176,8 @@ class GraspSolution:
 
     def set_bit(self, index, value, dataset: Dataset):
         self.selected[index] = value
-        i_cost = dataset.pbis_cost_scaled[index]
-        i_value = dataset.pbis_satisfaction_scaled[index]
+        i_cost = self.dataset.pbis_cost_scaled[index]
+        i_value = self.dataset.pbis_satisfaction_scaled[index]
         mult = 1 if value == 1 else -1
         self.total_cost += i_cost*mult
         self.total_satisfaction += i_value*mult
@@ -196,4 +199,10 @@ class GraspSolution:
         string += "\nSatisfaction: " + str(self.total_satisfaction)
         string += "\nCost: " + str(self.total_cost)
         string += "\nMono Objective Score: " + str(self.mono_objective_score)
+        return string
+    
+    def print_genes(self):
+        string=""
+        for gen in self.selected:
+            string+=str(gen)
         return string

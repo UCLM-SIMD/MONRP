@@ -1,4 +1,5 @@
 from abc import ABC
+import random
 
 from algorithms.GRASP.Dataset import Dataset
 import numpy as np
@@ -13,9 +14,13 @@ class Algorithm(ABC):
         self.debug_mode:bool = debug_mode
         self.tackle_dependencies:bool = tackle_dependencies
 
-        self.random_seed:int = random_seed
-        if random_seed is not None:
-            np.random.seed(random_seed)
+        self.set_seed(random_seed)
+    
+    def set_seed(self,seed:int):
+        self.random_seed:int = seed
+        if seed is not None:
+            np.random.seed(seed)
+            random.seed(seed)
 
     def reset(self):
         pass

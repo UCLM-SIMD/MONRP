@@ -130,8 +130,7 @@ class PBILAlgorithm(EDAAlgorithm):  # Population Based Incremental Learning
     def generate_sample_from_probabilities(self, probabilities):
         sample_selected = np.random.binomial(1, probabilities)
 
-        sample = GraspSolution(None, costs=self.dataset.pbis_cost_scaled,
-                               values=self.dataset.pbis_satisfaction_scaled, selected=sample_selected)
+        sample = GraspSolution(self.dataset, None, selected=sample_selected)
         return sample
 
 
