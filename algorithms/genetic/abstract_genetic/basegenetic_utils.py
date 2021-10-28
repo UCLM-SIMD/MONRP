@@ -21,12 +21,12 @@ class BaseGeneticUtils(Utils):
         self.objectives_minimization = ["MAX", "MIN"]
 
     # GENERATE DATASET PROBLEM------------------------------------------------------------------
-    def generate_dataset_problem(self, dataset_name):
-        genes, dataset = generate_dataset_genes(dataset_name)
-        problem = Problem(genes, self.objectives_minimization)
-        self.problem = problem
-        self.dataset = dataset
-        return self.problem, self.dataset
+    #def generate_dataset_problem(self, dataset_name):
+    #    genes, dataset = generate_dataset_genes(dataset_name)
+    #    problem = Problem(genes, self.objectives_minimization)
+    #    self.problem = problem
+    #    self.dataset = dataset
+    #    return self.problem, self.dataset
 
     # EVALUATION------------------------------------------------------------------
     def evaluate(self, population, best_individual):

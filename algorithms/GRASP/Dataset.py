@@ -88,9 +88,10 @@ class Dataset:
         self.pbis_satisfaction_scaled = (
             self.pbis_satisfaction - np.min(self.pbis_satisfaction) + margin) / (diff + margin)
 
+        
+        #self.pbis_score = self.pbis_satisfaction_scaled / self.pbis_cost_scaled
+        
         # each pbi score is computed from the scaled versions of pbi satisfaction and cost
-        self.pbis_score = self.pbis_satisfaction_scaled / self.pbis_cost_scaled
-
         self.pbis_cost_scaled, self.pbis_satisfaction_scaled, self.pbis_score = normalize_dataset_sum(
             self.pbis_cost, self.pbis_satisfaction, self.stakeholders_importances, self.stakeholders_pbis_priorities)
 
@@ -129,19 +130,3 @@ class Dataset:
             # if not -> add new dependency to parent list and recursively launch aux fun
             self.new_dependencies.setdefault(parent, []).append(d)
             self.aux_dependencies(parent, d)
-    """ 
-    def check_deps()
-        self.new_deps=set()
-        for dep in deps:
-            if dep is not None:
-                for d2 in dep:
-                    self.new_deps[dep].append(d2)#modo que no se repitan si ya hay uno tipo set()
-                    aux_deps(dep,d2)
-
-    def aux_deps(padre,hijo):
-        if padre!=hijo and hijo not in self.new_deps[padre]: # evitar ciclos
-            for d in deps[hijo]:
-                self.new_deps[padre].append(d)
-                    self.auxdeps(padre,d)
-    
-    """

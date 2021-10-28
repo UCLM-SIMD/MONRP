@@ -41,8 +41,8 @@ class BaseGeneticAlgorithm(Algorithm):
         self.num_generations: int = 0
         self.best_individual = None
 
-    def reset(self):
-        pass
+    #def reset(self):
+    #    pass
 
     def run(self):
         pass
@@ -86,6 +86,9 @@ class BaseGeneticAlgorithm(Algorithm):
                 best_individual = copy.deepcopy(new_best_individual)
         else:
             best_individual = copy.deepcopy(new_best_individual)
+
+    def add_evaluation(self, new_population):
+        pass
 
     # def evaluate(self, population, best_individual):
     #    try:

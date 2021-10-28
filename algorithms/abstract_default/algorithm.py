@@ -1,4 +1,5 @@
 from abc import ABC
+import copy
 import random
 
 from algorithms.GRASP.Dataset import Dataset
@@ -41,5 +42,21 @@ class Algorithm(ABC):
 
     def stop_criterion(self):
         pass
+
+        # EVALUATION------------------------------------------------------------------
+    def evaluate(self, population, best_individual):
+        best_score = 0
+        new_best_individual = None
+        for ind in population:
+            ind.evaluate()
+            if ind.mono_objective_score > best_score:
+                new_best_individual = copy.deepcopy(ind)
+                best_score = ind.mono_objective_score
+            self.add_evaluation(population)
+        if best_individual is not None:
+            if new_best_individual.mono_objective_score > best_individual.mono_objective_score:
+                best_individual = copy.deepcopy(new_best_individual)
+        else:
+            best_individual = copy.deepcopy(new_best_individual)
 
 

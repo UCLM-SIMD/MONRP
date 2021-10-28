@@ -101,19 +101,19 @@ class EDAAlgorithm(Algorithm):  # Estimation of Distribution Algorithm
             sol.correct_dependencies(self.dataset)
         return solutions
 
-    def evaluate(self, population, best_individual):
-        best_score = 0
-        new_best_individual = None
-        for ind in population:
-            if ind.compute_mono_objective_score() > best_score:
-                new_best_individual = copy.deepcopy(ind)
-                best_score = ind.compute_mono_objective_score()
-            self.add_evaluation(population)
-        if best_individual is not None:
-            if new_best_individual.compute_mono_objective_score() > best_individual.compute_mono_objective_score():
-                best_individual = copy.deepcopy(new_best_individual)
-        else:
-            best_individual = copy.deepcopy(new_best_individual)
+    #def evaluate(self, population, best_individual):
+    #    best_score = 0
+    #    new_best_individual = None
+    #    for ind in population:
+    #        if ind.compute_mono_objective_score() > best_score:
+    #            new_best_individual = copy.deepcopy(ind)
+    #            best_score = ind.compute_mono_objective_score()
+    #        self.add_evaluation(population)
+    #    if best_individual is not None:
+    #        if new_best_individual.compute_mono_objective_score() > best_individual.compute_mono_objective_score():
+    #            best_individual = copy.deepcopy(new_best_individual)
+    #    else:
+    #        best_individual = copy.deepcopy(new_best_individual)
 
     def add_evaluation(self, new_population):
         self.num_evaluations += 1
