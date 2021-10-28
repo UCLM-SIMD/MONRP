@@ -6,7 +6,6 @@ from algorithms.abstract_default.evaluation_exception import EvaluationLimit
 from evaluation.update_nds import get_nondominated_solutions
 from models.solution import Solution
 from models.problem import Problem
-from datasets.dataset_gen_generator import generate_dataset_genes
 from algorithms.GRASP.GraspSolution import GraspSolution
 from algorithms.GRASP.Dataset import Dataset
 from algorithms.EDA.UMDA.umda_executer import UMDAExecuter
