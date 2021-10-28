@@ -119,7 +119,8 @@ class EDAAlgorithm(Algorithm):  # Estimation of Distribution Algorithm
         self.num_evaluations += 1
         # if(self.num_evaluations >= self.max_evaluations):
         if (self.stop_criterion(self.num_generations, self.num_evaluations)):
-            self.update_nds(new_population)
+            #self.update_nds(new_population)
+            get_nondominated_solutions(new_population, self.nds)
             raise EvaluationLimit
 
     def reset(self):

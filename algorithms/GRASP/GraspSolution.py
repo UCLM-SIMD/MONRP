@@ -44,7 +44,7 @@ class GraspSolution:
             values[i] is the goodness metric of candidate i.
             when called from GRASP object, it is recommended to use scaled values such as self.dataset.pbis_satisfaction_scaled
         """
-        self.dataset:Dataset = dataset
+        self.dataset: Dataset = dataset
         costs = dataset.pbis_cost_scaled
         values = dataset.pbis_satisfaction_scaled
         if uniform:
@@ -79,7 +79,15 @@ class GraspSolution:
          methods do overwrite it)
         :return: mixture of satisfactions and costs of all selected candidates
         """
-        return self.total_satisfaction / (self.total_cost + 1 / len(np.where(self.selected == 1)))
+        self.mono_objective_score = self.total_satisfaction / (self.total_cost + 1 / len(np.where(self.selected == 1)))
+
+        return self.mono_objective_score
+
+    def evaluate(self):
+        sel=self.selected==1
+        self.total_cost = self.dataset.pbis_cost_scaled[sel].sum()
+        self.total_satisfaction = self.dataset.pbis_satisfaction_scaled[sel].sum()
+        return self.compute_mono_objective_score()
 
     def flip(self, i, i_cost, i_value):
         """
@@ -174,7 +182,7 @@ class GraspSolution:
                 return True
         return False
 
-    def set_bit(self, index, value, dataset: Dataset):
+    def set_bit(self, index, value, dataset: Dataset = None):
         self.selected[index] = value
         i_cost = self.dataset.pbis_cost_scaled[index]
         i_value = self.dataset.pbis_satisfaction_scaled[index]
@@ -182,16 +190,22 @@ class GraspSolution:
         self.total_cost += i_cost*mult
         self.total_satisfaction += i_value*mult
 
-    def correct_dependencies(self, dataset):
+    def correct_dependencies(self, dataset=None):
         # for each included gene
         for gene_index in range(len(self.selected)):
             if(self.selected[gene_index] == 1):
                 # if has dependencies -> include all genes
-                if dataset.dependencies[gene_index] is None:
+                if self.dataset.dependencies[gene_index] is None:
                     continue
-                for other_gene in dataset.dependencies[gene_index]:
+                for other_gene in self.dataset.dependencies[gene_index]:
                     #self.selected[other_gene-1] = 1
-                    self.set_bit((other_gene-1), 1, dataset)
+                    self.set_bit((other_gene-1), 1, self.dataset)
+
+    def get_max_cost_satisfactions(self):
+        return np.sum(self.dataset.pbis_cost_scaled), np.sum(self.dataset.pbis_satisfaction_scaled)
+
+    def get_min_cost_satisfactions(self):
+        return 0, 0
 
     def __str__(self):
         string = "PBIs selected in this Solution: "
@@ -200,9 +214,9 @@ class GraspSolution:
         string += "\nCost: " + str(self.total_cost)
         string += "\nMono Objective Score: " + str(self.mono_objective_score)
         return string
-    
+
     def print_genes(self):
-        string=""
+        string = ""
         for gen in self.selected:
-            string+=str(gen)
+            string += str(gen)
         return string

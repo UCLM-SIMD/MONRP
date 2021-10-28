@@ -10,6 +10,20 @@
             "env": {
                 "PYTHONPATH": "${workspaceRoot}"
             }
-        }
-    ]
+        },
+        {
+            "name": "Python: Test",
+            "type": "python",
+            "request": "launch",
+            "program": "unit_tests.py",
+            "args": [
+                "unittest"
+            ],
+            "cwd": "${workspaceRoot}",
+            "env": {
+                "PYTHONPATH": "${workspaceRoot}"
+            }
+        },
+    ],
+
 }

@@ -41,7 +41,7 @@ class Dataset:
 
     """
 
-    def __init__(self, dataset):
+    def __init__(self, dataset="test"):
         """
         :param
         dataset: string: 1 or 2 (at the moment)

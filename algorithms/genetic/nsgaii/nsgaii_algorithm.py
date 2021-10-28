@@ -88,24 +88,24 @@ class NSGAIIAlgorithm(BaseGeneticAlgorithm):# TODO NSGAIIALGORITHM -> NSGAII y r
 
             
 
-    def evaluate(self, population, best_individual):
-        #super().evaluate(population, best_individual)
-        try:
-            best_score = 0
-            new_best_individual = None
-            for ind in population:
-                ind.evaluate_fitness()
-                self.add_evaluation(population)#############
-                if ind.total_score > best_score:
-                    new_best_individual = copy.deepcopy(ind)
-                    best_score = ind.total_score
-            if best_individual is not None:
-                if new_best_individual.total_score > best_individual.total_score:
-                    best_individual = copy.deepcopy(new_best_individual)
-            else:
-                best_individual = copy.deepcopy(new_best_individual)
-        except EvaluationLimit:
-            pass
+    #def evaluate(self, population, best_individual):
+    #    #super().evaluate(population, best_individual)
+    #    try:
+    #        best_score = 0
+    #        new_best_individual = None
+    #        for ind in population:
+    #            ind.evaluate_fitness()
+    #            self.add_evaluation(population)#############
+    #            if ind.total_score > best_score:
+    #                new_best_individual = copy.deepcopy(ind)
+    #                best_score = ind.total_score
+    #        if best_individual is not None:
+    #            if new_best_individual.total_score > best_individual.total_score:
+    #                best_individual = copy.deepcopy(new_best_individual)
+    #        else:
+    #            best_individual = copy.deepcopy(new_best_individual)
+    #    except EvaluationLimit:
+    #        pass
 
 
     def add_evaluation(self,new_population):
@@ -123,12 +123,7 @@ class NSGAIIAlgorithm(BaseGeneticAlgorithm):# TODO NSGAIIALGORITHM -> NSGAII y r
 
 
     def reset(self):
-        self.best_generation_avgValue = 0
-        self.best_generation = 0
-        self.best_individual = None
-        self.population = None
-        self.num_generations = 0
-        self.num_evaluations = 0
+        super().reset()
         self.returned_population = None
 
     # RUN ALGORITHM------------------------------------------------------------------

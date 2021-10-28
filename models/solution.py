@@ -139,3 +139,9 @@ class Solution:
             else:
                 return_genes += "-"+","
         return return_genes
+
+    def print_genes_array(self):
+        return_genes = []
+        for i in range(0, len(self.genes)):
+            return_genes.append(self.genes[i].included)
+        return return_genes

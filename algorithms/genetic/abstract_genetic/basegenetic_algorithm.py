@@ -1,5 +1,12 @@
-from algorithms.abstract_default.evaluation_exception import EvaluationLimit
 from algorithms.abstract_default.algorithm import Algorithm
+from algorithms.abstract_default.evaluation_exception import EvaluationLimit
+import evaluation.metrics as metrics
+import copy
+from models.problem import Problem
+from models.solution import Solution
+from models.population import Population
+from datasets.dataset_gen_generator import generate_dataset_genes
+
 
 
 class BaseGeneticAlgorithm(Algorithm):
@@ -46,3 +53,60 @@ class BaseGeneticAlgorithm(Algorithm):
             return num_generations >= self.max_generations
         else:
             return num_evaluations >= self.max_evaluations
+    
+    def generate_dataset_problem(self, dataset_name):
+        genes, dataset = generate_dataset_genes(dataset_name)
+        problem = Problem(genes, self.objectives_minimization)
+        self.problem = problem
+        self.dataset = dataset
+        return self.problem, self.dataset
+
+    def reset(self):
+        self.best_generation_avgValue = 0
+        self.best_generation = 0
+        self.num_evaluations = 0
+        self.num_generations = 0
+        self.best_individual = None
+        self.population = None
+
+    # EVALUATION------------------------------------------------------------------
+    def evaluate(self, population, best_individual):
+        try:
+            best_score = 0
+            new_best_individual = None
+            for ind in population:
+                ind.evaluate_fitness()
+                self.add_evaluation(population)#############
+                if ind.total_score > best_score:
+                    new_best_individual = copy.deepcopy(ind)
+                    best_score = ind.total_score
+            if best_individual is not None:
+                if new_best_individual.total_score > best_individual.total_score:
+                    best_individual = copy.deepcopy(new_best_individual)
+            else:
+                best_individual = copy.deepcopy(new_best_individual)
+        except EvaluationLimit:
+            pass
+
+    # GENERATE STARTING POPULATION------------------------------------------------------------------
+    def generate_starting_population(self):
+        population = Population()
+        for i in range(0, self.population_length):
+            individual = Solution(self.problem.genes,
+                                  self.problem.objectives, self.dataset.dependencies)
+            individual.initRandom()
+            population.append(individual)
+        return population
+
+    # LAST GENERATION ENHANCE------------------------------------------------------------------
+    def calculate_last_generation_with_enhance(self, best_generation, best_generation_avgValue, num_generation, population):
+        bestAvgValue = metrics.calculate_bestAvgValue(population)
+        if bestAvgValue > best_generation_avgValue:
+            best_generation_avgValue = bestAvgValue
+            best_generation = num_generation
+        return best_generation, best_generation_avgValue
+
+    def repair_population_dependencies(self,population):
+        for ind in population:
+            ind.correct_dependencies()
+        return population
