@@ -169,7 +169,7 @@ class PBILAlgorithm(EDAAlgorithm):  # Population Based Incremental Learning
                 get_nondominated_solutions(self.population, self.nds)
                 self.num_generations += 1
                 if self.debug_mode:
-                    paretos.append(format_population(self.nds, self.dataset))
+                    paretos.append(self.nds)
 
         except EvaluationLimit:
             pass

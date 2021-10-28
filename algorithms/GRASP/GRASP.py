@@ -216,7 +216,7 @@ class GRASP(Algorithm):
                 self.num_iterations += 1
 
                 if self.debug_mode:
-                    paretos.append(format_population(self.nds, self.dataset))
+                    paretos.append(self.nds)
 
         except EvaluationLimit:
             pass

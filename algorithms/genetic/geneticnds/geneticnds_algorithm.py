@@ -203,7 +203,7 @@ class GeneticNDSAlgorithm(BaseGeneticAlgorithm):
 
                 self.num_generations += 1
                 if self.debug_mode:
-                    paretos.append(format_population(self.nds, self.dataset))
+                    paretos.append(self.nds)
 
                 # mostrar por pantalla
                 # if num_generations % 100 == 0:
@@ -235,27 +235,6 @@ class GeneticNDSAlgorithm(BaseGeneticAlgorithm):
             best_generation = num_generation
         return best_generation, best_generation_avgValue
 
-    def generate_starting_population(self):
-        population = []
-        for i in range(0, self.population_length):
-            individual = GraspSolution(self.dataset, None, uniform=True)
-            population.append(individual)
-        return population
-
-    def evaluate(self, population, best_individual):
-        best_score = 0
-        new_best_individual = None
-        for ind in population:
-            ind.evaluate()
-            if ind.mono_objective_score > best_score:
-                new_best_individual = copy.deepcopy(ind)
-                best_score = ind.mono_objective_score
-            self.add_evaluation(population)
-        if best_individual is not None:
-            if new_best_individual.mono_objective_score > best_individual.mono_objective_score:
-                best_individual = copy.deepcopy(new_best_individual)
-        else:
-            best_individual = copy.deepcopy(new_best_individual)
 
     def add_evaluation(self, new_population):
         self.num_evaluations += 1
@@ -293,90 +272,90 @@ class GeneticNDSAlgorithm(BaseGeneticAlgorithm):
 
     # CROSSOVER------------------------------------------------------------------
 
-    def crossover_one_point(self, population):
-        new_population = []  # Population()
-        i = 0
-        while i < len(population):
-            # if last element is alone-> add it
-            if i == len(population) - 1:
-                new_population.append(population[i])  # .get(i))
+    #def crossover_one_point(self, population):
+    #    new_population = []  # Population()
+    #    i = 0
+    #    while i < len(population):
+    #        # if last element is alone-> add it
+    #        if i == len(population) - 1:
+    #            new_population.append(population[i])  # .get(i))
+#
+    #        else:
+    #            # pair 2 parents -> crossover or add them and jump 1 index extra
+    #            prob = random.random()
+    #            if prob < self.crossover_prob:
+    #                offsprings = self.crossover_aux_one_point(
+    #                    population[i], population[i+1])
+    #                # print(offsprings)
+    #                new_population.extend(offsprings)
+    #            else:
+    #                new_population.extend(
+    #                    [population[i], population[i+1]])
+    #            i += 1
+#
+    #        i += 1
+#
+    #    return new_population
 
-            else:
-                # pair 2 parents -> crossover or add them and jump 1 index extra
-                prob = random.random()
-                if prob < self.crossover_prob:
-                    offsprings = self.crossover_aux_one_point(
-                        population[i], population[i+1])
-                    # print(offsprings)
-                    new_population.extend(offsprings)
-                else:
-                    new_population.extend(
-                        [population[i], population[i+1]])
-                i += 1
-
-            i += 1
-
-        return new_population
-
-    def crossover_aux_one_point(self, parent1, parent2):
-        chromosome_length = len(parent1.selected)
-        # index aleatorio del punto de division para el cruce
-        crossover_point = random.randint(1, chromosome_length - 1)
-
-        offspring_genes1 = np.concatenate((parent1.selected[0:crossover_point],
-        parent2.selected[crossover_point:]) )
-        #parent1.selected[0:crossover_point] + \
-        #    parent2.selected[crossover_point:]
-
-
-        offspring_genes2 = np.concatenate((parent2.selected[0:crossover_point],
-        parent1.selected[crossover_point:]) )
-        # parent2.selected[0:crossover_point] + \
-        #    parent1.selected[crossover_point:]
-
-        # self.problem.generate_individual(
-        offspring1 = GraspSolution(
-            self.dataset, None, selected=offspring_genes1)
-        # offspring_genes1, self.dataset.dependencies)
-        # self.problem.generate_individual(
-        offspring2 = GraspSolution(
-            self.dataset, None, selected=offspring_genes2)
-        # offspring_genes2, self.dataset.dependencies)
-
-        return offspring1, offspring2
+#    def crossover_aux_one_point(self, parent1, parent2):
+#        chromosome_length = len(parent1.selected)
+#        # index aleatorio del punto de division para el cruce
+#        crossover_point = random.randint(1, chromosome_length - 1)
+#
+#        offspring_genes1 = np.concatenate((parent1.selected[0:crossover_point],
+#        parent2.selected[crossover_point:]) )
+#        #parent1.selected[0:crossover_point] + \
+#        #    parent2.selected[crossover_point:]
+#
+#
+#        offspring_genes2 = np.concatenate((parent2.selected[0:crossover_point],
+#        parent1.selected[crossover_point:]) )
+#        # parent2.selected[0:crossover_point] + \
+#        #    parent1.selected[crossover_point:]
+#
+#        # self.problem.generate_individual(
+#        offspring1 = GraspSolution(
+#            self.dataset, None, selected=offspring_genes1)
+#        # offspring_genes1, self.dataset.dependencies)
+#        # self.problem.generate_individual(
+#        offspring2 = GraspSolution(
+#            self.dataset, None, selected=offspring_genes2)
+#        # offspring_genes2, self.dataset.dependencies)
+#
+#        return offspring1, offspring2
 
     # MUTATION------------------------------------------------------------------
 
-    def mutation_flip1bit(self, population):
-        new_population = []  # Population()
-        new_population.extend(population)  # .population)
-
-        for individual in new_population:
-            prob = random.random()
-            if prob < self.mutation_prob:
-                chromosome_length = len(individual.selected)
-                mutation_point = random.randint(0, chromosome_length - 1)
-                if individual.selected[mutation_point] == 0:
-                    individual.set_bit(mutation_point, 1)
-                else:
-                    individual.set_bit(mutation_point, 0)
-
-        return new_population
-
-    def mutation_flipeachbit(self, population):
-        new_population = []  # Population()
-        new_population.extend(population)  # .population)
-
-        for individual in new_population:
-            for gen_index in range(len(individual.selected)):
-                prob = random.random()
-                if prob < self.mutation_prob:
-                    if individual.selected[gen_index] == 0:
-                        individual.set_bit(gen_index, 1)
-                    else:
-                        individual.set_bit(gen_index, 0)
-
-        return new_population
+#    def mutation_flip1bit(self, population):
+#        new_population = []  # Population()
+#        new_population.extend(population)  # .population)
+#
+#        for individual in new_population:
+#            prob = random.random()
+#            if prob < self.mutation_prob:
+#                chromosome_length = len(individual.selected)
+#                mutation_point = random.randint(0, chromosome_length - 1)
+#                if individual.selected[mutation_point] == 0:
+#                    individual.set_bit(mutation_point, 1)
+#                else:
+#                    individual.set_bit(mutation_point, 0)
+#
+#        return new_population
+#
+#    def mutation_flipeachbit(self, population):
+#        new_population = []  # Population()
+#        new_population.extend(population)  # .population)
+#
+#        for individual in new_population:
+#            for gen_index in range(len(individual.selected)):
+#                prob = random.random()
+#                if prob < self.mutation_prob:
+#                    if individual.selected[gen_index] == 0:
+#                        individual.set_bit(gen_index, 1)
+#                    else:
+#                        individual.set_bit(gen_index, 0)
+#
+#        return new_population
 
     # REPLACEMENT------------------------------------------------------------------
     def replacement_elitism(self, population, newpopulation):
