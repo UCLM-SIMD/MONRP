@@ -9,7 +9,6 @@ import copy
 from models.problem import Problem
 from models.solution import Solution
 from models.population import Population
-from datasets.dataset_gen_generator import generate_dataset_genes
 
 
 class BaseGeneticAlgorithm(Algorithm):

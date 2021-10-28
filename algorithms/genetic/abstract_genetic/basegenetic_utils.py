@@ -1,5 +1,3 @@
-from datasets.dataset_gen_generator import generate_dataset_genes
-from datasets.dataset3 import generate_dataset3_genes
 from models.solution import Solution
 from algorithms.abstract_default.utils import Utils
 import random
@@ -66,7 +64,7 @@ class BaseGeneticUtils(Utils):
             best_generation = num_generation
         return best_generation, best_generation_avgValue
 
-    def repair_population_dependencies(self,population):
+    def repair_population_dependencies(self, population):
         for ind in population:
             ind.correct_dependencies()
         return population

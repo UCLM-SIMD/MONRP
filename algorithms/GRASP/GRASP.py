@@ -1,7 +1,5 @@
-from evaluation.format_population import format_population
 from algorithms.abstract_default.evaluation_exception import EvaluationLimit
 import copy
-from datasets.dataset_gen_generator import generate_dataset_genes
 from numpy.lib.function_base import diff
 from algorithms.abstract_default.algorithm import Algorithm
 from algorithms.GRASP.grasp_executer import GRASPExecuter
@@ -14,7 +12,6 @@ import sys
 import random
 
 from algorithms.GRASP.GraspSolution import GraspSolution
-from datasets import dataset1, dataset2, dataset3
 from evaluation.update_nds import get_nondominated_solutions
 from models.solution import Solution
 from models.problem import Problem

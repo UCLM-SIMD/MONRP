@@ -1,5 +1,4 @@
 import random
-from evaluation.format_population import format_population
 from algorithms.abstract_default.evaluation_exception import EvaluationLimit
 from algorithms.genetic.abstract_genetic.basegenetic_algorithm import BaseGeneticAlgorithm
 from algorithms.genetic.nsgaii.nsgaii_executer import NSGAIIExecuter

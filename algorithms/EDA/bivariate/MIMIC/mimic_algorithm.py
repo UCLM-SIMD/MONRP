@@ -1,17 +1,14 @@
 import random
 from typing import List
 from algorithms.EDA.eda_algorithm import EDAAlgorithm
-from evaluation.format_population import format_population
 from algorithms.abstract_default.evaluation_exception import EvaluationLimit
 from evaluation.update_nds import get_nondominated_solutions
 from models.solution import Solution
-from models.problem import Problem
 from algorithms.GRASP.GraspSolution import GraspSolution
 from algorithms.GRASP.Dataset import Dataset
 from algorithms.EDA.UMDA.umda_executer import UMDAExecuter
 from algorithms.genetic.abstract_genetic.basegenetic_algorithm import BaseGeneticAlgorithm
 from algorithms.genetic.genetic.genetic_executer import GeneticExecuter
-from algorithms.genetic.genetic.genetic_utils import GeneticUtils
 
 import copy
 import time

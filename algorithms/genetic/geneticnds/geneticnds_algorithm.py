@@ -1,6 +1,5 @@
 import numpy as np
 from algorithms.GRASP.GraspSolution import GraspSolution
-from evaluation.format_population import format_population
 from algorithms.abstract_default.evaluation_exception import EvaluationLimit
 from algorithms.genetic.abstract_genetic.basegenetic_algorithm import BaseGeneticAlgorithm
 from algorithms.genetic.geneticnds.geneticnds_executer import GeneticNDSExecuter
