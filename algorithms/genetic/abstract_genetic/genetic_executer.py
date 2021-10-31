@@ -1,32 +1,29 @@
+from typing import Any, Dict, List
+from algorithms.genetic.abstract_genetic.abstract_genetic_algorithm import AbstractGeneticAlgorithm
 import evaluation.metrics as metrics
 
 from algorithms.abstract_algorithm.abstract_executer import AbstractExecuter
 
 
 class GeneticExecuter(AbstractExecuter):
-    def __init__(self, algorithm):
-        self.algorithm = algorithm
-        self.algorithm_type = "genetic"
+    def __init__(self, algorithm: AbstractGeneticAlgorithm):
+        super().__init__(algorithm)
+        self.algorithm: AbstractGeneticAlgorithm = algorithm
+        self.algorithm_type: str = "genetic"
 
-    def initialize_file(self, file_path):
-        # print("Running...")
-        f = open(file_path, "w")
-        f.write("Dataset,Algorithm,Population Length,Generations,Evaluations,"
-                "Selection Scheme,Selection Candidates,Crossover Scheme,Crossover Probability,Mutation Scheme,"
-                "Mutation Probability,Replacement Scheme,Time(s),AvgValue,BestAvgValue,BestGeneration,HV,Spread,NumSolutions,Spacing,"
-                "NumGenerations,Requirements per sol,NumEvaluations\n")
-        f.close()
+        self.config_fields.extend(["Population Length", "MaxGenerations", "MaxEvaluations",
+                                   "Selection Scheme", "Selection Candidates", "Crossover Scheme", "Crossover Probability", "Mutation Scheme"
+                                   "Mutation Probability", "Replacement Scheme", ])
 
-    def reset_file(self, file_path):
-        file = open(file_path, "w")
-        file.close()
+        self.metrics_fields.extend(
+            ["NumGenerations", "NumEvaluations", "BestGeneration", ])
 
-    def execute(self, executions, file_path):
-        algorithm_name = self.algorithm.__class__.__name__
-        dataset_name = self.algorithm.dataset_name
+    def get_config_fields(self,) -> List[str]:
+        config_lines: List[str] = super().get_config_fields()
+
         population_length = self.algorithm.population_length
         generations = self.algorithm.max_generations
-        evaluations = self.algorithm.max_evaluations
+        max_evaluations = self.algorithm.max_evaluations
         selection = self.algorithm.selection_scheme
         selection_candidates = self.algorithm.selection_candidates
         crossover = self.algorithm.crossover_scheme
@@ -34,60 +31,32 @@ class GeneticExecuter(AbstractExecuter):
         mutation = self.algorithm.mutation_scheme
         mutation_prob = self.algorithm.mutation_prob
         replacement = self.algorithm.replacement_scheme
-        dataset = self.algorithm.dataset
 
-        for i in range(0, executions):
-            #print("Executing iteration: ", i + 1)
-            self.algorithm.reset()
-            result = self.algorithm.run()
+        config_lines.append(str(population_length))
+        config_lines.append(str(generations))
+        config_lines.append(str(max_evaluations))
+        config_lines.append(str(selection))
+        config_lines.append(str(selection_candidates))
+        config_lines.append(str(crossover))
+        config_lines.append(str(mutation))
+        config_lines.append(str(crossover_prob))
+        config_lines.append(str(mutation))
+        config_lines.append(str(mutation_prob))
+        config_lines.append(str(replacement))
+        return config_lines
 
-            time = str(result["time"]) if "time" in result else 'NaN'
-            numGenerations = str(
-                result["numGenerations"]) if "numGenerations" in result else 'NaN'
-            bestGeneration = str(
-                result["bestGeneration"]) if "bestGeneration" in result else 'NaN'
+    def get_metrics_fields(self, result: Dict[str, Any]) -> List[str]:
+        metrics_fields: List[str] = super().get_metrics_fields(result)
 
-            avgValue = str(metrics.calculate_avgValue(result["population"]))
-            bestAvgValue = str(
-                metrics.calculate_bestAvgValue(result["population"]))
-            hv = str(metrics.calculate_hypervolume(result["population"]))
-            spread = str(metrics.calculate_spread(
-                result["population"], dataset))
-            numSolutions = str(
-                metrics.calculate_numSolutions(result["population"]))
-            spacing = str(metrics.calculate_spacing(result["population"]))
-            mean_bits_per_sol =  str(metrics.calculate_mean_bits_per_sol(result["population"]))
+        numGenerations = str(
+            result["numGenerations"]) if "numGenerations" in result else 'NaN'
+        numEvaluations = str(
+            result["numEvaluations"]) if "numEvaluations" in result else 'NaN'
+        bestGeneration = str(
+            result["bestGeneration"]) if "bestGeneration" in result else 'NaN'
 
-            numEvaluations = str(
-                result["numEvaluations"]) if "numEvaluations" in result else 'NaN'
+        metrics_fields.append(str(numGenerations))
+        metrics_fields.append(str(numEvaluations))
+        metrics_fields.append(str(bestGeneration))
 
-            f = open(file_path, "a")
-            data = str(dataset_name) + "," + \
-                str(algorithm_name) + "," + \
-                str(population_length) + "," + \
-                str(generations) + "," + \
-                str(evaluations) + "," + \
-                str(selection) + "," + \
-                str(selection_candidates) + "," + \
-                str(crossover) + "," + \
-                str(crossover_prob) + "," + \
-                str(mutation) + "," + \
-                str(mutation_prob) + "," + \
-                str(replacement) + "," + \
-                str(time) + "," + \
-                str(avgValue) + "," + \
-                str(bestAvgValue) + "," + \
-                str(bestGeneration) + "," + \
-                str(hv) + "," + \
-                str(spread) + "," + \
-                str(numSolutions) + "," + \
-                str(spacing) + "," + \
-                str(numGenerations) + "," + \
-                str(mean_bits_per_sol) + "," + \
-                str(numEvaluations) + \
-                "\n"
-
-            f.write(data)
-            f.close()
-
-        # print("End")
+        return metrics_fields

@@ -43,11 +43,12 @@ class UMDAAlgorithm(EDAAlgorithm):  # Univariate Marginal Distribution Algorithm
         # if random_seed is not None:
         #    np.random.seed(random_seed)
 
-        self.file: str = str(self.__class__.__name__)+"-"+str(dataset_name)+"-"+str(random_seed)+"-"+str(population_length)+"-" +\
-            str(max_generations) + "-"+str(max_evaluations)+".txt"
+        self.file: str = (f"{str(self.__class__.__name__)}-{str(dataset_name)}-{str(random_seed)}-{str(population_length)}-"
+                          f"{str(max_generations)}-{str(max_evaluations)}.txt")
 
     def get_name(self) -> str:
-        return f"UMDA selection{self.selection_scheme} {self.replacement_scheme}"
+        return (f"UMDA{str(self.population_length)}+{str(self.max_generations)}+"
+                f"{str(self.max_evaluations)}")
 
     ''' 
     LEARN PROBABILITY MODEL

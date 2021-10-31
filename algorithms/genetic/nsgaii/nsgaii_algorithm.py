@@ -76,16 +76,13 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
         else:
             self.replacement = self.replacement_elitism
 
-        self.file: str = str(self.__class__.__name__)+"-"+str(dataset_name)+"-"+str(random_seed)+"-"+str(population_length)+"-" +\
-            str(max_generations) + "-"+selection+"-"+str(selection_candidates)+"-" +\
-            str(crossover)+"-"+str(crossover_prob)+"-"+str(mutation) + \
-            "-"+str(mutation_prob)+"-"+str(replacement)+".txt"
-        # + "-"+str(max_evaluations) TODO
+        self.file: str = (f"{str(self.__class__.__name__)}-{str(dataset_name)}-{str(random_seed)}-{str(population_length)}-"
+                          f"{str(max_generations)}-{str(max_evaluations)}-{str(selection)}-{str(selection_candidates)}-{str(crossover)}-"
+                          f"{str(crossover_prob)}-{str(mutation)}-{str(mutation_prob)}-{str(replacement)}.txt")
 
     def get_name(self) -> str:
-        return "NSGA-II+"+str(self.population_length)+"+"+str(self.max_generations)+"+"+str(self.max_evaluations)\
-            + "+"+str(self.crossover_prob)\
-            + "+"+str(self.mutation_scheme)+"+"+str(self.mutation_prob)
+        return f"NSGA-II{str(self.population_length)}+{str(self.max_generations)}+{str(self.max_evaluations)}+{str(self.crossover_prob)}\
+            +{str(self.mutation_scheme)}+{str(self.mutation_prob)}"
 
     # def evaluate(self, population, best_individual):
     #    #super().evaluate(population, best_individual)

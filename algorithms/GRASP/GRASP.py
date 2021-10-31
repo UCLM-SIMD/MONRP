@@ -137,16 +137,17 @@ class GRASP(AbstractAlgorithm):
             self.local_search = "None"
 
         self.executer = GRASPExecuter(algorithm=self)
-        self.file: str = self.__class__.__name__+"-"+(str(dataset)+"-"+str(seed)+"-"+str(iterations)+"-"+str(solutions_per_iteration)
-                                                      + "-"+str(init_type) + "-"+str(local_search_type) + "-"+str(path_relinking_mode)+".txt")
-        # + "-"+str(max_evaluations) TODO
+        self.file: str = (f"{str(self.__class__.__name__)}-{str(dataset)}-{str(seed)}-{str(iterations)}-"
+                          f"{str(solutions_per_iteration)}-{str(max_evaluations)}-{str(init_type)}-"
+                          f"{local_search_type}-{str(path_relinking_mode)}.txt")
 
     def get_name(self) -> str:
         init = "stochastic" if self.init_type == "stochastically" else self.init_type
-        local = "+"+self.local_search_type.replace(
+        local = self.local_search_type.replace(
             'best_first_neighbor_', '') if self.local_search_type != "None" else ""
-        PR = "+PR" if self.path_relinking_mode != "None" else ""
-        return "GRASP+"+str(self.iterations)+"+"+str(self.solutions_per_iteration)+"+"+str(self.max_evaluations)+"+"+init+local+PR
+        PR = "PR" if self.path_relinking_mode != "None" else ""
+        return (f"GRASP+{str(self.iterations)}+{str(self.solutions_per_iteration)}+"
+                f"{str(self.max_evaluations)}+{init}+{local}+{PR}")
 
     def reset(self) -> None:
         self.nds = []

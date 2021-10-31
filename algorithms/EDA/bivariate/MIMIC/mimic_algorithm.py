@@ -48,11 +48,12 @@ class MIMICAlgorithm(EDAAlgorithm):
         # if random_seed is not None:
         #    np.random.seed(random_seed)
 
-        self.file: str = str(self.__class__.__name__)+"-"+str(dataset_name)+"-"+str(random_seed)+"-"+str(population_length)+"-" +\
-            str(max_generations) + "-"+str(max_evaluations)+".txt"
+        self.file: str = (f"{str(self.__class__.__name__)}-{str(dataset_name)}-{str(random_seed)}-{str(population_length)}-"
+                          f"{str(max_generations)}-{str(max_evaluations)}.txt")
 
     def get_name(self) -> str:
-        return f"MIMIC selection{self.selection_scheme} {self.replacement_scheme}"
+        return (f"MIMIC+{self.population_length}+{self.max_generations}+"
+                f"{self.max_evaluations}")
 
     '''
     LEARN PROBABILITY MODEL

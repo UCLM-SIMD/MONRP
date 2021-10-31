@@ -1,78 +1,47 @@
+from typing import Any, Dict, List
 from algorithms.abstract_algorithm.abstract_executer import AbstractExecuter
-import evaluation.metrics as metrics
+
 
 class PBILExecuter(AbstractExecuter):
     def __init__(self, algorithm):
-        self.algorithm = algorithm
-        self.algorithm_type = "pbil"
+        from algorithms.EDA.PBIL.pbil_algorithm import PBILAlgorithm
+        super().__init__(algorithm)
+        self.algorithm: PBILAlgorithm
+        self.algorithm_type: str = "pbil"
 
-    def initialize_file(self, file_path):
-        # print("Running...")
-        f = open(file_path, "w")
-        f.write("Dataset,Algorithm,Population Length,Generations,Evaluations,"
-                "Learning Rate,Mutation Probability,Mutation Shift,Time(s),AvgValue,BestAvgValue,BestGeneration,HV,Spread,NumSolutions,Spacing,"
-                "NumGenerations,Requirements per sol\n")
-        f.close()
+        self.config_fields.extend(["Population Length", "MaxGenerations", "MaxEvaluations",
+                                   "Learning Rate", "Mutation Probability", "Mutation Shift"])
 
-    def reset_file(self, file_path):
-        file = open(file_path, "w")
-        file.close()
+        self.metrics_fields.extend(
+            ["NumGenerations", "NumEvaluations", ])
 
-    def execute(self, executions, file_path):
-        algorithm_name = self.algorithm.__class__.__name__
-        dataset_name = self.algorithm.dataset_name
+    def get_config_fields(self,) -> List[str]:
+        config_lines: List[str] = super().get_config_fields()
+
         population_length = self.algorithm.population_length
-        generations = self.algorithm.max_generations
-        evaluations = self.algorithm.max_evaluations
-        lr = self.algorithm.learning_rate
+        max_generations = self.algorithm.max_generations
+        max_evaluations = self.algorithm.max_evaluations
+        learning_rate = self.algorithm.learning_rate
         mutation_prob = self.algorithm.mutation_prob
         mutation_shift = self.algorithm.mutation_shift
-        dataset = self.algorithm.dataset
 
-        for i in range(0, executions):
-            result = self.algorithm.run()
+        config_lines.append(str(population_length))
+        config_lines.append(str(max_generations))
+        config_lines.append(str(max_evaluations))
+        config_lines.append(str(learning_rate))
+        config_lines.append(str(mutation_prob))
+        config_lines.append(str(mutation_shift))
+        return config_lines
 
-            time = str(result["time"]) if "time" in result else 'NaN'
-            numGenerations = str(
-                result["numGenerations"]) if "numGenerations" in result else 'NaN'
-            bestGeneration = str(
-                result["bestGeneration"]) if "bestGeneration" in result else 'NaN' #TODO no hay bestgen
+    def get_metrics_fields(self, result: Dict[str, Any]) -> List[str]:
+        metrics_fields: List[str] = super().get_metrics_fields(result)
 
-            avgValue = str(metrics.calculate_avgValue(result["population"]))
-            bestAvgValue = str(
-                metrics.calculate_bestAvgValue(result["population"]))
-            hv = str(metrics.calculate_hypervolume(result["population"]))
-            spread = str(metrics.calculate_spread(
-                result["population"], dataset))
-            numSolutions = str(
-                metrics.calculate_numSolutions(result["population"]))
-            spacing = str(metrics.calculate_spacing(result["population"]))
-            mean_bits_per_sol =  str(metrics.calculate_mean_bits_per_sol(result["population"]))
-            numEvaluations = str(
-                result["numEvaluations"]) if "numEvaluations" in result else 'NaN'
+        numGenerations = str(
+            result["numGenerations"]) if "numGenerations" in result else 'NaN'
+        numEvaluations = str(
+            result["numEvaluations"]) if "numEvaluations" in result else 'NaN'
 
-            f = open(file_path, "a")
-            data = str(dataset_name) + "," + \
-                str(algorithm_name) + "," + \
-                str(population_length) + "," + \
-                str(generations) + "," + \
-                str(evaluations) + "," + \
-                str(lr) + "," + \
-                str(mutation_prob) + "," + \
-                str(mutation_shift) + "," + \
-                str(time) + "," + \
-                str(avgValue) + "," + \
-                str(bestAvgValue) + "," + \
-                str(bestGeneration) + "," + \
-                str(hv) + "," + \
-                str(spread) + "," + \
-                str(numSolutions) + "," + \
-                str(spacing) + "," + \
-                str(numGenerations) + "," + \
-                str(mean_bits_per_sol) + "," + \
-                str(numEvaluations) + \
-                "\n"
+        metrics_fields.append(str(numGenerations))
+        metrics_fields.append(str(numEvaluations))
 
-            f.write(data)
-            f.close()
-
+        return metrics_fields

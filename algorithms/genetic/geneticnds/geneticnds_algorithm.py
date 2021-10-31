@@ -77,17 +77,15 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
         elif replacement == "elitismnds":
             self.replacement = self.replacement_elitism
 
-        self.file: str = str(self.__class__.__name__)+"-"+str(dataset_name)+"-"+str(random_seed)+"-"+str(population_length)+"-" +\
-            str(max_generations)+"-" +\
-            selection+"-"+str(selection_candidates)+"-" +\
-            str(crossover)+"-"+str(crossover_prob)+"-"+str(mutation) + \
-            "-"+str(mutation_prob)+"-"+str(replacement)+".txt"
-        # + "-"+str(max_evaluations) TODO
+        self.file: str = (f"{str(self.__class__.__name__)}-{str(dataset_name)}-{str(random_seed)}-{str(population_length)}-"
+                          f"{str(max_generations)}-{str(max_evaluations)}-"
+                          f"{str(selection)}-{str(selection_candidates)}-"
+                          f"{str(crossover)}-{str(crossover_prob)}-{str(mutation)}-"
+                          f"{str(mutation_prob)}-{str(replacement)}.txt")
 
     def get_name(self) -> str:
-        return "GeneticNDS+"+str(self.population_length)+"+"+str(self.max_generations) + \
-            "+"+str(self.max_evaluations)+"+"+str(self.crossover_prob)\
-            + "+"+str(self.mutation_scheme)+"+"+str(self.mutation_prob)
+        return f"GeneticNDS{str(self.population_length)}+{str(self.max_generations)}+{str(self.max_evaluations)}+{str(self.crossover_prob)}\
+            +{str(self.mutation_scheme)}+{str(self.mutation_prob)}"
 
     # UPDATE NDS------------------------------------------------------------------
 
@@ -229,7 +227,7 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
         self.num_evaluations += 1
         # if(self.num_evaluations >= self.max_evaluations):
         if (self.stop_criterion(self.num_generations, self.num_evaluations)):
-            self.update_nds(new_population)
+            get_nondominated_solutions(new_population, self.nds)
             raise EvaluationLimit
 
     def selection_tournament(self, population: List[Solution]) -> List[Solution]:

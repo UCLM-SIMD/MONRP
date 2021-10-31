@@ -1,9 +1,9 @@
 - cambiar nombres de algoritmos XAlgorithm a X (luego)
-- refactorizar los executers para que los campos que se guardan no esten repetidos
+- refactorizar los executers para que los campos que se guardan no esten repetidos TODO
 - cambiar los modelos de los geneticos a los del GRASP +
-- mover los modelos del grasp a models 
+- mover los modelos del grasp a models +
 - mover cada uno de los datasets a un fichero en concreto y la clase Dataset tmb +
-- ponerle tipos a todo
+- ponerle tipos a todo +
 - hacer tests unitarios +
 - añadir comentarios a funciones
 - cambiar nombres parametros entre grasp y geneticos para que sean iguales

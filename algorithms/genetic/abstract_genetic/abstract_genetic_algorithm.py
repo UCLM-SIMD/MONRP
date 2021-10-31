@@ -3,6 +3,7 @@ import random
 from typing import List, Tuple
 
 import numpy as np
+from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
 from models.Solution import Solution
 from algorithms.abstract_algorithm.abstract_algorithm import AbstractAlgorithm
 import evaluation.metrics as metrics
@@ -73,19 +74,22 @@ class AbstractGeneticAlgorithm(AbstractAlgorithm):
 
     # EVALUATION------------------------------------------------------------------
     def evaluate(self, population, best_individual) -> None:
-        best_score = 0
-        new_best_individual = None
-        for ind in population:
-            ind.evaluate()
-            if ind.mono_objective_score > best_score:
-                new_best_individual = copy.deepcopy(ind)
-                best_score = ind.mono_objective_score
-            self.add_evaluation(population)
-        if best_individual is not None:
-            if new_best_individual.mono_objective_score > best_individual.mono_objective_score:
+        try:
+            best_score = 0
+            new_best_individual = None
+            for ind in population:
+                ind.evaluate()
+                if ind.mono_objective_score > best_score:
+                    new_best_individual = copy.deepcopy(ind)
+                    best_score = ind.mono_objective_score
+                self.add_evaluation(population)
+            if best_individual is not None:
+                if new_best_individual.mono_objective_score > best_individual.mono_objective_score:
+                    best_individual = copy.deepcopy(new_best_individual)
+            else:
                 best_individual = copy.deepcopy(new_best_individual)
-        else:
-            best_individual = copy.deepcopy(new_best_individual)
+        except EvaluationLimit:
+            pass
 
     @abstractmethod
     def add_evaluation(self, new_population):

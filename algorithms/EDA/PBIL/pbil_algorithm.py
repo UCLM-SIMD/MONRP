@@ -44,12 +44,12 @@ class PBILAlgorithm(EDAAlgorithm):  # Population Based Incremental Learning
         # if random_seed is not None:
         #    np.random.seed(random_seed)
 
-        self.file: str = str(self.__class__.__name__)+"-"+str(dataset_name)+"-"+str(random_seed)+"-"+str(population_length)+"-" +\
-            str(max_generations) + "-"+str(max_evaluations)+"-"+str(learning_rate)+"-" + \
-            str(mutation_prob)+"-"+str(mutation_shift)+".txt"
+        self.file: str = (f"{str(self.__class__.__name__)}-{str(dataset_name)}-{str(random_seed)}-{str(population_length)}-"
+                          f"{str(max_generations)}-{str(max_evaluations)}-{str(learning_rate)}-{str(mutation_prob)}-{str(mutation_shift)}.txt")
 
     def get_name(self) -> str:
-        return f"PBIL+{self.population_length}+{self.max_generations}+{self.max_evaluations}+{self.learning_rate}+{self.mutation_prob}+{self.mutation_shift}"
+        return (f"PBIL+{self.population_length}+{self.max_generations}+{self.max_evaluations}+"
+                f"{self.learning_rate}+{self.mutation_prob}+{self.mutation_shift}")
 
     def initialize_probability_vector(self) -> np.ndarray:
         probabilities = np.full(self.dataset.pbis_score.size, 0.5)
