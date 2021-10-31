@@ -1,7 +1,8 @@
+from typing import Tuple
 import numpy as np
 
 
-def dataset_test():
+def dataset_test() -> Tuple[np.ndarray, int, np.ndarray, np.ndarray, np.ndarray]:
     pbis_cost = np.array(
         [3, 3, 3, 3, 3])
     num_pbis = len(pbis_cost)

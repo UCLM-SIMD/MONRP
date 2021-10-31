@@ -1,5 +1,10 @@
+from typing import List
 import numpy as np
-def get_nondominated_solutions(solutions,nds=[]):
+
+from models.Solution import Solution
+
+
+def get_nondominated_solutions(solutions: List[Solution], nds=[]) -> List[Solution]:
     """
     For each sol in solutions:
         if no solution in self.NDS dominates sol:

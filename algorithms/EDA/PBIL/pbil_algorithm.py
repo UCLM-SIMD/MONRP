@@ -1,6 +1,7 @@
+from typing import Any, Dict, List, Tuple
 from algorithms.EDA.eda_algorithm import EDAAlgorithm
-from evaluation.update_nds import get_nondominated_solutions
-from algorithms.abstract_default.evaluation_exception import EvaluationLimit
+from evaluation.get_nondominated_solutions import get_nondominated_solutions
+from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
 from algorithms.EDA.PBIL.pbil_executer import PBILExecuter
 from models.Solution import Solution
 
@@ -9,13 +10,12 @@ import numpy as np
 
 
 class PBILAlgorithm(EDAAlgorithm):  # Population Based Incremental Learning
-    def __init__(self, dataset_name:str="1", random_seed:int=None, debug_mode:bool=False, tackle_dependencies:bool=False,
-                population_length:int=100, max_generations:int=100, max_evaluations:int=0,
-                 learning_rate:float=0.1, mutation_prob:float=0.1, mutation_shift:float=0.1):
+    def __init__(self, dataset_name: str = "test", random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
+                 population_length: int = 100, max_generations: int = 100, max_evaluations: int = 0,
+                 learning_rate: float = 0.1, mutation_prob: float = 0.1, mutation_shift: float = 0.1):
 
-        
         super().__init__(dataset_name, random_seed, debug_mode, tackle_dependencies,
-            population_length, max_generations, max_evaluations)
+                         population_length, max_generations, max_evaluations)
 
         self.executer = PBILExecuter(algorithm=self)
         # self.problem, self.dataset = self.utils.generate_dataset_problem(
@@ -28,9 +28,9 @@ class PBILAlgorithm(EDAAlgorithm):  # Population Based Incremental Learning
         #self.max_generations = max_generations
         #self.max_evaluations = max_evaluations
 
-        self.learning_rate:float = learning_rate
-        self.mutation_prob:float = mutation_prob
-        self.mutation_shift:float = mutation_shift
+        self.learning_rate: float = learning_rate
+        self.mutation_prob: float = mutation_prob
+        self.mutation_shift: float = mutation_shift
 
         #self.nds = []
         #self.best_individual = None
@@ -41,17 +41,17 @@ class PBILAlgorithm(EDAAlgorithm):  # Population Based Incremental Learning
         #self.tackle_dependencies = tackle_dependencies
 
         #self.random_seed = random_seed
-        #if random_seed is not None:
+        # if random_seed is not None:
         #    np.random.seed(random_seed)
 
-        self.file:str = str(self.__class__.__name__)+"-"+str(dataset_name)+"-"+str(random_seed)+"-"+str(population_length)+"-" +\
+        self.file: str = str(self.__class__.__name__)+"-"+str(dataset_name)+"-"+str(random_seed)+"-"+str(population_length)+"-" +\
             str(max_generations) + "-"+str(max_evaluations)+"-"+str(learning_rate)+"-" + \
             str(mutation_prob)+"-"+str(mutation_shift)+".txt"
 
-    def get_name(self):
+    def get_name(self) -> str:
         return f"PBIL+{self.population_length}+{self.max_generations}+{self.max_evaluations}+{self.learning_rate}+{self.mutation_prob}+{self.mutation_shift}"
 
-    def initialize_probability_vector(self):
+    def initialize_probability_vector(self) -> np.ndarray:
         probabilities = np.full(self.dataset.pbis_score.size, 0.5)
         #probabilities = np.full(self.dataset.pbis_score.size, 1/self.dataset.pbis_score.size)
 
@@ -61,7 +61,7 @@ class PBILAlgorithm(EDAAlgorithm):  # Population Based Incremental Learning
     SELECT INDIVIDUALS
     '''
 
-    def select_individuals(self, population):
+    def select_individuals(self, population: List[Solution]) -> Solution:
         # max_value, max_sample = self.find_max_sample(population) # esto es muy monobjetivo
         max_sample = self.find_max_sample_nds(
             population, self.nds)
@@ -69,14 +69,14 @@ class PBILAlgorithm(EDAAlgorithm):  # Population Based Incremental Learning
         #    population)
         return max_sample
 
-    def find_max_sample_monoscore(self, population):
+    def find_max_sample_monoscore(self, population: List[Solution]) -> Tuple[float, Solution]:
         population.sort(
             key=lambda x: x.compute_mono_objective_score(), reverse=True)
         max_score = population[0].compute_mono_objective_score()
         max_sample = population[0]
         return max_score, max_sample
 
-    def find_max_sample_nds(self, population, nds):
+    def find_max_sample_nds(self, population: List[Solution], nds) -> Solution:
         if len(nds) > 0:
             random_index = np.random.randint(len(nds))
             return nds[random_index]
@@ -84,7 +84,7 @@ class PBILAlgorithm(EDAAlgorithm):  # Population Based Incremental Learning
             random_index = np.random.randint(len(population))
             return population[random_index]
 
-    def find_max_sample_pop(self, population):
+    def find_max_sample_pop(self, population: List[Solution]) -> Solution:
         nds_pop = get_nondominated_solutions(population, [])
         #nds_pop = population
         random_index = np.random.randint(len(nds_pop))
@@ -94,7 +94,7 @@ class PBILAlgorithm(EDAAlgorithm):  # Population Based Incremental Learning
     LEARN PROBABILITY MODEL
     '''
 
-    def learn_probability_model(self, probability_vector, max_sample):
+    def learn_probability_model(self, probability_vector: np.ndarray, max_sample: Solution) -> np.ndarray:
         for i in np.arange(len(probability_vector)):
             probability_vector[i] = probability_vector[i]*(
                 1-self.learning_rate)+max_sample.selected[i]*(self.learning_rate)
@@ -110,7 +110,7 @@ class PBILAlgorithm(EDAAlgorithm):  # Population Based Incremental Learning
     SAMPLE NEW POPULATION
     '''
 
-    def sample_new_population(self, probability_vector):
+    def sample_new_population(self, probability_vector: np.ndarray) -> List[Solution]:
         new_population = []
         for i in np.arange(self.population_length):
             sample = self.generate_sample_from_probabilities(
@@ -118,7 +118,7 @@ class PBILAlgorithm(EDAAlgorithm):  # Population Based Incremental Learning
             new_population.append(sample)
         return new_population
 
-    def generate_sample_from_probabilities(self, probabilities):
+    def generate_sample_from_probabilities(self, probabilities: np.ndarray) -> Solution:
         sample_selected = np.random.binomial(1, probabilities)
 
         sample = Solution(self.dataset, None, selected=sample_selected)
@@ -127,8 +127,7 @@ class PBILAlgorithm(EDAAlgorithm):  # Population Based Incremental Learning
 
 # RUN ALGORITHM------------------------------------------------------------------
 
-
-    def run(self):
+    def run(self) -> Dict[str, Any]:
         start = time.time()
         self.reset()
 
@@ -141,7 +140,8 @@ class PBILAlgorithm(EDAAlgorithm):  # Population Based Incremental Learning
             while (not self.stop_criterion(self.num_generations, self.num_evaluations)):
                 self.population = []
 
-                self.population = self.sample_new_population(self.probability_vector)
+                self.population = self.sample_new_population(
+                    self.probability_vector)
 
                 # repair population if dependencies tackled:
                 if(self.tackle_dependencies):
@@ -166,8 +166,6 @@ class PBILAlgorithm(EDAAlgorithm):  # Population Based Incremental Learning
             pass
 
         end = time.time()
-
-        self.nds = format_population(self.nds, self.dataset)
 
         print("\nNDS created has", self.nds.__len__(), "solution(s)")
 

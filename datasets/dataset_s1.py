@@ -1,7 +1,8 @@
+from typing import Tuple
 import numpy as np
 
 
-def dataset_s1():
+def dataset_s1() -> Tuple[np.ndarray, int, np.ndarray, np.ndarray, np.ndarray]:
     pbis_cost = np.array([16, 27, 35, 18, 38, 14, 18,  7,  4, 30, 17, 18,  6, 37, 27, 18,  3,
                           3, 11,  9,  1, 24, 38, 39, 25, 28, 28, 32, 26, 19, 30, 37, 17,  6,
                           4, 30,  4, 30,  2, 22])

@@ -4,7 +4,7 @@ from datasets.dataset_s1 import dataset_s1
 from datasets.dataset_s2 import dataset_s2
 from datasets.dataset_s3 import dataset_s3
 from datasets.dataset_test import dataset_test
-from evaluation.normalize import normalize_dataset_sum
+from datasets.normalize_dataset import normalize_dataset
 import numpy as np
 
 
@@ -47,7 +47,7 @@ class Dataset:
 
     """
 
-    def __init__(self, dataset="test"):
+    def __init__(self, dataset: str = "test"):
         """
         :param
         dataset: string: 1 or 2 (at the moment)
@@ -71,36 +71,34 @@ class Dataset:
         else:
             raise Exception("Sorry, dataset with id=", id, " not found.")
 
-        self.num_pbis = len(self.pbis_cost)
-        self.pbis_satisfaction = self.stakeholders_importances.dot(
-            self.stakeholders_pbis_priorities)
+        #self.num_pbis: int = len(self.pbis_cost)
+        # self.pbis_satisfaction: np.ndarray = self.stakeholders_importances.dot(
+        #    self.stakeholders_pbis_priorities)
 
         # now two escalation follows, based on
         # https://en.wikipedia.org/wiki/Feature_scaling#Rescaling_(min-max_normalization)
         # scale pbis cost in range [0-1]
-        margin = 1 / self.num_pbis  # used to avoid zeros
-        diff = np.max(self.pbis_cost) - np.min(self.pbis_cost)
-        self.pbis_cost_scaled = (
-            self.pbis_cost - np.min(self.pbis_cost) + margin) / (diff + margin)
+        # margin = 1 / self.num_pbis  # used to avoid zeros
+        #diff = np.max(self.pbis_cost) - np.min(self.pbis_cost)
+        # self.pbis_cost_scaled:np.ndarray = (
+        #    self.pbis_cost - np.min(self.pbis_cost) + margin) / (diff + margin)
 
         # scale pbis satisfaction in range[0-1]
-        diff = np.max(self.pbis_satisfaction) - np.min(self.pbis_satisfaction)
-        self.pbis_satisfaction_scaled = (
-            self.pbis_satisfaction - np.min(self.pbis_satisfaction) + margin) / (diff + margin)
+        #diff = np.max(self.pbis_satisfaction) - np.min(self.pbis_satisfaction)
+        # self.pbis_satisfaction_scaled:np.ndarray = (
+        #    self.pbis_satisfaction - np.min(self.pbis_satisfaction) + margin) / (diff + margin)
 
-        
         #self.pbis_score = self.pbis_satisfaction_scaled / self.pbis_cost_scaled
-        
+
         # each pbi score is computed from the scaled versions of pbi satisfaction and cost
-        self.pbis_cost_scaled, self.pbis_satisfaction_scaled, self.pbis_score = normalize_dataset_sum(
-            self.pbis_cost, self.pbis_satisfaction, self.stakeholders_importances, self.stakeholders_pbis_priorities)
+        self.pbis_cost_scaled, self.pbis_satisfaction_scaled, self.pbis_score = normalize_dataset(
+            self.pbis_cost, self.stakeholders_importances, self.stakeholders_pbis_priorities)
 
         # simplify dependencies:
         if (self.dependencies is not None):
             self.calculate_dependencies()
 
-    # TODO CALCULAR DEPENDENCIAS TOTALES DEL DATASET
-    def calculate_dependencies(self):
+    def calculate_dependencies(self) -> None:
         self.new_dependencies = {}
         # dependency = index_dependency+1 (starts from 1)
         for dep in range(1, len(self.dependencies)+1):
@@ -119,7 +117,7 @@ class Dataset:
                 self.dependencies[i -
                                   1] = list(dict.fromkeys(self.new_dependencies[i]))
 
-    def aux_dependencies(self, parent, child):
+    def aux_dependencies(self, parent: int, child: int) -> None:
         # if no dependencies in child -> stop
         if self.dependencies[child-1] is None:
             return

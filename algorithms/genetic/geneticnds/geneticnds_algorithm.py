@@ -1,13 +1,16 @@
-from algorithms.abstract_default.evaluation_exception import EvaluationLimit
-from algorithms.genetic.abstract_genetic.basegenetic_algorithm import BaseGeneticAlgorithm
+from typing import Any, Dict, List
+from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
+from algorithms.genetic.abstract_genetic.abstract_genetic_algorithm import AbstractGeneticAlgorithm
 from algorithms.genetic.geneticnds.geneticnds_executer import GeneticNDSExecuter
 import copy
 import time
-from evaluation.update_nds import get_nondominated_solutions
+from evaluation.get_nondominated_solutions import get_nondominated_solutions
 import random
 import evaluation.metrics as metrics
+from models.Solution import Solution
 
-class GeneticNDSAlgorithm(BaseGeneticAlgorithm):
+
+class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
     def __init__(self, dataset_name: str = "test", random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
                  population_length: int = 100, max_generations: int = 100, max_evaluations: int = 0,
                  selection: str = "tournament", selection_candidates: int = 2,
@@ -20,12 +23,12 @@ class GeneticNDSAlgorithm(BaseGeneticAlgorithm):
                          selection, selection_candidates, crossover, crossover_prob,
                          mutation, mutation_prob, replacement,)
 
-        #self.utils = GeneticNDSUtils(
+        # self.utils = GeneticNDSUtils(
         #    random_seed, population_length, selection_candidates, crossover_prob, mutation_prob)
         self.executer = GeneticNDSExecuter(algorithm=self)
-        #self.problem, self.dataset = self.utils.generate_dataset_problem(
+        # self.problem, self.dataset = self.utils.generate_dataset_problem(
         #    dataset_name=dataset_name)
-        self.dataset_name = dataset_name
+        #self.dataset_name = dataset_name
 
         #self.population_length = population_length
         #self.max_generations = max_generations
@@ -81,14 +84,14 @@ class GeneticNDSAlgorithm(BaseGeneticAlgorithm):
             "-"+str(mutation_prob)+"-"+str(replacement)+".txt"
         # + "-"+str(max_evaluations) TODO
 
-    def get_name(self):
+    def get_name(self) -> str:
         return "GeneticNDS+"+str(self.population_length)+"+"+str(self.max_generations) + \
             "+"+str(self.max_evaluations)+"+"+str(self.crossover_prob)\
             + "+"+str(self.mutation_scheme)+"+"+str(self.mutation_prob)
 
     # UPDATE NDS------------------------------------------------------------------
 
-    #def is_non_dominated(self, ind, nds):
+    # def is_non_dominated(self, ind, nds):
     #    non_dominated = True
     #    for other_ind in nds:
     #        # if ind.dominates(other_ind):
@@ -101,7 +104,7 @@ class GeneticNDSAlgorithm(BaseGeneticAlgorithm):
 #
     #    return non_dominated
 #
-    #def updateNDS(self, new_population):
+    # def updateNDS(self, new_population):
     #    new_nds = []
     #    merged_population = copy.deepcopy(self.nds)
     #    merged_population.extend(new_population)
@@ -142,13 +145,13 @@ class GeneticNDSAlgorithm(BaseGeneticAlgorithm):
     #        self.updateNDS(new_population)
     #        raise EvaluationLimit
 
-    def reset(self):
+    def reset(self) -> None:
         super().reset()
         self.nds = []
 
     # RUN ALGORITHM------------------------------------------------------------------
 
-    def run(self):
+    def run(self) -> Dict[str, Any]:
         self.reset()
         paretos = []
         start = time.time()
@@ -215,30 +218,21 @@ class GeneticNDSAlgorithm(BaseGeneticAlgorithm):
         return {  # "population": returned_population,
             "population": self.nds,
             "time": end - start,
-            "best_individual": self.best_individual,
-            # "nds": self.nds,
-            "bestGeneration": self.best_generation,
             "numGenerations": self.num_generations,
+            "bestGeneration": self.best_generation,
+            "best_individual": self.best_individual,
             "numEvaluations": self.num_evaluations,
-            "paretos": paretos
+            "paretos": paretos,
         }
 
-    def calculate_last_generation_with_enhance(self, best_generation, best_generation_avgValue, num_generation, population):
-        bestAvgValue = metrics.calculate_bestAvgValue(population)
-        if bestAvgValue > best_generation_avgValue:
-            best_generation_avgValue = bestAvgValue
-            best_generation = num_generation
-        return best_generation, best_generation_avgValue
-
-
-    def add_evaluation(self, new_population):
+    def add_evaluation(self, new_population: List[Solution]) -> None:
         self.num_evaluations += 1
         # if(self.num_evaluations >= self.max_evaluations):
         if (self.stop_criterion(self.num_generations, self.num_evaluations)):
             self.update_nds(new_population)
             raise EvaluationLimit
 
-    def selection_tournament(self, population):
+    def selection_tournament(self, population: List[Solution]) -> List[Solution]:
         new_population = []  # Population()
         # crear tantos individuos como tamaño de la poblacion
         for i in range(0, len(population)):
@@ -267,7 +261,7 @@ class GeneticNDSAlgorithm(BaseGeneticAlgorithm):
 
     # CROSSOVER------------------------------------------------------------------
 
-    #def crossover_one_point(self, population):
+    # def crossover_one_point(self, population):
     #    new_population = []  # Population()
     #    i = 0
     #    while i < len(population):
@@ -353,7 +347,7 @@ class GeneticNDSAlgorithm(BaseGeneticAlgorithm):
 #        return new_population
 
     # REPLACEMENT------------------------------------------------------------------
-    def replacement_elitism(self, population, newpopulation):
+    def replacement_elitism(self, population: List[Solution], newpopulation: List[Solution]) -> List[Solution]:
         # encontrar mejor individuo de poblacion
         best_individual = None
         best_individual_total_score = 0
@@ -374,5 +368,5 @@ class GeneticNDSAlgorithm(BaseGeneticAlgorithm):
                 worst_individual_index = newpopulation_replaced.index(ind)
 
         # reemplazar peor individuo por el mejor de poblacion antigua
-        newpopulation_replaced[worst_individual_index]=best_individual
+        newpopulation_replaced[worst_individual_index] = best_individual
         return newpopulation_replaced

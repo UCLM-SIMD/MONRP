@@ -1,13 +1,16 @@
 import random
-from algorithms.abstract_default.evaluation_exception import EvaluationLimit
-from algorithms.genetic.abstract_genetic.basegenetic_algorithm import BaseGeneticAlgorithm
+from typing import Any, Dict, List
+from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
+from algorithms.genetic.abstract_genetic.abstract_genetic_algorithm import AbstractGeneticAlgorithm
 from algorithms.genetic.nsgaii.nsgaii_executer import NSGAIIExecuter
 import copy
 import time
 
+from models.Solution import Solution
+
 
 # TODO NSGAIIALGORITHM -> NSGAII y reescribir ficheros output
-class NSGAIIAlgorithm(BaseGeneticAlgorithm):
+class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
     def __init__(self, dataset_name="test", random_seed=None, population_length=20, max_generations=1000, max_evaluations=0,
                  selection="tournament", selection_candidates=2,
                  crossover="onepoint", crossover_prob=0.9,
@@ -22,7 +25,7 @@ class NSGAIIAlgorithm(BaseGeneticAlgorithm):
         self.executer = NSGAIIExecuter(algorithm=self)
         # self.problem, self.dataset = self.utils.generate_dataset_problem(
         #    dataset_name=dataset_name)
-        self.dataset_name = dataset_name
+        #self.dataset_name = dataset_name
 
         #self.random_seed = random_seed
         #self.population_length = population_length
@@ -79,7 +82,7 @@ class NSGAIIAlgorithm(BaseGeneticAlgorithm):
             "-"+str(mutation_prob)+"-"+str(replacement)+".txt"
         # + "-"+str(max_evaluations) TODO
 
-    def get_name(self):
+    def get_name(self) -> str:
         return "NSGA-II+"+str(self.population_length)+"+"+str(self.max_generations)+"+"+str(self.max_evaluations)\
             + "+"+str(self.crossover_prob)\
             + "+"+str(self.mutation_scheme)+"+"+str(self.mutation_prob)
@@ -103,7 +106,7 @@ class NSGAIIAlgorithm(BaseGeneticAlgorithm):
     #    except EvaluationLimit:
     #        pass
 
-    def add_evaluation(self, new_population):
+    def add_evaluation(self, new_population: List[Solution]) -> None:
         self.num_evaluations += 1
         # if(self.num_evaluations >= self.max_evaluations):
         if (self.stop_criterion(self.num_generations, self.num_evaluations)):
@@ -114,12 +117,12 @@ class NSGAIIAlgorithm(BaseGeneticAlgorithm):
                 self.best_generation, self.best_generation_avgValue, self.num_generations, self.returned_population)
             raise EvaluationLimit
 
-    def reset(self):
+    def reset(self) -> None:
         super().reset()
         self.returned_population = None
 
     # RUN ALGORITHM------------------------------------------------------------------
-    def run(self):
+    def run(self) -> Dict[str, Any]:
         self.reset()
         paretos = []
         start = time.time()
@@ -149,7 +152,8 @@ class NSGAIIAlgorithm(BaseGeneticAlgorithm):
                 self.evaluate(self.population, self.best_individual)
                 # self.num_evaluations+=len(self.population)
 
-                self.population, fronts = self.fast_nondominated_sort(self.population)
+                self.population, fronts = self.fast_nondominated_sort(
+                    self.population)
                 new_population = []
                 front_num = 0
 
@@ -173,7 +177,8 @@ class NSGAIIAlgorithm(BaseGeneticAlgorithm):
                     fronts[front_num][0:self.population_length - len(new_population)])
                 self.population = copy.deepcopy(new_population)
                 # ordenar por NDS y crowding distance
-                self.population, fronts = self.fast_nondominated_sort(self.population)
+                self.population, fronts = self.fast_nondominated_sort(
+                    self.population)
                 for front in fronts:
                     self.calculate_crowding_distance(front)
 
@@ -212,15 +217,15 @@ class NSGAIIAlgorithm(BaseGeneticAlgorithm):
 
         return {"population": fronts[0],
                 "time": end - start,
-                "best_individual": self.best_individual,
-                "bestGeneration": self.best_generation,
                 "numGenerations": self.num_generations,
+                "bestGeneration": self.best_generation,
+                "best_individual": self.best_individual,
                 "numEvaluations": self.num_evaluations,
                 "paretos": paretos
                 }
 
     # SELECTION------------------------------------------------------------------
-    def selection_tournament(self, population):
+    def selection_tournament(self, population: List[Solution]) -> List[Solution]:
         #self.num_candidates = 2
         new_population = []
         # crear tantos individuos como tamaño de la poblacion
@@ -315,7 +320,7 @@ class NSGAIIAlgorithm(BaseGeneticAlgorithm):
 #        return new_population
 
     # REPLACEMENT------------------------------------------------------------------
-    def replacement_elitism(self, population, newpopulation):
+    def replacement_elitism(self, population: List[Solution], newpopulation: List[Solution]) -> List[Solution]:
         # encontrar mejor individuo de poblacion
         best_individual = None
         for ind in population:
@@ -364,14 +369,14 @@ class NSGAIIAlgorithm(BaseGeneticAlgorithm):
         return population, fronts
 
     # CALCULATE CROWDING DISTANCE------------------------------------------------------------------
-    def calculate_crowding_distance(self, front):
+    def calculate_crowding_distance(self, front: List[Solution]) -> None:
         if len(front) > 0:
             solutions_num = len(front)
             for individual in front:
                 individual.crowding_distance = 0
 
             front.sort(
-                    key=lambda individual: individual.total_cost)
+                key=lambda individual: individual.total_cost)
             # front[0].crowding_distance = 10 ** 9 #########################
             front[0].crowding_distance = float('inf')
             # front[solutions_num - 1].crowding_distance = 10 ** 9 #########################
@@ -387,7 +392,7 @@ class NSGAIIAlgorithm(BaseGeneticAlgorithm):
                     front[i + 1].total_cost - front[i - 1].total_cost) / scale
 
             front.sort(
-                    key=lambda individual: individual.total_satisfaction)
+                key=lambda individual: individual.total_satisfaction)
             # front[0].crowding_distance = 10 ** 9 #########################
             front[0].crowding_distance = float('inf')
             # front[solutions_num - 1].crowding_distance = 10 ** 9 #########################
@@ -402,9 +407,7 @@ class NSGAIIAlgorithm(BaseGeneticAlgorithm):
                 front[i].crowding_distance += (
                     front[i + 1].total_satisfaction - front[i - 1].total_satisfaction) / scale
 
-
-
-            #for m in range(len(front[0].objectives)):
+            # for m in range(len(front[0].objectives)):
             #    front.sort(
             #        key=lambda individual: individual.objectives[m].value)
             #    # front[0].crowding_distance = 10 ** 9 #########################
@@ -422,7 +425,7 @@ class NSGAIIAlgorithm(BaseGeneticAlgorithm):
             #            front[i + 1].objectives[m].value - front[i - 1].objectives[m].value) / scale
 
     # CROWDING OPERATOR------------------------------------------------------------------
-    def crowding_operator(self, individual, other_individual):
+    def crowding_operator(self, individual: any, other_individual: any) -> int:
         if (individual.rank < other_individual.rank) or \
             ((individual.rank == other_individual.rank) and (
                 individual.crowding_distance > other_individual.crowding_distance)):

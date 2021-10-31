@@ -1,9 +1,9 @@
 import evaluation.metrics as metrics
 
-from algorithms.abstract_default.executer import Executer
+from algorithms.abstract_algorithm.abstract_executer import AbstractExecuter
 
 
-class BaseGeneticExecuter(Executer):
+class GeneticExecuter(AbstractExecuter):
     def __init__(self, algorithm):
         self.algorithm = algorithm
         self.algorithm_type = "genetic"

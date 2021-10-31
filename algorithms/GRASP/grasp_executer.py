@@ -1,8 +1,8 @@
 import evaluation.metrics as metrics
-from algorithms.abstract_default.executer import Executer
+from algorithms.abstract_algorithm.abstract_executer import AbstractExecuter
 
 
-class GRASPExecuter(Executer):
+class GRASPExecuter(AbstractExecuter):
     def __init__(self, algorithm):
         self.algorithm_type = "grasp"
         self.algorithm = algorithm

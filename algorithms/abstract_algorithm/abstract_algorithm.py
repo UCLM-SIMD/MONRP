@@ -1,35 +1,39 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 import copy
 import random
+from typing import Any, Dict, List, Tuple
 
 from datasets.Dataset import Dataset
 import numpy as np
 
-class Algorithm(ABC):
 
-    def __init__(self, dataset_name:str="1", random_seed:int=None, debug_mode:bool=False, tackle_dependencies:bool=False):
+class AbstractAlgorithm(ABC):
 
-        self.dataset:Dataset = Dataset(dataset_name)
-        self.dataset_name:str = dataset_name
+    def __init__(self, dataset_name: str = "1", random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False):
 
-        self.debug_mode:bool = debug_mode
-        self.tackle_dependencies:bool = tackle_dependencies
-        self.random_seed:int = None
+        self.dataset: Dataset = Dataset(dataset_name)
+        self.dataset_name: str = dataset_name
+
+        self.debug_mode: bool = debug_mode
+        self.tackle_dependencies: bool = tackle_dependencies
+        self.random_seed: int = random_seed
         self.set_seed(random_seed)
-    
-    def set_seed(self,seed:int):
-        self.random_seed:int = seed
+
+    def set_seed(self, seed: int):
+        self.random_seed: int = seed
         if seed is not None:
             np.random.seed(seed)
             random.seed(seed)
 
-    def reset(self):
+    @abstractmethod
+    def reset(self) -> None:
         pass
 
-    def run(self):
+    @abstractmethod
+    def run(self) -> Dict[str, Any]:
         pass
 
-    def generate_chart(self, plot):
+    def generate_chart(self, plot) -> Tuple[List[float], List[float]]:
         result = self.run()
         func = [i for i in result["population"]]
         function1 = [i.total_satisfaction for i in func]
@@ -37,14 +41,14 @@ class Algorithm(ABC):
         plot.scatter(function2, function1, label=self.get_name())
         return function1, function2
 
-    def get_name(self):
+    def get_name(self) -> str:
         return "Algorithm"
 
-    def stop_criterion(self):
+    @abstractmethod
+    def stop_criterion(self) -> bool:
         pass
 
-        # EVALUATION------------------------------------------------------------------
-    def evaluate(self, population, best_individual):
+    def evaluate(self, population, best_individual) -> None:
         best_score = 0
         new_best_individual = None
         for ind in population:
@@ -58,5 +62,3 @@ class Algorithm(ABC):
                 best_individual = copy.deepcopy(new_best_individual)
         else:
             best_individual = copy.deepcopy(new_best_individual)
-
-

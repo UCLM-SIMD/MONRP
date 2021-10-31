@@ -1,6 +1,7 @@
+from typing import Any, Dict, List
 from algorithms.EDA.eda_algorithm import EDAAlgorithm
-from algorithms.abstract_default.evaluation_exception import EvaluationLimit
-from evaluation.update_nds import get_nondominated_solutions
+from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
+from evaluation.get_nondominated_solutions import get_nondominated_solutions
 from models.Solution import Solution
 from algorithms.EDA.UMDA.umda_executer import UMDAExecuter
 
@@ -9,13 +10,12 @@ import numpy as np
 
 
 class UMDAAlgorithm(EDAAlgorithm):  # Univariate Marginal Distribution Algorithm
-    def __init__(self, dataset_name:str="test", random_seed:int=None, debug_mode:bool=False, tackle_dependencies:bool=False,
-                population_length:int=100, max_generations:int=100, max_evaluations:int=0,
-                 selected_individuals:int=60, selection_scheme:str="nds", replacement_scheme:str="replacement"):
-
+    def __init__(self, dataset_name: str = "test", random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
+                 population_length: int = 100, max_generations: int = 100, max_evaluations: int = 0,
+                 selected_individuals: int = 60, selection_scheme: str = "nds", replacement_scheme: str = "replacement"):
 
         super().__init__(dataset_name, random_seed, debug_mode, tackle_dependencies,
-            population_length, max_generations, max_evaluations)
+                         population_length, max_generations, max_evaluations)
         self.executer = UMDAExecuter(algorithm=self)
         # self.problem, self.dataset = self.utils.generate_dataset_problem(
         #    dataset_name=dataset_name)
@@ -27,10 +27,10 @@ class UMDAAlgorithm(EDAAlgorithm):  # Univariate Marginal Distribution Algorithm
         #self.max_generations = max_generations
         #self.max_evaluations = max_evaluations
 
-        self.selected_individuals:int = selected_individuals
+        self.selected_individuals: int = selected_individuals
 
-        self.selection_scheme:str = selection_scheme
-        self.replacement_scheme:str = replacement_scheme
+        self.selection_scheme: str = selection_scheme
+        self.replacement_scheme: str = replacement_scheme
 
         #self.nds = []
         #self.num_evaluations = 0
@@ -39,24 +39,22 @@ class UMDAAlgorithm(EDAAlgorithm):  # Univariate Marginal Distribution Algorithm
         #self.debug_mode = debug_mode
         #self.tackle_dependencies = tackle_dependencies
 
-        # TODO los utils no se usan y estan mal los super()
-
         #self.random_seed = random_seed
-        #if random_seed is not None:
+        # if random_seed is not None:
         #    np.random.seed(random_seed)
 
-        self.file:str = str(self.__class__.__name__)+"-"+str(dataset_name)+"-"+str(random_seed)+"-"+str(population_length)+"-" +\
+        self.file: str = str(self.__class__.__name__)+"-"+str(dataset_name)+"-"+str(random_seed)+"-"+str(population_length)+"-" +\
             str(max_generations) + "-"+str(max_evaluations)+".txt"
 
-    def get_name(self):
+    def get_name(self) -> str:
         return f"UMDA selection{self.selection_scheme} {self.replacement_scheme}"
-
 
     ''' 
     LEARN PROBABILITY MODEL
     '''
 
-    def learn_probability_model(self, population):  # suavizar con laplace(?)
+    # suavizar con laplace(?)
+    def learn_probability_model(self, population: List[Solution]) -> List[float]:
         probability_model = []
         # para cada gen:
         for index in np.arange(len(self.dataset.pbis_cost_scaled)):
@@ -74,20 +72,20 @@ class UMDAAlgorithm(EDAAlgorithm):  # Univariate Marginal Distribution Algorithm
     SAMPLE NEW POPULATION
     '''
 
-    def generate_sample_from_probabilities_binomial(self, probabilities):
+    def generate_sample_from_probabilities_binomial(self, probabilities: List[float]) -> Solution:
         #probs = probabilities/len(probabilities)
         sample_selected = np.random.binomial(1, probabilities)
         sample = Solution(self.dataset, None, selected=sample_selected)
         return sample
 
-    def generate_sample_from_probabilities(self, probabilities):
+    def generate_sample_from_probabilities(self, probabilities: List[float]) -> Solution:
         probs = [prob * 10 for prob in probabilities]
         sum_probs = np.sum(probs)
         scaled_probs = probs / sum_probs
         sample = Solution(self.dataset, scaled_probs)
         return sample
 
-    def replace_population_from_probabilities_elitism(self, probability_model, population):
+    def replace_population_from_probabilities_elitism(self, probability_model: List[float], population: List[Solution]) -> List[Solution]:
         new_population = []
         # elitist R-1 inds
         for i in np.arange(self.population_length-1):
@@ -106,7 +104,7 @@ class UMDAAlgorithm(EDAAlgorithm):  # Univariate Marginal Distribution Algorithm
 
         return new_population
 
-    def replace_population_from_probabilities(self, probability_model):
+    def replace_population_from_probabilities(self, probability_model: List[float]) -> List[Solution]:
         new_population = []
         for i in np.arange(self.population_length):
             new_individual = self.generate_sample_from_probabilities_binomial(
@@ -117,7 +115,7 @@ class UMDAAlgorithm(EDAAlgorithm):  # Univariate Marginal Distribution Algorithm
 
         return new_population
 
-    def sample_new_population(self, probability_model):
+    def sample_new_population(self, probability_model: List[float]) -> List[Solution]:
         if self.replacement_scheme == "replacement":
             population = self.replace_population_from_probabilities(
                 probability_model)
@@ -128,7 +126,7 @@ class UMDAAlgorithm(EDAAlgorithm):  # Univariate Marginal Distribution Algorithm
 
     # RUN ALGORITHM------------------------------------------------------------------
 
-    def run(self):
+    def run(self) -> Dict[str, Any]:
         self.reset()
         paretos = []
         start = time.time()

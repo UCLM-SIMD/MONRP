@@ -1,10 +1,14 @@
 import math
+from typing import List
 import numpy as np
+from datasets.Dataset import Dataset
+
+from models.Solution import Solution
 
 # AVGVALUE------------------------------------------------------------------
 
 
-def calculate_avgValue(population):
+def calculate_avgValue(population: List[Solution]) -> float:
     avgValue = 0
     for ind in population:
         avgValue += ind.compute_mono_objective_score()
@@ -14,7 +18,7 @@ def calculate_avgValue(population):
 # BESTAVGVALUE------------------------------------------------------------------
 
 
-def calculate_bestAvgValue(population):
+def calculate_bestAvgValue(population: List[Solution]) -> float:
     bestAvgValue = 0
     for ind in population:
         if bestAvgValue < ind.compute_mono_objective_score():
@@ -25,13 +29,13 @@ def calculate_bestAvgValue(population):
 # NUMSOLUTIONS------------------------------------------------------------------
 
 
-def calculate_numSolutions(population):
+def calculate_numSolutions(population: List[Solution]) -> int:
     return len(set(population))
 
 # SPACING------------------------------------------------------------------
 
 
-def calculate_spacing(population):
+def calculate_spacing(population: List[Solution]) -> float:
     n = len(population)
     N = 2  # len(population[0].objectives)
     spacing = 0
@@ -76,7 +80,7 @@ def calculate_spacing(population):
 # HYPERVOLUME------------------------------------------------------------------
 
 
-def calculate_hypervolume(population):
+def calculate_hypervolume(population: List[Solution]) -> float:
     # obtener minimos y maximos de cada objetivo
     objectives_diff = []
     # aux_max_obj=[population[0].max_score,population[0].max_cost]
@@ -132,16 +136,14 @@ def calculate_hypervolume(population):
 # SPREAD------------------------------------------------------------------
 
 
-def eudis2(v1, v2):
+def eudis2(v1: float, v2: float) -> float:
     return math.dist(v1, v2)
     # return distance.euclidean(v1, v2)
 
 
-def calculate_spread(population, dataset):
+def calculate_spread(population: List[Solution], dataset: Dataset) -> float:
     MIN_OBJ1 = 0
     MIN_OBJ2 = 0
-    # MAX_OBJ1 = 25  # max_importancia_Stakeholder * max_prioridad_pbi_para_Stakeholder # TODO fix
-    # MAX_OBJ2 = 40  # max estimacion de pbi
 
     MAX_OBJ1 = np.max(dataset.pbis_satisfaction_scaled)
     MAX_OBJ2 = np.max(dataset.pbis_cost_scaled)
@@ -190,9 +192,9 @@ def calculate_spread(population, dataset):
     return spread
 
 
-def calculate_mean_bits_per_sol(solutions):
+def calculate_mean_bits_per_sol(solutions: List[Solution]) -> float:
     genes = 0
     n_sols = len(solutions)
     for sol in solutions:
-    	genes += np.count_nonzero(sol.selected)
+        genes += np.count_nonzero(sol.selected)
     return genes/n_sols

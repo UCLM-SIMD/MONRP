@@ -1,8 +1,10 @@
+from typing import Tuple
 import numpy as np
 
 
-def normalize_dataset_sum(pbis_cost, pbis_satisfaction, stakeholders_importances, stakeholders_pbis_priorities):
+def normalize_dataset(pbis_cost: np.ndarray, stakeholders_importances: np.ndarray, stakeholders_pbis_priorities: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     num_pbis = len(pbis_cost)
+
     pbis_satisfaction = stakeholders_importances.dot(
         stakeholders_pbis_priorities)
 

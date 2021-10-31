@@ -1,8 +1,8 @@
 import random
-from typing import List
+from typing import Any, Dict, List, Tuple
 from algorithms.EDA.eda_algorithm import EDAAlgorithm
-from algorithms.abstract_default.evaluation_exception import EvaluationLimit
-from evaluation.update_nds import get_nondominated_solutions
+from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
+from evaluation.get_nondominated_solutions import get_nondominated_solutions
 from models.Solution import Solution
 
 import time
@@ -12,13 +12,14 @@ from scipy import stats as scipy_stats
 
 
 class MIMICAlgorithm(EDAAlgorithm):
-    def __init__(self, dataset_name:str="test", random_seed:int=None, debug_mode:bool=False, tackle_dependencies:bool=False,
-                population_length:int=100, max_generations:int=100, max_evaluations:int=0,
-                selected_individuals:int=60, selection_scheme:str="nds", replacement_scheme:str="replacement"):
+
+    def __init__(self, dataset_name: str = "test", random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
+                 population_length: int = 100, max_generations: int = 100, max_evaluations: int = 0,
+                 selected_individuals: int = 60, selection_scheme: str = "nds", replacement_scheme: str = "replacement"):
 
         # self.executer = UMDAExecuter(algorithm=self)
         super().__init__(dataset_name, random_seed, debug_mode, tackle_dependencies,
-            population_length, max_generations, max_evaluations)
+                         population_length, max_generations, max_evaluations)
 
         #self.dataset = Dataset(dataset_name)
         #self.dataset_name = dataset_name
@@ -30,34 +31,34 @@ class MIMICAlgorithm(EDAAlgorithm):
 
         self.selected_individuals: int = selected_individuals
 
-        self.selection_scheme:str = selection_scheme
-        self.replacement_scheme:str = replacement_scheme
+        self.selection_scheme: str = selection_scheme
+        self.replacement_scheme: str = replacement_scheme
 
         #self.nds = []
         #self.num_evaluations: int = 0
         #self.num_generations: int = 0
         #self.best_individual = None
 
-        self.population:List[Solution] = []
+        self.population: List[Solution] = []
 
         #self.debug_mode = debug_mode
         #self.tackle_dependencies = tackle_dependencies
 
         #self.random_seed = random_seed
-        #if random_seed is not None:
+        # if random_seed is not None:
         #    np.random.seed(random_seed)
 
-        self.file:str = str(self.__class__.__name__)+"-"+str(dataset_name)+"-"+str(random_seed)+"-"+str(population_length)+"-" +\
+        self.file: str = str(self.__class__.__name__)+"-"+str(dataset_name)+"-"+str(random_seed)+"-"+str(population_length)+"-" +\
             str(max_generations) + "-"+str(max_evaluations)+".txt"
 
-    def get_name(self):
+    def get_name(self) -> str:
         return f"MIMIC selection{self.selection_scheme} {self.replacement_scheme}"
 
     '''
     LEARN PROBABILITY MODEL
     '''
 
-    def learn_probability_model(self, population, selected_individuals):
+    def learn_probability_model(self, population: List[Solution], selected_individuals: int) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         # init structures
         parents = np.zeros(self.gene_size, dtype=int)
         used = np.full(self.gene_size, False)
@@ -81,7 +82,7 @@ class MIMICAlgorithm(EDAAlgorithm):
         used[current_var] = True
 
         # Adds iteratively the variable with less conditional entropy.
-        for i in range(1,self.gene_size):
+        for i in range(1, self.gene_size):
             # Chooses the next variable.
             parents[i] = current_var
             current_var = self.get_lower_conditional_entropy(
@@ -95,7 +96,7 @@ class MIMICAlgorithm(EDAAlgorithm):
 
         return marginals, parents, variables, conditionals
 
-    def learn_marginals(self, population, selected_individuals, laplace=0):
+    def learn_marginals(self, population: List[Solution], selected_individuals: int, laplace: int = 0):
         '''
             // Learns a model from the best individuals in a given population
             // It assumes that population is sorted in descendent order.
@@ -125,7 +126,7 @@ class MIMICAlgorithm(EDAAlgorithm):
                 (selected_individuals+(2*laplace))
         return marginals
 
-    def get_probability_distribution(self, elements, v1, N, laplace=1):
+    def get_probability_distribution(self, elements: List[Solution], v1: int, N: int, laplace: int = 1) -> np.ndarray:
         prob = np.zeros(2)
         #N = len(elements)
         for i in range(N):
@@ -137,7 +138,7 @@ class MIMICAlgorithm(EDAAlgorithm):
                 prob[i] = (prob[i])/N
         return prob
 
-    def get_entropy(self, elements, var1, N):
+    def get_entropy(self, elements: List[Solution], var1: int, N: int) -> float:
         '''
            public double getEntropy(int var1,int N){
             int i;
@@ -160,7 +161,7 @@ class MIMICAlgorithm(EDAAlgorithm):
         # return entropy
         return scipy_stats.entropy(probs, base=2)
 
-    def get_conditional_entropy(self, population, var1, var2, N):
+    def get_conditional_entropy(self, population: List[int], var1: int, var2: int, N: int) -> float:
         '''
            public double getConditionalEntropy(int var1,int var2,int N){
             int i,j,valueI,valueJ;
@@ -182,7 +183,7 @@ class MIMICAlgorithm(EDAAlgorithm):
             return entropy;
         }
         '''
-        entropy = 0
+        entropy: float = 0.0
         prob_x, prob_y, prob_xy = self.get_distributions(
             population, var1, var2, N, 1)
         for j in range(2):
@@ -195,7 +196,7 @@ class MIMICAlgorithm(EDAAlgorithm):
             entropy += prob_y[j]*entropy2
         return entropy
 
-    def get_lower_conditional_entropy(self, population, parent, used, N):
+    def get_lower_conditional_entropy(self, population: List[Solution], parent: int, used: List[bool], N: int) -> int:
         '''
         private int getLowerConditionalEntropy(int parent, boolean[] used){
             int index = -1;
@@ -212,7 +213,7 @@ class MIMICAlgorithm(EDAAlgorithm):
             return index;
         }
         '''
-        index = -1
+        index: int = -1
         min_ce = float("inf")
         for i in range(self.gene_size):
             if(used[i]):
@@ -223,7 +224,7 @@ class MIMICAlgorithm(EDAAlgorithm):
                 index = i
         return index
 
-    def get_distributions(self, population, X, Y, N, laplace=1):
+    def get_distributions(self, population: List[Solution], X: int, Y: int, N: int, laplace: int = 1) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
         '''
         public ThreeProbs getDistributionsOf(int X,int Y, int N, int Laplace){
             double[][] probXY = new double[2][2];
@@ -299,7 +300,7 @@ class MIMICAlgorithm(EDAAlgorithm):
     SAMPLE NEW POPULATION
     '''
 
-    def sample_new_population(self, marginals, parents, variables, conditionals):
+    def sample_new_population(self, marginals: List[float], parents: List[int], variables: List[int], conditionals: List[List[float]]) -> List[Solution]:
         new_population = []
         for i in np.arange(self.population_length):
             new_individual = self.generate_sample(
@@ -307,7 +308,7 @@ class MIMICAlgorithm(EDAAlgorithm):
             new_population.append(new_individual)
         return new_population
 
-    def generate_sample(self, marginals, parents, variables, conditionals):
+    def generate_sample(self, marginals: List[float], parents: List[int], variables: List[int], conditionals: List[List[float]]) -> Solution:
         '''
         // Samples an individual
         public int[] getSample(){
@@ -357,7 +358,7 @@ class MIMICAlgorithm(EDAAlgorithm):
         return sample_ind
 
     # RUN ALGORITHM------------------------------------------------------------------
-    def run(self):
+    def run(self) -> Dict[str, Any]:
         self.reset()
         paretos = []
         start = time.time()
@@ -409,9 +410,3 @@ class MIMICAlgorithm(EDAAlgorithm):
                 "numEvaluations": self.num_evaluations,
                 "paretos": paretos
                 }
-
-
-#if __name__ == '__main__':
-#    algorithm = MIMICAlgorithm(dataset_name="1", population_length=4, max_generations=3,
-#                               max_evaluations=0, selected_individuals=4, selection_scheme="nds", replacement_scheme="replacement")
-#    result = algorithm.run()

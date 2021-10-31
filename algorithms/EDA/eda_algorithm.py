@@ -1,14 +1,16 @@
+from abc import abstractmethod
+from typing import List
 import numpy as np
 from models.Solution import Solution
-from algorithms.abstract_default.algorithm import Algorithm
-from algorithms.abstract_default.evaluation_exception import EvaluationLimit
-from evaluation.update_nds import get_nondominated_solutions
+from algorithms.abstract_algorithm.abstract_algorithm import AbstractAlgorithm
+from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
+from evaluation.get_nondominated_solutions import get_nondominated_solutions
 
 
-class EDAAlgorithm(Algorithm):  # Estimation of Distribution Algorithm
+class EDAAlgorithm(AbstractAlgorithm):  # Estimation of Distribution Algorithm
 
-    def __init__(self, dataset_name:str="1", random_seed:int=None, debug_mode:bool=False, tackle_dependencies:bool=False,
-        population_length:int=100, max_generations:int=100, max_evaluations:int=0,):
+    def __init__(self, dataset_name: str = "1", random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
+                 population_length: int = 100, max_generations: int = 100, max_evaluations: int = 0,):
 
         super().__init__(dataset_name, random_seed, debug_mode, tackle_dependencies)
 
@@ -16,8 +18,8 @@ class EDAAlgorithm(Algorithm):  # Estimation of Distribution Algorithm
         #self.dataset_name:str = dataset_name
 
         self.nds = []
-        self.num_evaluations:int = 0
-        self.num_generations:int = 0
+        self.num_evaluations: int = 0
+        self.num_generations: int = 0
         self.best_individual = None
 
         self.population_length: int = population_length
@@ -28,14 +30,14 @@ class EDAAlgorithm(Algorithm):  # Estimation of Distribution Algorithm
         #self.tackle_dependencies:bool = tackle_dependencies
 
         #self.random_seed:int = random_seed
-        #if random_seed is not None:
+        # if random_seed is not None:
         #    np.random.seed(random_seed)
 
     ''' 
     GENERATE INITIAL POPULATION
     '''
 
-    def generate_initial_population(self):
+    def generate_initial_population(self) -> List[Solution]:
         population = []
         candidates_score_scaled = np.full(
             self.dataset.pbis_score.size, 1/self.dataset.pbis_score.size)
@@ -57,7 +59,7 @@ class EDAAlgorithm(Algorithm):  # Estimation of Distribution Algorithm
     SELECT INDIVIDUALS
     '''
 
-    def select_individuals(self, population):
+    def select_individuals(self, population: List[Solution]) -> List[Solution]:
         if self.selection_scheme == "nds":
             individuals = self.select_nondominated_individuals(
                 population)
@@ -65,7 +67,7 @@ class EDAAlgorithm(Algorithm):  # Estimation of Distribution Algorithm
             individuals = self.select_individuals_monoscore(population)
         return individuals
 
-    def select_individuals_monoscore(self, population):
+    def select_individuals_monoscore(self, population: List[Solution]) -> List[Solution]:
         individuals = []
         population.sort(
             key=lambda x: x.compute_mono_objective_score(), reverse=True)
@@ -75,7 +77,7 @@ class EDAAlgorithm(Algorithm):  # Estimation of Distribution Algorithm
 
         return individuals
 
-    def select_nondominated_individuals(self, population):
+    def select_nondominated_individuals(self, population: List[Solution]) -> List[Solution]:
         selected_individuals = get_nondominated_solutions(population, [])
         return selected_individuals
 
@@ -83,22 +85,23 @@ class EDAAlgorithm(Algorithm):  # Estimation of Distribution Algorithm
     LEARN PROBABILITY MODEL
     '''
 
-    def learn_probability_model(self):
+    @abstractmethod
+    def learn_probability_model(self) -> List[float]:
         pass
 
     ''' 
     SAMPLE NEW POPULATION
     '''
-
-    def sample_new_population(self):
+    @abstractmethod
+    def sample_new_population(self) -> List[Solution]:
         pass
 
-    def repair_population_dependencies(self, solutions):
+    def repair_population_dependencies(self, solutions: List[Solution]) -> List[Solution]:
         for sol in solutions:
-            sol.correct_dependencies(self.dataset)
+            sol.correct_dependencies()
         return solutions
 
-    #def evaluate(self, population, best_individual):
+    # def evaluate(self, population, best_individual):
     #    best_score = 0
     #    new_best_individual = None
     #    for ind in population:
@@ -112,21 +115,21 @@ class EDAAlgorithm(Algorithm):  # Estimation of Distribution Algorithm
     #    else:
     #        best_individual = copy.deepcopy(new_best_individual)
 
-    def add_evaluation(self, new_population):
+    def add_evaluation(self, new_population) -> None:
         self.num_evaluations += 1
         # if(self.num_evaluations >= self.max_evaluations):
         if (self.stop_criterion(self.num_generations, self.num_evaluations)):
-            #self.update_nds(new_population)
+            # self.update_nds(new_population)
             get_nondominated_solutions(new_population, self.nds)
             raise EvaluationLimit
 
-    def reset(self):
+    def reset(self) -> None:
         self.nds = []
         self.best_individual = None
         self.num_generations = 0
         self.num_evaluations = 0
 
-    def stop_criterion(self, num_generations, num_evaluations):
+    def stop_criterion(self, num_generations, num_evaluations) -> bool:
         if self.max_evaluations == 0:
             return num_generations >= self.max_generations
         else:

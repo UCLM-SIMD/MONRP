@@ -1,6 +1,7 @@
-from algorithms.abstract_default.evaluation_exception import EvaluationLimit
+from typing import Any, Dict, List
+from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
 import copy
-from algorithms.abstract_default.algorithm import Algorithm
+from algorithms.abstract_algorithm.abstract_algorithm import AbstractAlgorithm
 from algorithms.GRASP.grasp_executer import GRASPExecuter
 import time
 
@@ -10,10 +11,10 @@ import sys
 import random
 
 from models.Solution import Solution
-from evaluation.update_nds import get_nondominated_solutions
+from evaluation.get_nondominated_solutions import get_nondominated_solutions
 
 
-class GRASP(Algorithm):
+class GRASP(AbstractAlgorithm):
     """
     __author__      = "Victor.PerezPiqueras@uclm.es" "Pablo.Bermejo@uclm.es"
 
@@ -81,9 +82,9 @@ class GRASP(Algorithm):
 
     """
 
-    def __init__(self, dataset:str="test", iterations:int=20, solutions_per_iteration:int=10, max_evaluations:int=0, init_type:str="stochastically",
-                 local_search_type:str="best_first_neighbor_random", path_relinking_mode:str="None", seed:int=None, debug_mode:bool=False,
-                 tackle_dependencies:bool=False):
+    def __init__(self, dataset: str = "test", iterations: int = 20, solutions_per_iteration: int = 10, max_evaluations: int = 0, init_type: str = "stochastically",
+                 local_search_type: str = "best_first_neighbor_random", path_relinking_mode: str = "None", seed: int = None, debug_mode: bool = False,
+                 tackle_dependencies: bool = False):
         """
         :param dataset: integer number: 1 or 2
         :param iterations: integer (default 20), number of GRASP construct+local_search repetitions
@@ -98,23 +99,23 @@ class GRASP(Algorithm):
         #self.dataset = Dataset(dataset)
         #self.dataset_name = dataset
 
-        self.iterations:int = iterations
-        self.solutions_per_iteration:int = solutions_per_iteration
-        self.max_evaluations:int = max_evaluations
+        self.iterations: int = iterations
+        self.solutions_per_iteration: int = solutions_per_iteration
+        self.max_evaluations: int = max_evaluations
 
-        self.nds = []
-        self.num_evaluations:int = 0
-        self.num_iterations:int = 0
-        self.start:int = 0
+        self.nds: List[Solution] = []
+        self.num_evaluations: int = 0
+        self.num_iterations: int = 0
+        self.start: int = 0
 
-        self.init_type:str = init_type
-        self.local_search_type:str = local_search_type
-        self.path_relinking_mode:str = path_relinking_mode
+        self.init_type: str = init_type
+        self.local_search_type: str = local_search_type
+        self.path_relinking_mode: str = path_relinking_mode
 
         #self.debug_mode = debug_mode
         #self.tackle_dependencies = tackle_dependencies
 
-        #if seed is not None:
+        # if seed is not None:
         #    np.random.seed(seed)
 
         if self.init_type == "stochastically":
@@ -136,38 +137,40 @@ class GRASP(Algorithm):
             self.local_search = "None"
 
         self.executer = GRASPExecuter(algorithm=self)
-        self.file:str = self.__class__.__name__+"-"+(str(dataset)+"-"+str(seed)+"-"+str(iterations)+"-"+str(solutions_per_iteration)
-                                                 + "-"+str(init_type) + "-"+str(local_search_type) + "-"+str(path_relinking_mode)+".txt")
+        self.file: str = self.__class__.__name__+"-"+(str(dataset)+"-"+str(seed)+"-"+str(iterations)+"-"+str(solutions_per_iteration)
+                                                      + "-"+str(init_type) + "-"+str(local_search_type) + "-"+str(path_relinking_mode)+".txt")
         # + "-"+str(max_evaluations) TODO
 
-    def get_name(self):
+    def get_name(self) -> str:
         init = "stochastic" if self.init_type == "stochastically" else self.init_type
         local = "+"+self.local_search_type.replace(
             'best_first_neighbor_', '') if self.local_search_type != "None" else ""
         PR = "+PR" if self.path_relinking_mode != "None" else ""
         return "GRASP+"+str(self.iterations)+"+"+str(self.solutions_per_iteration)+"+"+str(self.max_evaluations)+"+"+init+local+PR
 
-    def reset(self):
+    def reset(self) -> None:
         self.nds = []
         self.num_evaluations = 0
         self.num_iterations = 0
         self.start = 0
 
-    def stop_criterion(self, num_iterations, num_evaluations):
+    def stop_criterion(self, num_iterations, num_evaluations) -> bool:
         if self.max_evaluations == 0:
             return num_iterations >= self.iterations
         else:
             return num_evaluations >= self.max_evaluations
 
-    def add_evaluation(self, initiated_solutions):
+    def add_evaluation(self, initiated_solutions) -> None:
         self.num_evaluations += 1
+
         # if(self.num_evaluations >= self.max_evaluations):
+
         if self.stop_criterion(self.num_iterations, self.num_evaluations):
             # self.update_nds(initiated_solutions)
             get_nondominated_solutions(initiated_solutions, self.nds)
             raise EvaluationLimit
 
-    def run(self):
+    def run(self) -> Dict[str, Any]:
         """
         Core code of GRASP: initiation + local search + NDS update, repeated self.iterations times.
         :return (selected_list, seconds) list of ndarray and double.
@@ -226,7 +229,6 @@ class GRASP(Algorithm):
         # return selected_list, seconds
         #genes,_ = generate_dataset_genes(self.dataset.id)
 
-
         #self.nds = format_population(self.nds, self.dataset)
         return {
             "population": self.nds,
@@ -250,12 +252,12 @@ class GRASP(Algorithm):
     #    genes,_ = generate_dataset_genes(self.dataset.id)
     #    return _results_in_victor_format(selected_list, seconds, self.iterations, genes, self.num_evaluations)
 
-    def repair_population_dependencies(self, solutions):
+    def repair_population_dependencies(self, solutions: List[Solution]) -> List[Solution]:
         for sol in solutions:
-            sol.correct_dependencies(self.dataset)
+            sol.correct_dependencies()
         return solutions
 
-    def init_solutions_stochastically(self):
+    def init_solutions_stochastically(self) -> List[Solution]:
         """
         candidates (pbis) are selected stochastically based on a rankin of the score of each pbi
         the ranking is scaled with values that sum up to 1. Each value is used as the probability to be chosen.
@@ -275,7 +277,7 @@ class GRASP(Algorithm):
                 i -= 1  # TODO ESTO NO DEBERIA SER EN EL ELSE?
         return solutions
 
-    def init_solutions_uniform(self):
+    def init_solutions_uniform(self) -> List[Solution]:
         """
         candidates (pbis) are selected uniformly 
         :return solutions: list of GraspSolution
@@ -294,7 +296,7 @@ class GRASP(Algorithm):
                 i -= 1
         return solutions
 
-    def local_search_bitwise_neighborhood_sorted_score(self, initiated_solutions):
+    def local_search_bitwise_neighborhood_sorted_score(self, initiated_solutions: List[Solution]) -> List[Solution]:
         """
         For each initial solution, it runs an incremental search over the set of candidates, adding or removing each of them.
         Each time this operation improves sol.mono_objective_score, that change in sol is kept.
@@ -337,7 +339,7 @@ class GRASP(Algorithm):
 
         return initiated_solutions
 
-    def local_search_bitwise_neighborhood_sorted_score_r(self, initiated_solutions):
+    def local_search_bitwise_neighborhood_sorted_score_r(self, initiated_solutions: List[Solution]) -> List[Solution]:
         """
         For each initial solution, it runs an incremental search over the set of candidates, adding or removing each of them.
         Each time this operation improves sol.mono_objective_score, that change in sol is kept. If not, it tries all the 
@@ -409,7 +411,7 @@ class GRASP(Algorithm):
 
         return initiated_solutions
 
-    def local_search_bitwise_neighborhood_random(self, initiated_solutions):
+    def local_search_bitwise_neighborhood_random(self, initiated_solutions: List[Solution]) -> List[Solution]:
         """
         For each initial solution, it runs an incremental search over the set of candidates, adding or removing each of them.
         The order of change in the pbis is random.
@@ -448,7 +450,7 @@ class GRASP(Algorithm):
 
         return initiated_solutions
 
-    def local_search_bitwise_neighborhood_random_domination(self, initiated_solutions):
+    def local_search_bitwise_neighborhood_random_domination(self, initiated_solutions: List[Solution]) -> List[Solution]:
         """
         For each initial solution, it runs an incremental search over the set of candidates, adding or removing each of them.
         Each time this operation improves sol.mono_objective_score, that change in sol is kept.
@@ -486,7 +488,7 @@ class GRASP(Algorithm):
 
         return initiated_solutions
 
-    def local_search_bitwise_neighborhood_sorted_domination(self, initiated_solutions):
+    def local_search_bitwise_neighborhood_sorted_domination(self, initiated_solutions: List[Solution]) -> List[Solution]:
         """
         For each initial solution, it runs an incremental search over the set of candidates, adding or removing each of them.
         Each time this operation improves sol.mono_objective_score, that change in sol is kept.
@@ -525,7 +527,7 @@ class GRASP(Algorithm):
 
         return initiated_solutions
 
-    def path_relinking(self, solutions):
+    def path_relinking(self, solutions: List[Solution]) -> List[Solution]:
         new_sols = []
         if len(self.nds) > 0:
             for solution in solutions:
