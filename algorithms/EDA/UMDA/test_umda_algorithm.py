@@ -2,7 +2,6 @@ import unittest
 
 import numpy as np
 from algorithms.EDA.UMDA.umda_algorithm import UMDAAlgorithm as tested_algorithm_class
-from algorithms.GRASP.GraspSolution import GraspSolution
 
 
 class UMDATestCase(unittest.TestCase):

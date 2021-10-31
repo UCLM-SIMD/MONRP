@@ -2,8 +2,6 @@ import random
 from algorithms.abstract_default.evaluation_exception import EvaluationLimit
 from algorithms.genetic.abstract_genetic.basegenetic_algorithm import BaseGeneticAlgorithm
 from algorithms.genetic.nsgaii.nsgaii_executer import NSGAIIExecuter
-from algorithms.genetic.nsgaii.nsgaii_utils import NSGAIIUtils
-from models.population import Population
 import copy
 import time
 

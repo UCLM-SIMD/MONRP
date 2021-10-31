@@ -1,13 +1,9 @@
-import numpy as np
-from algorithms.GRASP.GraspSolution import GraspSolution
 from algorithms.abstract_default.evaluation_exception import EvaluationLimit
 from algorithms.genetic.abstract_genetic.basegenetic_algorithm import BaseGeneticAlgorithm
 from algorithms.genetic.geneticnds.geneticnds_executer import GeneticNDSExecuter
-from algorithms.genetic.geneticnds.geneticnds_utils import GeneticNDSUtils
 import copy
 import time
 from evaluation.update_nds import get_nondominated_solutions
-from models.population import Population
 import random
 import evaluation.metrics as metrics
 

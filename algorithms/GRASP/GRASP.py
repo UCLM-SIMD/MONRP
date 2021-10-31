@@ -1,20 +1,16 @@
 from algorithms.abstract_default.evaluation_exception import EvaluationLimit
 import copy
-from numpy.lib.function_base import diff
 from algorithms.abstract_default.algorithm import Algorithm
 from algorithms.GRASP.grasp_executer import GRASPExecuter
 import time
 
-from algorithms.GRASP.Dataset import Dataset
 import numpy as np
 import getopt
 import sys
 import random
 
-from algorithms.GRASP.GraspSolution import GraspSolution
+from models.Solution import Solution
 from evaluation.update_nds import get_nondominated_solutions
-from models.solution import Solution
-from models.problem import Problem
 
 
 class GRASP(Algorithm):
@@ -272,7 +268,7 @@ class GRASP(Algorithm):
 
         solutions = []
         for i in np.arange(self.solutions_per_iteration):
-            sol = GraspSolution(self.dataset,candidates_score_scaled)
+            sol = Solution(self.dataset, candidates_score_scaled)
             # avoid solution with 0 cost due to 0 candidates selected
             if np.count_nonzero(sol.selected) > 0:
                 solutions.append(sol)
@@ -291,7 +287,7 @@ class GRASP(Algorithm):
         # create GraspSolutions
         solutions = []
         for i in np.arange(self.solutions_per_iteration):
-            sol = GraspSolution(self.dataset,candidates_score_scaled)
+            sol = Solution(self.dataset, candidates_score_scaled)
             # avoid solution with 0 cost due to 0 candidates selected
             if np.count_nonzero(sol.selected) > 0:
                 solutions.append(sol)

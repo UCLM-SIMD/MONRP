@@ -1,16 +1,9 @@
 from algorithms.EDA.eda_algorithm import EDAAlgorithm
 from algorithms.abstract_default.evaluation_exception import EvaluationLimit
 from evaluation.update_nds import get_nondominated_solutions
-from models.solution import Solution
-from models.problem import Problem
-from algorithms.GRASP.GraspSolution import GraspSolution
-from algorithms.GRASP.Dataset import Dataset
+from models.Solution import Solution
 from algorithms.EDA.UMDA.umda_executer import UMDAExecuter
-from algorithms.genetic.abstract_genetic.basegenetic_algorithm import BaseGeneticAlgorithm
-from algorithms.genetic.genetic.genetic_executer import GeneticExecuter
-from algorithms.genetic.genetic.genetic_utils import GeneticUtils
 
-import copy
 import time
 import numpy as np
 
@@ -84,14 +77,14 @@ class UMDAAlgorithm(EDAAlgorithm):  # Univariate Marginal Distribution Algorithm
     def generate_sample_from_probabilities_binomial(self, probabilities):
         #probs = probabilities/len(probabilities)
         sample_selected = np.random.binomial(1, probabilities)
-        sample = GraspSolution(self.dataset, None, selected=sample_selected)
+        sample = Solution(self.dataset, None, selected=sample_selected)
         return sample
 
     def generate_sample_from_probabilities(self, probabilities):
         probs = [prob * 10 for prob in probabilities]
         sum_probs = np.sum(probs)
         scaled_probs = probs / sum_probs
-        sample = GraspSolution(self.dataset, scaled_probs)
+        sample = Solution(self.dataset, scaled_probs)
         return sample
 
     def replace_population_from_probabilities_elitism(self, probability_model, population):

@@ -2,7 +2,7 @@ from abc import ABC
 import copy
 import random
 
-from algorithms.GRASP.Dataset import Dataset
+from datasets.Dataset import Dataset
 import numpy as np
 
 class Algorithm(ABC):
@@ -14,7 +14,7 @@ class Algorithm(ABC):
 
         self.debug_mode:bool = debug_mode
         self.tackle_dependencies:bool = tackle_dependencies
-
+        self.random_seed:int = None
         self.set_seed(random_seed)
     
     def set_seed(self,seed:int):
@@ -31,9 +31,9 @@ class Algorithm(ABC):
 
     def generate_chart(self, plot):
         result = self.run()
-        func = [i.objectives for i in result["population"]]
-        function1 = [i[0].value for i in func]
-        function2 = [i[1].value for i in func]
+        func = [i for i in result["population"]]
+        function1 = [i.total_satisfaction for i in func]
+        function2 = [i.total_cost for i in func]
         plot.scatter(function2, function1, label=self.get_name())
         return function1, function2
 

@@ -1,18 +1,9 @@
 from algorithms.EDA.eda_algorithm import EDAAlgorithm
-from evaluation.format_population import format_population
 from evaluation.update_nds import get_nondominated_solutions
 from algorithms.abstract_default.evaluation_exception import EvaluationLimit
-from models.solution import Solution
-from datasets.dataset_gen_generator import generate_dataset_genes
-from models.problem import Problem
 from algorithms.EDA.PBIL.pbil_executer import PBILExecuter
-from algorithms.GRASP.GraspSolution import GraspSolution
-from algorithms.GRASP.Dataset import Dataset
-from algorithms.genetic.abstract_genetic.basegenetic_algorithm import BaseGeneticAlgorithm
-from algorithms.genetic.genetic.genetic_executer import GeneticExecuter
-from algorithms.genetic.genetic.genetic_utils import GeneticUtils
+from models.Solution import Solution
 
-import copy
 import time
 import numpy as np
 
@@ -130,7 +121,7 @@ class PBILAlgorithm(EDAAlgorithm):  # Population Based Incremental Learning
     def generate_sample_from_probabilities(self, probabilities):
         sample_selected = np.random.binomial(1, probabilities)
 
-        sample = GraspSolution(self.dataset, None, selected=sample_selected)
+        sample = Solution(self.dataset, None, selected=sample_selected)
         return sample
 
 

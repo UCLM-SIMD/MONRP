@@ -2,7 +2,6 @@ import unittest
 
 import numpy as np
 from algorithms.GRASP.GRASP import GRASP as tested_algorithm_class
-from algorithms.GRASP.GraspSolution import GraspSolution
 
 
 class GRASPTestCase(unittest.TestCase):

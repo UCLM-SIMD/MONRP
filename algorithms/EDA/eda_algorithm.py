@@ -1,8 +1,5 @@
-import copy
-
 import numpy as np
-from algorithms.GRASP.Dataset import Dataset
-from algorithms.GRASP.GraspSolution import GraspSolution
+from models.Solution import Solution
 from algorithms.abstract_default.algorithm import Algorithm
 from algorithms.abstract_default.evaluation_exception import EvaluationLimit
 from evaluation.update_nds import get_nondominated_solutions
@@ -49,7 +46,7 @@ class EDAAlgorithm(Algorithm):  # Estimation of Distribution Algorithm
             # self.dataset.pbis_score.size, 1/self.dataset.pbis_score.size)  # 0.5 ?
             # ind = GraspSolution(self.dataset,probs)
 
-            ind = GraspSolution(self.dataset,candidates_score_scaled)
+            ind = Solution(self.dataset, candidates_score_scaled)
 
             # ind = GraspSolution(self.dataset,None,uniform=True)
 

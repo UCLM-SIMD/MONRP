@@ -2,8 +2,6 @@ import unittest
 
 import numpy as np
 from algorithms.genetic.geneticnds.geneticnds_algorithm import GeneticNDSAlgorithm as tested_algorithm_class
-from algorithms.GRASP.GraspSolution import GraspSolution
-import collections
 
 
 class GeneticNDSTestCase(unittest.TestCase):

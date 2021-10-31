@@ -1,5 +1,3 @@
-import random
-from models.population import Population
 import math
 import numpy as np
 

@@ -1,14 +1,10 @@
 import random
 
 import numpy as np
-from algorithms.GRASP.GraspSolution import GraspSolution
+from models.Solution import Solution
 from algorithms.abstract_default.algorithm import Algorithm
-from algorithms.abstract_default.evaluation_exception import EvaluationLimit
 import evaluation.metrics as metrics
 import copy
-from models.problem import Problem
-from models.solution import Solution
-from models.population import Population
 
 
 class BaseGeneticAlgorithm(Algorithm):
@@ -121,7 +117,7 @@ class BaseGeneticAlgorithm(Algorithm):
     def generate_starting_population(self):
         population = []
         for i in range(0, self.population_length):
-            individual = GraspSolution(self.dataset, None, uniform=True)
+            individual = Solution(self.dataset, None, uniform=True)
             population.append(individual)
         return population
 
@@ -169,9 +165,9 @@ class BaseGeneticAlgorithm(Algorithm):
         offspring_genes2 = np.concatenate((parent2.selected[0:crossover_point],
                                            parent1.selected[crossover_point:]))
 
-        offspring1 = GraspSolution(
+        offspring1 = Solution(
             self.dataset, None, selected=offspring_genes1)
-        offspring2 = GraspSolution(
+        offspring2 = Solution(
             self.dataset, None, selected=offspring_genes2)
 
         return offspring1, offspring2

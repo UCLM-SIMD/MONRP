@@ -3,14 +3,8 @@ from typing import List
 from algorithms.EDA.eda_algorithm import EDAAlgorithm
 from algorithms.abstract_default.evaluation_exception import EvaluationLimit
 from evaluation.update_nds import get_nondominated_solutions
-from models.solution import Solution
-from algorithms.GRASP.GraspSolution import GraspSolution
-from algorithms.GRASP.Dataset import Dataset
-from algorithms.EDA.UMDA.umda_executer import UMDAExecuter
-from algorithms.genetic.abstract_genetic.basegenetic_algorithm import BaseGeneticAlgorithm
-from algorithms.genetic.genetic.genetic_executer import GeneticExecuter
+from models.Solution import Solution
 
-import copy
 import time
 import numpy as np
 import math
@@ -44,7 +38,7 @@ class MIMICAlgorithm(EDAAlgorithm):
         #self.num_generations: int = 0
         #self.best_individual = None
 
-        self.population:List[GraspSolution] = []
+        self.population:List[Solution] = []
 
         #self.debug_mode = debug_mode
         #self.tackle_dependencies = tackle_dependencies
@@ -359,7 +353,7 @@ class MIMICAlgorithm(EDAAlgorithm):
                 else:
                     sample[variables[j]] = 0
 
-        sample_ind = GraspSolution(self.dataset,None, selected=sample)
+        sample_ind = Solution(self.dataset, None, selected=sample)
         return sample_ind
 
     # RUN ALGORITHM------------------------------------------------------------------

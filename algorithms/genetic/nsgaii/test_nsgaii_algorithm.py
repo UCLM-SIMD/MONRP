@@ -2,8 +2,6 @@ import unittest
 
 import numpy as np
 from algorithms.genetic.nsgaii.nsgaii_algorithm import NSGAIIAlgorithm as tested_algorithm_class
-from algorithms.GRASP.GraspSolution import GraspSolution
-import collections
 
 
 class NSGAIITestCase(unittest.TestCase):

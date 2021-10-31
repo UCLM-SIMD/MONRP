@@ -1,5 +1,7 @@
 import numpy as np
 
+from datasets.Dataset import Dataset
+
 
 class Solution:
     """
@@ -30,7 +32,7 @@ class Solution:
         it simulates the result of flip(i,cost_i,value_i) and returns the would-be new cost, value and mono_objective_score
     """
 
-    def __init__(self, selected, costs, values):
+    def __init__(self, dataset: Dataset, probabilities, selected=None, uniform=False):
         """
         :param probabilities: numpy ndarray
             probabilities[i] is the probability in range [0-1] to set self.selected[i] to 1.
@@ -42,11 +44,31 @@ class Solution:
             values[i] is the goodness metric of candidate i.
             when called from GRASP object, it is recommended to use scaled values such as self.dataset.pbis_satisfaction_scaled
         """
-        num_candidates = len(selected)
-        self.selected = selected
+        self.dataset: Dataset = dataset
+        costs = dataset.pbis_cost_scaled
+        values = dataset.pbis_satisfaction_scaled
+        if uniform:
+            # TODO PROBAR UMDA ,replace=False
+            genes = np.random.choice(2, len(costs))
+            self.selected = np.array(genes, dtype=int)
+            indexes = np.array(self.selected).nonzero()
+            self.total_cost = costs[indexes].sum()
+            self.total_satisfaction = values[indexes].sum()
+        elif selected is not None:
+            self.selected = np.array(selected, dtype=int)
+            indexes = np.array(self.selected).nonzero()
+            self.total_cost = costs[indexes].sum()
+            self.total_satisfaction = values[indexes].sum()
+        else:
+            num_candidates = len(probabilities)
+            self.selected = np.zeros(num_candidates, dtype=int)
+            # samples a random number of candidates. prob of each candidate to be chosen in received in probabilities
+            sampled = np.random.choice(np.arange(num_candidates), size=np.random.randint(num_candidates),
+                                       replace=False, p=probabilities)
+            self.selected[sampled] = 1
 
-        self.total_cost = costs[selected==1].sum()
-        self.total_satisfaction = values[selected==1].sum()
+            self.total_cost = costs[sampled].sum()
+            self.total_satisfaction = values[sampled].sum()
 
         self.mono_objective_score = self.compute_mono_objective_score()
 
@@ -57,7 +79,15 @@ class Solution:
          methods do overwrite it)
         :return: mixture of satisfactions and costs of all selected candidates
         """
-        return self.total_satisfaction / (self.total_cost + 1 / len(np.where(self.selected == 1)))
+        self.mono_objective_score = self.total_satisfaction / (self.total_cost + 1 / len(np.where(self.selected == 1)))
+
+        return self.mono_objective_score
+
+    def evaluate(self):
+        sel=self.selected==1
+        self.total_cost = self.dataset.pbis_cost_scaled[sel].sum()
+        self.total_satisfaction = self.dataset.pbis_satisfaction_scaled[sel].sum()
+        return self.compute_mono_objective_score()
 
     def flip(self, i, i_cost, i_value):
         """
@@ -111,7 +141,7 @@ class Solution:
 
         dominates = dominates or (
             self.total_cost < solution.total_cost and self.total_satisfaction == solution.total_satisfaction)
-        
+
         return dominates
 
     def is_dominated_by_value(self, cost, satisfaction):
@@ -128,7 +158,7 @@ class Solution:
 
         dominated = dominated or (
             self.total_cost > cost and self.total_satisfaction == satisfaction)
-        #print(self.total_cost,self.total_satisfaction,dominated,cost,satisfaction)
+        # print(self.total_cost,self.total_satisfaction,dominated,cost,satisfaction)
         return dominated
 
     def dominates_all_in(self, solutions):
@@ -152,10 +182,41 @@ class Solution:
                 return True
         return False
 
+    def set_bit(self, index, value, dataset: Dataset = None):
+        self.selected[index] = value
+        i_cost = self.dataset.pbis_cost_scaled[index]
+        i_value = self.dataset.pbis_satisfaction_scaled[index]
+        mult = 1 if value == 1 else -1
+        self.total_cost += i_cost*mult
+        self.total_satisfaction += i_value*mult
+
+    def correct_dependencies(self, dataset=None):
+        # for each included gene
+        for gene_index in range(len(self.selected)):
+            if(self.selected[gene_index] == 1):
+                # if has dependencies -> include all genes
+                if self.dataset.dependencies[gene_index] is None:
+                    continue
+                for other_gene in self.dataset.dependencies[gene_index]:
+                    #self.selected[other_gene-1] = 1
+                    self.set_bit((other_gene-1), 1, self.dataset)
+
+    def get_max_cost_satisfactions(self):
+        return np.sum(self.dataset.pbis_cost_scaled), np.sum(self.dataset.pbis_satisfaction_scaled)
+
+    def get_min_cost_satisfactions(self):
+        return 0, 0
+
     def __str__(self):
         string = "PBIs selected in this Solution: "
         string += ' '.join(map(str, np.where(self.selected == 1)))
         string += "\nSatisfaction: " + str(self.total_satisfaction)
         string += "\nCost: " + str(self.total_cost)
         string += "\nMono Objective Score: " + str(self.mono_objective_score)
+        return string
+
+    def print_genes(self):
+        string = ""
+        for gen in self.selected:
+            string += str(gen)
         return string

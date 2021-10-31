@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 from algorithms.EDA.bivariate.MIMIC.mimic_algorithm import MIMICAlgorithm as tested_algorithm_class
-from algorithms.GRASP.GraspSolution import GraspSolution
+from models.Solution import Solution
 
 
 class MIMICTestCase(unittest.TestCase):
@@ -50,9 +50,9 @@ class MIMICTestCase(unittest.TestCase):
         Test that `learn_marginals()` method works
         """
         sample = [0, 0, 0, 0, 1]
-        sol = GraspSolution(self.algorithm.dataset, None, selected=sample)
+        sol = Solution(self.algorithm.dataset, None, selected=sample)
         sample2 = [0, 0, 0, 0, 0]
-        sol2 = GraspSolution(self.algorithm.dataset, None, selected=sample2)
+        sol2 = Solution(self.algorithm.dataset, None, selected=sample2)
 
         expected_marginals = [0, 0, 0, 0, 0.67]
         solutions = [sol2, sol, sol]
@@ -75,9 +75,9 @@ class MIMICTestCase(unittest.TestCase):
         Test that `get_probability_distribution()` method works
         """
         sample = [0, 0, 0, 0, 1]
-        sol = GraspSolution(self.algorithm.dataset, None, selected=sample)
+        sol = Solution(self.algorithm.dataset, None, selected=sample)
         sample2 = [0, 0, 0, 0, 0]
-        sol2 = GraspSolution(self.algorithm.dataset, None, selected=sample2)
+        sol2 = Solution(self.algorithm.dataset, None, selected=sample2)
 
         expected_probability_distribution = [0.33, 0.67]
         solutions = [sol2, sol, sol]
@@ -102,9 +102,9 @@ class MIMICTestCase(unittest.TestCase):
         Test that `get_entropy()` method works
         """
         sample = [0, 0, 0, 0, 1]
-        sol = GraspSolution(self.algorithm.dataset, None, selected=sample)
+        sol = Solution(self.algorithm.dataset, None, selected=sample)
         sample2 = [0, 0, 0, 0, 0]
-        sol2 = GraspSolution(self.algorithm.dataset, None, selected=sample2)
+        sol2 = Solution(self.algorithm.dataset, None, selected=sample2)
 
         expected_entropy = 0.9183
         solutions = [sol2, sol, sol]
@@ -126,9 +126,9 @@ class MIMICTestCase(unittest.TestCase):
         Test that `get_conditional_entropy()` method works
         """
         sample = [0, 0, 0, 0, 1]
-        sol = GraspSolution(self.algorithm.dataset, None, selected=sample)
+        sol = Solution(self.algorithm.dataset, None, selected=sample)
         sample2 = [0, 0, 0, 0, 0]
-        sol2 = GraspSolution(self.algorithm.dataset, None, selected=sample2)
+        sol2 = Solution(self.algorithm.dataset, None, selected=sample2)
 
         expected_entropy = 0.8541
         solutions = [sol2, sol, sol]
@@ -153,9 +153,9 @@ class MIMICTestCase(unittest.TestCase):
         """
 
         sample = [0, 0, 0, 0, 1]
-        sol = GraspSolution(self.algorithm.dataset, None, selected=sample)
+        sol = Solution(self.algorithm.dataset, None, selected=sample)
         sample2 = [0, 0, 0, 0, 0]
-        sol2 = GraspSolution(self.algorithm.dataset, None, selected=sample2)
+        sol2 = Solution(self.algorithm.dataset, None, selected=sample2)
         solutions = [sol2, sol, sol]
 
         used = [True, False, False, False, False]
@@ -178,9 +178,9 @@ class MIMICTestCase(unittest.TestCase):
         """
 
         sample = [0, 0, 0, 0, 1]
-        sol = GraspSolution(self.algorithm.dataset, None, selected=sample)
+        sol = Solution(self.algorithm.dataset, None, selected=sample)
         sample2 = [0, 0, 0, 0, 0]
-        sol2 = GraspSolution(self.algorithm.dataset, None, selected=sample2)
+        sol2 = Solution(self.algorithm.dataset, None, selected=sample2)
         solutions = [sol2, sol, sol]
 
         x = 0
@@ -271,8 +271,8 @@ class MIMICTestCase(unittest.TestCase):
         """
         sample = [0, 0, 0, 0, 1]
         sample2 = [0, 0, 0, 0, 0]
-        sol = GraspSolution(self.algorithm.dataset, None, selected=sample)
-        sol2 = GraspSolution(self.algorithm.dataset, None, selected=sample2)
+        sol = Solution(self.algorithm.dataset, None, selected=sample)
+        sol2 = Solution(self.algorithm.dataset, None, selected=sample2)
         sols = [sol2, sol2, sol]
         expected_marginals = [0, 0, 0, 0, 0.33]
         expected_parents = [-1, 0, 1, 2, 3]
