@@ -111,9 +111,7 @@ Common methods for EDAs are:
 - ```generate_initial_population()```
 - ```select_individuals()```: 
 - ```learn_probability_model()```: 
-- ```sample_new_population()```: 
-- ```calculate_crowding_distance()```: 
-- ```crowding_operator()```
+- ```sample_new_population()```:
 
 ### UMDA (univariate)
 Univariate Marginal Distribution Algorithm.
