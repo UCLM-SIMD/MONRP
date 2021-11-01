@@ -2,12 +2,14 @@
 import os
 
 from algorithms.EDA.UMDA.umda_executer import UMDAExecuter
+from algorithms.EDA.UMDA.umda_algorithm import UMDAAlgorithm
 
 filenames = [f for f in os.listdir(
     os.getcwd()) if f.endswith('.txt') and "umda" in f]
 print(filenames)
 
-UMDAExecuter().initialize_file('output/metrics/merged_output_umda.txt')
+UMDAExecuter(UMDAAlgorithm).initialize_file(
+    'output/metrics/merged_output_umda.txt')
 
 # Open file in write mode
 with open('output/metrics/merged_output_umda.txt', 'w') as outfile:

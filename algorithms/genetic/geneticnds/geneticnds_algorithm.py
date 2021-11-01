@@ -6,7 +6,6 @@ import copy
 import time
 from evaluation.get_nondominated_solutions import get_nondominated_solutions
 import random
-import evaluation.metrics as metrics
 from models.Solution import Solution
 
 

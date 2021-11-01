@@ -68,7 +68,7 @@ class UMDAAlgorithm(EDAAlgorithm):
     def replace_population_from_probabilities_elitism(self, probability_model: List[float], population: List[Solution]) -> List[Solution]:
         new_population = []
         # elitist R-1 inds
-        for i in np.arange(self.population_length-1):
+        for _ in np.arange(self.population_length-1):
             new_individual = self.generate_sample_from_probabilities_binomial(
                 probability_model)
             # new_individual = self.generate_sample_from_probabilities(
@@ -84,7 +84,7 @@ class UMDAAlgorithm(EDAAlgorithm):
 
     def replace_population_from_probabilities(self, probability_model: List[float]) -> List[Solution]:
         new_population = []
-        for i in np.arange(self.population_length):
+        for _ in np.arange(self.population_length):
             new_individual = self.generate_sample_from_probabilities_binomial(
                 probability_model)
             # new_individual = self.generate_sample_from_probabilities(
@@ -109,7 +109,6 @@ class UMDAAlgorithm(EDAAlgorithm):
         paretos = []
         start = time.time()
 
-        returned_population = None
         self.population = self.generate_initial_population()
         self.evaluate(self.population, self.best_individual)
 

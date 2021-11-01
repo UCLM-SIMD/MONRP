@@ -2,12 +2,14 @@
 import os
 
 from algorithms.genetic.abstract_genetic.genetic_executer import GeneticExecuter
+from algorithms.genetic.abstract_genetic.abstract_genetic_algorithm import AbstractGeneticAlgorithm
 
 filenames = [f for f in os.listdir(
     os.getcwd()) if f.endswith('.txt') and "genetic" in f]
 print(filenames)
 
-GeneticExecuter().initialize_file('output/metrics/merged_output_genetic.txt')
+GeneticExecuter(AbstractGeneticAlgorithm).initialize_file(
+    'output/metrics/merged_output_genetic.txt')
 
 # Open file3 in write mode
 with open('output/metrics/merged_output_genetic.txt', 'w') as outfile:

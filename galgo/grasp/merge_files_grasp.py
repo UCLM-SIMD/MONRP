@@ -2,12 +2,13 @@
 import os
 
 from algorithms.GRASP.grasp_executer import GRASPExecuter
+from algorithms.GRASP.GRASP import GRASP
 
 filenames = [f for f in os.listdir(
     os.getcwd()) if f.endswith('.txt') and "grasp" in f]
 print(filenames)
 
-GRASPExecuter().initialize_file('output/metrics/merged_output_grasp.txt')
+GRASPExecuter(GRASP).initialize_file('output/metrics/merged_output_grasp.txt')
 
 # Open file3 in write mode
 with open('output/metrics/merged_output_grasp.txt', 'w') as outfile:

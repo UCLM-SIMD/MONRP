@@ -4,10 +4,13 @@ import numpy as np
 from models.Solution import Solution
 
 
-def get_nondominated_solutions(solutions: List[Solution], nds=[]) -> List[Solution]:
+def get_nondominated_solutions(solutions: List[Solution], nds=None) -> List[Solution]:
     """Given a set of solutions and a set of NDS, this method updates the NDS, inserting nondominated
     solutions of the solutions set and removing those from the NDS that are then dominated by other solutions.
     """
+    if nds is None:
+        nds = []
+
     for sol in solutions:
         insert = True
 

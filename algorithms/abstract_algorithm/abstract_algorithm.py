@@ -2,9 +2,12 @@ from abc import ABC, abstractmethod
 import copy
 import random
 from typing import Any, Dict, List, Tuple
+from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
 
 from datasets.Dataset import Dataset
 import numpy as np
+
+from models.Solution import Solution
 
 
 class AbstractAlgorithm(ABC):
@@ -66,17 +69,21 @@ class AbstractAlgorithm(ABC):
     def stop_criterion(self) -> bool:
         pass
 
-    def evaluate(self, population, best_individual) -> None:
-        best_score = 0
-        new_best_individual = None
-        for ind in population:
-            ind.evaluate()
-            if ind.mono_objective_score > best_score:
-                new_best_individual = copy.deepcopy(ind)
-                best_score = ind.mono_objective_score
-            self.add_evaluation(population)
-        if best_individual is not None:
-            if new_best_individual.mono_objective_score > best_individual.mono_objective_score:
+    def evaluate(self, population: List[Solution], best_individual: Solution) -> Solution:
+        try:
+            best_score = 0
+            new_best_individual = None
+            for ind in population:
+                ind.evaluate()
+                if ind.mono_objective_score > best_score:
+                    new_best_individual = copy.deepcopy(ind)
+                    best_score = ind.mono_objective_score
+                self.add_evaluation(population)
+            if best_individual is not None:
+                if new_best_individual.mono_objective_score > best_individual.mono_objective_score:
+                    best_individual = copy.deepcopy(new_best_individual)
+            else:
                 best_individual = copy.deepcopy(new_best_individual)
-        else:
-            best_individual = copy.deepcopy(new_best_individual)
+        except EvaluationLimit:
+            pass
+        return best_individual

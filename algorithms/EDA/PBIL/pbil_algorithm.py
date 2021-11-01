@@ -87,7 +87,7 @@ class PBILAlgorithm(EDAAlgorithm):
         """Samples new population using the probability vector given
         """
         new_population = []
-        for i in np.arange(self.population_length):
+        for _ in np.arange(self.population_length):
             sample = self.generate_sample_from_probabilities(
                 probability_vector)
             new_population.append(sample)
@@ -106,7 +106,6 @@ class PBILAlgorithm(EDAAlgorithm):
 
         paretos = []
 
-        returned_population = None
         self.probability_vector = self.initialize_probability_vector()
 
         try:
@@ -130,7 +129,9 @@ class PBILAlgorithm(EDAAlgorithm):
 
                 # update nds with solutions constructed and evolved in this iteration
                 get_nondominated_solutions(self.population, self.nds)
+
                 self.num_generations += 1
+
                 if self.debug_mode:
                     paretos.append(self.nds)
 

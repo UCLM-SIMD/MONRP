@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 from typing import List
 
 from algorithms.abstract_algorithm.abstract_algorithm import AbstractAlgorithm

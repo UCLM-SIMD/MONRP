@@ -2,12 +2,14 @@
 import os
 
 from algorithms.EDA.PBIL.pbil_executer import PBILExecuter
+from algorithms.EDA.PBIL.pbil_algorithm import PBILAlgorithm
 
 filenames = [f for f in os.listdir(
     os.getcwd()) if f.endswith('.txt') and "pbil" in f]
 print(filenames)
 
-PBILExecuter().initialize_file('output/metrics/merged_output_pbil.txt')
+PBILExecuter(PBILAlgorithm).initialize_file(
+    'output/metrics/merged_output_pbil.txt')
 
 # Open file3 in write mode
 with open('merged_output_pbil.txt', 'w') as outfile:

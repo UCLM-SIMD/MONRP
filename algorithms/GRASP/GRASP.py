@@ -6,8 +6,6 @@ from algorithms.GRASP.grasp_executer import GRASPExecuter
 import time
 
 import numpy as np
-import getopt
-import sys
 import random
 
 from models.Solution import Solution

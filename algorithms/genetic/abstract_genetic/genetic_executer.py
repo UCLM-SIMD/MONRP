@@ -1,6 +1,5 @@
 from typing import Any, Dict, List
 from algorithms.genetic.abstract_genetic.abstract_genetic_algorithm import AbstractGeneticAlgorithm
-import evaluation.metrics as metrics
 
 from algorithms.abstract_algorithm.abstract_executer import AbstractExecuter
 
@@ -17,8 +16,8 @@ class GeneticExecuter(AbstractExecuter):
         self.algorithm_type: str = "genetic"
 
         self.config_fields.extend(["Population Length", "MaxGenerations", "MaxEvaluations",
-                                   "Selection Scheme", "Selection Candidates", "Crossover Scheme", "Crossover Probability", "Mutation Scheme"
-                                   "Mutation Probability", "Replacement Scheme", ])
+                                   "Selection Scheme", "Selection Candidates", "Crossover Scheme", "Crossover Probability",
+                                   "Mutation Scheme", "Mutation Probability", "Replacement Scheme", ])
 
         self.metrics_fields.extend(
             ["NumGenerations", "NumEvaluations", "BestGeneration", ])
