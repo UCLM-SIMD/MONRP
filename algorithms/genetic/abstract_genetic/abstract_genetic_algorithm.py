@@ -1,6 +1,6 @@
 from abc import abstractmethod
 import random
-from typing import List, Tuple
+from typing import Any, Dict, List, Tuple
 
 import numpy as np
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
@@ -11,12 +11,16 @@ import copy
 
 
 class AbstractGeneticAlgorithm(AbstractAlgorithm):
+    """Abstract class for genetic algorithms
+    """
+
     def __init__(self, dataset_name: str = "test", random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
                  population_length: int = 100, max_generations: int = 100, max_evaluations: int = 0,
                  selection: str = "tournament", selection_candidates: int = 2, crossover: str = "onepoint", crossover_prob: float = 0.9,
                  mutation: str = "flipeachbit", mutation_prob: float = 0.1,
                  replacement: str = "elitism",):
-
+        """Init method calls parent init and includes specific parameters of genetic algorithms
+        """
         super().__init__(dataset_name, random_seed, debug_mode, tackle_dependencies)
 
         self.population_length: int = population_length
@@ -40,11 +44,8 @@ class AbstractGeneticAlgorithm(AbstractAlgorithm):
         self.num_generations: int = 0
         self.best_individual = None
 
-    # def reset(self):
-    #    pass
-
     @abstractmethod
-    def run(self):
+    def run(self) -> Dict[str, Any]:
         pass
 
     @abstractmethod
@@ -57,13 +58,6 @@ class AbstractGeneticAlgorithm(AbstractAlgorithm):
         else:
             return num_evaluations >= self.max_evaluations
 
-    # def generate_dataset_problem(self, dataset_name):
-    #    genes, dataset = generate_dataset_genes(dataset_name)
-    #    problem = Problem(genes, self.objectives_minimization)
-    #    self.problem = problem
-    #    self.dataset = dataset
-    #    return self.problem, self.dataset
-
     def reset(self) -> None:
         self.best_generation_avgValue = 0
         self.best_generation = 0
@@ -72,7 +66,6 @@ class AbstractGeneticAlgorithm(AbstractAlgorithm):
         self.best_individual = None
         self.population = None
 
-    # EVALUATION------------------------------------------------------------------
     def evaluate(self, population, best_individual) -> None:
         try:
             best_score = 0
@@ -95,35 +88,9 @@ class AbstractGeneticAlgorithm(AbstractAlgorithm):
     def add_evaluation(self, new_population):
         pass
 
-    # def evaluate(self, population, best_individual):
-    #    try:
-    #        best_score = 0
-    #        new_best_individual = None
-    #        for ind in population:
-    #            ind.evaluate_fitness()
-    #            self.add_evaluation(population)#############
-    #            if ind.total_score > best_score:
-    #                new_best_individual = copy.deepcopy(ind)
-    #                best_score = ind.total_score
-    #        if best_individual is not None:
-    #            if new_best_individual.total_score > best_individual.total_score:
-    #                best_individual = copy.deepcopy(new_best_individual)
-    #        else:
-    #            best_individual = copy.deepcopy(new_best_individual)
-    #    except EvaluationLimit:
-    #        pass
-
-    # GENERATE STARTING POPULATION------------------------------------------------------------------
-    # def generate_starting_population(self):
-    #    population = Population()
-    #    for i in range(0, self.population_length):
-    #        individual = Solution(self.problem.genes,
-    #                              self.problem.objectives, self.dataset.dependencies)
-    #        individual.initRandom()
-    #        population.append(individual)
-    #    return population
-
     def generate_starting_population(self) -> List[Solution]:
+        """Method that generates a starting population of solutions
+        """
         population = []
         for i in range(0, self.population_length):
             individual = Solution(self.dataset, None, uniform=True)
@@ -144,6 +111,8 @@ class AbstractGeneticAlgorithm(AbstractAlgorithm):
         return population
 
     def crossover_one_point(self, population: List[Solution]) -> List[Solution]:
+        """Default crossover operator
+        """
         new_population = []
         i = 0
         while i < len(population):
@@ -165,6 +134,8 @@ class AbstractGeneticAlgorithm(AbstractAlgorithm):
         return new_population
 
     def crossover_aux_one_point(self, parent1: Solution, parent2: Solution) -> Tuple[Solution, Solution]:
+        """Crossover aux method
+        """
         chromosome_length = len(parent1.selected)
         # index aleatorio del punto de division para el cruce
         crossover_point = random.randint(1, chromosome_length - 1)
@@ -182,6 +153,8 @@ class AbstractGeneticAlgorithm(AbstractAlgorithm):
         return offspring1, offspring2
 
     def mutation_flip1bit(self, population: List[Solution]) -> List[Solution]:
+        """Default mutation operator
+        """
         new_population = []
         new_population.extend(population)
 
@@ -198,6 +171,8 @@ class AbstractGeneticAlgorithm(AbstractAlgorithm):
         return new_population
 
     def mutation_flipeachbit(self, population: List[Solution]) -> List[Solution]:
+        """Default mutation operator
+        """
         new_population = []
         new_population.extend(population)
 

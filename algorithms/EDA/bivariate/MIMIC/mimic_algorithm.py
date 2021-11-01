@@ -1,5 +1,6 @@
 import random
 from typing import Any, Dict, List, Tuple
+from algorithms.EDA.bivariate.MIMIC.mimic_executer import MIMICExecuter
 from algorithms.EDA.eda_algorithm import EDAAlgorithm
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
 from evaluation.get_nondominated_solutions import get_nondominated_solutions
@@ -17,7 +18,7 @@ class MIMICAlgorithm(EDAAlgorithm):
                  population_length: int = 100, max_generations: int = 100, max_evaluations: int = 0,
                  selected_individuals: int = 60, selection_scheme: str = "nds", replacement_scheme: str = "replacement"):
 
-        # self.executer = UMDAExecuter(algorithm=self)
+        self.executer = MIMICExecuter(algorithm=self)
         super().__init__(dataset_name, random_seed, debug_mode, tackle_dependencies,
                          population_length, max_generations, max_evaluations)
 

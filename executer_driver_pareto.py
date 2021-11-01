@@ -1,7 +1,6 @@
 from algorithms.EDA.PBIL.pbil_algorithm import PBILAlgorithm
 from algorithms.EDA.UMDA.umda_algorithm import UMDAAlgorithm
 from algorithms.GRASP.GRASP import GRASP
-from algorithms.genetic.genetic.genetic_algorithm import GeneticAlgorithm
 from algorithms.genetic.geneticnds.geneticnds_algorithm import GeneticNDSAlgorithm
 from algorithms.genetic.nsgaii.nsgaii_algorithm import NSGAIIAlgorithm
 import argparse
@@ -13,17 +12,15 @@ parser.add_argument('-c', '--config', nargs="+",
                     help='<Required> configuration', required=False)
 
 
-params = parser.parse_args().config[0].split()  # sh galgo
-#params = parser.parse_args().config # debug local
+#params = parser.parse_args().config[0].split()  # sh galgo
+params = parser.parse_args().config # debug local
 print(params)
 if(params[0] == "genetic"):
     # -c genetic geneticnds 1 4 20 100 10000 tournament 2 onepoint 0.8 flip1bit 0.1 elitism
     # algorithmtype algorithm dataset seed population_length max_generations max_evaluations selection selection_candidates crossover
     #  crossover_prob mutation mutation_prob replacement
     algorithm_name = str(params[1])
-    if algorithm_name == "genetic":
-        algorithm_model = GeneticAlgorithm
-    elif algorithm_name == "geneticnds":
+    if algorithm_name == "geneticnds":
         algorithm_model = GeneticNDSAlgorithm
     elif algorithm_name == "nsgaii":
         algorithm_model = NSGAIIAlgorithm

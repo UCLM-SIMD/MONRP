@@ -8,9 +8,18 @@ import numpy as np
 
 
 class AbstractAlgorithm(ABC):
+    """Abstract class for algorithm implementations
+    """
 
     def __init__(self, dataset_name: str = "1", random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False):
+        """Default init method that sets common arguments such as dataset, seed and modes.
 
+        Args:
+            dataset_name (str, optional): [description]. Defaults to "1".
+            random_seed (int, optional): [description]. Defaults to None.
+            debug_mode (bool, optional): [description]. Defaults to False.
+            tackle_dependencies (bool, optional): [description]. Defaults to False.
+        """
         self.dataset: Dataset = Dataset(dataset_name)
         self.dataset_name: str = dataset_name
 
@@ -27,13 +36,22 @@ class AbstractAlgorithm(ABC):
 
     @abstractmethod
     def reset(self) -> None:
+        """Method that clears specific algorithm implementation variables and data
+        """
         pass
 
     @abstractmethod
     def run(self) -> Dict[str, Any]:
+        """Main method of algorithm that runs the search
+
+        Returns:
+            Dict[str, Any]: results of execution are returned as a dict
+        """
         pass
 
     def generate_chart(self, plot) -> Tuple[List[float], List[float]]:
+        """Aux method that runs the algorithm and plots the returned data
+        """
         result = self.run()
         func = [i for i in result["population"]]
         function1 = [i.total_satisfaction for i in func]

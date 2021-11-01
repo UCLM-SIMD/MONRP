@@ -14,46 +14,11 @@ class Dataset:
     del Sagrado, José del Águila, Isabel M. Orellana, Francisco J.
     Multi-objective ant colony optimization for requirements selection.
     Empirical Software Engineering. Vol. 20(3). 2015.
-
-    Attributes
-    -----------
-    id :  string
-        1 or 2, currently.
-
-    num_pbis : integer
-        just used to represent the number of pbis or candidates to be selected
-
-    pbis_cost : numpy ndarray
-        Cost of each product backlog item
-
-    stakeholders_importances: numpy ndarray
-        Importance or weight assigned to each stakeholder
-
-    stakeholders_pbis_priorities: numpy ndarray, shape is (len(self.stakeholders_importances),self.num_pbis)
-        Importance of each pbi for each stakeholder
-
-    pbis_satisfaction: numpy ndarray, shape is (self.num_pbis)
-        satisfaction[i] is the sum of stakeholders_pbis_priorities(_,i) each value weighted by self.stakeholders_importances[j]
-
-    pbis_satisfaction_scaled: numpy ndarray, shape is (self.num_pbis)
-        scaled version of self.pbis_satisfaction
-
-    pbis_cost_scaled: numpy ndarray, shape is (self.num_pbis)
-        scaled version of self.pbis_cost
-
-    pbis_score: numpy ndarray, shape is (self.num_pbis)
-        mixture of each pbi satisfaction and cost.
-
-
     """
 
     def __init__(self, dataset: str = "test"):
+        """Loads dataset vectors depending on the dataset name.
         """
-        :param
-        dataset: string: 1 or 2 (at the moment)
-            if dataset not in [1,2], all attributes are set to None.
-        """
-
         self.id = dataset
 
         if dataset == "test":  # 2 clientes 5 reqs 2 ints: 1-2-3-4-5; 1->2; 4->1
@@ -71,25 +36,6 @@ class Dataset:
         else:
             raise Exception("Sorry, dataset with id=", id, " not found.")
 
-        #self.num_pbis: int = len(self.pbis_cost)
-        # self.pbis_satisfaction: np.ndarray = self.stakeholders_importances.dot(
-        #    self.stakeholders_pbis_priorities)
-
-        # now two escalation follows, based on
-        # https://en.wikipedia.org/wiki/Feature_scaling#Rescaling_(min-max_normalization)
-        # scale pbis cost in range [0-1]
-        # margin = 1 / self.num_pbis  # used to avoid zeros
-        #diff = np.max(self.pbis_cost) - np.min(self.pbis_cost)
-        # self.pbis_cost_scaled:np.ndarray = (
-        #    self.pbis_cost - np.min(self.pbis_cost) + margin) / (diff + margin)
-
-        # scale pbis satisfaction in range[0-1]
-        #diff = np.max(self.pbis_satisfaction) - np.min(self.pbis_satisfaction)
-        # self.pbis_satisfaction_scaled:np.ndarray = (
-        #    self.pbis_satisfaction - np.min(self.pbis_satisfaction) + margin) / (diff + margin)
-
-        #self.pbis_score = self.pbis_satisfaction_scaled / self.pbis_cost_scaled
-
         # each pbi score is computed from the scaled versions of pbi satisfaction and cost
         self.pbis_cost_scaled, self.pbis_satisfaction_scaled, self.pbis_score = normalize_dataset(
             self.pbis_cost, self.stakeholders_importances, self.stakeholders_pbis_priorities)
@@ -99,6 +45,9 @@ class Dataset:
             self.calculate_dependencies()
 
     def calculate_dependencies(self) -> None:
+        """Given the list of dependencies, recursively stores dependencies of requirements,
+        saving in each requirements index all the requirements that have to be included to satisfy the dependency restrictions.
+        """
         self.new_dependencies = {}
         # dependency = index_dependency+1 (starts from 1)
         for dep in range(1, len(self.dependencies)+1):

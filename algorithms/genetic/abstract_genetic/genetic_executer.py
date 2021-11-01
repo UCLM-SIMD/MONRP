@@ -6,7 +6,12 @@ from algorithms.abstract_algorithm.abstract_executer import AbstractExecuter
 
 
 class GeneticExecuter(AbstractExecuter):
+    """Specific genetic implementation of executer.
+    """
+
     def __init__(self, algorithm: AbstractGeneticAlgorithm):
+        """Init method extends config and metrics fields with specific genetic algorithm data
+        """
         super().__init__(algorithm)
         self.algorithm: AbstractGeneticAlgorithm = algorithm
         self.algorithm_type: str = "genetic"
@@ -19,6 +24,8 @@ class GeneticExecuter(AbstractExecuter):
             ["NumGenerations", "NumEvaluations", "BestGeneration", ])
 
     def get_config_fields(self,) -> List[str]:
+        """Genetic algorithm executer extends config fields read from the execution
+        """
         config_lines: List[str] = super().get_config_fields()
 
         population_length = self.algorithm.population_length
@@ -46,6 +53,8 @@ class GeneticExecuter(AbstractExecuter):
         return config_lines
 
     def get_metrics_fields(self, result: Dict[str, Any]) -> List[str]:
+        """Genetic algorithm executer extends metrics fields read from the execution
+        """
         metrics_fields: List[str] = super().get_metrics_fields(result)
 
         numGenerations = str(

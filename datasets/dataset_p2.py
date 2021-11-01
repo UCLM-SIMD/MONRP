@@ -21,18 +21,7 @@ def dataset_p2() -> Tuple[np.ndarray, int, np.ndarray, np.ndarray, np.ndarray]:
                                               [3, 2, 2, 1, 3, 1, 3, 2, 3, 2, 3, 2, 1, 3, 2, 3, 2, 1, 3, 3, 1, 1, 1, 2, 3, 3, 2, 1, 1, 1, 1, 2, 2, 2, 3, 2, 2, 3, 1, 1, 3, 1, 1, 3, 1, 2, 1, 1, 3, 2, 2, 1, 3, 2, 1, 3, 3, 1, 2, 3, 2, 2, 3, 3, 3, 1, 2, 1, 2, 1, 2, 3, 3, 2, 2, 2, 1, 3, 3, 1, 3, 1, 2, 2, 2, 1, 1, 1, 3, 1, 1, 3, 3, 1, 2, 1, 2, 3, 1, 3]))
     stakeholders_pbis_priorities = np.vstack((stakeholders_pbis_priorities,
                                               [1, 2, 3, 1, 3, 1, 2, 3, 1, 1, 2, 2, 3, 1, 2, 1, 1, 1, 1, 3, 1, 1, 3, 3, 3, 2, 2, 3, 2, 3, 1, 1, 3, 3, 2, 2, 1, 1, 2, 1, 3, 1, 1, 2, 1, 2, 3, 3, 2, 2, 1, 3, 3, 2, 3, 1, 2, 1, 3, 2, 2, 2, 1, 2, 1, 3, 2, 1, 2, 1, 2, 2, 3, 2, 1, 3, 2, 3, 1, 3, 3, 2, 1, 2, 2, 2, 2, 1, 3, 3, 3, 1, 1, 3, 1, 3, 3, 3, 3, 3]))
-    # dependencies = np.array([
-    #    None,[["implication",24]],[["implication",26],["implication",27],["implication",28],["implication",29]],["implication",5],None,
-    #    [["implication",7]],[["implication",30]],None,None,[["implication",32],["implication",33]],None,None,None,[["implication",32],
-    #    ["implication",34],["implication",37],["implication",38]],None,[["implication",39],["implication",40]],[["implication",43]],None,None,None,
-    #    [["combination",22]],None,None,None,None,None,None,None,[["implication",49],["implication",50],["implication",51]],[["implication",52],["implication",53]],
-    #    [["implication",55]],[["implication",56],["implication",57]],[["implication",58]],None,None,[["implication",61]],None,None,[["implication",63]],
-    #    [["implication",64]],[["combination",33]],None,[["implication",65]],None,None,[["implication",68]],[["implication",70]],None,None,None,
-    #    None,None,None,None,[["implication",79],["combination",47]],[["implication",80]],[["implication",80]],None,None,None,
-    #    None,[["implication",83],["implication",84]],None,[["implication",87]],[["combination",66]],None,None,None,None,None,None,None,None,
-    #    [["combination",65]],None,None,None,None,None,None,
-    #    None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,
-    # ],dtype=object)
+
     dependencies = np.array([None, [24], [26, 27, 28, 29], [5], None, [7], [30], None, None, [32, 33],  # 1-10
                              None, None, None, [32, 34, 37, 38], None, [
         39, 40], [43], None, None, None,  # 11-20

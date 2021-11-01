@@ -6,44 +6,11 @@ from datasets.Dataset import Dataset
 
 class Solution:
     """
-    It represents a solution handled by GRASP search.
-
-    Attributes
-    ----------
-    selected: numpy ndarray shape(number of candidates to be chosen)
-        Initially all slots are set to 0 (not selected). When a slot is set to 1, that candidate (pbi, feature,etc...) is chosen.
-
-    total_cost: integer or double
-        sum of cost of all the selected candidates in selected. Metric to be minimized.
-
-    total_satisfaction: double
-        it represents the total importance of all candidates together. Metric to be maximized.
-
-    mono_objective_score: double
-        in case it is necessary, a single metric which is the mixture of cost and satisfaction
-
-
-    Methods
-    -------
-    flip(i,cost_i, value_i)
-        swaps value of self.selected[i] (0 to 1 or 1 to 0), and updates the solution cost, satisfaction and mono_objective_score
-    compute_mono_objective_score()
-        a simple way to mix both satisfaction and cost metrics into a single one
-    try_flip(i,cost_i, value_i)
-        it simulates the result of flip(i,cost_i,value_i) and returns the would-be new cost, value and mono_objective_score
+    It represents a solution handled by algorithm search.
     """
 
     def __init__(self, dataset: Dataset, probabilities, selected=None, uniform=False):
         """
-        :param probabilities: numpy ndarray
-            probabilities[i] is the probability in range [0-1] to set self.selected[i] to 1.
-            len(probabilities)==len(selected)
-        :param costs: numpy ndarray, shape is len(selected)
-            costs[i] is the cost associated to candidate (e.g. pbi) i.
-            when called from GRASP object, it is recommended to use scaled values such as self.dataset.pbis_cost_scaled
-        :param values: numpy ndarray, shape is len(selected)
-            values[i] is the goodness metric of candidate i.
-            when called from GRASP object, it is recommended to use scaled values such as self.dataset.pbis_satisfaction_scaled
         """
         self.dataset: Dataset = dataset
         costs = dataset.pbis_cost_scaled
@@ -85,7 +52,9 @@ class Solution:
         return self.mono_objective_score
 
     def evaluate(self) -> float:
-        sel = self.selected == 1
+        """Recalculates total cost and satisfaction counting selected requirements.
+        """
+        sel = (self.selected == 1)
         self.total_cost = self.dataset.pbis_cost_scaled[sel].sum()
         self.total_satisfaction = self.dataset.pbis_satisfaction_scaled[sel].sum(
         )
@@ -131,9 +100,7 @@ class Solution:
                 new_satisfaction / (new_cost + 1 / smooth))
 
     def dominates(self, solution: "Solution") -> bool:
-        """
-        :param solution: GRASPSolution
-        :return: True if self dominates solution, in terms of cost and satisfaction
+        """Return True if self dominates solution, in terms of cost and satisfaction
         """
         dominates = (self.total_cost < solution.total_cost) and (
             self.total_satisfaction > solution.total_satisfaction)
@@ -147,10 +114,7 @@ class Solution:
         return dominates
 
     def is_dominated_by_value(self, cost: float, satisfaction: float) -> bool:
-        """
-        :param cost: double
-        :param satisfaction: double
-        :return: True if self dominates solution, in terms of cost and satisfaction
+        """Return True if self dominates solution, in terms of cost and satisfaction
         """
         dominated = (self.total_cost > cost) and (
             self.total_satisfaction < satisfaction)
@@ -160,13 +124,11 @@ class Solution:
 
         dominated = dominated or (
             self.total_cost > cost and self.total_satisfaction == satisfaction)
-        # print(self.total_cost,self.total_satisfaction,dominated,cost,satisfaction)
+
         return dominated
 
     def dominates_all_in(self, solutions: List["Solution"]) -> bool:
-        """
-        :param solutions: list of GraspSolution
-        :return: True if self dominates all GraspSolution in solutions
+        """Return True if self dominates all GraspSolution in solutions
         """
         for sol in solutions:
             if not self.dominates(sol):
@@ -174,10 +136,7 @@ class Solution:
         return True
 
     def is_dominated_by_any_in(self, solutions: List["Solution"]) -> bool:
-        """
-
-        :param solutions: list of GraspSolution
-        :return: True if self is dominated by any GraspSolution in solutions
+        """Return True if self is dominated by any GraspSolution in solutions
         """
         for sol in solutions:
             if sol.dominates(self):
@@ -185,6 +144,8 @@ class Solution:
         return False
 
     def set_bit(self, index: int, value: int) -> None:
+        """Sets a bit of a solution given its index to the value given, updating cost and satisfaction.
+        """
         self.selected[index] = value
         i_cost = self.dataset.pbis_cost_scaled[index]
         i_value = self.dataset.pbis_satisfaction_scaled[index]
@@ -193,6 +154,8 @@ class Solution:
         self.total_satisfaction += i_value*mult
 
     def correct_dependencies(self) -> None:
+        """For each requirement selected, sets to 1 all requirements included in its dependencies.
+        """
         # for each included gene
         for gene_index in range(len(self.selected)):
             if(self.selected[gene_index] == 1):

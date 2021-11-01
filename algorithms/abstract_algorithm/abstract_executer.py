@@ -6,14 +6,24 @@ import evaluation.metrics as metrics
 
 
 class AbstractExecuter(ABC):
+    """Executer class used to delegate configuration, execution and formatting of algorithm outputs
+    """
+
     def __init__(self, algorithm: AbstractAlgorithm):
+        """All executers store default config and metrics fields. Specific implementations might include more fields
+        """
         self.algorithm: AbstractAlgorithm = algorithm
         self.config_fields: List[str] = ["Dataset", "Algorithm"]
         self.metrics_fields: List[str] = ["Time(s)", "HV", "Spread", "NumSolutions", "Spacing",
                                           "Requirements per sol", "AvgValue", "BestAvgValue", ]
-        self.config_lines: List[str] = []
 
     def execute(self, executions: int, file_path: str) -> None:
+        """Method that executes the algorithm a number of times and writes a new line with config and metrics data for each execution
+
+        Args:
+            executions (int): [description]
+            file_path (str): [description]
+        """
         config_fields: List[str] = self.get_config_fields()
         for i in range(0, executions):
             #print("Executing iteration: ", i + 1)
@@ -30,7 +40,9 @@ class AbstractExecuter(ABC):
 
         # print("End")
 
-    def get_config_fields(self,):
+    def get_config_fields(self,) -> List[str]:
+        """Method that returns the config fields of the algorithm. Specific implementations might add new fields.
+        """
         config_lines: List[str] = []
 
         algorithm_name = self.algorithm.__class__.__name__
@@ -41,7 +53,9 @@ class AbstractExecuter(ABC):
 
         return config_lines
 
-    def get_metrics_fields(self, result):
+    def get_metrics_fields(self, result) -> List[str]:
+        """Method that returns the metrics fields of an execution result. Specific implementations might add new fields.
+        """
         metrics_fields: List[str] = []
 
         time = str(result["time"]) if "time" in result else 'NaN'
@@ -68,12 +82,16 @@ class AbstractExecuter(ABC):
 
         return metrics_fields
 
-    def file_write_line(self, file_path: str, line: str):
+    def file_write_line(self, file_path: str, line: str) -> None:
+        """Aux method to write a line in a file
+        """
         f = open(file_path, "a")
         f.write(line)
         f.close()
 
     def initialize_file(self, file_path: str) -> None:
+        """Aux method to write the header of the file.
+        """
         # add all fields
         fields = self.config_fields + self.metrics_fields
         header: str = self.get_string_from_fields(fields, end_line=True)
@@ -85,6 +103,8 @@ class AbstractExecuter(ABC):
         file.close()
 
     def get_string_from_fields(self, fields_array: List[str], end_line: bool = True) -> str:
+        """Aux method to generate a string line from a list of fields
+        """
         line: str = ""
         for field_index in range(len(fields_array)-1):
             line += f"{fields_array[field_index]},"
@@ -104,9 +124,9 @@ class AbstractExecuter(ABC):
         f.close()
 
     def execute_pareto(self, file_path: str) -> None:
-        algorithm_name = self.algorithm.get_name()
-        dataset = self.algorithm.dataset_name
-
+        """Method that executes the algorithm once and writes the solution points.
+        """
+        self.algorithm.reset()
         result = self.algorithm.run()
         for sol in result["population"]:
             #print("Executing iteration: ", i + 1)

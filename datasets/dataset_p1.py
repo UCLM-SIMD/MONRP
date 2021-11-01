@@ -21,10 +21,6 @@ def dataset_p1() -> Tuple[np.ndarray, int, np.ndarray, np.ndarray, np.ndarray]:
     stakeholders_pbis_priorities = np.vstack((stakeholders_pbis_priorities,
                                               [5, 4, 2, 4, 5, 4, 2, 4, 5, 2, 4, 5, 3, 4, 4, 1, 1, 2, 4,
                                                1]))
-    # dependencies = np.array(
-    #    [None,None,[["combination",12]],[["implication",8],["implication",17]],None,None,None,[["implication",17]],
-    #    [["implication",3],["implication",6],["implication",12]
-    #    ,["implication",19]],None,[["implication",19],["combination",13]],None,None,None,None,None,None,None,None,None],dtype=object)
     dependencies = np.array([None, None, [12], [8, 17], None, None, None, [17], [3, 6, 12, 19], None,
                              [19, 13], [3], [11], None, None, None, None, None, None, None, ], dtype=object)
 

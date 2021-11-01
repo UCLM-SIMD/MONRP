@@ -3,7 +3,12 @@ from algorithms.abstract_algorithm.abstract_executer import AbstractExecuter
 
 
 class PBILExecuter(AbstractExecuter):
+    """Specific pbil implementation of executer.
+    """
+
     def __init__(self, algorithm):
+        """Init method extends config and metrics fields with specific pbil algorithm data
+        """
         from algorithms.EDA.PBIL.pbil_algorithm import PBILAlgorithm
         super().__init__(algorithm)
         self.algorithm: PBILAlgorithm
@@ -16,6 +21,8 @@ class PBILExecuter(AbstractExecuter):
             ["NumGenerations", "NumEvaluations", ])
 
     def get_config_fields(self,) -> List[str]:
+        """PBIL algorithm executer extends config fields read from the execution
+        """
         config_lines: List[str] = super().get_config_fields()
 
         population_length = self.algorithm.population_length
@@ -34,6 +41,8 @@ class PBILExecuter(AbstractExecuter):
         return config_lines
 
     def get_metrics_fields(self, result: Dict[str, Any]) -> List[str]:
+        """PBIL algorithm executer extends metrics fields read from the execution
+        """
         metrics_fields: List[str] = super().get_metrics_fields(result)
 
         numGenerations = str(

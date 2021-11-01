@@ -5,8 +5,6 @@ from datasets.Dataset import Dataset
 
 from models.Solution import Solution
 
-# AVGVALUE------------------------------------------------------------------
-
 
 def calculate_avgValue(population: List[Solution]) -> float:
     avgValue = 0
@@ -14,8 +12,6 @@ def calculate_avgValue(population: List[Solution]) -> float:
         avgValue += ind.compute_mono_objective_score()
     avgValue /= len(population)
     return avgValue
-
-# BESTAVGVALUE------------------------------------------------------------------
 
 
 def calculate_bestAvgValue(population: List[Solution]) -> float:
@@ -26,18 +22,14 @@ def calculate_bestAvgValue(population: List[Solution]) -> float:
 
     return bestAvgValue
 
-# NUMSOLUTIONS------------------------------------------------------------------
-
 
 def calculate_numSolutions(population: List[Solution]) -> int:
     return len(set(population))
 
-# SPACING------------------------------------------------------------------
-
 
 def calculate_spacing(population: List[Solution]) -> float:
     n = len(population)
-    N = 2  # len(population[0].objectives)
+    N = 2
     spacing = 0
     mean_objectives = []
 
@@ -53,17 +45,9 @@ def calculate_spacing(population: List[Solution]) -> float:
     objective /= len(population)
     mean_objectives.append(objective)
 
-    # calcular la media de cada objetivo
-    # for i in range(0, len(population[0].objectives)):
-    #	objective = 0
-    #	for j in range(0, len(population)):
-    #		objective += population[j].objectives[i].value
-    #	objective /= len(population)
-    #	mean_objectives.append(objective)
-
     for j in range(0, len(population)):
         aux_spacing = 0
-        for i in range(0, N):  # len(population[0].objectives)):
+        for i in range(0, N):
             di = mean_objectives[i]
             if i == 0:
                 dij = population[j].total_cost
@@ -77,14 +61,9 @@ def calculate_spacing(population: List[Solution]) -> float:
     spacing /= (n * N)
     return spacing
 
-# HYPERVOLUME------------------------------------------------------------------
-
 
 def calculate_hypervolume(population: List[Solution]) -> float:
-    # obtener minimos y maximos de cada objetivo
     objectives_diff = []
-    # aux_max_obj=[population[0].max_score,population[0].max_cost]
-    # aux_min_obj=[population[0].min_score,population[0].min_cost]
     aux_max_cost, aux_max_sat = population[0].get_max_cost_satisfactions()
     aux_min_cost, aux_min_sat = population[0].get_min_cost_satisfactions()
 
@@ -112,28 +91,11 @@ def calculate_hypervolume(population: List[Solution]) -> float:
     aux_val = aux_max_norm-aux_min_norm
     objectives_diff.append(aux_val)
 
-    # for i in range(0,len(population[0].objectives)):
-    #	aux_min = float('inf')
-    #	aux_max = 0
-    #	for ind in population:  ##############################################
-    #		if ind.objectives[i].value < aux_min:
-    #			aux_min = ind.objectives[i].value
-    #		if ind.objectives[i].value > aux_max:
-    #			aux_max = ind.objectives[i].value
-#
-    #	aux_max_norm = (aux_max-aux_min_obj[i])/(aux_max_obj[i]-aux_min_obj[i])
-    #	aux_min_norm = (aux_min-aux_min_obj[i])/(aux_max_obj[i]-aux_min_obj[i])
-    #	aux_val = aux_max_norm-aux_min_norm
-    #	objectives_diff.append(aux_val)
-
-    # calcular hypervolume
     hypervolume = 1
     for i in range(0, len(objectives_diff)):
         hypervolume *= objectives_diff[i]
 
     return hypervolume
-
-# SPREAD------------------------------------------------------------------
 
 
 def eudis2(v1: float, v2: float) -> float:
@@ -158,7 +120,6 @@ def calculate_spread(population: List[Solution], dataset: Dataset) -> float:
     first_solution = population[0]
     last_solution = population[len(population) - 1]
 
-    # obtener first_extreme=[score=0 (worst),cost=0 (best)] y last_extreme=[score=MAX_SCORE (best),cost=MAX_COST (worst)]
     first_extreme = [MIN_OBJ1, MIN_OBJ2]
     last_extreme = [MAX_OBJ1, MAX_OBJ2]
 
@@ -167,27 +128,25 @@ def calculate_spread(population: List[Solution], dataset: Dataset) -> float:
     dl = eudis2([last_solution.total_satisfaction,
                 last_solution.total_cost], last_extreme)
 
-    # calcular media de todas las distancias entre puntos
     davg = 0
     dist_count = 0
     for i in range(0, len(population)):
         for j in range(0, len(population)):
-            # no calcular distancia de un punto a si mismo
+            # avoid distance from a point to itself
             if i != j:
                 dist_count += 1
                 davg += eudis2([population[i].total_satisfaction, population[i].total_cost],
                                [population[j].total_satisfaction, population[j].total_cost])
-    # media=distancia total / numero de distancias
     davg /= dist_count
 
-    # calcular sumatorio(i=1->N-1) |di-davg|
+    # calculate sumatory(i=1->N-1) |di-davg|
     sum_dist = 0
     for i in range(0, len(population) - 1):
         di = eudis2([population[i].total_satisfaction, population[i].total_cost],
                     [population[i + 1].total_satisfaction, population[i + 1].total_cost])
         sum_dist += abs(di - davg)
 
-    # formula spread
+    # spread formula
     spread = (df + dl + sum_dist) / (df + dl + (N - 1) * davg)
     return spread
 

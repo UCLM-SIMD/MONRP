@@ -3,6 +3,9 @@ import numpy as np
 
 
 def normalize_dataset(pbis_cost: np.ndarray, stakeholders_importances: np.ndarray, stakeholders_pbis_priorities: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Given the costs, importances and priorities, this method calculates the total satisfaction and score, and scales cost and
+    satisfaction using min-max normalization
+    """
     num_pbis = len(pbis_cost)
 
     pbis_satisfaction = stakeholders_importances.dot(
@@ -12,13 +15,11 @@ def normalize_dataset(pbis_cost: np.ndarray, stakeholders_importances: np.ndarra
     # https://en.wikipedia.org/wiki/Feature_scaling#Rescaling_(min-max_normalization)
     # scale pbis cost in range [0-1]
     margin = 1 / num_pbis  # used to avoid zeros
-    # suma costes -minimos costes TODO
     diff = np.sum(pbis_cost) - np.min(pbis_cost)
     pbis_cost_scaled = (pbis_cost - np.min(pbis_cost) +
                         margin) / (diff + margin)
 
     # scale pbis satisfaction in range[0-1]
-    # suma satisfact - min TODO
     diff = np.sum(pbis_satisfaction) - np.min(pbis_satisfaction)
     pbis_satisfaction_scaled = (
         pbis_satisfaction - np.min(pbis_satisfaction) + margin) / (diff + margin)

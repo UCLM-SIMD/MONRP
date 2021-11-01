@@ -9,7 +9,10 @@ import time
 import numpy as np
 
 
-class PBILAlgorithm(EDAAlgorithm):  # Population Based Incremental Learning
+class PBILAlgorithm(EDAAlgorithm):
+    """Population Based Incremental Learning
+    """
+
     def __init__(self, dataset_name: str = "test", random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
                  population_length: int = 100, max_generations: int = 100, max_evaluations: int = 0,
                  learning_rate: float = 0.1, mutation_prob: float = 0.1, mutation_shift: float = 0.1):
@@ -18,31 +21,10 @@ class PBILAlgorithm(EDAAlgorithm):  # Population Based Incremental Learning
                          population_length, max_generations, max_evaluations)
 
         self.executer = PBILExecuter(algorithm=self)
-        # self.problem, self.dataset = self.utils.generate_dataset_problem(
-        #    dataset_name=dataset_name)
-
-        #self.dataset = Dataset(dataset_name)
-        #self.dataset_name = dataset_name
-
-        #self.population_length = population_length
-        #self.max_generations = max_generations
-        #self.max_evaluations = max_evaluations
 
         self.learning_rate: float = learning_rate
         self.mutation_prob: float = mutation_prob
         self.mutation_shift: float = mutation_shift
-
-        #self.nds = []
-        #self.best_individual = None
-        #self.num_generations = 0
-        #self.num_evaluations = 0
-
-        #self.debug_mode = debug_mode
-        #self.tackle_dependencies = tackle_dependencies
-
-        #self.random_seed = random_seed
-        # if random_seed is not None:
-        #    np.random.seed(random_seed)
 
         self.file: str = (f"{str(self.__class__.__name__)}-{str(dataset_name)}-{str(random_seed)}-{str(population_length)}-"
                           f"{str(max_generations)}-{str(max_evaluations)}-{str(learning_rate)}-{str(mutation_prob)}-{str(mutation_shift)}.txt")
@@ -57,12 +39,9 @@ class PBILAlgorithm(EDAAlgorithm):  # Population Based Incremental Learning
 
         return probabilities
 
-    ''' 
-    SELECT INDIVIDUALS
-    '''
-
     def select_individuals(self, population: List[Solution]) -> Solution:
-        # max_value, max_sample = self.find_max_sample(population) # esto es muy monobjetivo
+        """Select best individual TODO choose the method used (mo or nds) depending on config 
+        """
         max_sample = self.find_max_sample_nds(
             population, self.nds)
         # max_sample = self.find_max_sample_pop(
@@ -90,27 +69,23 @@ class PBILAlgorithm(EDAAlgorithm):  # Population Based Incremental Learning
         random_index = np.random.randint(len(nds_pop))
         return nds_pop[random_index]
 
-    ''' 
-    LEARN PROBABILITY MODEL
-    '''
-
     def learn_probability_model(self, probability_vector: np.ndarray, max_sample: Solution) -> np.ndarray:
+        """Updates the probability vector using the sample given
+        """
         for i in np.arange(len(probability_vector)):
             probability_vector[i] = probability_vector[i]*(
                 1-self.learning_rate)+max_sample.selected[i]*(self.learning_rate)
 
-        for i in np.arange(len(probability_vector)):  # mutacion flip each bit
+        for i in np.arange(len(probability_vector)):
             prob = np.random.random_sample()
             if prob < self.mutation_prob:
                 probability_vector[i] = probability_vector[i]*(
                     1-self.mutation_shift) + (np.random.randint(2))*self.mutation_shift
         return probability_vector
 
-    ''' 
-    SAMPLE NEW POPULATION
-    '''
-
     def sample_new_population(self, probability_vector: np.ndarray) -> List[Solution]:
+        """Samples new population using the probability vector given
+        """
         new_population = []
         for i in np.arange(self.population_length):
             sample = self.generate_sample_from_probabilities(
@@ -119,13 +94,11 @@ class PBILAlgorithm(EDAAlgorithm):  # Population Based Incremental Learning
         return new_population
 
     def generate_sample_from_probabilities(self, probabilities: np.ndarray) -> Solution:
+        """Aux method to construct a sample using the probability vector.
+        """
         sample_selected = np.random.binomial(1, probabilities)
-
         sample = Solution(self.dataset, None, selected=sample_selected)
         return sample
-
-
-# RUN ALGORITHM------------------------------------------------------------------
 
     def run(self) -> Dict[str, Any]:
         start = time.time()
@@ -156,7 +129,6 @@ class PBILAlgorithm(EDAAlgorithm):  # Population Based Incremental Learning
                     self.probability_vector, max_sample)
 
                 # update nds with solutions constructed and evolved in this iteration
-                # self.update_nds(self.population)
                 get_nondominated_solutions(self.population, self.nds)
                 self.num_generations += 1
                 if self.debug_mode:
