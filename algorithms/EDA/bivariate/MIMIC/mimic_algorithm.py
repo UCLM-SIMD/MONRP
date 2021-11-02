@@ -38,6 +38,7 @@ class MIMICAlgorithm(EDAAlgorithm):
         return (f"MIMIC+{self.population_length}+{self.max_generations}+"
                 f"{self.max_evaluations}")
 
+    # lgtm [py/inheritance/signature-mismatch]
     def learn_probability_model(self, population: List[Solution], selected_individuals: int) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         # init structures
         parents = np.zeros(self.gene_size, dtype=int)
@@ -161,6 +162,7 @@ class MIMICAlgorithm(EDAAlgorithm):
 
         return prob_x, prob_y, prob_xy
 
+    # lgtm [py/inheritance/signature-mismatch]
     def sample_new_population(self, marginals: List[float], parents: List[int], variables: List[int], conditionals: List[List[float]]) -> List[Solution]:
         new_population = []
         for _ in np.arange(self.population_length):

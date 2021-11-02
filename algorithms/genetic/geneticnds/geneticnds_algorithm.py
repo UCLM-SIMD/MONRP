@@ -143,9 +143,6 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
             for j in range(0, self.selection_candidates):
                 random_index = random.randint(0, len(population)-1)
                 candidate = population[random_index]
-
-                score = candidate.total_satisfaction
-                cost = candidate.total_cost
                 total_score = candidate.mono_objective_score
                 # store best scoring individual
                 if(total_score > best_total_score):

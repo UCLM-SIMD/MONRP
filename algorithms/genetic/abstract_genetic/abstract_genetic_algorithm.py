@@ -3,11 +3,9 @@ import random
 from typing import Any, Dict, List, Tuple
 
 import numpy as np
-from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
 from models.Solution import Solution
 from algorithms.abstract_algorithm.abstract_algorithm import AbstractAlgorithm
 import evaluation.metrics as metrics
-import copy
 
 
 class AbstractGeneticAlgorithm(AbstractAlgorithm):
