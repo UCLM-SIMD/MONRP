@@ -69,7 +69,6 @@ class PBILAlgorithm(EDAAlgorithm):
         random_index = np.random.randint(len(nds_pop))
         return nds_pop[random_index]
 
-    # lgtm [py/inheritance/signature-mismatch]
     def learn_probability_model(self, probability_vector: np.ndarray, max_sample: Solution) -> np.ndarray:
         """Updates the probability vector using the sample given
         """
@@ -84,7 +83,6 @@ class PBILAlgorithm(EDAAlgorithm):
                     1-self.mutation_shift) + (np.random.randint(2))*self.mutation_shift
         return probability_vector
 
-    # lgtm [py/inheritance/signature-mismatch]
     def sample_new_population(self, probability_vector: np.ndarray) -> List[Solution]:
         """Samples new population using the probability vector given
         """

@@ -56,13 +56,13 @@ class EDAAlgorithm(AbstractAlgorithm):
         selected_individuals = get_nondominated_solutions(population, [])
         return selected_individuals
 
-    @abstractmethod
-    def learn_probability_model(self):
-        pass
+    # @abstractmethod
+    # def learn_probability_model(self):
+    #     pass
 
-    @abstractmethod
-    def sample_new_population(self):
-        pass
+    # @abstractmethod
+    # def sample_new_population(self):
+    #     pass
 
     def repair_population_dependencies(self, solutions: List[Solution]) -> List[Solution]:
         for sol in solutions:

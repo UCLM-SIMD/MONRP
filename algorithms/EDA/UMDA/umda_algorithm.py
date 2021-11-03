@@ -33,7 +33,6 @@ class UMDAAlgorithm(EDAAlgorithm):
         return (f"UMDA{str(self.population_length)}+{str(self.max_generations)}+"
                 f"{str(self.max_evaluations)}")
 
-    # lgtm [py/inheritance/signature-mismatch]
     def learn_probability_model(self, population: List[Solution]) -> List[float]:
         """Learns probability from a set of solutions, returning an array of probabilities for each gene to be 1.
         """
@@ -94,7 +93,6 @@ class UMDAAlgorithm(EDAAlgorithm):
 
         return new_population
 
-    # lgtm [py/inheritance/signature-mismatch]
     def sample_new_population(self, probability_model: List[float]) -> List[Solution]:
         """Given a probability vector, samples a new population depending on the scheme selected.
         """
