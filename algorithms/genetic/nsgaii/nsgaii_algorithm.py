@@ -18,7 +18,8 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
                  selection="tournament", selection_candidates=2,
                  crossover="onepoint", crossover_prob=0.9,
                  mutation="flipeachbit", mutation_prob=0.1,
-                 replacement="elitism", debug_mode=False, tackle_dependencies=False):
+                 # replacement="elitism",
+                 debug_mode=False, tackle_dependencies=False):
 
         super().__init__(dataset_name, random_seed, debug_mode, tackle_dependencies,
                          population_length, max_generations, max_evaluations)
@@ -30,7 +31,7 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
         self.crossover_prob = crossover_prob
         self.mutation_scheme = mutation
         self.mutation_prob = mutation_prob
-        self.replacement_scheme = replacement
+        #self.replacement_scheme = replacement
 
         self.population = None
         self.best_generation_avgValue = None
@@ -51,14 +52,15 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
         elif mutation == "flipeachbit":
             self.mutation = self.mutation_flipeachbit
 
-        if replacement == "elitism":
-            self.replacement = self.replacement_elitism
-        else:
-            self.replacement = self.replacement_elitism
+        # if replacement == "elitism":
+        #    self.replacement = self.replacement_elitism
+        # else:
+        #    self.replacement = self.replacement_elitism
 
         self.file: str = (f"{str(self.__class__.__name__)}-{str(dataset_name)}-{str(random_seed)}-{str(population_length)}-"
                           f"{str(max_generations)}-{str(max_evaluations)}-{str(selection)}-{str(selection_candidates)}-{str(crossover)}-"
-                          f"{str(crossover_prob)}-{str(mutation)}-{str(mutation_prob)}-{str(replacement)}.txt")
+                          f"{str(crossover_prob)}-{str(mutation)}-{str(mutation_prob)}.txt")
+        # -{str(replacement)}
 
     def get_name(self) -> str:
         return f"NSGA-II{str(self.population_length)}+{str(self.max_generations)}+{str(self.max_evaluations)}+{str(self.crossover_prob)}\
@@ -187,25 +189,25 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
 
         return new_population
 
-    def replacement_elitism(self, population: List[Solution], newpopulation: List[Solution]) -> List[Solution]:
-        """Specific replacement implementation that compares individuals by crowding operator
-        """
-        best_individual = None
-        for ind in population:
-            if (best_individual is None or self.crowding_operator(ind, best_individual) == 1):
-                best_individual = copy.deepcopy(ind)
-
-        newpopulation_replaced = []
-        newpopulation_replaced.extend(newpopulation)
-        worst_individual_index = None
-        worst_individual = None
-        for ind in newpopulation_replaced:
-            if (worst_individual is None or self.crowding_operator(ind, worst_individual) == -1):
-                worst_individual = copy.deepcopy(ind)
-                worst_individual_index = newpopulation_replaced.index(ind)
-
-        newpopulation_replaced[worst_individual_index] = best_individual
-        return newpopulation_replaced
+    # def replacement_elitism(self, population: List[Solution], newpopulation: List[Solution]) -> List[Solution]:
+    #    """Specific replacement implementation that compares individuals by crowding operator
+    #    """
+    #    best_individual = None
+    #    for ind in population:
+    #        if (best_individual is None or self.crowding_operator(ind, best_individual) == 1):
+    #            best_individual = copy.deepcopy(ind)
+    #
+    #    newpopulation_replaced = []
+    #    newpopulation_replaced.extend(newpopulation)
+    #    worst_individual_index = None
+    #    worst_individual = None
+    #    for ind in newpopulation_replaced:
+    #        if (worst_individual is None or self.crowding_operator(ind, worst_individual) == -1):
+    #            worst_individual = copy.deepcopy(ind)
+    #            worst_individual_index = newpopulation_replaced.index(ind)
+    #
+    #    newpopulation_replaced[worst_individual_index] = best_individual
+    #    return newpopulation_replaced
 
     def fast_nondominated_sort(self, population: List[Solution]) -> Tuple[List[Solution], List[Solution]]:
         """Fast method that sorts a population in fronts, where each front contains solutions that are nondominated between them.
@@ -236,7 +238,7 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
             fronts.append(temp)
         return population, fronts
 
-    def calculate_crowding_distance(self, front: List[Solution]) -> None:
+    def calculate_crowding_distance(self, front: List[Solution]) -> List[Solution]:
         """Calculates the crowding distance of each solution in the front given.
         """
         if len(front) > 0:
@@ -275,6 +277,8 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
             for i in range(1, solutions_num - 1):
                 front[i].crowding_distance += (
                     front[i + 1].total_satisfaction - front[i - 1].total_satisfaction) / scale
+
+            return front
 
     def crowding_operator(self, individual: any, other_individual: any) -> int:
         """Compares two individuals by their dominance and/or crowding distance.
