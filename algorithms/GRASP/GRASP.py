@@ -147,11 +147,6 @@ class GRASP(AbstractAlgorithm):
             "paretos": paretos
         }
 
-    def repair_population_dependencies(self, solutions: List[Solution]) -> List[Solution]:
-        for sol in solutions:
-            sol.correct_dependencies()
-        return solutions
-
     def init_solutions_stochastically(self) -> List[Solution]:
         """
         candidates (pbis) are selected stochastically based on a rankin of the score of each pbi

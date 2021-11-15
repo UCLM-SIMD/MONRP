@@ -12,8 +12,8 @@ parser.add_argument('-c', '--config', nargs="+",
                     help='<Required> configuration', required=False)
 
 
-# params = parser.parse_args().config[0].split()  # sh galgo
-params = parser.parse_args().config  # local
+params = parser.parse_args().config[0].split()  # sh galgo
+# params = parser.parse_args().config  # local
 print(params)
 if(params[0] == "genetic"):
     # -c genetic geneticnds 1 4 20 100 10000 tournament 2 onepoint 0.8 flip1bit 0.1 elitism

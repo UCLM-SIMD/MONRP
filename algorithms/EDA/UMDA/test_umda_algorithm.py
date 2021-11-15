@@ -2,6 +2,7 @@ import unittest
 
 import numpy as np
 from algorithms.EDA.UMDA.umda_algorithm import UMDAAlgorithm as tested_algorithm_class
+from models.Solution import Solution
 
 
 class UMDATestCase(unittest.TestCase):
@@ -42,3 +43,25 @@ class UMDATestCase(unittest.TestCase):
             with self.subTest(i=i):
                 self.assertIsNone(np.testing.assert_array_equal(
                     expected_genes[i], actual_population[i].selected))
+
+    def test_learn_probability_model(self):
+        """
+        Test that `learn_probability_model()` method works
+        """
+        self.algorithm.population_length = 5
+
+        sols = [Solution(self.algorithm.dataset, None,
+                         selected=[0, 1, 0, 0, 0]),
+                Solution(self.algorithm.dataset, None,
+                         selected=[0, 0, 0, 0, 0]),
+                Solution(self.algorithm.dataset, None,
+                         selected=[0, 0, 0, 0, 1]),
+                Solution(self.algorithm.dataset, None,
+                         selected=[0, 0, 0, 0, 1])]
+
+        actual_probability_model = self.algorithm.learn_probability_model(sols)
+
+        expected_probability_model = [0, 0.25, 0, 0, 0.5]
+
+        self.assertIsNone(np.testing.assert_array_equal(
+            actual_probability_model, expected_probability_model))

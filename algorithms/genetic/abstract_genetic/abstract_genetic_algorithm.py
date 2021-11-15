@@ -85,11 +85,6 @@ class AbstractGeneticAlgorithm(AbstractAlgorithm):
             best_generation = num_generation
         return best_generation, best_generation_avgValue
 
-    def repair_population_dependencies(self, population: List[Solution]) -> List[Solution]:
-        for ind in population:
-            ind.correct_dependencies()
-        return population
-
     def crossover_one_point(self, population: List[Solution]) -> List[Solution]:
         """Default crossover operator
         """

@@ -87,3 +87,8 @@ class AbstractAlgorithm(ABC):
         except EvaluationLimit:
             pass
         return best_individual
+
+    def repair_population_dependencies(self, solutions: List[Solution]) -> List[Solution]:
+        for sol in solutions:
+            sol.correct_dependencies()
+        return solutions

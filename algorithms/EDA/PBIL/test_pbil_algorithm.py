@@ -2,6 +2,7 @@ import unittest
 
 import numpy as np
 from algorithms.EDA.PBIL.pbil_algorithm import PBILAlgorithm as tested_algorithm_class
+from models.Solution import Solution
 
 
 class PBILTestCase(unittest.TestCase):
@@ -45,3 +46,23 @@ class PBILTestCase(unittest.TestCase):
             with self.subTest(i=i):
                 self.assertIsNone(np.testing.assert_array_equal(
                     expected_genes[i], actual_population[i].selected))
+
+    def test_learn_probability_model(self):
+        """
+        Test that `learn_probability_model()` method works
+        """
+        self.algorithm.population_length = 5
+        self.algorithm.learning_rate = 1.0
+        self.algorithm.mutation_prob = 1.0
+        self.algorithm.mutation_shift = 1.0
+        sol = Solution(self.algorithm.dataset, None,
+                       selected=[0, 1, 0, 0, 0])
+        probability_vector = [1, 1, 0.5, 0.5, 0]
+
+        actual_probability_model = self.algorithm.learn_probability_model(
+            probability_vector, sol)
+
+        expected_probability_model = [1, 1, 1, 0, 0]
+
+        self.assertIsNone(np.testing.assert_array_equal(
+            actual_probability_model, expected_probability_model))

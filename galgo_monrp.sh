@@ -52,7 +52,7 @@ done <$PWD/"$FILE"
 
 JOBS=${#CONFIGURATIONS[@]}
 
-echo "Executing mode: <$1> for algorithm: <$2>"
+echo "------Executing mode: <$1> for algorithm: <$2>------"
 echo "Reading algorithm configuration from: $PWD/$FILE"
 echo "Job array name: $NAME"
 echo "Jobs created: $JOBS"

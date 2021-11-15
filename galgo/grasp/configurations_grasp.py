@@ -12,37 +12,37 @@ def generate_configurations():
         "grasp"
     ]
     iterations = [
-        #20, 50, 
-        100, 
-        #200, 
-        #300,
-        #500
+        #20, 50,
+        100,
+        # 200,
+        # 300,
+        # 500
     ]
     solutions_per_iteration_list = [
-        #20,
-        #  40, 60, 80, 
+        # 20,
+        #  40, 60, 80,
         100,
         #  200,
-        #500
+        # 500
     ]
     evaluations = [
         10000,
         0,
     ]
-    init_types=["stochastically"
-    #,"uniform"
-    ]
+    init_types = ["stochastically"
+                  # ,"uniform"
+                  ]
     local_search_types = [
         "None",
-        #"best_first_neighbor_random",
-        #"best_first_neighbor_sorted_score",
-        #"best_first_neighbor_sorted_score_r",
-        #"best_first_neighbor_sorted_domination",
-        #"best_first_neighbor_random_domination",
+        # "best_first_neighbor_random",
+        # "best_first_neighbor_sorted_score",
+        # "best_first_neighbor_sorted_score_r",
+        # "best_first_neighbor_sorted_domination",
+        "best_first_neighbor_random_domination",
     ]
-    path_relinking_types=[
-        #"None",
-        #"after_local"
+    path_relinking_types = [
+        "None",
+        # "after_local"
     ]
     seed = 10
 
@@ -62,8 +62,8 @@ def generate_configurations():
                                         str(solutions_per_iteration) + ' ' + \
                                         str(evaluation) + ' ' + \
                                         str(init_type) + ' ' + \
-                                        str(local_search_type)+ ' ' + \
-                                        str(path_relinking_type)  + '\n'
+                                        str(local_search_type) + ' ' + \
+                                        str(path_relinking_type) + '\n'
                                     f.write(returnStr)
     f.close()
 

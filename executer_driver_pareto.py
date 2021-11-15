@@ -12,8 +12,8 @@ parser.add_argument('-c', '--config', nargs="+",
                     help='<Required> configuration', required=False)
 
 
-#params = parser.parse_args().config[0].split()  # sh galgo
-params = parser.parse_args().config # debug local
+params = parser.parse_args().config[0].split()  # sh galgo
+# params = parser.parse_args().config # debug local
 print(params)
 if(params[0] == "genetic"):
     # -c genetic geneticnds 1 4 20 100 10000 tournament 2 onepoint 0.8 flip1bit 0.1 elitism
@@ -30,9 +30,9 @@ if(params[0] == "genetic"):
          str(params[9]), float(params[10]), str(params[11]), float(params[12]), str(params[13])]
 
     algorithm = algorithm_model(dataset_name=dataset_name, random_seed=seed, population_length=pop_length,
-                            max_generations=max_gens, max_evaluations=evaluations,
-                            selection=sel_scheme, crossover=cross_scheme, crossover_prob=cross_prob, mutation=mut_scheme,
-                            mutation_prob=mut_prob, replacement=repl_scheme)
+                                max_generations=max_gens, max_evaluations=evaluations,
+                                selection=sel_scheme, crossover=cross_scheme, crossover_prob=cross_prob, mutation=mut_scheme,
+                                mutation_prob=mut_prob, replacement=repl_scheme)
     filepath = "output/paretos/pareto-genetic-"+algorithm.file
 
 elif(params[0] == "grasp"):
@@ -42,11 +42,11 @@ elif(params[0] == "grasp"):
 
     algorithm_name, dataset_name, seed, iterations, solutions_per_iteration, evaluations, init_type, local_search_type, path_relinking = \
         [str(params[1]), str(params[2]), int(params[3]),
-            int(params[4]), int(params[5]),int(params[6]), str(params[7]), str(params[8]), str(params[9])]
+            int(params[4]), int(params[5]), int(params[6]), str(params[7]), str(params[8]), str(params[9])]
 
     algorithm = algorithm_model(dataset=dataset_name, iterations=iterations, solutions_per_iteration=solutions_per_iteration,
                                 max_evaluations=evaluations,
-                                init_type=init_type, local_search_type=local_search_type,path_relinking_mode=path_relinking, seed=seed)
+                                init_type=init_type, local_search_type=local_search_type, path_relinking_mode=path_relinking, seed=seed)
     filepath = "output/paretos/pareto-grasp-"+algorithm.file
 
 elif(params[0] == "eda"):
@@ -70,7 +70,7 @@ elif(params[0] == "eda"):
 
         algorithm_name, dataset_name, seed, numpop, gens, evaluations, lr, mutprob, mutshift = \
             [str(params[1]), str(params[2]), int(params[3]),
-                int(params[4]),int(params[5]), int(params[6]), float(params[7]), float(params[8]), float(params[9])]
+                int(params[4]), int(params[5]), int(params[6]), float(params[7]), float(params[8]), float(params[9])]
 
         algorithm = algorithm_model(dataset_name=dataset_name, population_length=numpop, max_evaluations=evaluations,
                                     max_generations=gens, learning_rate=lr, mutation_prob=mutprob, mutation_shift=mutshift, random_seed=seed)

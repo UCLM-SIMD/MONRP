@@ -64,11 +64,6 @@ class EDAAlgorithm(AbstractAlgorithm):
     # def sample_new_population(self):
     #     pass
 
-    def repair_population_dependencies(self, solutions: List[Solution]) -> List[Solution]:
-        for sol in solutions:
-            sol.correct_dependencies()
-        return solutions
-
     def add_evaluation(self, new_population) -> None:
         self.num_evaluations += 1
         if (self.stop_criterion(self.num_generations, self.num_evaluations)):

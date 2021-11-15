@@ -47,6 +47,25 @@ class NSGAIITestCase(unittest.TestCase):
                 self.assertIsNone(np.testing.assert_array_equal(
                     expected_genes[i], actual_population[i].selected))
 
+    def test_generate_starting_population(self):
+        """
+        Test that `generate_starting_population()` method works
+        """
+        self.algorithm.population_length = 5
+
+        actual_population = self.algorithm.generate_starting_population()
+
+        expected_genes = [[0, 1, 1, 0, 1],
+                          [1, 1, 1, 1, 1],
+                          [1, 0, 0, 1, 0],
+                          [0, 0, 0, 0, 1],
+                          [0, 1, 1, 0, 0]]
+
+        for i in range(len(expected_genes)):
+            with self.subTest(i=i):
+                self.assertIsNone(np.testing.assert_array_equal(
+                    expected_genes[i], actual_population[i].selected))
+
     def test_selection_tournament(self):
         """
         Test that `selection_tournament()` method works
@@ -65,6 +84,97 @@ class NSGAIITestCase(unittest.TestCase):
                           [0, 0, 0, 0, 0],
                           [1, 1, 1, 1, 1],
                           [0, 0, 0, 0, 1]]
+
+        for i in range(len(expected_genes)):
+            with self.subTest(i=i):
+                self.assertIsNone(np.testing.assert_array_equal(
+                    expected_genes[i], actual_population[i].selected))
+
+    def test_crossover_one_point(self):
+        """
+        Test that `crossover_one_point()` method works
+        """
+        self.algorithm.population_length = 5
+        self.algorithm.max_generations = 5
+
+        result = self.algorithm.run()
+
+        actual_population = self.algorithm.crossover_one_point(
+            result["population"])
+
+        expected_genes = [[0, 0, 0, 0, 0],
+                          [0, 0, 0, 0, 0],
+                          [0, 0, 0, 0, 1],
+                          [1, 0, 0, 0, 1],
+                          [1, 1, 1, 1, 1]]
+
+        for i in range(len(expected_genes)):
+            with self.subTest(i=i):
+                self.assertIsNone(np.testing.assert_array_equal(
+                    expected_genes[i], actual_population[i].selected))
+
+    def test_crossover_aux_one_point(self):
+        """
+        Test that `crossover_aux_one_point()` method works
+        """
+        self.algorithm.population_length = 5
+        self.algorithm.max_generations = 5
+
+        result = self.algorithm.run()
+
+        actual_population = self.algorithm.crossover_aux_one_point(
+            result["population"][0], result["population"][3])
+
+        expected_genes = [[0, 0, 0, 0, 1],
+                          [1, 0, 0, 0, 0]]
+
+        for i in range(len(expected_genes)):
+            with self.subTest(i=i):
+                self.assertIsNone(np.testing.assert_array_equal(
+                    expected_genes[i], actual_population[i].selected))
+
+    def test_mutation_flip1bit(self):
+        """
+        Test that `mutation_flip1bit()` method works
+        """
+        self.algorithm.population_length = 5
+        self.algorithm.max_generations = 5
+
+        result = self.algorithm.run()
+
+        self.algorithm.mutation_prob = 1.0
+        actual_population = self.algorithm.mutation_flip1bit(
+            result["population"])
+
+        expected_genes = [[0, 0, 0, 0, 1],
+                          [0, 1, 0, 0, 0],
+                          [0, 1, 0, 0, 1],
+                          [1, 0, 1, 0, 1],
+                          [1, 0, 1, 1, 1]]
+
+        for i in range(len(expected_genes)):
+            with self.subTest(i=i):
+                self.assertIsNone(np.testing.assert_array_equal(
+                    expected_genes[i], actual_population[i].selected))
+
+    def test_mutation_flipeachbit(self):
+        """
+        Test that `mutation_flipeachbit()` method works
+        """
+        self.algorithm.population_length = 5
+        self.algorithm.max_generations = 5
+
+        result = self.algorithm.run()
+
+        self.algorithm.mutation_prob = 1.0
+        actual_population = self.algorithm.mutation_flipeachbit(
+            result["population"])
+
+        expected_genes = [[1, 1, 1, 1, 1],
+                          [1, 1, 1, 1, 1],
+                          [1, 1, 1, 1, 0],
+                          [0, 1, 1, 1, 0],
+                          [0, 0, 0, 0, 0]]
 
         for i in range(len(expected_genes)):
             with self.subTest(i=i):
