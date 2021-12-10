@@ -1,0 +1,9 @@
+{
+  "costs": [3, 3, 3, 3, 3],
+  "importances": [1, 3],
+  "priorities": [
+    [4, 2, 1, 2, 5],
+    [4, 2, 1, 2, 5]
+  ],
+  "dependencies": [[2], null, null, [1], null]
+}

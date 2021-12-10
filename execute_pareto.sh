@@ -12,8 +12,7 @@ source ../newvenv/bin/activate
 CONFIGURATIONS=()
 while IFS= read -r line; do
    CONFIGURATIONS+=("$line")
-done <$PWD/$CONFIG_FILE
-#done <$PWD/configs.txt
+done <$PWD/configs_pareto.txt
 
 # get configuration at job index (1..JOBS_NUM)
 CONFIG="${CONFIGURATIONS[$((PBS_ARRAY_INDEX - 1))]}"

@@ -1,0 +1,16 @@
+- cambiar nombres de algoritmos XAlgorithm a X (luego)
+- refactorizar los executers para que los campos que se guardan no esten repetidos TODO
+- cambiar los modelos de los geneticos a los del GRASP +
+- mover los modelos del grasp a models +
+- mover cada uno de los datasets a un fichero en concreto y la clase Dataset tmb +
+- ponerle tipos a todo +
+- hacer tests unitarios +
+- añadir comentarios a funciones
+- cambiar nombres parametros entre grasp y geneticos para que sean iguales
+- cambiar parametros de grasp a poplength numgens igual que los demas
+- pasar metricas basicas del return de run a padre por herencia
+
+- pasar metodos de utils de los geneticos al padre, excepto los que son distintos, que se dejan en el codigo del algoritmo hijo. +
+- quitar llamadas a utils. +
+- pasar todos los metodos utils al nuevo formato graspsolution +
+- probar el test
