@@ -164,7 +164,7 @@ class Solution:
                     continue
                 for other_gene in self.dataset.dependencies[gene_index]:
                     #self.selected[other_gene-1] = 1
-                    self.set_bit((other_gene-1), 1)
+                    self.set_bit((other_gene), 1)
 
     def get_max_cost_satisfactions(self) -> float:
         return np.sum(self.dataset.pbis_cost_scaled), np.sum(self.dataset.pbis_satisfaction_scaled)
