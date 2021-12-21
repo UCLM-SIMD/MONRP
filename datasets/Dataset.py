@@ -19,23 +19,22 @@ class Dataset:
             self.load_from_json_file(source_file)
         else:
             self.id = dataset
-            self.load_from_json_file("datasets/"+dataset+".json")
-            # if dataset == "test":  # 2 clientes 5 reqs 2 ints: 1-2-3-4-5; 1->2; 4->1
-            #    self.load_from_json_file("datasets/"+"test"+".json")
-            #    self.pbis_cost, self.num_pbis, self.stakeholders_importances, self.stakeholders_pbis_priorities, self.dependencies = dataset_test()
-            # elif dataset == "1":  # 5 clientes 20 reqs 10 ints
-            #    self.pbis_cost, self.num_pbis, self.stakeholders_importances, self.stakeholders_pbis_priorities, self.dependencies = dataset_p1()
-            # elif dataset == "2":  # 5 clientes 100 reqs 44ints
-            #    self.pbis_cost, self.num_pbis, self.stakeholders_importances, self.stakeholders_pbis_priorities, self.dependencies = dataset_p2()
-            # elif dataset == "s1":  # 15 customers 40 reqs
-            #    self.pbis_cost, self.num_pbis, self.stakeholders_importances, self.stakeholders_pbis_priorities, self.dependencies = dataset_s1()
-            # elif dataset == "s2":  # 50 customers 80 reqs
-            #    self.pbis_cost, self.num_pbis, self.stakeholders_importances, self.stakeholders_pbis_priorities, self.dependencies = dataset_s2()
-            # elif dataset == "s3":  # 100 customers 140 reqs
-            #    self.pbis_cost, self.num_pbis, self.stakeholders_importances, self.stakeholders_pbis_priorities, self.dependencies = dataset_s3()
-            # else:
-            #    raise Exception("Sorry, dataset with id=", id, " not found.")
+            if dataset == "test":  # 2 clientes 5 reqs 2 ints: 1-2-3-4-5; 1->2; 4->1
+                json_dataset = "test"
+            elif dataset == "1":  # 5 clientes 20 reqs 10 ints
+                json_dataset = "p1"
+            elif dataset == "2":  # 5 clientes 100 reqs 44ints
+                json_dataset = "p2"
+            elif dataset == "s1":  # 15 customers 40 reqs
+                json_dataset = "s1"
+            elif dataset == "s2":  # 50 customers 80 reqs
+                json_dataset = "s2"
+            elif dataset == "s3":  # 100 customers 140 reqs
+                json_dataset = "s3"
+            else:
+                raise Exception("Sorry, dataset with id=", id, " not found.")
 
+            self.load_from_json_file("datasets/"+json_dataset+".json")
         # normalize values calculating scaled satisfactions, costs and scores
         self.normalize()
 
@@ -50,15 +49,25 @@ class Dataset:
             # use filename as dataset id
             self.id = Path(source_file).stem
 
-            self.pbis_cost = np.array(json_data["costs"])
+            self.pbis_cost = np.array(json_data["costs"]).astype(int)
             self.num_pbis = len(self.pbis_cost)
-            self.stakeholders_importances = np.array(json_data["importances"])
+            self.stakeholders_importances = np.array(
+                json_data["importances"]).astype(int)
             self.stakeholders_pbis_priorities = np.array(
-                json_data["priorities"])
-            self.dependencies = np.array(
-                json_data["dependencies"], dtype=object)
-            print(self.pbis_cost, self.num_pbis, self.stakeholders_importances,
-                  self.stakeholders_pbis_priorities, self.dependencies, self.id)
+                json_data["priorities"]).astype(int)
+            if json_data["dependencies"]:
+                self.dependencies = np.array(
+                    json_data["dependencies"], dtype=object)
+                for x in range(len(self.dependencies)):
+                    if self.dependencies[x] is None:
+                        continue
+                    for y in range(len(self.dependencies[x])):
+                        self.dependencies[x][y] = int(self.dependencies[x][y])
+
+            else:
+                self.dependencies = None
+            # print(self.pbis_cost, self.num_pbis, self.stakeholders_importances,
+            #      self.stakeholders_pbis_priorities, self.dependencies, self.id)
 
     def calculate_dependencies(self) -> None:
         """Given the list of dependencies, recursively stores dependencies of requirements,
@@ -66,28 +75,28 @@ class Dataset:
         """
         self.new_dependencies = {}
         # dependency = index_dependency+1 (starts from 1)
-        for dep in range(1, len(self.dependencies)+1):
-            if self.dependencies[dep-1] is not None:
+        for dep in range(len(self.dependencies)):
+            if self.dependencies[dep] is not None:
                 # if req has dependencies -> add them and launch aux fun
-                for dep2 in self.dependencies[dep-1]:
+                for dep2 in self.dependencies[dep]:
                     self.new_dependencies.setdefault(dep, []).append(dep2)
                     self.aux_dependencies(dep, dep2)
 
         # store new dependencies non repeatedly:
         self.dependencies = np.empty(len(self.dependencies), dtype=object)
-        for i in range(1, len(self.dependencies)+1):
+        for i in range(len(self.dependencies)):
             if i not in self.new_dependencies:
-                self.dependencies[i-1] = None
+                self.dependencies[i] = None
             else:
-                self.dependencies[i -
-                                  1] = list(dict.fromkeys(self.new_dependencies[i]))
+                self.dependencies[i] = list(
+                    dict.fromkeys(self.new_dependencies[i]))
 
     def aux_dependencies(self, parent: int, child: int) -> None:
         # if no dependencies in child -> stop
-        if self.dependencies[child-1] is None:
+        if self.dependencies[child] is None:
             return
         # for each dependency in child -> if it is already the parent or contained in parent -> stop
-        for d in self.dependencies[child-1]:
+        for d in self.dependencies[child]:
             if (d == parent) or (d in self.new_dependencies[parent]):
                 continue
             # if not -> add new dependency to parent list and recursively launch aux fun
