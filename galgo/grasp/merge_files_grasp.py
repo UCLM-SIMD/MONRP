@@ -3,7 +3,8 @@ import os
 
 from algorithms.GRASP.grasp_executer import GRASPExecuter
 from algorithms.GRASP.GRASP import GRASP
-
+import sys
+sys.path.append(os.getcwd()) 
 filenames = [f for f in os.listdir(
     os.getcwd()) if f.endswith('.txt') and "grasp" in f]
 print(filenames)
@@ -11,7 +12,7 @@ print(filenames)
 GRASPExecuter(GRASP).initialize_file('output/metrics/merged_output_grasp.txt')
 
 # Open file3 in write mode
-with open('output/metrics/merged_output_grasp.txt', 'w') as outfile:
+with open('output/metrics/merged_output_grasp.txt', 'a') as outfile:
     # outfile.write("Dataset,Algorithm,Iterations,Solutions per Iteration,Evaluations,Initialization Type,"
     #            "Local Search Type,Path Relinking,Time(s),AvgValue,BestAvgValue,HV,Spread,NumSolutions,"
     #			"Spacing,NumGenerations,Requirements per sol,NumEvaluations\n")

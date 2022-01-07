@@ -1,30 +1,21 @@
 # RUN SCRIPT IN THE FOLDER WHERE THE DATA IS LOCATED
 import os
-
+import sys
+sys.path.append(os.getcwd()) 
 from algorithms.EDA.PBIL.pbil_executer import PBILExecuter
 from algorithms.EDA.PBIL.pbil_algorithm import PBILAlgorithm
 
+out_dir="output/metrics"
+out_file="merged_output_pbil.txt"
 filenames = [f for f in os.listdir(
-    os.getcwd()) if f.endswith('.txt') and "pbil" in f]
+    out_dir) if f.endswith('.txt') and "pbil" in f]
 print(filenames)
 
 PBILExecuter(PBILAlgorithm).initialize_file(
-    'output/metrics/merged_output_pbil.txt')
+    f'{out_dir}/{out_file}')
 
-# Open file3 in write mode
-with open('merged_output_pbil.txt', 'w') as outfile:
-    # outfile.write("Dataset,Algorithm,Population Length,Generations,Evaluations,"
-    #            "Learning Rate,Mutation Probability,Mutation Shift,Time(s),AvgValue,BestAvgValue,BestGeneration,HV,Spread,NumSolutions,Spacing,"
-    #            "NumGenerations,Requirements per sol,NumEvaluations\n")
-    # Iterate through list
+with open(f'{out_dir}/{out_file}', 'a') as outfile:
     for names in filenames:
-        # Open each file in read mode
-        with open(names) as infile:
-            # read the data from file1 and
-            # file2 and write it in file3
+        with open(f'{out_dir}/{names}') as infile:
             outfile.write(infile.read())
-
-        # Add '\n' to enter data of file2
-        # from next line
-        # outfile.write("\n")
     outfile.close()

@@ -1,6 +1,7 @@
 # RUN SCRIPT IN THE FOLDER WHERE THE DATA IS LOCATED
 import os
-
+import sys
+sys.path.append(os.getcwd()) 
 from algorithms.genetic.abstract_genetic.genetic_executer import GeneticExecuter
 from algorithms.genetic.abstract_genetic.abstract_genetic_algorithm import AbstractGeneticAlgorithm
 
@@ -12,7 +13,7 @@ GeneticExecuter(AbstractGeneticAlgorithm).initialize_file(
     'output/metrics/merged_output_genetic.txt')
 
 # Open file3 in write mode
-with open('output/metrics/merged_output_genetic.txt', 'w') as outfile:
+with open('output/metrics/merged_output_genetic.txt', 'a') as outfile:
     # outfile.write("Dataset,Algorithm,Population Length,Generations,Evaluations,"
     #              "Selection Scheme,Selection Candidates,Crossover Scheme,Crossover Probability,Mutation Scheme,"
     #              "Mutation Probability,Replacement Scheme,Time(s),AvgValue,BestAvgValue,BestGeneration,HV,Spread,NumSolutions,"
