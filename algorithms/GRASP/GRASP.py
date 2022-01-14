@@ -342,8 +342,12 @@ class GRASP:
             # avoid solution with 0 cost due to 0 candidates selected
             if np.count_nonzero(sol.selected) > 0:
                 solutions.append(sol)
+<<<<<<< HEAD
             else:
                 i -= 1
+=======
+                i -= 1  # TODO ESTO NO DEBERIA SER EN EL ELSE? #@pablo CREO QUE SÍ, y que esto está mal!, no entiendo que no falle
+>>>>>>> 0a234eb2 (population is initiated, creating each individual following a topological order.)
         return solutions
 
     def init_solutions_uniform(self) -> List[Solution]:

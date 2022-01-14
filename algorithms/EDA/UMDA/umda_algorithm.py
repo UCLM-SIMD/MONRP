@@ -74,6 +74,55 @@ class UMDAAlgorithm(EDAAlgorithm):
 
         return probability_model
 
+<<<<<<< HEAD
+=======
+    def generate_sample_from_probabilities_binomial(self, probabilities: List[float]) -> Solution:
+        """Generates a sample given the probability vector, using numpy binomial method.
+        """
+        sample_selected = np.random.binomial(1, probabilities)
+        sample = Solution(self.dataset, None, selected=sample_selected)
+        return sample
+
+
+
+    def generate_sample_from_probabilities(self, probabilities: List[float]) -> Solution:
+        """Generates a sample given the probability vector, using scaled probabilities
+        """
+        probs = [prob * 10 for prob in probabilities]
+        sum_probs = np.sum(probs)
+        scaled_probs = probs / sum_probs
+        sample = Solution(self.dataset, scaled_probs)
+        return sample
+
+    def replace_population_from_probabilities_elitism(self, probability_model: List[float], population: List[Solution]) -> List[Solution]:
+        new_population = []
+        # elitist R-1 inds
+        for _ in np.arange(self.population_length-1):
+            new_individual = self.generate_sample_from_probabilities_binomial(
+                probability_model)
+            # new_individual = self.generate_sample_from_probabilities(
+            #    probability_model)
+            new_population.append(new_individual)
+
+        # elitism -> add best individual from old population
+        population.sort(
+            key=lambda x: x.compute_mono_objective_score(), reverse=True)
+        new_population.append(population[0])
+
+        return new_population
+
+    def replace_population_from_probabilities(self, probability_model: List[float]) -> List[Solution]:
+        new_population = []
+        for _ in np.arange(self.population_length):
+            new_individual = self.generate_sample_from_probabilities_binomial(
+                probability_model)
+            # new_individual = self.generate_sample_from_probabilities(
+            #    probability_model)
+            new_population.append(new_individual)
+
+        return new_population
+
+>>>>>>> 0a234eb2 (population is initiated, creating each individual following a topological order.)
     def sample_new_population(self, probability_model: List[float]) -> List[Solution]:
         """Given a probability vector, samples a new population depending on the scheme selected.
         """
