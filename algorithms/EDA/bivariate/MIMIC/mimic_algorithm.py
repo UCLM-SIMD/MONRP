@@ -221,7 +221,7 @@ class MIMICAlgorithm(EDAAlgorithm):
                 self.num_generations += 1
 
                 if self.debug_mode:
-                    paretos.append(self.nds)
+                    paretos.append(self.nds.copy())
 
         except EvaluationLimit:
             pass

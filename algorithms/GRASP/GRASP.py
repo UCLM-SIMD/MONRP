@@ -62,7 +62,8 @@ class GRASP(AbstractAlgorithm):
 
         self.executer = GRASPExecuter(algorithm=self)
         self.file: str = (f"{str(self.__class__.__name__)}-{str(dataset)}-{str(seed)}-{str(iterations)}-"
-                          f"{str(solutions_per_iteration)}-{str(max_evaluations)}-{str(init_type)}-"
+                          f"{str(solutions_per_iteration)}-{str(init_type)}-"
+                          # -{str(max_evaluations)}
                           f"{local_search_type}-{str(path_relinking_mode)}.txt")
 
     def get_name(self) -> str:
@@ -131,7 +132,7 @@ class GRASP(AbstractAlgorithm):
                 self.num_iterations += 1
 
                 if self.debug_mode:
-                    paretos.append(self.nds)
+                    paretos.append(self.nds.copy())
 
         except EvaluationLimit:
             pass

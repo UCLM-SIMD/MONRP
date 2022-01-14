@@ -44,7 +44,8 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
             self.replacement = self.replacement_elitism
 
         self.file: str = (f"{str(self.__class__.__name__)}-{str(dataset_name)}-{str(random_seed)}-{str(population_length)}-"
-                          f"{str(max_generations)}-{str(max_evaluations)}-"
+                          f"{str(max_generations)}-"
+                          # -{str(max_evaluations)}
                           f"{str(selection)}-{str(selection_candidates)}-"
                           f"{str(crossover)}-{str(crossover_prob)}-{str(mutation)}-"
                           f"{str(mutation_prob)}-{str(replacement)}.txt")
@@ -106,7 +107,7 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
 
                 self.num_generations += 1
                 if self.debug_mode:
-                    paretos.append(self.nds)
+                    paretos.append(self.nds.copy())
 
         except EvaluationLimit:
             pass
