@@ -57,6 +57,8 @@ class UMDAAlgorithm(EDAAlgorithm):
         sample = Solution(self.dataset, None, selected=sample_selected)
         return sample
 
+
+
     def generate_sample_from_probabilities(self, probabilities: List[float]) -> Solution:
         """Generates a sample given the probability vector, using scaled probabilities
         """

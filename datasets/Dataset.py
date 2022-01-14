@@ -39,7 +39,8 @@ class Dataset:
         self.normalize()
 
         # simplify dependencies:
-        if (self.dependencies is not None):
+        if self.dependencies is not None:
+            self.list_of_sons = self.dependencies.copy()  # needed in feda_algorithm.py
             self.calculate_dependencies()
 
     def load_from_json_file(self, source_file: str) -> None:
