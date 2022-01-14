@@ -4,36 +4,38 @@ def generate_configurations():
     dataset_problems = [
         "1",
         "2",
-        "s1",
-        "s2",
+        # "s1",
+        # "s2",
         "s3",
     ]
     algorithms = [
         "pbil"
     ]
     population_length = [
-        #20, 50, 
-        100, 200, 500
+        # 20,
+        50,
+        100, 200,  # 500
     ]
     max_generations = [
-        100, 200, 500
+        50,
+        100, 200,  # 500
     ]
     evaluations = [
-        10000,
+        # 10000,
         0
     ]
     learning_rate = [
-        #0.01, 0.05, 
-        0.1#, 0.2 
-        ,0.5#, 1
+        #0.01, 0.05,
+        0.1  # , 0.2
+        , 0.5, 0.9
     ]
     mutation_prob = [
-        0.1,# 0.2, 
-        0.5#, 1
+        0.1,  # 0.2,
+        0.5, 0.9
     ]
     mutation_shift = [
-        0.1,# 0.2, 
-        0.5#, 1
+        0.1,  # 0.2,
+        0.5, 0.9
     ]
     seed = 10
 

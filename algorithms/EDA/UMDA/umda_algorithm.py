@@ -27,7 +27,8 @@ class UMDAAlgorithm(EDAAlgorithm):
         self.replacement_scheme: str = replacement_scheme
 
         self.file: str = (f"{str(self.__class__.__name__)}-{str(dataset_name)}-{str(random_seed)}-{str(population_length)}-"
-                          f"{str(max_generations)}-{str(max_evaluations)}.txt")
+                          f"{str(max_generations)}-{str(max_evaluations)}-{str(selected_individuals)}-{str(selection_scheme)}-"
+                          f"{str(replacement_scheme)}.txt")
 
     def get_name(self) -> str:
         return (f"UMDA{str(self.population_length)}+{str(self.max_generations)}+"
