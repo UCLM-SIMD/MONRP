@@ -83,9 +83,10 @@ class AbstractExecuter(ABC):
         return metrics_fields
 
     def file_write_line(self, file_path: str, line: str) -> None:
+        
         """Aux method to write a line in a file
         """
-        f = open(file_path, "a")
+        f = open(file_path,"a")
         f.write(line)
         f.close()
 
@@ -95,8 +96,9 @@ class AbstractExecuter(ABC):
         # add all fields
         fields = self.config_fields + self.metrics_fields
         header: str = self.get_string_from_fields(fields, end_line=True)
-
-        self.file_write_line(file_path, header)
+        file = open(file_path, "w")
+        file.write(header)
+        file.close()
 
     def reset_file(self, file_path: str) -> None:
         file = open(file_path, "w")
