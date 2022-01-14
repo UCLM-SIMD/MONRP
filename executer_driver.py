@@ -52,15 +52,16 @@ elif(params[0] == "grasp"):
 elif(params[0] == "eda"):
     if(params[1] == "umda"):
         # -c eda umda s1 5 100 300 10000 50
-        # algorithmtype algorithm dataset seed numpop gens max_evaluations selinds
+        # algorithmtype algorithm dataset seed numpop gens max_evaluations selinds selscheme replscheme
         algorithm_model = UMDAAlgorithm
 
-        algorithm_name, dataset_name, seed, numpop, gens, max_evaluations, selinds = \
+        algorithm_name, dataset_name, seed, numpop, gens, max_evaluations, selinds, selscheme, replscheme = \
             [str(params[1]), str(params[2]), int(params[3]),
-                int(params[4]), int(params[5]), int(params[6]), int(params[7])]
+                int(params[4]), int(params[5]), int(params[6]), int(params[7]), str(params[8]), str(params[9])]
 
         algorithm = algorithm_model(dataset_name=dataset_name, population_length=numpop,
-                                    max_generations=gens, max_evaluations=max_evaluations, selected_individuals=selinds, random_seed=seed)
+                                    max_generations=gens, max_evaluations=max_evaluations, selected_individuals=selinds,
+                                    selection_scheme=selscheme, replacement_scheme=replscheme, random_seed=seed)
         filepath = "output/metrics/umda-"+algorithm.file
 
     elif(params[1] == "pbil"):
