@@ -16,11 +16,11 @@ class FEDAAlgorithm(EDAAlgorithm):
 
     Given an initial set of requirements (pbis) dependencies in the form of
     X1-->X2, FEDA uses this knowledge as a prefixed structure.
-    e.g: we can have an acyclic graph like this: G={1-->3, 2-->3, 4, 3-->5}, where pbis 1,2,4 do not have parents,
-    parents(3)={1,2} and parents(5)={3}.
+    e.g: we can have an acyclic graph like this: G={0-->2, 1-->2, 3, 2-->4}, where pbis 0,1,3 do not have parents,
+    parents(2)={0,1} and parents(4)={2}.
 
     Thus, learning is not structural and only applies to data.
-    Sampling is always performed following a topological (ancestral) order ([4,1,2,3,5] in the example above).
+    Sampling is always performed following a topological (ancestral) order ([3,0,1,2,4] in the example above).
 
     Algorithm is as follows:
 
@@ -33,7 +33,7 @@ class FEDAAlgorithm(EDAAlgorithm):
     2. Learning
     -- If X does not have any parents, learn its marginal probability
     -- Conditional: P(X| each Y in parents(X)==0)
-    In the example above, P(3| 1==0,2==0). thus,
+    In the example above, P(2| 0==0,1==0). thus,
     we only need to learn P(X|parents(X)) from individuals where all Y in parents(X) are == 0.
     This means that conditional probability can be stored in an unidimensional array (self.cond_probability_model).
 
