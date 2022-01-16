@@ -87,14 +87,12 @@ class PBILAlgorithm(EDAAlgorithm):
         """Given a probability vector, samples a new population depending on the scheme selected.
         """
         population = self.replace_population_from_probabilities(
-                probability_model)
+            probability_model)
         return population
 
     def run(self) -> Dict[str, Any]:
         start = time.time()
         self.reset()
-
-        paretos = []
 
         self.probability_vector = self.initialize_probability_vector()
 
@@ -123,7 +121,7 @@ class PBILAlgorithm(EDAAlgorithm):
                 self.num_generations += 1
 
                 if self.debug_mode:
-                    paretos.append(self.nds.copy())
+                    self.debug_data()
 
         except EvaluationLimit:
             pass
@@ -137,5 +135,6 @@ class PBILAlgorithm(EDAAlgorithm):
                 "numGenerations": self.num_generations,
                 "best_individual": self.best_individual,
                 "numEvaluations": self.num_evaluations,
-                "paretos": paretos
+                "nds_debug": self.nds_debug,
+                "population_debug": self.population_debug
                 }

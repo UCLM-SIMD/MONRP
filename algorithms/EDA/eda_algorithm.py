@@ -42,7 +42,7 @@ class EDAAlgorithm(AbstractAlgorithm):
             #         self.nds)
             # else:
             individuals = self.select_nondominated_individuals(
-                    population)
+                population)
 
         elif self.selection_scheme == "monoscore":
             individuals = self.select_individuals_monoscore(population)
@@ -91,7 +91,7 @@ class EDAAlgorithm(AbstractAlgorithm):
             new_population.append(new_individual)
 
         return new_population
-    
+
     def replace_population_from_probabilities_elitism(self, probability_model: List[float], population: List[Solution]) -> List[Solution]:
         new_population = []
         # elitist R-1 inds

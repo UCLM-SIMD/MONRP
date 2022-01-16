@@ -132,7 +132,7 @@ class GRASP(AbstractAlgorithm):
                 self.num_iterations += 1
 
                 if self.debug_mode:
-                    paretos.append(self.nds.copy())
+                    self.debug_data()
 
         except EvaluationLimit:
             pass
@@ -145,7 +145,8 @@ class GRASP(AbstractAlgorithm):
             "time": seconds,
             "numGenerations": self.num_iterations,
             "numEvaluations": self.num_evaluations,
-            "paretos": paretos
+            "nds_debug": self.nds_debug,
+            "population_debug": self.population_debug
         }
 
     def init_solutions_stochastically(self) -> List[Solution]:

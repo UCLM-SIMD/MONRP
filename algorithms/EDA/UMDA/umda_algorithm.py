@@ -63,18 +63,14 @@ class UMDAAlgorithm(EDAAlgorithm):
 
     def run(self) -> Dict[str, Any]:
         self.reset()
-        paretos = []
-        populations = []
         start = time.time()
 
         self.population = self.generate_initial_population()
-        # old_pop = []
         self.evaluate(self.population, self.best_individual)
-
         get_nondominated_solutions(self.population, self.nds)
+
         if self.debug_mode:
-            paretos.append(self.nds.copy())
-            populations.append(self.population.copy())
+            self.debug_data()
 
         try:
             while (not self.stop_criterion(self.num_generations, self.num_evaluations)):
@@ -104,8 +100,7 @@ class UMDAAlgorithm(EDAAlgorithm):
                 self.num_generations += 1
 
                 if self.debug_mode:
-                    paretos.append(self.nds.copy())
-                    populations.append(self.population.copy())
+                    self.debug_data()
 
         except EvaluationLimit:
             pass
@@ -119,6 +114,6 @@ class UMDAAlgorithm(EDAAlgorithm):
                 "numGenerations": self.num_generations,
                 "best_individual": self.best_individual,
                 "numEvaluations": self.num_evaluations,
-                "paretos": paretos,
-                "populations": populations
+                "nds_debug": self.nds_debug,
+                "population_debug": self.population_debug
                 }

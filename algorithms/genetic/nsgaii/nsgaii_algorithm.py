@@ -84,7 +84,6 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
 
     def run(self) -> Dict[str, Any]:
         self.reset()
-        paretos = []
         start = time.time()
 
         # init nsgaii
@@ -157,7 +156,7 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
                 self.num_generations += 1
 
                 if self.debug_mode:
-                    paretos.append(self.nds.copy())
+                    self.debug_data(nds_debug=fronts[0])
 
         except EvaluationLimit:
             pass
@@ -170,7 +169,8 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
                 "bestGeneration": self.best_generation,
                 "best_individual": self.best_individual,
                 "numEvaluations": self.num_evaluations,
-                "paretos": paretos
+                "nds_debug": self.nds_debug,
+                "population_debug": self.population_debug
                 }
 
     def selection_tournament(self, population: List[Solution]) -> List[Solution]:

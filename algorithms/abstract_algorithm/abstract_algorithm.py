@@ -96,20 +96,25 @@ class AbstractAlgorithm(ABC):
             sol.correct_dependencies()
         return solutions
 
-    def createGIF(self, input_folder: str = "temp", output_filename: str = "example_gif", dpi: int = 100, fps: int = 1) -> None:
+    def createGIF(self, input_folder: str = "temp", output_filename: str = "example_gif", dpi: int = 100, fps: int = 1, onlyNDS: bool = False) -> None:
         plt.rcParams['figure.figsize'] = [16, 10]
         plt.rcParams['figure.dpi'] = 200
+
         alg_results = []
         filenames = []
+
         self.debug_mode = True
+
         result = self.run()
-        alg_results.append(result["paretos"])
-        alg_results.append(result["populations"])
+
+        alg_results.append(result["nds_debug"])
+        alg_results.append(result["population_debug"])
 
         # loop pareto steps and generate a frame with all points for all algorithms
         for pareto_index in range(len(alg_results[0])):
             plt.cla()
             plt.clf()
+
             # intermediate pareto results for a frame
             func = [j for j in alg_results[0][pareto_index]]
             functiony = [i.total_satisfaction for i in func]
@@ -117,12 +122,13 @@ class AbstractAlgorithm(ABC):
             plt.scatter(functionx, functiony,
                         label="NDS")
 
-            # intermediate population results for a frame
-            func = [j for j in alg_results[1][pareto_index]]
-            functiony = [i.total_satisfaction for i in func]
-            functionx = [i.total_cost for i in func]
-            plt.scatter(functionx, functiony,
-                        label="Population")
+            if not onlyNDS:
+                # intermediate population results for a frame
+                func = [j for j in alg_results[1][pareto_index]]
+                functiony = [i.total_satisfaction for i in func]
+                functionx = [i.total_cost for i in func]
+                plt.scatter(functionx, functiony,
+                            label="Population")
 
             # config frame
             plt.xlabel('Effort', fontsize=12)
@@ -133,7 +139,6 @@ class AbstractAlgorithm(ABC):
             plt.grid(True)
             plt.draw()
             # store frame
-            # filename = f'input_folder+'/temp'+str(pareto_index+1)+'.png'
             filename = f'{input_folder}/temp{str(pareto_index+1)}.png'
             filenames.append(filename)
             plt.savefig(filename, dpi=dpi)
@@ -153,3 +158,19 @@ class AbstractAlgorithm(ABC):
         for filename in set(filenames):
             os.remove(filename)
         print('DONE')
+
+    def debug_data(self, nds_debug=None, population_debug=None):
+        # if first call: reset
+        if(not (hasattr(self, "nds_debug") and hasattr(self, "population_debug"))):
+            self.nds_debug = []
+            self.population_debug = []
+
+        if nds_debug is not None:
+            self.nds_debug.append(nds_debug.copy())
+        else:
+            self.nds_debug.append(self.nds.copy())
+
+        if population_debug is not None:
+            self.population_debug.append(population_debug.copy())
+        else:
+            self.population_debug.append(self.population.copy())
