@@ -96,7 +96,8 @@ class AbstractAlgorithm(ABC):
             sol.correct_dependencies()
         return solutions
 
-    def createGIF(self, input_folder: str = "temp", output_filename: str = "example_gif", dpi: int = 100, fps: int = 1, onlyNDS: bool = False) -> None:
+    def createGIF(self, input_folder: str = "temp", output_filename: str = "example_gif", dpi: int = 100, fps: int = 1,
+                  onlyNDS: bool = False, max_x: float = 1.0, max_y: float = 1.0) -> None:
         plt.rcParams['figure.figsize'] = [16, 10]
         plt.rcParams['figure.dpi'] = 200
 
@@ -131,6 +132,8 @@ class AbstractAlgorithm(ABC):
                             label="Population")
 
             # config frame
+            plt.xlim([0, max_x])
+            plt.ylim([0, max_y])
             plt.xlabel('Effort', fontsize=12)
             plt.ylabel('Satisfaction', fontsize=12)
             plt.legend(loc="lower right")
