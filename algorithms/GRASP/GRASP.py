@@ -75,6 +75,7 @@ class GRASP(AbstractAlgorithm):
                 f"{str(self.max_evaluations)}+{init}+{local}+{PR}")
 
     def reset(self) -> None:
+        super().reset()
         self.nds = []
         self.num_evaluations = 0
         self.num_iterations = 0

@@ -34,17 +34,20 @@ class AbstractAlgorithm(ABC):
         self.random_seed: int = random_seed
         self.set_seed(random_seed)
 
+        self.nds_debug = []
+        self.population_debug = []
+
     def set_seed(self, seed: int):
         self.random_seed: int = seed
         if seed is not None:
             np.random.seed(seed)
             random.seed(seed)
 
-    @abstractmethod
     def reset(self) -> None:
         """Method that clears specific algorithm implementation variables and data
         """
-        pass
+        self.nds_debug = []
+        self.population_debug = []
 
     @abstractmethod
     def run(self) -> Dict[str, Any]:
@@ -163,11 +166,6 @@ class AbstractAlgorithm(ABC):
         print('DONE')
 
     def debug_data(self, nds_debug=None, population_debug=None):
-        # if first call: reset
-        if(not (hasattr(self, "nds_debug") and hasattr(self, "population_debug"))):
-            self.nds_debug = []
-            self.population_debug = []
-
         if nds_debug is not None:
             self.nds_debug.append(nds_debug.copy())
         else:

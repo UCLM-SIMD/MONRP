@@ -81,7 +81,6 @@ class UMDAAlgorithm(EDAAlgorithm):
                 # learning
                 probability_model = self.learn_probability_model(
                     individuals)
-
                 # old_pop = self.population.copy()
 
                 # replacement

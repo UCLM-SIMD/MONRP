@@ -124,6 +124,7 @@ class EDAAlgorithm(AbstractAlgorithm):
             raise EvaluationLimit
 
     def reset(self) -> None:
+        super().reset()
         self.nds = []
         self.best_individual = None
         self.num_generations = 0
