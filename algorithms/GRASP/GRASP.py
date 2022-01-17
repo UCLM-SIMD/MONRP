@@ -74,6 +74,13 @@ class GRASP(AbstractAlgorithm):
         return (f"GRASP+{str(self.iterations)}+{str(self.solutions_per_iteration)}+"
                 f"{str(self.max_evaluations)}+{init}+{local}+{PR}")
 
+    def df_find_data(self, df: any):
+        return df[(df["Iterations"] == self.iterations) & (df["Solutions per Iteration"] == self.solutions_per_iteration)
+                  & (df["Initialization Type"] == self.init_type) & (df["Local Search Type"] == self.local_search_type)
+                  & (df["Path Relinking"] == self.path_relinking_mode) & (df["Algorithm"] == self.__class__.__name__)
+                  & (df["Dataset"] == self.dataset_name)
+                  ]
+
     def reset(self) -> None:
         super().reset()
         self.nds = []

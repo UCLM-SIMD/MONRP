@@ -50,6 +50,15 @@ class AbstractGeneticAlgorithm(AbstractAlgorithm):
     def get_name(self) -> str:
         pass
 
+    def df_find_data(self, df: any):
+        return df[(df["Population Length"] == self.population_length) & (df["MaxGenerations"] == self.max_generations)
+                  & (df["Selection Candidates"] == self.selection_candidates) & (df["Selection Scheme"] == self.selection_scheme)
+                  & (df["Crossover Scheme"] == self.crossover_scheme) & (df["Crossover Probability"] == self.crossover_prob)
+                  & (df["Mutation Scheme"] == self.mutation_scheme) & (df["Mutation Probability"] == self.mutation_prob)
+                  & (df["Replacement Scheme"] == self.replacement_scheme) & (df["Algorithm"] == self.__class__.__name__)
+                  & (df["Dataset"] == self.dataset_name)
+                  ]
+
     def stop_criterion(self, num_generations, num_evaluations) -> bool:
         if self.max_evaluations == 0:
             return num_generations >= self.max_generations

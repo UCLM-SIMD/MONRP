@@ -33,6 +33,13 @@ class PBILAlgorithm(EDAAlgorithm):
         return (f"PBIL+{self.population_length}+{self.max_generations}+{self.max_evaluations}+"
                 f"{self.learning_rate}+{self.mutation_prob}+{self.mutation_shift}")
 
+    def df_find_data(self, df: any):
+        return df[(df["Population Length"] == self.population_length) & (df["MaxGenerations"] == self.max_generations)
+                  & (df["Learning Rate"] == self.learning_rate) & (df["Mutation Probability"] == self.mutation_prob)
+                  & (df["Algorithm"] == self.__class__.__name__) & (df["Mutation Shift"] == self.mutation_shift)
+                  & (df["Dataset"] == self.dataset_name)
+                  ]
+
     def initialize_probability_vector(self) -> np.ndarray:
         probabilities = np.full(self.dataset.pbis_score.size, 0.5)
         #probabilities = np.full(self.dataset.pbis_score.size, 1/self.dataset.pbis_score.size)

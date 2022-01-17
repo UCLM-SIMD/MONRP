@@ -34,6 +34,13 @@ class UMDAAlgorithm(EDAAlgorithm):
         return (f"UMDA{str(self.population_length)}+{str(self.max_generations)}+{str(self.max_evaluations)}+"
                 f"{str(self.selected_individuals)}+{str(self.selection_scheme)}+{str(self.replacement_scheme)}")
 
+    def df_find_data(self, df: any):
+        return df[(df["Population Length"] == self.population_length) & (df["MaxGenerations"] == self.max_generations)
+                  & (df["Selection Scheme"] == self.selection_scheme) & (df["Selected Individuals"] == self.selected_individuals)
+                  & (df["Algorithm"] == self.__class__.__name__) & (df["Replacement Scheme"] == self.replacement_scheme)
+                  & (df["Dataset"] == self.dataset_name)
+                  ]
+
     def learn_probability_model(self, population: List[Solution]) -> List[float]:
         """Learns probability from a set of solutions, returning an array of probabilities for each gene to be 1.
         """
