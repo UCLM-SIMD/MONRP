@@ -35,6 +35,7 @@ class EDAAlgorithm(AbstractAlgorithm):
         return population
 
     def select_individuals(self, population: List[Solution]) -> List[Solution]:
+
         if self.selection_scheme == "nds":
             # TODO
             # if len(self.nds) > 0:
