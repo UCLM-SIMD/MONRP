@@ -18,7 +18,7 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
                  selection="tournament", selection_candidates=2,
                  crossover="onepoint", crossover_prob=0.9,
                  mutation="flipeachbit", mutation_prob=0.1,
-                 # replacement="elitism",
+                 replacement="elitism",
                  debug_mode=False, tackle_dependencies=False):
 
         super().__init__(dataset_name, random_seed, debug_mode, tackle_dependencies,
@@ -58,8 +58,9 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
         #    self.replacement = self.replacement_elitism
 
         self.file: str = (f"{str(self.__class__.__name__)}-{str(dataset_name)}-{str(random_seed)}-{str(population_length)}-"
-                          f"{str(max_generations)}-{str(max_evaluations)}-{str(selection)}-{str(selection_candidates)}-{str(crossover)}-"
-                          f"{str(crossover_prob)}-{str(mutation)}-{str(mutation_prob)}.txt")
+                          # -{str(max_evaluations)}
+                          f"{str(max_generations)}-{str(selection)}-{str(selection_candidates)}-{str(crossover)}-"
+                          f"{str(crossover_prob)}-{str(mutation)}-{str(mutation_prob)}-{str(replacement)}.txt")
         # -{str(replacement)}
 
     def get_name(self) -> str:
@@ -83,7 +84,6 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
 
     def run(self) -> Dict[str, Any]:
         self.reset()
-        paretos = []
         start = time.time()
 
         # init nsgaii
@@ -156,7 +156,7 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
                 self.num_generations += 1
 
                 if self.debug_mode:
-                    paretos.append(self.nds)
+                    self.debug_data(nds_debug=fronts[0])
 
         except EvaluationLimit:
             pass
@@ -169,7 +169,8 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
                 "bestGeneration": self.best_generation,
                 "best_individual": self.best_individual,
                 "numEvaluations": self.num_evaluations,
-                "paretos": paretos
+                "nds_debug": self.nds_debug,
+                "population_debug": self.population_debug
                 }
 
     def selection_tournament(self, population: List[Solution]) -> List[Solution]:

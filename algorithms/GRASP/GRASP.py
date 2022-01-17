@@ -62,7 +62,8 @@ class GRASP(AbstractAlgorithm):
 
         self.executer = GRASPExecuter(algorithm=self)
         self.file: str = (f"{str(self.__class__.__name__)}-{str(dataset)}-{str(seed)}-{str(iterations)}-"
-                          f"{str(solutions_per_iteration)}-{str(max_evaluations)}-{str(init_type)}-"
+                          f"{str(solutions_per_iteration)}-{str(init_type)}-"
+                          # -{str(max_evaluations)}
                           f"{local_search_type}-{str(path_relinking_mode)}.txt")
 
     def get_name(self) -> str:
@@ -74,6 +75,7 @@ class GRASP(AbstractAlgorithm):
                 f"{str(self.max_evaluations)}+{init}+{local}+{PR}")
 
     def reset(self) -> None:
+        super().reset()
         self.nds = []
         self.num_evaluations = 0
         self.num_iterations = 0
@@ -131,7 +133,7 @@ class GRASP(AbstractAlgorithm):
                 self.num_iterations += 1
 
                 if self.debug_mode:
-                    paretos.append(self.nds)
+                    self.debug_data()
 
         except EvaluationLimit:
             pass
@@ -144,7 +146,8 @@ class GRASP(AbstractAlgorithm):
             "time": seconds,
             "numGenerations": self.num_iterations,
             "numEvaluations": self.num_evaluations,
-            "paretos": paretos
+            "nds_debug": self.nds_debug,
+            "population_debug": self.population_debug
         }
 
     def init_solutions_stochastically(self) -> List[Solution]:

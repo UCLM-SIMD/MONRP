@@ -44,7 +44,8 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
             self.replacement = self.replacement_elitism
 
         self.file: str = (f"{str(self.__class__.__name__)}-{str(dataset_name)}-{str(random_seed)}-{str(population_length)}-"
-                          f"{str(max_generations)}-{str(max_evaluations)}-"
+                          f"{str(max_generations)}-"
+                          # -{str(max_evaluations)}
                           f"{str(selection)}-{str(selection_candidates)}-"
                           f"{str(crossover)}-{str(crossover_prob)}-{str(mutation)}-"
                           f"{str(mutation_prob)}-{str(replacement)}.txt")
@@ -63,13 +64,16 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
 
     def run(self) -> Dict[str, Any]:
         self.reset()
-        paretos = []
         start = time.time()
 
         self.num_generations = 0
         self.num_evaluations = 0
         self.population = self.generate_starting_population()
         self.evaluate(self.population, self.best_individual)
+        get_nondominated_solutions(self.population, self.nds)
+
+        if self.debug_mode:
+            self.debug_data()
 
         try:
             while (not self.stop_criterion(self.num_generations, self.num_evaluations)):
@@ -106,7 +110,7 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
 
                 self.num_generations += 1
                 if self.debug_mode:
-                    paretos.append(self.nds)
+                    self.debug_data()
 
         except EvaluationLimit:
             pass
@@ -120,7 +124,8 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
             "bestGeneration": self.best_generation,
             "best_individual": self.best_individual,
             "numEvaluations": self.num_evaluations,
-            "paretos": paretos,
+            "nds_debug": self.nds_debug,
+            "population_debug": self.population_debug
         }
 
     def add_evaluation(self, new_population: List[Solution]) -> None:
