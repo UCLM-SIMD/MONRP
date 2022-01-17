@@ -6,11 +6,19 @@ class FEDAExecuter(AbstractExecuter):
     """Specific umda implementation of executer.
     """
 
+<<<<<<< HEAD
     def __init__(self, algorithm, execs:int):
         """Init method extends config and metrics fields with specific feda algorithm data
         """
         from algorithms.EDA.FEDA.feda_algorithm import FEDAAlgorithm
         super().__init__(algorithm,execs)
+=======
+    def __init__(self, algorithm):
+        """Init method extends config and metrics fields with specific feda algorithm data
+        """
+        from algorithms.EDA.FEDA.feda_algorithm import FEDAAlgorithm
+        super().__init__(algorithm)
+>>>>>>> bd41d390 (first version of FEDA (Fixed-structure EDA) finished)
         self.algorithm: FEDAAlgorithm
         self.algorithm_type: str = "feda"
 
@@ -20,9 +28,12 @@ class FEDAExecuter(AbstractExecuter):
         self.metrics_fields.extend(
             ["NumGenerations", "NumEvaluations", ])
 
+<<<<<<< HEAD
         self.metrics_dictionary["NumGenerations"] = [None] * int(execs)
         self.metrics_dictionary["NumEvaluations"] = [None] * int(execs)
 
+=======
+>>>>>>> bd41d390 (first version of FEDA (Fixed-structure EDA) finished)
     def get_config_fields(self,) -> List[str]:
         """FEDA algorithm executer extends metrics fields read from the execution
         """
@@ -43,6 +54,7 @@ class FEDAExecuter(AbstractExecuter):
         config_lines.append(str(replacement_scheme))
         return config_lines
 
+<<<<<<< HEAD
     def get_metrics_fields(self, result: Dict[str, Any], repetition) -> List[str]:
         """FEDA algorithm executer extends metrics fields read from the execution
         """
@@ -56,5 +68,19 @@ class FEDAExecuter(AbstractExecuter):
 
         self.metrics_dictionary['NumGenerations'][repetition] = numGenerations
         self.metrics_dictionary['NumEvaluations'][repetition] = numEvaluations
+=======
+    def get_metrics_fields(self, result: Dict[str, Any]) -> List[str]:
+        """FEDA algorithm executer extends metrics fields read from the execution
+        """
+        metrics_fields: List[str] = super().get_metrics_fields(result)
+
+        numGenerations = str(
+            result["numGenerations"]) if "numGenerations" in result else 'NaN'
+        numEvaluations = str(
+            result["numEvaluations"]) if "numEvaluations" in result else 'NaN'
+
+        metrics_fields.append(str(numGenerations))
+        metrics_fields.append(str(numEvaluations))
+>>>>>>> bd41d390 (first version of FEDA (Fixed-structure EDA) finished)
 
         return metrics_fields

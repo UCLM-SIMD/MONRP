@@ -53,7 +53,11 @@ class EDAAlgorithm(AbstractAlgorithm):
         return population
 
     def select_individuals(self, population: List[Solution]) -> List[Solution]:
+<<<<<<< HEAD
         individuals = None
+=======
+
+>>>>>>> bd41d390 (first version of FEDA (Fixed-structure EDA) finished)
         if self.selection_scheme == "nds":
             # TODO
             # if len(self.nds) > 0:

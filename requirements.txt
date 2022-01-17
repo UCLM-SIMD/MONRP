@@ -16,7 +16,12 @@ imageio~=2.13.5
 pymoo
 =======
 
+<<<<<<< HEAD
 dask~=2021.4.1
 numpy~=1.20.1
 pandas~=1.2.2
 >>>>>>> a7741b90 (GRASP y clases necesarias creado hasta la fase de construcción inicial de soluciones)
+=======
+
+imageio~=2.13.5
+>>>>>>> bd41d390 (first version of FEDA (Fixed-structure EDA) finished)
