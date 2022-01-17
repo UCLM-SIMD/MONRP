@@ -83,28 +83,16 @@ class PBILAlgorithm(EDAAlgorithm):
                     1-self.mutation_shift) + (np.random.randint(2))*self.mutation_shift
         return probability_vector
 
-    def sample_new_population(self, probability_vector: np.ndarray) -> List[Solution]:
-        """Samples new population using the probability vector given
+    def sample_new_population(self, probability_model: List[float]) -> List[Solution]:
+        """Given a probability vector, samples a new population depending on the scheme selected.
         """
-        new_population = []
-        for _ in np.arange(self.population_length):
-            sample = self.generate_sample_from_probabilities(
-                probability_vector)
-            new_population.append(sample)
-        return new_population
-
-    def generate_sample_from_probabilities(self, probabilities: np.ndarray) -> Solution:
-        """Aux method to construct a sample using the probability vector.
-        """
-        sample_selected = np.random.binomial(1, probabilities)
-        sample = Solution(self.dataset, None, selected=sample_selected)
-        return sample
+        population = self.replace_population_from_probabilities(
+            probability_model)
+        return population
 
     def run(self) -> Dict[str, Any]:
         start = time.time()
         self.reset()
-
-        paretos = []
 
         self.probability_vector = self.initialize_probability_vector()
 
@@ -133,7 +121,7 @@ class PBILAlgorithm(EDAAlgorithm):
                 self.num_generations += 1
 
                 if self.debug_mode:
-                    paretos.append(self.nds)
+                    self.debug_data()
 
         except EvaluationLimit:
             pass
@@ -147,5 +135,6 @@ class PBILAlgorithm(EDAAlgorithm):
                 "numGenerations": self.num_generations,
                 "best_individual": self.best_individual,
                 "numEvaluations": self.num_evaluations,
-                "paretos": paretos
+                "nds_debug": self.nds_debug,
+                "population_debug": self.population_debug
                 }

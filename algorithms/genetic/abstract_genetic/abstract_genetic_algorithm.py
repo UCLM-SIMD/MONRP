@@ -57,6 +57,7 @@ class AbstractGeneticAlgorithm(AbstractAlgorithm):
             return num_evaluations >= self.max_evaluations
 
     def reset(self) -> None:
+        super().reset()
         self.best_generation_avgValue = 0
         self.best_generation = 0
         self.num_evaluations = 0

@@ -189,11 +189,15 @@ class MIMICAlgorithm(EDAAlgorithm):
 
     def run(self) -> Dict[str, Any]:
         self.reset()
-        paretos = []
         start = time.time()
 
         self.population = self.generate_initial_population()
         self.evaluate(self.population, self.best_individual)
+        get_nondominated_solutions(self.population, self.nds)
+
+        if self.debug_mode:
+            self.debug_data()
+
         try:
             while (not self.stop_criterion(self.num_generations, self.num_evaluations)):
                 # selection
@@ -221,7 +225,7 @@ class MIMICAlgorithm(EDAAlgorithm):
                 self.num_generations += 1
 
                 if self.debug_mode:
-                    paretos.append(self.nds)
+                    self.debug_data()
 
         except EvaluationLimit:
             pass
@@ -235,5 +239,6 @@ class MIMICAlgorithm(EDAAlgorithm):
                 "numGenerations": self.num_generations,
                 "best_individual": self.best_individual,
                 "numEvaluations": self.num_evaluations,
-                "paretos": paretos
+                "nds_debug": self.nds_debug,
+                "population_debug": self.population_debug
                 }

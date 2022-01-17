@@ -51,13 +51,13 @@ while IFS= read -r line; do
 done <$PWD/"$FILE"
 
 JOBS=${#CONFIGURATIONS[@]}
-
-echo "------Executing mode: <$1> for algorithm: <$2>------"
+echo "=========================================================================================="
+echo "Executing mode: ${1^^} for algorithm: ${2^^}"
 echo "Reading algorithm configuration from: $PWD/$FILE"
 echo "Job array name: $NAME"
 echo "Jobs created: $JOBS"
 echo "Job array ID:"
-
+echo "=========================================================================================="
 qsub -J 1-"$JOBS" \
    -N "$NAME" \
    -e "$PWD"/errors/ \

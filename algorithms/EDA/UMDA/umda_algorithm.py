@@ -31,8 +31,8 @@ class UMDAAlgorithm(EDAAlgorithm):
                           f"{str(replacement_scheme)}.txt")
 
     def get_name(self) -> str:
-        return (f"UMDA{str(self.population_length)}+{str(self.max_generations)}+"
-                f"{str(self.max_evaluations)}")
+        return (f"UMDA{str(self.population_length)}+{str(self.max_generations)}+{str(self.max_evaluations)}+"
+                f"{str(self.selected_individuals)}+{str(self.selection_scheme)}+{str(self.replacement_scheme)}")
 
     def learn_probability_model(self, population: List[Solution]) -> List[float]:
         """Learns probability from a set of solutions, returning an array of probabilities for each gene to be 1.
@@ -50,52 +50,6 @@ class UMDAAlgorithm(EDAAlgorithm):
 
         return probability_model
 
-    def generate_sample_from_probabilities_binomial(self, probabilities: List[float]) -> Solution:
-        """Generates a sample given the probability vector, using numpy binomial method.
-        """
-        sample_selected = np.random.binomial(1, probabilities)
-        sample = Solution(self.dataset, None, selected=sample_selected)
-        return sample
-
-
-
-    def generate_sample_from_probabilities(self, probabilities: List[float]) -> Solution:
-        """Generates a sample given the probability vector, using scaled probabilities
-        """
-        probs = [prob * 10 for prob in probabilities]
-        sum_probs = np.sum(probs)
-        scaled_probs = probs / sum_probs
-        sample = Solution(self.dataset, scaled_probs)
-        return sample
-
-    def replace_population_from_probabilities_elitism(self, probability_model: List[float], population: List[Solution]) -> List[Solution]:
-        new_population = []
-        # elitist R-1 inds
-        for _ in np.arange(self.population_length-1):
-            new_individual = self.generate_sample_from_probabilities_binomial(
-                probability_model)
-            # new_individual = self.generate_sample_from_probabilities(
-            #    probability_model)
-            new_population.append(new_individual)
-
-        # elitism -> add best individual from old population
-        population.sort(
-            key=lambda x: x.compute_mono_objective_score(), reverse=True)
-        new_population.append(population[0])
-
-        return new_population
-
-    def replace_population_from_probabilities(self, probability_model: List[float]) -> List[Solution]:
-        new_population = []
-        for _ in np.arange(self.population_length):
-            new_individual = self.generate_sample_from_probabilities_binomial(
-                probability_model)
-            # new_individual = self.generate_sample_from_probabilities(
-            #    probability_model)
-            new_population.append(new_individual)
-
-        return new_population
-
     def sample_new_population(self, probability_model: List[float]) -> List[Solution]:
         """Given a probability vector, samples a new population depending on the scheme selected.
         """
@@ -109,24 +63,28 @@ class UMDAAlgorithm(EDAAlgorithm):
 
     def run(self) -> Dict[str, Any]:
         self.reset()
-        paretos = []
         start = time.time()
 
         self.population = self.generate_initial_population()
         self.evaluate(self.population, self.best_individual)
+        get_nondominated_solutions(self.population, self.nds)
+
+        if self.debug_mode:
+            self.debug_data()
 
         try:
             while (not self.stop_criterion(self.num_generations, self.num_evaluations)):
                 # selection
+                # TODO individuals = self.select_individuals(self.population+old_pop)
                 individuals = self.select_individuals(self.population)
 
                 # learning
                 probability_model = self.learn_probability_model(
                     individuals)
+                # old_pop = self.population.copy()
 
                 # replacement
                 self.population = self.sample_new_population(probability_model)
-
                 # repair population if dependencies tackled:
                 if(self.tackle_dependencies):
                     self.population = self.repair_population_dependencies(
@@ -141,7 +99,7 @@ class UMDAAlgorithm(EDAAlgorithm):
                 self.num_generations += 1
 
                 if self.debug_mode:
-                    paretos.append(self.nds)
+                    self.debug_data()
 
         except EvaluationLimit:
             pass
@@ -155,5 +113,6 @@ class UMDAAlgorithm(EDAAlgorithm):
                 "numGenerations": self.num_generations,
                 "best_individual": self.best_individual,
                 "numEvaluations": self.num_evaluations,
-                "paretos": paretos
+                "nds_debug": self.nds_debug,
+                "population_debug": self.population_debug
                 }

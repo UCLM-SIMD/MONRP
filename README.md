@@ -222,3 +222,20 @@ The steps to add new unit tests are the following:
    suite.addTests(loader.loadTestsFromModule(SpecificAlgorithmTestCase))
    ...
    ```
+
+
+---
+
+# Experiments
+
+First, arrays of hyperparameter configurations have to be defined in ```galgo/<algorithm...>/configurations_<algorithm>.py```
+
+Then, use script ```galgo_monrp.sh``` to launch the experiments. It can generate metrics of the execution or a pareto for each configuration. Execution examples are the following: 
+
+```> sh galgo_monrp.sh metrics grasp```
+
+```> sh galgo_monrp.sh pareto umda```
+
+Pareto execution will generate one file for each configuration, containing one row of X-Y values for each solution found in the pareto.
+
+Metrics execution will calculate metrics of 10 consecutive executions for each configuration, storing each configuration in a file. For grouping of these metrics, ```galgo/galgo_file_merger.py``` can be used. Running ```galgo_file_merger.py -a <algorithm>``` will generate a new output file with the column names of the metrics and will include all outputs of the given algorithm.

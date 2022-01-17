@@ -25,7 +25,7 @@ def random_dataset_generator(num_pbis: int = None, num_stakeholders: int = None,
     # default parameters:
     num_pbis = default_num_pbis if num_pbis is None else num_pbis
     num_stakeholders = default_num_stakeholders if num_stakeholders is None else num_stakeholders
-    num_dependencies = default_num_stakeholders if num_dependencies is None else num_dependencies
+    num_dependencies = default_num_dependencies if num_dependencies is None else num_dependencies
 
     if num_pbis <= 0 or num_stakeholders <= 0 or num_dependencies <= 0:
         raise Exception(
