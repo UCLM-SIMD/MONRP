@@ -3,7 +3,7 @@ from algorithms.EDA.eda_algorithm import EDAAlgorithm
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
 from evaluation.get_nondominated_solutions import get_nondominated_solutions
 from models.Solution import Solution
-from algorithms.EDA.UMDA.umda_executer import UMDAExecuter
+from algorithms.EDA.FEDA.feda_executer import FEDAExecuter
 from collections import defaultdict
 
 import time
@@ -54,7 +54,7 @@ class FEDAAlgorithm(EDAAlgorithm):
 
         self.population = None
         self.selection_scheme: str = selection_scheme
-        # self.executer = UMDAExecuter(algorithm=self)
+        self.executer = FEDAExecuter(algorithm=self)
 
         self.file: str = (
             f"{str(self.__class__.__name__)}-{str(dataset_name)}-{str(random_seed)}-{str(population_length)}-"
@@ -176,7 +176,7 @@ class FEDAAlgorithm(EDAAlgorithm):
                     probs[x] = np.sum(subset[:, x]) / len(subset)  # if len>0 (individuals with all parents(X)=0)
                     # overwrite P(X)
                 # else: probs[x] = 0 TODO That is, do not sample X if there is no individual where all parents(X)==0
-                
+
         return probs
 
     '''
