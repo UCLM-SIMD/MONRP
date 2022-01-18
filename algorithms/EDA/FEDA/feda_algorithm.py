@@ -13,10 +13,14 @@ from collections import defaultdict
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
 from evaluation.get_nondominated_solutions import get_nondominated_solutions
 from models.Solution import Solution
+<<<<<<< HEAD
 from algorithms.EDA.UMDA.umda_executer import UMDAExecuter
 <<<<<<< HEAD
 >>>>>>> 1e9aefc3 (Simple inititation of FEDA object, and comment added to explain the algorithm.)
 =======
+=======
+from algorithms.EDA.FEDA.feda_executer import FEDAExecuter
+>>>>>>> f81e7f43 (unused import solved - replaced by feda executer)
 from collections import defaultdict
 >>>>>>> 0a234eb2 (population is initiated, creating each individual following a topological order.)
 
@@ -165,7 +169,7 @@ class FEDAAlgorithm(EDAAlgorithm):
 
         self.population = None
         self.selection_scheme: str = selection_scheme
-        # self.executer = UMDAExecuter(algorithm=self)
+        self.executer = FEDAExecuter(algorithm=self)
 
         self.file: str = (
             f"{str(self.__class__.__name__)}-{str(dataset_name)}-{str(random_seed)}-{str(population_length)}-"
@@ -569,7 +573,7 @@ if __name__ == "__main__":
                     probs[x] = np.sum(subset[:, x]) / len(subset)  # if len>0 (individuals with all parents(X)=0)
                     # overwrite P(X)
                 # else: probs[x] = 0 TODO That is, do not sample X if there is no individual where all parents(X)==0
-                
+
         return probs
 
     '''
