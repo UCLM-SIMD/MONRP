@@ -172,7 +172,8 @@ class GRASP(AbstractAlgorithm):
             # avoid solution with 0 cost due to 0 candidates selected
             if np.count_nonzero(sol.selected) > 0:
                 solutions.append(sol)
-                i -= 1  # TODO ESTO NO DEBERIA SER EN EL ELSE? #@pablo CREO QUE SÍ, y que esto está mal!, no entiendo que no falle
+            else:
+                i -= 1
         return solutions
 
     def init_solutions_uniform(self) -> List[Solution]:
@@ -190,6 +191,7 @@ class GRASP(AbstractAlgorithm):
             # avoid solution with 0 cost due to 0 candidates selected
             if np.count_nonzero(sol.selected) > 0:
                 solutions.append(sol)
+            else:
                 i -= 1
         return solutions
 
