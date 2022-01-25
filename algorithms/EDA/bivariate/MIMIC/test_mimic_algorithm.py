@@ -26,7 +26,7 @@ class MIMICTestCase(unittest.TestCase):
 
         expected_num_generations = 5
         expected_num_evaluations = 30
-        expected_pop_size = 4
+        expected_pop_size = 5
 
         actual_population = result["population"]
         actual_num_generations = result["numGenerations"]
@@ -37,13 +37,12 @@ class MIMICTestCase(unittest.TestCase):
         self.assertEqual(actual_num_evaluations, expected_num_evaluations)
         self.assertEqual(actual_pop_size, expected_pop_size)
 
-        expected_genes = [[0,1,1,0,1], [0,0,0,0,0],
-                              [0,1,0,0,1], [0,0,0,0,1]]
+        expected_genes = [[1, 1, 1, 0, 1], [0, 0, 0, 0, 0],
+                          [0, 1, 1, 0, 1], [0, 1, 0, 0, 1], [0, 0, 0, 0, 1]]
         for i in range(expected_pop_size):
             with self.subTest(i=i):
                 self.assertIsNone(np.testing.assert_array_equal(
                     expected_genes[i], actual_population[i].selected))
-                    
 
     def test_learn_marginals(self):
         """  

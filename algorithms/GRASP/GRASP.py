@@ -111,7 +111,6 @@ class GRASP(AbstractAlgorithm):
 
         """
         self.reset()
-        paretos = []
         self.start = time.time()
 
         self.num_iterations = 0
