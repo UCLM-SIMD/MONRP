@@ -50,12 +50,12 @@ class Dataset:
             # use filename as dataset id
             self.id = Path(source_file).stem
 
-            self.pbis_cost = np.array(json_data["costs"]).astype(int)
+            self.pbis_cost = np.array(json_data["pbis_cost"]).astype(int)
             self.num_pbis = len(self.pbis_cost)
             self.stakeholders_importances = np.array(
-                json_data["importances"]).astype(int)
+                json_data["stakeholders_importances"]).astype(int)
             self.stakeholders_pbis_priorities = np.array(
-                json_data["priorities"]).astype(int)
+                json_data["stakeholders_pbis_priorities"]).astype(int)
             if json_data["dependencies"]:
                 self.dependencies = np.array(
                     json_data["dependencies"], dtype=object)

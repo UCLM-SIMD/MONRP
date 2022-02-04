@@ -1,60 +1,48 @@
+from typing import List
+
+from black import out
 from datasets.Dataset import Dataset
 import numpy as np
 import json
 import math
 
 
-def random_dataset_generator(num_pbis: int = None, num_stakeholders: int = None, num_dependencies: int = None,
-                             output_file: str = "datasets/random.json", scale: str = "s1") -> Dataset:
-    # scales:
-    if scale == "s1":
-        default_num_pbis = 40
-        default_num_stakeholders = 15
-    elif scale == "s2":
-        default_num_pbis = 80
-        default_num_stakeholders = 50
-    elif scale == "s3":
-        default_num_pbis = 140
-        default_num_stakeholders = 100
-    else:
-        raise Exception("Scale does not exist")
+def random_dataset_generator(num_pbis: int = 20, num_stakeholders: int = 5, percentage_dependencies: float = 0.45,
+                             range_pbi_costs: List[int] = None, range_stakeholder_importances: List[int] = None,
+                             range_stakeholder_pbis_priorities: List[int] = None, name: str = "random") -> Dataset:
 
-    # define default num of dependencies if not given -> ~45%
-    default_num_dependencies = math.floor(default_num_pbis*0.45)
+    # default values for lists
+    default_range_pbi_costs = [1, 1, 2, 3, 5, 8, 13, 21, 34]
+    default_range_stakeholder_importances = [1, 2, 3, 4, 5]
+    default_range_stakeholder_pbis_priorities = [1, 2, 3, 4, 5]
 
-    # default parameters:
-    num_pbis = default_num_pbis if num_pbis is None else num_pbis
-    num_stakeholders = default_num_stakeholders if num_stakeholders is None else num_stakeholders
-    num_dependencies = default_num_dependencies if num_dependencies is None else num_dependencies
+    # override values:
+    range_pbi_costs = default_range_pbi_costs if range_pbi_costs is None else range_pbi_costs
+    range_stakeholder_importances = default_range_stakeholder_importances if range_stakeholder_importances is None else range_stakeholder_importances
+    range_stakeholder_pbis_priorities = default_range_stakeholder_pbis_priorities if range_stakeholder_pbis_priorities is None else range_stakeholder_pbis_priorities
 
-    if num_pbis <= 0 or num_stakeholders <= 0 or num_dependencies <= 0:
+    if num_pbis <= 0 or num_stakeholders <= 0 or percentage_dependencies < 0:
         raise Exception(
             "Parameters num_pbis, num_stakeholders, num_dependencies must be positive integers")
 
-    # default ranges:
-    min_pbi_cost = 1
-    max_pbi_cost = 40
-
-    min_stakeholder_importance = 1
-    max_stakeholder_importance = 5
-
-    min_stakeholder_priorities = 1
-    max_stakeholder_priorities = 5
+    output_file: str = f"datasets/{name}.json"
 
     # generate random pbi costs array
-    pbi_costs = np.random.randint(
-        min_pbi_cost, (max_pbi_cost+1), size=num_pbis)
+    pbi_costs = np.random.choice(range_pbi_costs, size=num_pbis)
 
     # generate random stakeholder importances array
-    stakeholder_importances = np.random.randint(
-        min_stakeholder_importance, (max_stakeholder_importance+1), size=num_stakeholders)
+    stakeholder_importances = np.random.choice(
+        range_stakeholder_importances, size=num_stakeholders)
 
     # generate random array of priorities for all pbis for each stakeholder
-    stakeholder_priorities = []
+    stakeholder_pbis_priorities = []
     for _ in range(num_stakeholders):
-        priorities = np.random.randint(
-            min_stakeholder_priorities, (max_stakeholder_priorities+1), size=num_pbis)
-        stakeholder_priorities.append(priorities.tolist())
+        priorities = np.random.choice(
+            range_stakeholder_pbis_priorities, size=num_pbis)
+        stakeholder_pbis_priorities.append(priorities.tolist())
+
+    # calculate amount of dependencies given the num of pbis
+    num_dependencies = math.floor(num_pbis*percentage_dependencies)
 
     # generate valid dependencies until max and store them in a dict
     done_dependencies = {}
@@ -80,10 +68,14 @@ def random_dataset_generator(num_pbis: int = None, num_stakeholders: int = None,
 
     # return format
     json_data = {
-        "costs": pbi_costs.tolist(),
-        "importances": stakeholder_importances.tolist(),
-        "priorities": stakeholder_priorities,
+        "pbis_cost": pbi_costs.tolist(),
+        "stakeholders_importances": stakeholder_importances.tolist(),
+        "stakeholders_pbis_priorities": stakeholder_pbis_priorities,
         "dependencies": pbi_dependencies.tolist(),
+        "_len_pbis_cost": len(pbi_costs),
+        "_len_stakeholders_importances": len(stakeholder_importances),
+        "_len_stakeholders_pbis_priorities": len(stakeholder_pbis_priorities),
+        "_len_dependencies": len([x for x in pbi_dependencies if x is not None])
     }
 
     # store data in json file
