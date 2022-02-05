@@ -26,9 +26,11 @@ class UMDAAlgorithm(EDAAlgorithm):
         self.selection_scheme: str = selection_scheme
         self.replacement_scheme: str = replacement_scheme
 
-        self.file: str = (f"{str(self.__class__.__name__)}-{str(dataset_name)}-{str(random_seed)}-{str(population_length)}-"
-                          f"{str(max_generations)}-{str(max_evaluations)}-{str(selected_individuals)}-{str(selection_scheme)}-"
-                          f"{str(replacement_scheme)}.txt")
+    def get_file(self) -> str:
+        return (f"{str(self.__class__.__name__)}-{str(self.dataset_name)}-"
+                f"{self.dependencies_to_string()}-{str(self.random_seed)}-{str(self.population_length)}-"
+                f"{str(self.max_generations)}-{str(self.max_evaluations)}-{str(self.selected_individuals)}-{str(self.selection_scheme)}-"
+                f"{str(self.replacement_scheme)}.txt")
 
     def get_name(self) -> str:
         return (f"UMDA{str(self.population_length)}+{str(self.max_generations)}+{str(self.max_evaluations)}+"
@@ -38,7 +40,7 @@ class UMDAAlgorithm(EDAAlgorithm):
         return df[(df["Population Length"] == self.population_length) & (df["MaxGenerations"] == self.max_generations)
                   & (df["Selection Scheme"] == self.selection_scheme) & (df["Selected Individuals"] == self.selected_individuals)
                   & (df["Algorithm"] == self.__class__.__name__) & (df["Replacement Scheme"] == self.replacement_scheme)
-                  & (df["Dataset"] == self.dataset_name)
+                  & (df["Dataset"] == self.dataset_name) & (df["MaxEvaluations"] == self.max_evaluations)
                   ]
 
     def learn_probability_model(self, population: List[Solution]) -> List[float]:

@@ -29,6 +29,8 @@ class GRASP(AbstractAlgorithm):
 
         super().__init__(dataset, seed, debug_mode, tackle_dependencies)
 
+        self.executer = GRASPExecuter(algorithm=self)
+
         self.iterations: int = iterations
         self.solutions_per_iteration: int = solutions_per_iteration
         self.max_evaluations: int = max_evaluations
@@ -60,11 +62,12 @@ class GRASP(AbstractAlgorithm):
         elif self.local_search_type == "None":
             self.local_search = "None"
 
-        self.executer = GRASPExecuter(algorithm=self)
-        self.file: str = (f"{str(self.__class__.__name__)}-{str(dataset)}-{str(seed)}-{str(iterations)}-"
-                          f"{str(solutions_per_iteration)}-{str(init_type)}-"
-                          # -{str(max_evaluations)}
-                          f"{local_search_type}-{str(path_relinking_mode)}.txt")
+    def get_file(self) -> str:
+        return (f"{str(self.__class__.__name__)}-{str(self.dataset_name)}-"
+                f"{self.dependencies_to_string()}-{str(self.random_seed)}-"
+                f"{str(self.iterations)}-{str(self.max_evaluations)}-"
+                f"{str(self.solutions_per_iteration)}-{str(self.init_type)}-"
+                f"{self.local_search_type}-{str(self.path_relinking_mode)}.txt")
 
     def get_name(self) -> str:
         init = "stochastic" if self.init_type == "stochastically" else self.init_type
@@ -78,7 +81,7 @@ class GRASP(AbstractAlgorithm):
         return df[(df["Iterations"] == self.iterations) & (df["Solutions per Iteration"] == self.solutions_per_iteration)
                   & (df["Initialization Type"] == self.init_type) & (df["Local Search Type"] == self.local_search_type)
                   & (df["Path Relinking"] == self.path_relinking_mode) & (df["Algorithm"] == self.__class__.__name__)
-                  & (df["Dataset"] == self.dataset_name)
+                  & (df["Dataset"] == self.dataset_name) & (df["MaxEvaluations"] == self.max_evaluations)
                   ]
 
     def reset(self) -> None:

@@ -1,7 +1,5 @@
 import random
 from typing import List
-
-from black import out
 from datasets.Dataset import Dataset
 import numpy as np
 import json
@@ -34,7 +32,7 @@ def random_dataset_generator(num_pbis: int = 20, num_stakeholders: int = 5, perc
 
     # if given the total sum cost of all pbis->generate randomly the costs using aux function
     if total_pbi_costs is not None:
-        pbi_costs = constrained_sum_sample_pos(num_pbis, total_pbi_costs)
+        pbi_costs = _constrained_sum_sample_pos(num_pbis, total_pbi_costs)
     else:  # generate random pbi costs array
         pbi_costs = np.random.choice(range_pbi_costs, size=num_pbis)
 
@@ -95,7 +93,7 @@ def random_dataset_generator(num_pbis: int = 20, num_stakeholders: int = 5, perc
     return dataset
 
 
-def constrained_sum_sample_pos(num_pbis: int, total_sum_costs: int) -> np.ndarray:
+def _constrained_sum_sample_pos(num_pbis: int, total_sum_costs: int) -> np.ndarray:
     """Return a randomly chosen list of n positive integers summing to total.
     Each such list is equally likely to occur."""
 

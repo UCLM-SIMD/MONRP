@@ -43,12 +43,14 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
         elif replacement == "elitismnds":
             self.replacement = self.replacement_elitism
 
-        self.file: str = (f"{str(self.__class__.__name__)}-{str(dataset_name)}-{str(random_seed)}-{str(population_length)}-"
-                          f"{str(max_generations)}-"
-                          # -{str(max_evaluations)}
-                          f"{str(selection)}-{str(selection_candidates)}-"
-                          f"{str(crossover)}-{str(crossover_prob)}-{str(mutation)}-"
-                          f"{str(mutation_prob)}-{str(replacement)}.txt")
+
+    def get_file(self) -> str:
+        return (f"{str(self.__class__.__name__)}-{str(self.dataset_name)}-"
+                f"{self.dependencies_to_string()}-{str(self.random_seed)}-{str(self.population_length)}-"
+                f"{str(self.max_generations)}-{str(self.max_evaluations)}-"
+                f"{str(self.selection_scheme)}-{str(self.selection_candidates)}-"
+                f"{str(self.crossover_scheme)}-{str(self.crossover_prob)}-{str(self.mutation_scheme)}-"
+                f"{str(self.mutation_prob)}-{str(self.replacement_scheme)}.txt")
 
     def get_name(self) -> str:
         return f"GeneticNDS{str(self.population_length)}+{str(self.max_generations)}+{str(self.max_evaluations)}+{str(self.crossover_prob)}\

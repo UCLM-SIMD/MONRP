@@ -1,6 +1,10 @@
 import os
 import sys
 import argparse
+from algorithms.EDA.FEDA.feda_algorithm import FEDAAlgorithm
+from algorithms.EDA.FEDA.feda_executer import FEDAExecuter
+from algorithms.EDA.bivariate.MIMIC.mimic_algorithm import MIMICAlgorithm
+from algorithms.EDA.bivariate.MIMIC.mimic_executer import MIMICExecuter
 sys.path.append(os.getcwd()) 
 from algorithms.EDA.PBIL.pbil_executer import PBILExecuter
 from algorithms.EDA.PBIL.pbil_algorithm import PBILAlgorithm
@@ -39,6 +43,12 @@ elif alg=="genetic":
         f'{out_dir}/{out_file}')
 elif alg=="grasp":
     GRASPExecuter(GRASP).initialize_file(
+        f'{out_dir}/{out_file}')
+elif alg=="mimic":
+    MIMICExecuter(MIMICAlgorithm).initialize_file(
+        f'{out_dir}/{out_file}')
+elif alg=="feda":
+    FEDAExecuter(FEDAAlgorithm).initialize_file(
         f'{out_dir}/{out_file}')
 else:
     raise Exception("Error, algorithm not found")

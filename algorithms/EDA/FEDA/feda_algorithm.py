@@ -46,7 +46,7 @@ class FEDAAlgorithm(EDAAlgorithm):
 
     def __init__(self, dataset_name: str = "2", random_seed: int = None, debug_mode: bool = False,
                  tackle_dependencies: bool = False,
-                 population_length: int = 100, selection_scheme: str = "nds", max_generations: int = 100,
+                 population_length: int = 100, selection_scheme: str = "nds", selected_individuals: int = 60, max_generations: int = 100,
                  max_evaluations: int = 0):
 
         super().__init__(dataset_name, random_seed, debug_mode, tackle_dependencies,
@@ -54,22 +54,33 @@ class FEDAAlgorithm(EDAAlgorithm):
 
         self.population = None
         self.selection_scheme: str = selection_scheme
+        self.selected_individuals: int = selected_individuals
         self.executer = FEDAExecuter(algorithm=self)
-
-        self.file: str = (
-            f"{str(self.__class__.__name__)}-{str(dataset_name)}-{str(random_seed)}-{str(population_length)}-"
-            f"{str(max_generations)}-{str(max_evaluations)}.txt")
 
         self.probs = np.full(self.dataset.num_pbis, 0)
 
-        self.graph = defaultdict(list)  # self.graph[p]  returns list of children(p), if any.
+        # self.graph[p]  returns list of children(p), if any.
+        self.graph = defaultdict(list)
         self.parents_of = defaultdict(list)
         self.topological_order = self.compute_topological_order()
         self.orphans = self.find_orphans()
 
+    def get_file(self) -> str:
+        return (f"{str(self.__class__.__name__)}-{str(self.dataset_name)}-"
+                f"{self.dependencies_to_string()}-{str(self.random_seed)}-{str(self.population_length)}-"
+                f"{str(self.max_generations)}-{str(self.max_evaluations)}-{str(self.selected_individuals)}-"
+                f"{str(self.selection_scheme)}.txt")
+
     def get_name(self) -> str:
         return (f"FEDA{str(self.population_length)}+{str(self.max_generations)}+"
                 f"{str(self.max_evaluations)}")
+
+    def df_find_data(self, df: any):
+        return df[(df["Population Length"] == self.population_length) & (df["MaxGenerations"] == self.max_generations)
+                  & (df["Selection Scheme"] == self.selection_scheme) & (df["Selected Individuals"] == self.selected_individuals)
+                  & (df["Algorithm"] == self.__class__.__name__)
+                  & (df["Dataset"] == self.dataset_name) & (df["MaxEvaluations"] == self.max_evaluations)
+                  ]
 
     def run(self) -> Dict[str, Any]:
         self.reset()
@@ -170,10 +181,13 @@ class FEDAAlgorithm(EDAAlgorithm):
             parents_x = self.parents_of[x]
             if len(parents_x) != 0:  # for each X with parents,
                 subset = np_vectors
-                for y in parents_x:  # iteratively obtain individuals subset where all parents(X)==0
+                # iteratively obtain individuals subset where all parents(X)==0
+                for y in parents_x:
                     subset = subset[subset[:, y] == 0]
-                if len(subset) != 0:  # if len==0 (no individuals where all parents(X)=0) this lets marginal P(X) remain
-                    probs[x] = np.sum(subset[:, x]) / len(subset)  # if len>0 (individuals with all parents(X)=0)
+                # if len==0 (no individuals where all parents(X)=0) this lets marginal P(X) remain
+                if len(subset) != 0:
+                    # if len>0 (individuals with all parents(X)=0)
+                    probs[x] = np.sum(subset[:, x]) / len(subset)
                     # overwrite P(X)
                 # else: probs[x] = 0 TODO That is, do not sample X if there is no individual where all parents(X)==0
 
@@ -187,12 +201,14 @@ class FEDAAlgorithm(EDAAlgorithm):
 
     def sample_new_population(self, probs) -> List[Solution]:
         # init whole np 2d array with empty individuals
-        population = np.zeros(shape=(self.population_length, self.dataset.num_pbis))
+        population = np.zeros(
+            shape=(self.population_length, self.dataset.num_pbis))
 
         # sample following topological order
         for x in self.topological_order:
             if x in self.orphans:  # create values for each orphan in all individuals at once
-                x_values_in_pop = np.random.binomial(n=1, p=probs[x], size=self.population_length)
+                x_values_in_pop = np.random.binomial(
+                    n=1, p=probs[x], size=self.population_length)
                 population[:, x] = x_values_in_pop
             else:  # create values for each x, in all individuals one by one
                 parents_x = self.parents_of[x]
@@ -203,12 +219,14 @@ class FEDAAlgorithm(EDAAlgorithm):
                     if parent_is_set:
                         population[n, x] = 1  # then set X to 1
                     else:
-                        population[n, x] = np.random.binomial(n=1, p=probs[x], size=1)  # else use P(X|parents(X)==0)
+                        population[n, x] = np.random.binomial(
+                            n=1, p=probs[x], size=1)  # else use P(X|parents(X)==0)
 
         #  convert population into List of Solution
         new_population = []
         for individual in population:
-            new_population.append(Solution(self.dataset, None, selected=individual))
+            new_population.append(
+                Solution(self.dataset, None, selected=individual))
 
         return new_population
 

@@ -26,8 +26,11 @@ class PBILAlgorithm(EDAAlgorithm):
         self.mutation_prob: float = mutation_prob
         self.mutation_shift: float = mutation_shift
 
-        self.file: str = (f"{str(self.__class__.__name__)}-{str(dataset_name)}-{str(random_seed)}-{str(population_length)}-"
-                          f"{str(max_generations)}-{str(max_evaluations)}-{str(learning_rate)}-{str(mutation_prob)}-{str(mutation_shift)}.txt")
+    def get_file(self) -> str:
+        return (f"{str(self.__class__.__name__)}-{str(self.dataset_name)}-"
+                f"{self.dependencies_to_string()}-{str(self.random_seed)}-{str(self.population_length)}-"
+                f"{str(self.max_generations)}-{str(self.max_evaluations)}-{str(self.learning_rate)}-"
+                f"{str(self.mutation_prob)}-{str(self.mutation_shift)}.txt")
 
     def get_name(self) -> str:
         return (f"PBIL+{self.population_length}+{self.max_generations}+{self.max_evaluations}+"
@@ -37,17 +40,17 @@ class PBILAlgorithm(EDAAlgorithm):
         return df[(df["Population Length"] == self.population_length) & (df["MaxGenerations"] == self.max_generations)
                   & (df["Learning Rate"] == self.learning_rate) & (df["Mutation Probability"] == self.mutation_prob)
                   & (df["Algorithm"] == self.__class__.__name__) & (df["Mutation Shift"] == self.mutation_shift)
-                  & (df["Dataset"] == self.dataset_name)
+                  & (df["Dataset"] == self.dataset_name) & (df["MaxEvaluations"] == self.max_evaluations)
                   ]
 
     def initialize_probability_vector(self) -> np.ndarray:
         probabilities = np.full(self.dataset.pbis_score.size, 0.5)
-        #probabilities = np.full(self.dataset.pbis_score.size, 1/self.dataset.pbis_score.size)
+        # probabilities = np.full(self.dataset.pbis_score.size, 1/self.dataset.pbis_score.size)
 
         return probabilities
 
     def select_individuals(self, population: List[Solution]) -> Solution:
-        """Select best individual TODO choose the method used (mo or nds) depending on config 
+        """Select best individual TODO choose the method used (mo or nds) depending on config
         """
         max_sample = self.find_max_sample_nds(
             population, self.nds)
@@ -72,7 +75,7 @@ class PBILAlgorithm(EDAAlgorithm):
 
     def find_max_sample_pop(self, population: List[Solution]) -> Solution:
         nds_pop = get_nondominated_solutions(population, [])
-        #nds_pop = population
+        # nds_pop = population
         random_index = np.random.randint(len(nds_pop))
         return nds_pop[random_index]
 

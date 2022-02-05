@@ -19,22 +19,22 @@ class Dataset:
             self.load_from_json_file(source_file)
         else:
             self.id = dataset
-            if dataset == "test":  # 2 clientes 5 reqs 2 ints: 1-2-3-4-5; 1->2; 4->1
-                json_dataset = "test"
-            elif dataset == "1":  # 5 clientes 20 reqs 10 ints
-                json_dataset = "p1"
-            elif dataset == "2":  # 5 clientes 100 reqs 44ints
-                json_dataset = "p2"
-            elif dataset == "s1":  # 15 customers 40 reqs
-                json_dataset = "s1"
-            elif dataset == "s2":  # 50 customers 80 reqs
-                json_dataset = "s2"
-            elif dataset == "s3":  # 100 customers 140 reqs
-                json_dataset = "s3"
-            else:
-                raise Exception("Sorry, dataset with id=", id, " not found.")
+            # if dataset == "test":  # 2 clientes 5 reqs 2 ints: 1-2-3-4-5; 1->2; 4->1
+            #    json_dataset = "test"
+            # elif dataset == "1":  # 5 clientes 20 reqs 10 ints
+            #    json_dataset = "p1"
+            # elif dataset == "2":  # 5 clientes 100 reqs 44ints
+            #    json_dataset = "p2"
+            # elif dataset == "s1":  # 15 customers 40 reqs
+            #    json_dataset = "s1"
+            # elif dataset == "s2":  # 50 customers 80 reqs
+            #    json_dataset = "s2"
+            # elif dataset == "s3":  # 100 customers 140 reqs
+            #    json_dataset = "s3"
+            # else:
+            #    raise Exception("Sorry, dataset with id=", id, " not found.")
 
-            self.load_from_json_file("datasets/"+json_dataset+".json")
+            self.load_from_json_file("datasets/"+dataset+".json")
         # normalize values calculating scaled satisfactions, costs and scores
         self.normalize()
 

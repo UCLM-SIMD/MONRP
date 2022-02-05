@@ -68,6 +68,13 @@ class AbstractAlgorithm(ABC):
         plot.scatter(function2, function1, label=self.get_name())
         return function1, function2
 
+    @abstractmethod
+    def get_file(self)->str:
+        pass
+
+    def dependencies_to_string(self)->str:
+        return "deps" if self.tackle_dependencies else "no_deps"
+
     def get_name(self) -> str:
         return "Algorithm"
 

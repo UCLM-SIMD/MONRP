@@ -47,6 +47,10 @@ class AbstractGeneticAlgorithm(AbstractAlgorithm):
         pass
 
     @abstractmethod
+    def get_file(self) -> str:
+        pass
+
+    @abstractmethod
     def get_name(self) -> str:
         pass
 
@@ -56,7 +60,7 @@ class AbstractGeneticAlgorithm(AbstractAlgorithm):
                   & (df["Crossover Scheme"] == self.crossover_scheme) & (df["Crossover Probability"] == self.crossover_prob)
                   & (df["Mutation Scheme"] == self.mutation_scheme) & (df["Mutation Probability"] == self.mutation_prob)
                   & (df["Replacement Scheme"] == self.replacement_scheme) & (df["Algorithm"] == self.__class__.__name__)
-                  & (df["Dataset"] == self.dataset_name)
+                  & (df["Dataset"] == self.dataset_name) & (df["MaxEvaluations"] == self.max_evaluations)
                   ]
 
     def stop_criterion(self, num_generations, num_evaluations) -> bool:

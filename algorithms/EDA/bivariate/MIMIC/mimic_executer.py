@@ -14,8 +14,8 @@ class MIMICExecuter(AbstractExecuter):
         self.algorithm: MIMICAlgorithm
         self.algorithm_type: str = "mimic"
 
-        self.config_fields.extend(
-            ["Population Length", "MaxGenerations", "MaxEvaluations", ])
+        self.config_fields.extend(["Population Length", "MaxGenerations", "MaxEvaluations",
+                                   "Selected Individuals", "Selection Scheme", "Replacement Scheme"])
 
         self.metrics_fields.extend(
             ["NumGenerations", "NumEvaluations", ])
@@ -28,10 +28,16 @@ class MIMICExecuter(AbstractExecuter):
         population_length = self.algorithm.population_length
         max_generations = self.algorithm.max_generations
         max_evaluations = self.algorithm.max_evaluations
+        selected_individuals = self.algorithm.selected_individuals
+        selection_scheme = self.algorithm.selection_scheme
+        replacement_scheme = self.algorithm.replacement_scheme
 
         config_lines.append(str(population_length))
         config_lines.append(str(max_generations))
         config_lines.append(str(max_evaluations))
+        config_lines.append(str(selected_individuals))
+        config_lines.append(str(selection_scheme))
+        config_lines.append(str(replacement_scheme))
         return config_lines
 
     def get_metrics_fields(self, result: Dict[str, Any]) -> List[str]:
