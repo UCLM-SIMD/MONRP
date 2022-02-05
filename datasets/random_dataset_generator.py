@@ -1,3 +1,4 @@
+import random
 from typing import List
 
 from black import out
@@ -8,11 +9,12 @@ import math
 
 
 def random_dataset_generator(num_pbis: int = 20, num_stakeholders: int = 5, percentage_dependencies: float = 0.45,
-                             range_pbi_costs: List[int] = None, range_stakeholder_importances: List[int] = None,
+                             range_pbi_costs: List[int] = None, total_pbi_costs: int = None, range_stakeholder_importances: List[int] = None,
                              range_stakeholder_pbis_priorities: List[int] = None, name: str = "random") -> Dataset:
 
     # default values for lists
-    default_range_pbi_costs = [1, 1, 2, 3, 5, 8, 13, 21, 34]
+    default_range_pbi_costs = [1, 1, 2, 3, 5, 8, 13, 21, 34]  # Fibonacci
+    # 1=no importance; 5=highest importance
     default_range_stakeholder_importances = [1, 2, 3, 4, 5]
     default_range_stakeholder_pbis_priorities = [1, 2, 3, 4, 5]
 
@@ -24,11 +26,17 @@ def random_dataset_generator(num_pbis: int = 20, num_stakeholders: int = 5, perc
     if num_pbis <= 0 or num_stakeholders <= 0 or percentage_dependencies < 0:
         raise Exception(
             "Parameters num_pbis, num_stakeholders, num_dependencies must be positive integers")
+    if total_pbi_costs is not None and total_pbi_costs <= 0:
+        raise Exception(
+            "Total pbi cost must be positive")
 
     output_file: str = f"datasets/{name}.json"
 
-    # generate random pbi costs array
-    pbi_costs = np.random.choice(range_pbi_costs, size=num_pbis)
+    # if given the total sum cost of all pbis->generate randomly the costs using aux function
+    if total_pbi_costs is not None:
+        pbi_costs = constrained_sum_sample_pos(num_pbis, total_pbi_costs)
+    else:  # generate random pbi costs array
+        pbi_costs = np.random.choice(range_pbi_costs, size=num_pbis)
 
     # generate random stakeholder importances array
     stakeholder_importances = np.random.choice(
@@ -80,8 +88,16 @@ def random_dataset_generator(num_pbis: int = 20, num_stakeholders: int = 5, perc
 
     # store data in json file
     with open(output_file, "w") as json_file:
-        json.dump(json_data, json_file)
+        json.dump(json_data, json_file, indent=4)
 
     # return dataset instance
     dataset = Dataset("random", source_file=output_file)
     return dataset
+
+
+def constrained_sum_sample_pos(num_pbis: int, total_sum_costs: int) -> np.ndarray:
+    """Return a randomly chosen list of n positive integers summing to total.
+    Each such list is equally likely to occur."""
+
+    dividers = sorted(random.sample(range(1, total_sum_costs), num_pbis - 1))
+    return np.array([a - b for a, b in zip(dividers + [total_sum_costs], [0] + dividers)])
