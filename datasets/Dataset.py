@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import Dict
 import numpy as np
 import json
+import uuid
 
 
 class Dataset:
@@ -22,6 +23,7 @@ class Dataset:
                 json_data = json.load(json_file)
                 self.load_from_dict(json_data)
         elif source_dict:
+            self.id = uuid.uuid4().hex
             self.load_from_dict(source_dict)
         else:  # if not source file->search dataset json in datasets folder
             self.id = dataset
