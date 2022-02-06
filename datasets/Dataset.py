@@ -45,7 +45,7 @@ class Dataset:
             source_dict["stakeholders_importances"]).astype(int)
         self.stakeholders_pbis_priorities = np.array(
             source_dict["stakeholders_pbis_priorities"]).astype(int)
-        if source_dict["dependencies"]:
+        if "dependencies" in source_dict:
             self.dependencies = np.array(
                 source_dict["dependencies"], dtype=object)
             for x in range(len(self.dependencies)):
