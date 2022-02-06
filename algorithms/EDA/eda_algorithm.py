@@ -1,6 +1,7 @@
 # from abc import abstractmethod
 from typing import List
 import numpy as np
+from datasets import Dataset
 from models.Solution import Solution
 from algorithms.abstract_algorithm.abstract_algorithm import AbstractAlgorithm
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
@@ -11,10 +12,10 @@ class EDAAlgorithm(AbstractAlgorithm):
     """Estimation of Distribution Algorithm
     """
 
-    def __init__(self, dataset_name: str = "1", random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
+    def __init__(self, dataset_name: str = "1", dataset: Dataset = None, random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
                  population_length: int = 100, max_generations: int = 100, max_evaluations: int = 0,):
 
-        super().__init__(dataset_name, random_seed, debug_mode, tackle_dependencies)
+        super().__init__(dataset_name, dataset, random_seed, debug_mode, tackle_dependencies)
 
         self.nds = []
         self.num_evaluations: int = 0

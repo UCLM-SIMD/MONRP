@@ -3,6 +3,7 @@ from typing import Any, Dict, List, Tuple
 from algorithms.EDA.bivariate.MIMIC.mimic_executer import MIMICExecuter
 from algorithms.EDA.eda_algorithm import EDAAlgorithm
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
+from datasets import Dataset
 from evaluation.get_nondominated_solutions import get_nondominated_solutions
 from models.Solution import Solution
 
@@ -14,12 +15,12 @@ from scipy import stats as scipy_stats
 
 class MIMICAlgorithm(EDAAlgorithm):
 
-    def __init__(self, dataset_name: str = "test", random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
+    def __init__(self, dataset_name: str = "test", dataset: Dataset = None, random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
                  population_length: int = 100, max_generations: int = 100, max_evaluations: int = 0,
                  selected_individuals: int = 60, selection_scheme: str = "nds", replacement_scheme: str = "replacement"):
 
         self.executer = MIMICExecuter(algorithm=self)
-        super().__init__(dataset_name, random_seed, debug_mode, tackle_dependencies,
+        super().__init__(dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
                          population_length, max_generations, max_evaluations)
 
         self.gene_size: int = len(self.dataset.pbis_cost)

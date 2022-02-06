@@ -56,7 +56,7 @@ def configure_algorithm(params, mode):
             [str(params[1]), str(params[2]), (params[3] == "True"), int(params[4]),
                 int(params[5]), int(params[6]), int(params[7]), str(params[8]), str(params[9]), str(params[10])]
 
-        algorithm = algorithm_model(dataset=dataset_name, tackle_dependencies=tackle_dependencies, iterations=iterations, solutions_per_iteration=solutions_per_iteration,
+        algorithm = algorithm_model(dataset_name=dataset_name, tackle_dependencies=tackle_dependencies, iterations=iterations, solutions_per_iteration=solutions_per_iteration,
                                     max_evaluations=evaluations,
                                     init_type=init_type, local_search_type=local_search_type, path_relinking_mode=path_relinking, seed=seed)
         filepath = f"output/{mode}/grasp-"+algorithm.get_file()
@@ -88,11 +88,11 @@ def configure_algorithm(params, mode):
             algorithm = algorithm_model(dataset_name=dataset_name, tackle_dependencies=tackle_dependencies, population_length=numpop, max_evaluations=evaluations,
                                         max_generations=gens, learning_rate=lr, mutation_prob=mutprob, mutation_shift=mutshift, random_seed=seed)
             filepath = f"output/{mode}/pbil-"+algorithm.get_file()
-        
+
         elif(params[1] == "mimic"):
             # -c eda mimic s1 True 5 100 300 10000 50 nds replacement
             # algorithmtype algorithm dataset tackle_dependencies seed numpop gens max_evaluations selinds selscheme replscheme
-            algorithm_model =MIMICAlgorithm
+            algorithm_model = MIMICAlgorithm
 
             algorithm_name, dataset_name, tackle_dependencies, seed, numpop, gens, max_evaluations, selinds, selscheme, replscheme = \
                 [str(params[1]), str(params[2]), (params[3] == "True"), int(params[4]),

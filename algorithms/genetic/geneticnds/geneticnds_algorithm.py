@@ -4,6 +4,7 @@ from algorithms.genetic.abstract_genetic.abstract_genetic_algorithm import Abstr
 from algorithms.genetic.geneticnds.geneticnds_executer import GeneticNDSExecuter
 import copy
 import time
+from datasets import Dataset
 from evaluation.get_nondominated_solutions import get_nondominated_solutions
 import random
 from models.Solution import Solution
@@ -13,14 +14,14 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
     """Mono-Objective Genetic Algorithm that stores a set of nondominated solutions and updates it at each generation.
     """
 
-    def __init__(self, dataset_name: str = "test", random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
+    def __init__(self, dataset_name: str = "test", dataset: Dataset = None, random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
                  population_length: int = 100, max_generations: int = 100, max_evaluations: int = 0,
                  selection: str = "tournament", selection_candidates: int = 2,
                  crossover: str = "onepoint", crossover_prob: float = 0.9,
                  mutation: str = "flipeachbit", mutation_prob: float = 0.1,
                  replacement: str = "elitism",):
 
-        super().__init__(dataset_name, random_seed, debug_mode, tackle_dependencies,
+        super().__init__(dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
                          population_length, max_generations, max_evaluations,
                          selection, selection_candidates, crossover, crossover_prob,
                          mutation, mutation_prob, replacement,)
@@ -42,7 +43,6 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
             self.replacement = self.replacement_elitism
         elif replacement == "elitismnds":
             self.replacement = self.replacement_elitism
-
 
     def get_file(self) -> str:
         return (f"{str(self.__class__.__name__)}-{str(self.dataset_name)}-"

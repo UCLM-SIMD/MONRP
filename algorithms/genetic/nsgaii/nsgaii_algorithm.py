@@ -5,6 +5,7 @@ from algorithms.genetic.abstract_genetic.abstract_genetic_algorithm import Abstr
 from algorithms.genetic.nsgaii.nsgaii_executer import NSGAIIExecuter
 import copy
 import time
+from datasets import Dataset
 
 from models.Solution import Solution
 
@@ -14,13 +15,13 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
     individuals by dominance and crowding distance.
     """
 
-    def __init__(self, dataset_name="test", random_seed=None, population_length=20, max_generations=1000, max_evaluations=0,
+    def __init__(self, dataset_name="test", dataset: Dataset = None, random_seed=None, population_length=20, max_generations=1000, max_evaluations=0,
                  selection="tournament", selection_candidates=2,
                  crossover="onepoint", crossover_prob=0.9,
                  mutation="flipeachbit", mutation_prob=0.1,
                  debug_mode=False, tackle_dependencies=False):
 
-        super().__init__(dataset_name, random_seed, debug_mode, tackle_dependencies,
+        super().__init__(dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
                          population_length, max_generations, max_evaluations)
 
         self.executer = NSGAIIExecuter(algorithm=self)

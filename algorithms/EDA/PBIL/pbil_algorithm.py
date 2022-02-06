@@ -1,5 +1,6 @@
 from typing import Any, Dict, List, Tuple
 from algorithms.EDA.eda_algorithm import EDAAlgorithm
+from datasets import Dataset
 from evaluation.get_nondominated_solutions import get_nondominated_solutions
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
 from algorithms.EDA.PBIL.pbil_executer import PBILExecuter
@@ -13,11 +14,11 @@ class PBILAlgorithm(EDAAlgorithm):
     """Population Based Incremental Learning
     """
 
-    def __init__(self, dataset_name: str = "test", random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
+    def __init__(self, dataset_name: str = "test", dataset: Dataset = None, random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
                  population_length: int = 100, max_generations: int = 100, max_evaluations: int = 0,
                  learning_rate: float = 0.1, mutation_prob: float = 0.1, mutation_shift: float = 0.1):
 
-        super().__init__(dataset_name, random_seed, debug_mode, tackle_dependencies,
+        super().__init__(dataset_name, dataset,random_seed, debug_mode, tackle_dependencies,
                          population_length, max_generations, max_evaluations)
 
         self.executer = PBILExecuter(algorithm=self)

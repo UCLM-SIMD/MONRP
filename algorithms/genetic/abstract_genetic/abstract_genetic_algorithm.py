@@ -3,6 +3,7 @@ import random
 from typing import Any, Dict, List, Tuple
 
 import numpy as np
+from datasets import Dataset
 from models.Solution import Solution
 from algorithms.abstract_algorithm.abstract_algorithm import AbstractAlgorithm
 import evaluation.metrics as metrics
@@ -12,14 +13,14 @@ class AbstractGeneticAlgorithm(AbstractAlgorithm):
     """Abstract class for genetic algorithms
     """
 
-    def __init__(self, dataset_name: str = "test", random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
+    def __init__(self, dataset_name: str = "test", dataset: Dataset = None, random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
                  population_length: int = 100, max_generations: int = 100, max_evaluations: int = 0,
                  selection: str = "tournament", selection_candidates: int = 2, crossover: str = "onepoint", crossover_prob: float = 0.9,
                  mutation: str = "flipeachbit", mutation_prob: float = 0.1,
                  replacement: str = "elitism",):
         """Init method calls parent init and includes specific parameters of genetic algorithms
         """
-        super().__init__(dataset_name, random_seed, debug_mode, tackle_dependencies)
+        super().__init__(dataset_name, dataset, random_seed, debug_mode, tackle_dependencies)
 
         self.population_length: int = population_length
         self.max_generations: int = max_generations

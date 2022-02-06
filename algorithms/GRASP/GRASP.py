@@ -7,6 +7,7 @@ import time
 
 import numpy as np
 import random
+from datasets import Dataset
 
 from models.Solution import Solution
 from evaluation.get_nondominated_solutions import get_nondominated_solutions
@@ -23,11 +24,11 @@ class GRASP(AbstractAlgorithm):
 
     """
 
-    def __init__(self, dataset: str = "test", iterations: int = 20, solutions_per_iteration: int = 10, max_evaluations: int = 0, init_type: str = "stochastically",
+    def __init__(self, dataset_name: str = "test", dataset: Dataset = None, iterations: int = 20, solutions_per_iteration: int = 10, max_evaluations: int = 0, init_type: str = "stochastically",
                  local_search_type: str = "best_first_neighbor_random", path_relinking_mode: str = "None", seed: int = None, debug_mode: bool = False,
                  tackle_dependencies: bool = False):
 
-        super().__init__(dataset, seed, debug_mode, tackle_dependencies)
+        super().__init__(dataset_name, dataset, seed, debug_mode, tackle_dependencies)
 
         self.executer = GRASPExecuter(algorithm=self)
 

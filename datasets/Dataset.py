@@ -12,10 +12,9 @@ class Dataset:
     Empirical Software Engineering. Vol. 20(3). 2015.
     """
 
-    def __init__(self, dataset: str = "test", source_file: any = None, source_dict: Dict = None):
+    def __init__(self, dataset: str = "test", source_file: str = None, source_dict: Dict = None):
         """Loads dataset vectors depending on the dataset name.
         """
-
         if source_file:
             with open(source_file) as json_file:
                 # use filename as dataset id
