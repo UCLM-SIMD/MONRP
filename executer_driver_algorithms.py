@@ -44,7 +44,7 @@ def configure_algorithm(params, mode):
         algorithm = algorithm_model(dataset_name=dataset_name, tackle_dependencies=tackle_dependencies, random_seed=seed, population_length=pop_length,
                                     max_generations=max_gens, max_evaluations=evaluations,
                                     selection=sel_scheme, crossover=cross_scheme, crossover_prob=cross_prob, mutation=mut_scheme,
-                                    mutation_prob=mut_prob, replacement=repl_scheme)
+                                    mutation_prob=mut_prob)
         filepath = f"output/{mode}/genetic-"+algorithm.get_file()
 
     elif(params[0] == "grasp"):

@@ -44,7 +44,7 @@ def generate_configurations():
         # 10000,
         0,
     ]
-    init_types = ["stochastically"
+    init_types = ["stochastically",
                   "uniform"
                   ]
     local_search_types = [

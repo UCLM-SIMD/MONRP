@@ -248,7 +248,7 @@ class FEDAAlgorithm(EDAAlgorithm):
                     self.graph[parent].append(s)
                     self.parents_of[s].append(parent)
 
-        print("Dependencies Graph is: ", self.graph)
+        # print("Dependencies Graph is: ", self.graph)
         # Mark all the vertices as not visited
         visited = [False] * v
         order = []
@@ -259,7 +259,7 @@ class FEDAAlgorithm(EDAAlgorithm):
             if not visited[i]:
                 self.topological_sort_util(i, visited, order)
 
-        print("A topological order of graph structure is: ", order)
+        # print("A topological order of graph structure is: ", order)
 
         return order
 

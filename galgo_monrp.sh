@@ -7,12 +7,12 @@ source ../newvenv/bin/activate
 if [[ "$1" == "metrics" ]];
 then
    #DRIVER="executer_driver.py"
-   PRINT_MODE='(m)'
+   PRINT_MODE='m'
    MODE='metrics'
 elif [[ "$1" == "paretos" ]];
 then
    #DRIVER="executer_driver_pareto.py"
-   PRINT_MODE='(p)'
+   PRINT_MODE='p'
    MODE='paretos'
 else
    echo "[ERROR]: Allowed modes: metrics, paretos."
@@ -50,7 +50,7 @@ else
 fi
 
 # write job name
-NAME="monrp${2}${PRINT_MODE}"
+NAME="monrp-${PRINT_MODE}-${2}"
 
 # create one job array per config
 CONFIGURATIONS=()
