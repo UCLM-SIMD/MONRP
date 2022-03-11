@@ -6,6 +6,12 @@ class Hyperparameter:
         self.name = name
         self.value = value
 
+    def to_dict(self):
+        return {
+            "name": self.name,
+            "value": self.value
+        }
+
 
 HYPERPARAMETER_TRANSLATIONS = {
     "population_length": "Population Length",
