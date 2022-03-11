@@ -6,6 +6,7 @@ import numpy as np
 import os
 import imageio
 import matplotlib.pyplot as plt
+from models.Hyperparameter import Hyperparameter
 
 from models.Solution import Solution
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
@@ -40,6 +41,8 @@ class AbstractAlgorithm(ABC):
 
         self.nds_debug = []
         self.population_debug = []
+
+        self.hyperparameters: List[Hyperparameter] = []
 
     def set_seed(self, seed: int):
         self.random_seed: int = seed

@@ -7,6 +7,8 @@ from algorithms.abstract_algorithm.abstract_algorithm import AbstractAlgorithm
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
 from evaluation.get_nondominated_solutions import get_nondominated_solutions
 
+from models.Hyperparameter import generate_hyperparameter
+
 
 class EDAAlgorithm(AbstractAlgorithm):
     """Estimation of Distribution Algorithm
@@ -25,6 +27,13 @@ class EDAAlgorithm(AbstractAlgorithm):
         self.population_length: int = population_length
         self.max_generations: int = max_generations
         self.max_evaluations: int = max_evaluations
+
+        self.hyperparameters.append(generate_hyperparameter(
+            "population_length", population_length))
+        self.hyperparameters.append(generate_hyperparameter(
+            "max_generations", max_generations))
+        self.hyperparameters.append(generate_hyperparameter(
+            "max_evaluations", max_evaluations))
 
     def generate_initial_population(self) -> List[Solution]:
         population = []

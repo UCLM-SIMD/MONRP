@@ -8,6 +8,8 @@ from models.Solution import Solution
 from algorithms.abstract_algorithm.abstract_algorithm import AbstractAlgorithm
 import evaluation.metrics as metrics
 
+from models.Hyperparameter import generate_hyperparameter
+
 
 class AbstractGeneticAlgorithm(AbstractAlgorithm):
     """Abstract class for genetic algorithms
@@ -33,6 +35,27 @@ class AbstractGeneticAlgorithm(AbstractAlgorithm):
         self.mutation_scheme: str = mutation
         self.mutation_prob: float = mutation_prob
         self.replacement_scheme: str = replacement
+
+        self.hyperparameters.append(generate_hyperparameter(
+            "population_length", population_length))
+        self.hyperparameters.append(generate_hyperparameter(
+            "max_generations", max_generations))
+        self.hyperparameters.append(generate_hyperparameter(
+            "max_evaluations", max_evaluations))
+        self.hyperparameters.append(generate_hyperparameter(
+            "selection_scheme", selection))
+        self.hyperparameters.append(generate_hyperparameter(
+            "selection_candidates", selection_candidates))
+        self.hyperparameters.append(generate_hyperparameter(
+            "crossover_scheme", crossover))
+        self.hyperparameters.append(generate_hyperparameter(
+            "crossover_prob", crossover_prob))
+        self.hyperparameters.append(generate_hyperparameter(
+            "mutation_scheme", mutation))
+        self.hyperparameters.append(generate_hyperparameter(
+            "mutation_prob", mutation_prob))
+        self.hyperparameters.append(generate_hyperparameter(
+            "replacement_scheme", replacement))
 
         self.population = None
         self.best_generation_avgValue = None

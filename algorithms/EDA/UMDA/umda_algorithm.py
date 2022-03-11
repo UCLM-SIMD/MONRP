@@ -9,6 +9,8 @@ from algorithms.EDA.UMDA.umda_executer import UMDAExecuter
 import time
 import numpy as np
 
+from models.Hyperparameter import generate_hyperparameter
+
 
 class UMDAAlgorithm(EDAAlgorithm):
     """Univariate Marginal Distribution Algorithm
@@ -26,6 +28,11 @@ class UMDAAlgorithm(EDAAlgorithm):
 
         self.selection_scheme: str = selection_scheme
         self.replacement_scheme: str = replacement_scheme
+
+        self.hyperparameters.append(generate_hyperparameter(
+            "selection_scheme", selection_scheme))
+        self.hyperparameters.append(generate_hyperparameter(
+            "replacement_scheme", replacement_scheme))
 
     def get_file(self) -> str:
         return (f"{str(self.__class__.__name__)}-{str(self.dataset_name)}-"

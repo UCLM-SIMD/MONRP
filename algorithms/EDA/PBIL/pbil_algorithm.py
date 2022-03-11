@@ -9,6 +9,8 @@ from models.Solution import Solution
 import time
 import numpy as np
 
+from models.Hyperparameter import generate_hyperparameter
+
 
 class PBILAlgorithm(EDAAlgorithm):
     """Population Based Incremental Learning
@@ -18,7 +20,7 @@ class PBILAlgorithm(EDAAlgorithm):
                  population_length: int = 100, max_generations: int = 100, max_evaluations: int = 0,
                  learning_rate: float = 0.1, mutation_prob: float = 0.1, mutation_shift: float = 0.1):
 
-        super().__init__(dataset_name, dataset,random_seed, debug_mode, tackle_dependencies,
+        super().__init__(dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
                          population_length, max_generations, max_evaluations)
 
         self.executer = PBILExecuter(algorithm=self)
@@ -26,6 +28,13 @@ class PBILAlgorithm(EDAAlgorithm):
         self.learning_rate: float = learning_rate
         self.mutation_prob: float = mutation_prob
         self.mutation_shift: float = mutation_shift
+
+        self.hyperparameters.append(generate_hyperparameter(
+            "learning_rate", learning_rate))
+        self.hyperparameters.append(generate_hyperparameter(
+            "mutation_prob", mutation_prob))
+        self.hyperparameters.append(generate_hyperparameter(
+            "mutation_shift", mutation_shift))
 
     def get_file(self) -> str:
         return (f"{str(self.__class__.__name__)}-{str(self.dataset_name)}-"

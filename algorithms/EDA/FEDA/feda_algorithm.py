@@ -3,6 +3,7 @@ from algorithms.EDA.eda_algorithm import EDAAlgorithm
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
 from datasets import Dataset
 from evaluation.get_nondominated_solutions import get_nondominated_solutions
+from models.Hyperparameter import generate_hyperparameter
 from models.Solution import Solution
 from algorithms.EDA.FEDA.feda_executer import FEDAExecuter
 from collections import defaultdict
@@ -56,6 +57,12 @@ class FEDAAlgorithm(EDAAlgorithm):
         self.population = None
         self.selection_scheme: str = selection_scheme
         self.selected_individuals: int = selected_individuals
+
+        self.hyperparameters.append(generate_hyperparameter(
+            "selection_scheme", selection_scheme))
+        self.hyperparameters.append(generate_hyperparameter(
+            "selected_individuals", selected_individuals))
+
         self.executer = FEDAExecuter(algorithm=self)
 
         self.probs = np.full(self.dataset.num_pbis, 0)

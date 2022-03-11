@@ -6,7 +6,7 @@ from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
 from datasets import Dataset
 from evaluation.get_nondominated_solutions import get_nondominated_solutions
 from models.Solution import Solution
-
+from models.Hyperparameter import generate_hyperparameter
 import time
 import numpy as np
 import math
@@ -24,10 +24,17 @@ class MIMICAlgorithm(EDAAlgorithm):
                          population_length, max_generations, max_evaluations)
 
         self.gene_size: int = len(self.dataset.pbis_cost)
-
+        print(self.hyperparameters)
         self.selected_individuals: int = selected_individuals
         self.selection_scheme: str = selection_scheme
         self.replacement_scheme: str = replacement_scheme
+
+        self.hyperparameters.append(generate_hyperparameter(
+            "selected_individuals", selected_individuals))
+        self.hyperparameters.append(generate_hyperparameter(
+            "selection_scheme", selection_scheme))
+        self.hyperparameters.append(generate_hyperparameter(
+            "replacement_scheme", replacement_scheme))
 
         self.population: List[Solution] = []
 

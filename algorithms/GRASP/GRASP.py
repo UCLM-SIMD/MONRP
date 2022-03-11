@@ -12,6 +12,8 @@ from datasets import Dataset
 from models.Solution import Solution
 from evaluation.get_nondominated_solutions import get_nondominated_solutions
 
+from models.Hyperparameter import generate_hyperparameter
+
 
 class GRASP(AbstractAlgorithm):
     """
@@ -24,9 +26,9 @@ class GRASP(AbstractAlgorithm):
 
     """
 
-    def __init__(self, dataset_name: str = "test", dataset: Dataset = None, iterations: int = 20, solutions_per_iteration: int = 10, max_evaluations: int = 0, init_type: str = "stochastically",
-                 local_search_type: str = "best_first_neighbor_random", path_relinking_mode: str = "None", seed: int = None, debug_mode: bool = False,
-                 tackle_dependencies: bool = False):
+    def __init__(self, dataset_name: str = "test", dataset: Dataset = None, iterations: int = 20, solutions_per_iteration: int = 10, max_evaluations: int = 0,
+                 init_type: str = "stochastically", local_search_type: str = "best_first_neighbor_random", path_relinking_mode: str = "None", seed: int = None,
+                 debug_mode: bool = False, tackle_dependencies: bool = False):
 
         super().__init__(dataset_name, dataset, seed, debug_mode, tackle_dependencies)
 
@@ -35,6 +37,19 @@ class GRASP(AbstractAlgorithm):
         self.iterations: int = iterations
         self.solutions_per_iteration: int = solutions_per_iteration
         self.max_evaluations: int = max_evaluations
+
+        self.hyperparameters.append(generate_hyperparameter(
+            "iterations", iterations))
+        self.hyperparameters.append(generate_hyperparameter(
+            "solutions_per_iteration", solutions_per_iteration))
+        self.hyperparameters.append(generate_hyperparameter(
+            "max_evaluations", max_evaluations))
+        self.hyperparameters.append(generate_hyperparameter(
+            "init_type", init_type))
+        self.hyperparameters.append(generate_hyperparameter(
+            "local_search_type", local_search_type))
+        self.hyperparameters.append(generate_hyperparameter(
+            "path_relinking_mode", path_relinking_mode))
 
         self.nds: List[Solution] = []
         self.num_evaluations: int = 0
