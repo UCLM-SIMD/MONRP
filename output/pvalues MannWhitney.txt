@@ -1,0 +1,72 @@
+Results for dataset:  1 and metric:  HV
+                     GeneticNDSAlgorithm  NSGAIIAlgorithm  PBILAlgorithm  UMDAAlgorithm
+GeneticNDSAlgorithm             1.000000         0.000346       0.384673       0.000506
+NSGAIIAlgorithm                 0.000346         1.000000       0.000346       0.000346
+PBILAlgorithm                   0.384673         0.000346       1.000000       0.000506
+UMDAAlgorithm                   0.000506         0.000346       0.000506       1.000000
+Results for dataset:  1 and metric:  Spread
+                     GeneticNDSAlgorithm  NSGAIIAlgorithm  PBILAlgorithm  UMDAAlgorithm
+GeneticNDSAlgorithm             1.000000         0.000956       0.022659       0.010832
+NSGAIIAlgorithm                 0.000956         1.000000       0.000956       0.000956
+PBILAlgorithm                   0.022659         0.000956       1.000000       0.031209
+UMDAAlgorithm                   0.010832         0.000956       0.031209       1.000000
+Results for dataset:  1 and metric:  Spacing
+                     GeneticNDSAlgorithm  NSGAIIAlgorithm  PBILAlgorithm  UMDAAlgorithm
+GeneticNDSAlgorithm             1.000000         0.000956       1.000000       1.000000
+NSGAIIAlgorithm                 0.000956         1.000000       0.000956       0.000956
+PBILAlgorithm                   1.000000         0.000956       1.000000       1.000000
+UMDAAlgorithm                   1.000000         0.000956       1.000000       1.000000
+Results for dataset:  1 and metric:  NumSolutions
+                     GeneticNDSAlgorithm  NSGAIIAlgorithm  PBILAlgorithm  UMDAAlgorithm
+GeneticNDSAlgorithm             1.000000         0.000623       0.000623       0.000623
+NSGAIIAlgorithm                 0.000623         1.000000       0.000623       0.000623
+PBILAlgorithm                   0.000623         0.000623       1.000000       0.000623
+UMDAAlgorithm                   0.000623         0.000623       0.000623       1.000000
+Results for dataset:  2 and metric:  HV
+                     GeneticNDSAlgorithm  NSGAIIAlgorithm  PBILAlgorithm  UMDAAlgorithm
+GeneticNDSAlgorithm             1.000000          0.00109       0.212294        0.00109
+NSGAIIAlgorithm                 0.001090          1.00000       0.001090        0.00109
+PBILAlgorithm                   0.212294          0.00109       1.000000        0.00109
+UMDAAlgorithm                   0.001090          0.00109       0.001090        1.00000
+Results for dataset:  2 and metric:  Spread
+                     GeneticNDSAlgorithm  NSGAIIAlgorithm  PBILAlgorithm  UMDAAlgorithm
+GeneticNDSAlgorithm             1.000000         0.001096       0.280930       0.001096
+NSGAIIAlgorithm                 0.001096         1.000000       0.001096       0.280930
+PBILAlgorithm                   0.280930         0.001096       1.000000       0.001096
+UMDAAlgorithm                   0.001096         0.280930       0.001096       1.000000
+Results for dataset:  2 and metric:  Spacing
+                     GeneticNDSAlgorithm  NSGAIIAlgorithm  PBILAlgorithm  UMDAAlgorithm
+GeneticNDSAlgorithm             1.000000         0.001096       0.128044       0.063402
+NSGAIIAlgorithm                 0.001096         1.000000       0.001096       0.001096
+PBILAlgorithm                   0.128044         0.001096       1.000000       0.791337
+UMDAAlgorithm                   0.063402         0.001096       0.791337       1.000000
+Results for dataset:  2 and metric:  NumSolutions
+                     GeneticNDSAlgorithm  NSGAIIAlgorithm  PBILAlgorithm  UMDAAlgorithm
+GeneticNDSAlgorithm             1.000000         0.000771       0.000771       0.000771
+NSGAIIAlgorithm                 0.000771         1.000000       0.000771       0.000771
+PBILAlgorithm                   0.000771         0.000771       1.000000       0.000771
+UMDAAlgorithm                   0.000771         0.000771       0.000771       1.000000
+Results for dataset:  s3 and metric:  HV
+                     GeneticNDSAlgorithm  NSGAIIAlgorithm  PBILAlgorithm  UMDAAlgorithm
+GeneticNDSAlgorithm             1.000000         0.001096       0.075662       0.001096
+NSGAIIAlgorithm                 0.001096         1.000000       0.001096       0.001096
+PBILAlgorithm                   0.075662         0.001096       1.000000       0.001096
+UMDAAlgorithm                   0.001096         0.001096       0.001096       1.000000
+Results for dataset:  s3 and metric:  Spread
+                     GeneticNDSAlgorithm  NSGAIIAlgorithm  PBILAlgorithm  UMDAAlgorithm
+GeneticNDSAlgorithm             1.000000         0.001096       0.161972       0.001096
+NSGAIIAlgorithm                 0.001096         1.000000       0.001096       0.005655
+PBILAlgorithm                   0.161972         0.001096       1.000000       0.001096
+UMDAAlgorithm                   0.001096         0.005655       0.001096       1.000000
+Results for dataset:  s3 and metric:  Spacing
+                     GeneticNDSAlgorithm  NSGAIIAlgorithm  PBILAlgorithm  UMDAAlgorithm
+GeneticNDSAlgorithm             1.000000         0.001096       1.000000       1.000000
+NSGAIIAlgorithm                 0.001096         1.000000       0.001096       0.001096
+PBILAlgorithm                   1.000000         0.001096       1.000000       1.000000
+UMDAAlgorithm                   1.000000         0.001096       1.000000       1.000000
+Results for dataset:  s3 and metric:  NumSolutions
+                     GeneticNDSAlgorithm  NSGAIIAlgorithm  PBILAlgorithm  UMDAAlgorithm
+GeneticNDSAlgorithm             1.000000         0.000762       0.007110       0.000762
+NSGAIIAlgorithm                 0.000762         1.000000       0.000762       0.000762
+PBILAlgorithm                   0.007110         0.000762       1.000000       0.000762
+UMDAAlgorithm                   0.000762         0.000762       0.000762       1.000000
