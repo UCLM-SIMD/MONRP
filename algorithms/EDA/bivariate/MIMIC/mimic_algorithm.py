@@ -3,9 +3,10 @@ from typing import Any, Dict, List, Tuple
 from algorithms.EDA.bivariate.MIMIC.mimic_executer import MIMICExecuter
 from algorithms.EDA.eda_algorithm import EDAAlgorithm
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
+from datasets import Dataset
 from evaluation.get_nondominated_solutions import get_nondominated_solutions
 from models.Solution import Solution
-
+from models.Hyperparameter import generate_hyperparameter
 import time
 import numpy as np
 import math
@@ -14,29 +15,45 @@ from scipy import stats as scipy_stats
 
 class MIMICAlgorithm(EDAAlgorithm):
 
-    def __init__(self, dataset_name: str = "test", random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
+    def __init__(self, dataset_name: str = "test", dataset: Dataset = None, random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
                  population_length: int = 100, max_generations: int = 100, max_evaluations: int = 0,
                  selected_individuals: int = 60, selection_scheme: str = "nds", replacement_scheme: str = "replacement"):
 
         self.executer = MIMICExecuter(algorithm=self)
-        super().__init__(dataset_name, random_seed, debug_mode, tackle_dependencies,
+        super().__init__(dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
                          population_length, max_generations, max_evaluations)
 
         self.gene_size: int = len(self.dataset.pbis_cost)
-
+        print(self.hyperparameters)
         self.selected_individuals: int = selected_individuals
-
         self.selection_scheme: str = selection_scheme
         self.replacement_scheme: str = replacement_scheme
 
+        self.hyperparameters.append(generate_hyperparameter(
+            "selected_individuals", selected_individuals))
+        self.hyperparameters.append(generate_hyperparameter(
+            "selection_scheme", selection_scheme))
+        self.hyperparameters.append(generate_hyperparameter(
+            "replacement_scheme", replacement_scheme))
+
         self.population: List[Solution] = []
 
-        self.file: str = (f"{str(self.__class__.__name__)}-{str(dataset_name)}-{str(random_seed)}-{str(population_length)}-"
-                          f"{str(max_generations)}-{str(max_evaluations)}.txt")
+    def get_file(self) -> str:
+        return (f"{str(self.__class__.__name__)}-{str(self.dataset_name)}-"
+                f"{self.dependencies_to_string()}-{str(self.random_seed)}-{str(self.population_length)}-"
+                f"{str(self.max_generations)}-{str(self.max_evaluations)}-{str(self.selected_individuals)}-{str(self.selection_scheme)}-"
+                f"{str(self.replacement_scheme)}.txt")
 
     def get_name(self) -> str:
         return (f"MIMIC+{self.population_length}+{self.max_generations}+"
                 f"{self.max_evaluations}")
+
+    def df_find_data(self, df: any):
+        return df[(df["Population Length"] == self.population_length) & (df["MaxGenerations"] == self.max_generations)
+                  & (df["Selection Scheme"] == self.selection_scheme) & (df["Selected Individuals"] == self.selected_individuals)
+                  & (df["Algorithm"] == self.__class__.__name__) & (df["Replacement Scheme"] == self.replacement_scheme)
+                  & (df["Dataset"] == self.dataset_name) & (df["MaxEvaluations"] == self.max_evaluations)
+                  ]
 
     def learn_probability_model(self, population: List[Solution], selected_individuals: int) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         # init structures

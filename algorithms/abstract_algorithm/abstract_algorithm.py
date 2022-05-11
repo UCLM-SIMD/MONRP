@@ -6,6 +6,7 @@ import numpy as np
 import os
 import imageio
 import matplotlib.pyplot as plt
+from models.Hyperparameter import Hyperparameter
 
 from models.Solution import Solution
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
@@ -17,7 +18,7 @@ class AbstractAlgorithm(ABC):
     """Abstract class for algorithm implementations
     """
 
-    def __init__(self, dataset_name: str = "1", random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False):
+    def __init__(self, dataset_name: str = "test", dataset: Dataset = None, random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False):
         """Default init method that sets common arguments such as dataset, seed and modes.
 
         Args:
@@ -26,8 +27,12 @@ class AbstractAlgorithm(ABC):
             debug_mode (bool, optional): [description]. Defaults to False.
             tackle_dependencies (bool, optional): [description]. Defaults to False.
         """
-        self.dataset: Dataset = Dataset(dataset_name)
-        self.dataset_name: str = dataset_name
+        if dataset is not None:
+            self.dataset: Dataset = dataset
+            self.dataset_name: str = dataset.id
+        else:
+            self.dataset: Dataset = Dataset(dataset_name)
+            self.dataset_name: str = dataset_name
 
         self.debug_mode: bool = debug_mode
         self.tackle_dependencies: bool = tackle_dependencies
@@ -36,6 +41,8 @@ class AbstractAlgorithm(ABC):
 
         self.nds_debug = []
         self.population_debug = []
+
+        self.hyperparameters: List[Hyperparameter] = []
 
     def set_seed(self, seed: int):
         self.random_seed: int = seed
@@ -67,6 +74,13 @@ class AbstractAlgorithm(ABC):
         function2 = [i.total_cost for i in func]
         plot.scatter(function2, function1, label=self.get_name())
         return function1, function2
+
+    @abstractmethod
+    def get_file(self) -> str:
+        pass
+
+    def dependencies_to_string(self) -> str:
+        return "deps" if self.tackle_dependencies else "no_deps"
 
     def get_name(self) -> str:
         return "Algorithm"

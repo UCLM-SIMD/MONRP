@@ -1,7 +1,7 @@
 # MONRP
 
-[![Python 3.8](https://github.com/victorperezpiqueras/MONRP/actions/workflows/python.yml/badge.svg)](https://github.com/victorperezpiqueras/MONRP/actions/workflows/python.yml)
-[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/victorperezpiqueras/MONRP.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/victorperezpiqueras/MONRP/context:python)
+[![Python 3.8](https://github.com/UCLM-SIMD/MONRP/actions/workflows/python.yml/badge.svg)](https://github.com/UCLM-SIMD/MONRP/actions/workflows/python.yml)
+[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/UCLM-SIMD/MONRP.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/UCLM-SIMD/MONRP/context:python)
 
 # First steps
 

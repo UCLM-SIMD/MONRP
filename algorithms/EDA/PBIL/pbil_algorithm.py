@@ -1,5 +1,6 @@
 from typing import Any, Dict, List, Tuple
 from algorithms.EDA.eda_algorithm import EDAAlgorithm
+from datasets import Dataset
 from evaluation.get_nondominated_solutions import get_nondominated_solutions
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
 from algorithms.EDA.PBIL.pbil_executer import PBILExecuter
@@ -8,16 +9,18 @@ from models.Solution import Solution
 import time
 import numpy as np
 
+from models.Hyperparameter import generate_hyperparameter
+
 
 class PBILAlgorithm(EDAAlgorithm):
     """Population Based Incremental Learning
     """
 
-    def __init__(self, dataset_name: str = "test", random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
+    def __init__(self, dataset_name: str = "test", dataset: Dataset = None, random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
                  population_length: int = 100, max_generations: int = 100, max_evaluations: int = 0,
                  learning_rate: float = 0.1, mutation_prob: float = 0.1, mutation_shift: float = 0.1):
 
-        super().__init__(dataset_name, random_seed, debug_mode, tackle_dependencies,
+        super().__init__(dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
                          population_length, max_generations, max_evaluations)
 
         self.executer = PBILExecuter(algorithm=self)
@@ -26,21 +29,38 @@ class PBILAlgorithm(EDAAlgorithm):
         self.mutation_prob: float = mutation_prob
         self.mutation_shift: float = mutation_shift
 
-        self.file: str = (f"{str(self.__class__.__name__)}-{str(dataset_name)}-{str(random_seed)}-{str(population_length)}-"
-                          f"{str(max_generations)}-{str(max_evaluations)}-{str(learning_rate)}-{str(mutation_prob)}-{str(mutation_shift)}.txt")
+        self.hyperparameters.append(generate_hyperparameter(
+            "learning_rate", learning_rate))
+        self.hyperparameters.append(generate_hyperparameter(
+            "mutation_prob", mutation_prob))
+        self.hyperparameters.append(generate_hyperparameter(
+            "mutation_shift", mutation_shift))
+
+    def get_file(self) -> str:
+        return (f"{str(self.__class__.__name__)}-{str(self.dataset_name)}-"
+                f"{self.dependencies_to_string()}-{str(self.random_seed)}-{str(self.population_length)}-"
+                f"{str(self.max_generations)}-{str(self.max_evaluations)}-{str(self.learning_rate)}-"
+                f"{str(self.mutation_prob)}-{str(self.mutation_shift)}.txt")
 
     def get_name(self) -> str:
         return (f"PBIL+{self.population_length}+{self.max_generations}+{self.max_evaluations}+"
                 f"{self.learning_rate}+{self.mutation_prob}+{self.mutation_shift}")
 
+    def df_find_data(self, df: any):
+        return df[(df["Population Length"] == self.population_length) & (df["MaxGenerations"] == self.max_generations)
+                  & (df["Learning Rate"] == self.learning_rate) & (df["Mutation Probability"] == self.mutation_prob)
+                  & (df["Algorithm"] == self.__class__.__name__) & (df["Mutation Shift"] == self.mutation_shift)
+                  & (df["Dataset"] == self.dataset_name) & (df["MaxEvaluations"] == self.max_evaluations)
+                  ]
+
     def initialize_probability_vector(self) -> np.ndarray:
         probabilities = np.full(self.dataset.pbis_score.size, 0.5)
-        #probabilities = np.full(self.dataset.pbis_score.size, 1/self.dataset.pbis_score.size)
+        # probabilities = np.full(self.dataset.pbis_score.size, 1/self.dataset.pbis_score.size)
 
         return probabilities
 
     def select_individuals(self, population: List[Solution]) -> Solution:
-        """Select best individual TODO choose the method used (mo or nds) depending on config 
+        """Select best individual TODO choose the method used (mo or nds) depending on config
         """
         max_sample = self.find_max_sample_nds(
             population, self.nds)
@@ -65,7 +85,7 @@ class PBILAlgorithm(EDAAlgorithm):
 
     def find_max_sample_pop(self, population: List[Solution]) -> Solution:
         nds_pop = get_nondominated_solutions(population, [])
-        #nds_pop = population
+        # nds_pop = population
         random_index = np.random.randint(len(nds_pop))
         return nds_pop[random_index]
 

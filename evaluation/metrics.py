@@ -103,7 +103,10 @@ def eudis2(v1: float, v2: float) -> float:
     # return distance.euclidean(v1, v2)
 
 
-def calculate_spread(population: List[Solution], dataset: Dataset) -> float:
+def calculate_spread(population: List[Solution]) -> float:
+
+    dataset: Dataset = population[0].dataset
+
     MIN_OBJ1 = 0
     MIN_OBJ2 = 0
 

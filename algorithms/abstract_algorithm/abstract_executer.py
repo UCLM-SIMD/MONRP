@@ -25,7 +25,7 @@ class AbstractExecuter(ABC):
             file_path (str): [description]
         """
         config_fields: List[str] = self.get_config_fields()
-        for i in range(0, executions):
+        for _ in range(0, executions):
             #print("Executing iteration: ", i + 1)
             self.algorithm.reset()
             result = self.algorithm.run()
@@ -60,8 +60,7 @@ class AbstractExecuter(ABC):
 
         time = str(result["time"]) if "time" in result else 'NaN'
         hv = str(metrics.calculate_hypervolume(result["population"]))
-        spread = str(metrics.calculate_spread(
-            result["population"], self.algorithm.dataset))
+        spread = str(metrics.calculate_spread(result["population"]))
         numSolutions = str(
             metrics.calculate_numSolutions(result["population"]))
         spacing = str(metrics.calculate_spacing(result["population"]))
@@ -83,10 +82,9 @@ class AbstractExecuter(ABC):
         return metrics_fields
 
     def file_write_line(self, file_path: str, line: str) -> None:
-        
         """Aux method to write a line in a file
         """
-        f = open(file_path,"a")
+        f = open(file_path, "a")
         f.write(line)
         f.close()
 

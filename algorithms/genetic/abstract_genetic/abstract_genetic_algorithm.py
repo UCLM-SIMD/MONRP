@@ -3,23 +3,26 @@ import random
 from typing import Any, Dict, List, Tuple
 
 import numpy as np
+from datasets import Dataset
 from models.Solution import Solution
 from algorithms.abstract_algorithm.abstract_algorithm import AbstractAlgorithm
 import evaluation.metrics as metrics
+
+from models.Hyperparameter import generate_hyperparameter
 
 
 class AbstractGeneticAlgorithm(AbstractAlgorithm):
     """Abstract class for genetic algorithms
     """
 
-    def __init__(self, dataset_name: str = "test", random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
+    def __init__(self, dataset_name: str = "test", dataset: Dataset = None, random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
                  population_length: int = 100, max_generations: int = 100, max_evaluations: int = 0,
                  selection: str = "tournament", selection_candidates: int = 2, crossover: str = "onepoint", crossover_prob: float = 0.9,
                  mutation: str = "flipeachbit", mutation_prob: float = 0.1,
                  replacement: str = "elitism",):
         """Init method calls parent init and includes specific parameters of genetic algorithms
         """
-        super().__init__(dataset_name, random_seed, debug_mode, tackle_dependencies)
+        super().__init__(dataset_name, dataset, random_seed, debug_mode, tackle_dependencies)
 
         self.population_length: int = population_length
         self.max_generations: int = max_generations
@@ -32,6 +35,27 @@ class AbstractGeneticAlgorithm(AbstractAlgorithm):
         self.mutation_scheme: str = mutation
         self.mutation_prob: float = mutation_prob
         self.replacement_scheme: str = replacement
+
+        self.hyperparameters.append(generate_hyperparameter(
+            "population_length", population_length))
+        self.hyperparameters.append(generate_hyperparameter(
+            "max_generations", max_generations))
+        self.hyperparameters.append(generate_hyperparameter(
+            "max_evaluations", max_evaluations))
+        self.hyperparameters.append(generate_hyperparameter(
+            "selection_scheme", selection))
+        self.hyperparameters.append(generate_hyperparameter(
+            "selection_candidates", selection_candidates))
+        self.hyperparameters.append(generate_hyperparameter(
+            "crossover_scheme", crossover))
+        self.hyperparameters.append(generate_hyperparameter(
+            "crossover_prob", crossover_prob))
+        self.hyperparameters.append(generate_hyperparameter(
+            "mutation_scheme", mutation))
+        self.hyperparameters.append(generate_hyperparameter(
+            "mutation_prob", mutation_prob))
+        self.hyperparameters.append(generate_hyperparameter(
+            "replacement_scheme", replacement))
 
         self.population = None
         self.best_generation_avgValue = None
@@ -47,8 +71,21 @@ class AbstractGeneticAlgorithm(AbstractAlgorithm):
         pass
 
     @abstractmethod
+    def get_file(self) -> str:
+        pass
+
+    @abstractmethod
     def get_name(self) -> str:
         pass
+
+    def df_find_data(self, df: any):
+        return df[(df["Population Length"] == self.population_length) & (df["MaxGenerations"] == self.max_generations)
+                  & (df["Selection Candidates"] == self.selection_candidates) & (df["Selection Scheme"] == self.selection_scheme)
+                  & (df["Crossover Scheme"] == self.crossover_scheme) & (df["Crossover Probability"] == self.crossover_prob)
+                  & (df["Mutation Scheme"] == self.mutation_scheme) & (df["Mutation Probability"] == self.mutation_prob)
+                  & (df["Replacement Scheme"] == self.replacement_scheme) & (df["Algorithm"] == self.__class__.__name__)
+                  & (df["Dataset"] == self.dataset_name) & (df["MaxEvaluations"] == self.max_evaluations)
+                  ]
 
     def stop_criterion(self, num_generations, num_evaluations) -> bool:
         if self.max_evaluations == 0:

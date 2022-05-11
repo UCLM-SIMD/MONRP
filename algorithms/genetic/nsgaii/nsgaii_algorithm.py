@@ -5,6 +5,7 @@ from algorithms.genetic.abstract_genetic.abstract_genetic_algorithm import Abstr
 from algorithms.genetic.nsgaii.nsgaii_executer import NSGAIIExecuter
 import copy
 import time
+from datasets import Dataset
 
 from models.Solution import Solution
 
@@ -14,14 +15,13 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
     individuals by dominance and crowding distance.
     """
 
-    def __init__(self, dataset_name="test", random_seed=None, population_length=20, max_generations=1000, max_evaluations=0,
+    def __init__(self, dataset_name="test", dataset: Dataset = None, random_seed=None, population_length=20, max_generations=1000, max_evaluations=0,
                  selection="tournament", selection_candidates=2,
                  crossover="onepoint", crossover_prob=0.9,
                  mutation="flipeachbit", mutation_prob=0.1,
-                 replacement="elitism",
                  debug_mode=False, tackle_dependencies=False):
 
-        super().__init__(dataset_name, random_seed, debug_mode, tackle_dependencies,
+        super().__init__(dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
                          population_length, max_generations, max_evaluations)
 
         self.executer = NSGAIIExecuter(algorithm=self)
@@ -31,7 +31,7 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
         self.crossover_prob = crossover_prob
         self.mutation_scheme = mutation
         self.mutation_prob = mutation_prob
-        #self.replacement_scheme = replacement
+        self.replacement_scheme = "elitism"
 
         self.population = None
         self.best_generation_avgValue = None
@@ -52,16 +52,13 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
         elif mutation == "flipeachbit":
             self.mutation = self.mutation_flipeachbit
 
-        # if replacement == "elitism":
-        #    self.replacement = self.replacement_elitism
-        # else:
-        #    self.replacement = self.replacement_elitism
-
-        self.file: str = (f"{str(self.__class__.__name__)}-{str(dataset_name)}-{str(random_seed)}-{str(population_length)}-"
-                          # -{str(max_evaluations)}
-                          f"{str(max_generations)}-{str(selection)}-{str(selection_candidates)}-{str(crossover)}-"
-                          f"{str(crossover_prob)}-{str(mutation)}-{str(mutation_prob)}-{str(replacement)}.txt")
-        # -{str(replacement)}
+    def get_file(self) -> str:
+        return (f"{str(self.__class__.__name__)}-{str(self.dataset_name)}-"
+                f"{self.dependencies_to_string()}-{str(self.random_seed)}-{str(self.population_length)}-"
+                f"{str(self.max_generations)}-{str(self.max_evaluations)}-"
+                f"{str(self.selection_scheme)}-{str(self.selection_candidates)}-"
+                f"{str(self.crossover_scheme)}-{str(self.crossover_prob)}-{str(self.mutation_scheme)}-"
+                f"{str(self.mutation_prob)}-{str(self.replacement_scheme)}.txt")
 
     def get_name(self) -> str:
         return f"NSGA-II{str(self.population_length)}+{str(self.max_generations)}+{str(self.max_evaluations)}+{str(self.crossover_prob)}\

@@ -18,4 +18,4 @@ done <$PWD/$CONFIG_FILE
 # get configuration at job index (1..JOBS_NUM)
 CONFIG="${CONFIGURATIONS[$((PBS_ARRAY_INDEX - 1))]}"
 
-python "$FILE" -c "$CONFIG"
+python "$FILE" -c "$CONFIG" -m "$MODE"

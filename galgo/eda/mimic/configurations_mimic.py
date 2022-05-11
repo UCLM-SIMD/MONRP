@@ -22,19 +22,19 @@ def generate_configurations():
         # "a4",
     ]
     algorithms = [
-        "umda"
+        "mimic"
     ]
     population_length = [
         # 20,
-        # 50,
+        50,
         100,
-        # 200,  # 500
+        200,  # 500
     ]
     max_generations = [
         # 20,
-        # 50,
+        50,
         100,
-        # 200,  # 500
+        200,  # 500
     ]
     evaluations = [
         # 10000,
@@ -53,7 +53,7 @@ def generate_configurations():
     ]
     seed = 10
 
-    f = open("configs_umda.txt", "w")
+    f = open("configs_mimic.txt", "w")
     returnStr = ''
     type = "eda"
     for dataset_problem in dataset_problems:
