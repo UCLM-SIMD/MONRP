@@ -7,9 +7,12 @@ import time
 
 import numpy as np
 import random
+from datasets import Dataset
 
 from models.Solution import Solution
 from evaluation.get_nondominated_solutions import get_nondominated_solutions
+
+from models.Hyperparameter import generate_hyperparameter
 
 
 class GRASP(AbstractAlgorithm):
@@ -23,15 +26,30 @@ class GRASP(AbstractAlgorithm):
 
     """
 
-    def __init__(self, dataset: str = "test", iterations: int = 20, solutions_per_iteration: int = 10, max_evaluations: int = 0, init_type: str = "stochastically",
-                 local_search_type: str = "best_first_neighbor_random", path_relinking_mode: str = "None", seed: int = None, debug_mode: bool = False,
-                 tackle_dependencies: bool = False):
+    def __init__(self, dataset_name: str = "test", dataset: Dataset = None, iterations: int = 20, solutions_per_iteration: int = 10, max_evaluations: int = 0,
+                 init_type: str = "stochastically", local_search_type: str = "best_first_neighbor_random", path_relinking_mode: str = "None", seed: int = None,
+                 debug_mode: bool = False, tackle_dependencies: bool = False):
 
-        super().__init__(dataset, seed, debug_mode, tackle_dependencies)
+        super().__init__(dataset_name, dataset, seed, debug_mode, tackle_dependencies)
+
+        self.executer = GRASPExecuter(algorithm=self)
 
         self.iterations: int = iterations
         self.solutions_per_iteration: int = solutions_per_iteration
         self.max_evaluations: int = max_evaluations
+
+        self.hyperparameters.append(generate_hyperparameter(
+            "iterations", iterations))
+        self.hyperparameters.append(generate_hyperparameter(
+            "solutions_per_iteration", solutions_per_iteration))
+        self.hyperparameters.append(generate_hyperparameter(
+            "max_evaluations", max_evaluations))
+        self.hyperparameters.append(generate_hyperparameter(
+            "init_type", init_type))
+        self.hyperparameters.append(generate_hyperparameter(
+            "local_search_type", local_search_type))
+        self.hyperparameters.append(generate_hyperparameter(
+            "path_relinking_mode", path_relinking_mode))
 
         self.nds: List[Solution] = []
         self.num_evaluations: int = 0
@@ -60,11 +78,12 @@ class GRASP(AbstractAlgorithm):
         elif self.local_search_type == "None":
             self.local_search = "None"
 
-        self.executer = GRASPExecuter(algorithm=self)
-        self.file: str = (f"{str(self.__class__.__name__)}-{str(dataset)}-{str(seed)}-{str(iterations)}-"
-                          f"{str(solutions_per_iteration)}-{str(init_type)}-"
-                          # -{str(max_evaluations)}
-                          f"{local_search_type}-{str(path_relinking_mode)}.txt")
+    def get_file(self) -> str:
+        return (f"{str(self.__class__.__name__)}-{str(self.dataset_name)}-"
+                f"{self.dependencies_to_string()}-{str(self.random_seed)}-"
+                f"{str(self.iterations)}-{str(self.max_evaluations)}-"
+                f"{str(self.solutions_per_iteration)}-{str(self.init_type)}-"
+                f"{self.local_search_type}-{str(self.path_relinking_mode)}.txt")
 
     def get_name(self) -> str:
         init = "stochastic" if self.init_type == "stochastically" else self.init_type
@@ -73,6 +92,13 @@ class GRASP(AbstractAlgorithm):
         PR = "PR" if self.path_relinking_mode != "None" else ""
         return (f"GRASP+{str(self.iterations)}+{str(self.solutions_per_iteration)}+"
                 f"{str(self.max_evaluations)}+{init}+{local}+{PR}")
+
+    def df_find_data(self, df: any):
+        return df[(df["Iterations"] == self.iterations) & (df["Solutions per Iteration"] == self.solutions_per_iteration)
+                  & (df["Initialization Type"] == self.init_type) & (df["Local Search Type"] == self.local_search_type)
+                  & (df["Path Relinking"] == self.path_relinking_mode) & (df["Algorithm"] == self.__class__.__name__)
+                  & (df["Dataset"] == self.dataset_name) & (df["MaxEvaluations"] == self.max_evaluations)
+                  ]
 
     def reset(self) -> None:
         super().reset()
@@ -104,7 +130,6 @@ class GRASP(AbstractAlgorithm):
 
         """
         self.reset()
-        paretos = []
         self.start = time.time()
 
         self.num_iterations = 0
@@ -165,7 +190,8 @@ class GRASP(AbstractAlgorithm):
             # avoid solution with 0 cost due to 0 candidates selected
             if np.count_nonzero(sol.selected) > 0:
                 solutions.append(sol)
-                i -= 1  # TODO ESTO NO DEBERIA SER EN EL ELSE?
+            else:
+                i -= 1
         return solutions
 
     def init_solutions_uniform(self) -> List[Solution]:
@@ -183,6 +209,7 @@ class GRASP(AbstractAlgorithm):
             # avoid solution with 0 cost due to 0 candidates selected
             if np.count_nonzero(sol.selected) > 0:
                 solutions.append(sol)
+            else:
                 i -= 1
         return solutions
 

@@ -2,17 +2,17 @@ from typing import Any, Dict, List
 from algorithms.abstract_algorithm.abstract_executer import AbstractExecuter
 
 
-class MIMICExecuter(AbstractExecuter):
-    """Specific mimic implementation of executer.
+class FEDAExecuter(AbstractExecuter):
+    """Specific umda implementation of executer.
     """
 
     def __init__(self, algorithm):
-        """Init method extends config and metrics fields with specific mimic algorithm data
+        """Init method extends config and metrics fields with specific feda algorithm data
         """
-        from algorithms.EDA.bivariate.MIMIC.mimic_algorithm import MIMICAlgorithm
+        from algorithms.EDA.FEDA.feda_algorithm import FEDAAlgorithm
         super().__init__(algorithm)
-        self.algorithm: MIMICAlgorithm
-        self.algorithm_type: str = "mimic"
+        self.algorithm: FEDAAlgorithm
+        self.algorithm_type: str = "feda"
 
         self.config_fields.extend(["Population Length", "MaxGenerations", "MaxEvaluations",
                                    "Selected Individuals", "Selection Scheme", "Replacement Scheme"])
@@ -21,7 +21,7 @@ class MIMICExecuter(AbstractExecuter):
             ["NumGenerations", "NumEvaluations", ])
 
     def get_config_fields(self,) -> List[str]:
-        """MIMIC algorithm executer extends metrics fields read from the execution
+        """FEDA algorithm executer extends metrics fields read from the execution
         """
         config_lines: List[str] = super().get_config_fields()
 
@@ -41,7 +41,7 @@ class MIMICExecuter(AbstractExecuter):
         return config_lines
 
     def get_metrics_fields(self, result: Dict[str, Any]) -> List[str]:
-        """MIMIC algorithm executer extends metrics fields read from the execution
+        """FEDA algorithm executer extends metrics fields read from the execution
         """
         metrics_fields: List[str] = super().get_metrics_fields(result)
 

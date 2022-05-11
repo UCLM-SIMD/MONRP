@@ -1,6 +1,8 @@
 from pathlib import Path
+from typing import Dict
 import numpy as np
 import json
+import uuid
 
 
 class Dataset:
@@ -11,63 +13,50 @@ class Dataset:
     Empirical Software Engineering. Vol. 20(3). 2015.
     """
 
-    def __init__(self, dataset: str = "test", source_file: any = None):
+    def __init__(self, dataset: str = "test", source_file: str = None, source_dict: Dict = None):
         """Loads dataset vectors depending on the dataset name.
         """
-
         if source_file:
-            self.load_from_json_file(source_file)
-        else:
+            with open(source_file) as json_file:
+                # use filename as dataset id
+                self.id = Path(source_file).stem
+                json_data = json.load(json_file)
+                self.load_from_dict(json_data)
+        elif source_dict:
+            self.id = uuid.uuid4().hex
+            self.load_from_dict(source_dict)
+        else:  # if not source file->search dataset json in datasets folder
             self.id = dataset
-            if dataset == "test":  # 2 clientes 5 reqs 2 ints: 1-2-3-4-5; 1->2; 4->1
-                json_dataset = "test"
-            elif dataset == "1":  # 5 clientes 20 reqs 10 ints
-                json_dataset = "p1"
-            elif dataset == "2":  # 5 clientes 100 reqs 44ints
-                json_dataset = "p2"
-            elif dataset == "s1":  # 15 customers 40 reqs
-                json_dataset = "s1"
-            elif dataset == "s2":  # 50 customers 80 reqs
-                json_dataset = "s2"
-            elif dataset == "s3":  # 100 customers 140 reqs
-                json_dataset = "s3"
-            else:
-                raise Exception("Sorry, dataset with id=", id, " not found.")
+            with open("datasets/"+dataset+".json") as json_file:
+                json_data = json.load(json_file)
+                self.load_from_dict(json_data)
 
-            self.load_from_json_file("datasets/"+json_dataset+".json")
         # normalize values calculating scaled satisfactions, costs and scores
         self.normalize()
 
         # simplify dependencies:
-        if (self.dependencies is not None):
+        if self.dependencies is not None:
+            self.list_of_sons = self.dependencies.copy()  # needed in feda_algorithm.py
             self.calculate_dependencies()
 
-    def load_from_json_file(self, source_file: str) -> None:
-        with open(source_file) as json_file:
-            json_data = json.load(json_file)
+    def load_from_dict(self, source_dict: Dict) -> None:
+        self.pbis_cost = np.array(source_dict["pbis_cost"]).astype(int)
+        self.num_pbis = len(self.pbis_cost)
+        self.stakeholders_importances = np.array(
+            source_dict["stakeholders_importances"]).astype(int)
+        self.stakeholders_pbis_priorities = np.array(
+            source_dict["stakeholders_pbis_priorities"]).astype(int)
+        if "dependencies" in source_dict:
+            self.dependencies = np.array(
+                source_dict["dependencies"], dtype=object)
+            for x in range(len(self.dependencies)):
+                if self.dependencies[x] is None:
+                    continue
+                for y in range(len(self.dependencies[x])):
+                    self.dependencies[x][y] = int(self.dependencies[x][y])
 
-            # use filename as dataset id
-            self.id = Path(source_file).stem
-
-            self.pbis_cost = np.array(json_data["costs"]).astype(int)
-            self.num_pbis = len(self.pbis_cost)
-            self.stakeholders_importances = np.array(
-                json_data["importances"]).astype(int)
-            self.stakeholders_pbis_priorities = np.array(
-                json_data["priorities"]).astype(int)
-            if json_data["dependencies"]:
-                self.dependencies = np.array(
-                    json_data["dependencies"], dtype=object)
-                for x in range(len(self.dependencies)):
-                    if self.dependencies[x] is None:
-                        continue
-                    for y in range(len(self.dependencies[x])):
-                        self.dependencies[x][y] = int(self.dependencies[x][y])
-
-            else:
-                self.dependencies = None
-            # print(self.pbis_cost, self.num_pbis, self.stakeholders_importances,
-            #      self.stakeholders_pbis_priorities, self.dependencies, self.id)
+        else:
+            self.dependencies = None
 
     def calculate_dependencies(self) -> None:
         """Given the list of dependencies, recursively stores dependencies of requirements,
