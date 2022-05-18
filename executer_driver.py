@@ -225,6 +225,23 @@ elif(params[0] == "eda"):
         #filepath = "output/metrics/pbil-"+algorithm.file
         filepath = "output/metrics/results.json"
 
+    elif(params[1] == 'feda'):
+        # -c eda feda p1 5 100 300 10000  5 D
+        # algorithmtype algorithm dataset seed numpop gens max_evaluations num_execs dependencies
+        algorithm_model = FEDAAlgorithm
+
+        algorithm_name, dataset_name, seed, numpop, gens, max_evaluations, execs, dependencies = \
+            [str(params[1]), str(params[2]), int(params[3]),
+             int(params[4]),  int(params[5]), int(params[6]),
+             int(params[7]), str(params[8])]
+        tackle_dependencies = True if dependencies == 'D' else False
+
+        algorithm = algorithm_model(dataset_name=dataset_name, population_length=numpop, max_evaluations=max_evaluations,
+                        max_generations=gens, random_seed=seed, execs=execs,
+                        tackle_dependencies=tackle_dependencies)
+        # filepath = "output/metrics/pbil-"+algorithm.file
+        filepath = "output/metrics/results.json"
+
 # try:
 algorithm.executer.execute(executions=int(algorithm.num_executions), file_path=filepath)
 # except:

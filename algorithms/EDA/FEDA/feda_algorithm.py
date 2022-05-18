@@ -159,17 +159,39 @@ class FEDAAlgorithm(EDAAlgorithm):
     while(!stop_criterion)
     """
 
+<<<<<<< HEAD
     def __init__(self, dataset_name: str = "2", random_seed: int = None, debug_mode: bool = False,
+=======
+    def __init__(self, execs, dataset_name: str = "p2", dataset: Dataset = None, random_seed: int = None, debug_mode: bool = False,
+>>>>>>> 032bf379 (executer_driver extendido para lanzar FEDA)
                  tackle_dependencies: bool = False,
                  population_length: int = 100, selection_scheme: str = "nds", max_generations: int = 100,
                  max_evaluations: int = 0):
 
+<<<<<<< HEAD
         super().__init__(dataset_name, random_seed, debug_mode, tackle_dependencies,
+=======
+        super().__init__(execs,dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
+>>>>>>> 032bf379 (executer_driver extendido para lanzar FEDA)
                          population_length, max_generations, max_evaluations)
 
         self.population = None
         self.selection_scheme: str = selection_scheme
+<<<<<<< HEAD
         self.executer = FEDAExecuter(algorithm=self)
+=======
+        self.selected_individuals: int = selected_individuals
+        self.config_dictionary.update({'algorithm': 'feda'})
+
+        self.hyperparameters.append(generate_hyperparameter(
+            "selection_scheme", selection_scheme))
+        self.config_dictionary['selection_scheme'] = selection_scheme
+        self.hyperparameters.append(generate_hyperparameter(
+            "selected_individuals", selected_individuals))
+        self.config_dictionary['selected_individuals'] = selected_individuals
+
+        self.executer = FEDAExecuter(algorithm=self, execs=execs)
+>>>>>>> 032bf379 (executer_driver extendido para lanzar FEDA)
 
         self.file: str = (
             f"{str(self.__class__.__name__)}-{str(dataset_name)}-{str(random_seed)}-{str(population_length)}-"

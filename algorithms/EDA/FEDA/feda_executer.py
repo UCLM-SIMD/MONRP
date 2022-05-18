@@ -7,6 +7,7 @@ class FEDAExecuter(AbstractExecuter):
     """
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     def __init__(self, algorithm, execs:int):
         """Init method extends config and metrics fields with specific feda algorithm data
         """
@@ -19,6 +20,13 @@ class FEDAExecuter(AbstractExecuter):
         from algorithms.EDA.FEDA.feda_algorithm import FEDAAlgorithm
         super().__init__(algorithm)
 >>>>>>> bd41d390 (first version of FEDA (Fixed-structure EDA) finished)
+=======
+    def __init__(self, algorithm, execs:int):
+        """Init method extends config and metrics fields with specific feda algorithm data
+        """
+        from algorithms.EDA.FEDA.feda_algorithm import FEDAAlgorithm
+        super().__init__(algorithm,execs)
+>>>>>>> 032bf379 (executer_driver extendido para lanzar FEDA)
         self.algorithm: FEDAAlgorithm
         self.algorithm_type: str = "feda"
 
@@ -29,11 +37,17 @@ class FEDAExecuter(AbstractExecuter):
             ["NumGenerations", "NumEvaluations", ])
 
 <<<<<<< HEAD
+<<<<<<< HEAD
         self.metrics_dictionary["NumGenerations"] = [None] * int(execs)
         self.metrics_dictionary["NumEvaluations"] = [None] * int(execs)
 
 =======
 >>>>>>> bd41d390 (first version of FEDA (Fixed-structure EDA) finished)
+=======
+        self.metrics_dictionary["NumGenerations"] = [None] * int(execs)
+        self.metrics_dictionary["NumEvaluations"] = [None] * int(execs)
+
+>>>>>>> 032bf379 (executer_driver extendido para lanzar FEDA)
     def get_config_fields(self,) -> List[str]:
         """FEDA algorithm executer extends metrics fields read from the execution
         """
@@ -55,6 +69,7 @@ class FEDAExecuter(AbstractExecuter):
         return config_lines
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     def get_metrics_fields(self, result: Dict[str, Any], repetition) -> List[str]:
         """FEDA algorithm executer extends metrics fields read from the execution
         """
@@ -70,17 +85,28 @@ class FEDAExecuter(AbstractExecuter):
         self.metrics_dictionary['NumEvaluations'][repetition] = numEvaluations
 =======
     def get_metrics_fields(self, result: Dict[str, Any]) -> List[str]:
+=======
+    def get_metrics_fields(self, result: Dict[str, Any], repetition) -> List[str]:
+>>>>>>> 032bf379 (executer_driver extendido para lanzar FEDA)
         """FEDA algorithm executer extends metrics fields read from the execution
         """
-        metrics_fields: List[str] = super().get_metrics_fields(result)
+        metrics_fields: List[str] = super().get_metrics_fields(result, repetition=repetition)
 
         numGenerations = str(
             result["numGenerations"]) if "numGenerations" in result else 'NaN'
         numEvaluations = str(
             result["numEvaluations"]) if "numEvaluations" in result else 'NaN'
 
+<<<<<<< HEAD
         metrics_fields.append(str(numGenerations))
         metrics_fields.append(str(numEvaluations))
 >>>>>>> bd41d390 (first version of FEDA (Fixed-structure EDA) finished)
+=======
+        #metrics_fields.append(str(numGenerations))
+        #metrics_fields.append(str(numEvaluations))
+
+        self.metrics_dictionary['NumGenerations'][repetition] = numGenerations
+        self.metrics_dictionary['NumEvaluations'][repetition] = numEvaluations
+>>>>>>> 032bf379 (executer_driver extendido para lanzar FEDA)
 
         return metrics_fields
