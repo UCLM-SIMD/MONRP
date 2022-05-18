@@ -173,7 +173,7 @@ algorithm.executer.execute(output_folder=OUTPUT_FOLDER)
     filepath = "output/metrics/results.json"
 
 elif(params[0] == "grasp"):
-    # -c grasp grasp p1 5 10 10 10000 stochastically best_first_neighbor_random None 5 D
+    # "-c grasp grasp p1 5 10 10 10000 stochastically best_first_neighbor_random None 5 D"
     # algorithmtype algorithm dataset seed iterations solutions_per_iteration max_evaluations init_type local_search_type path_relinking_mode num_execs
     algorithm_model = GRASP
 
@@ -184,7 +184,7 @@ elif(params[0] == "grasp"):
          str(params[9]), str(params[10]), str(params[11])]
 
     tackle_dependencies = True if dependencies == 'D' else False
-    algorithm = algorithm_model(dataset=Dataset(dataset_name), iterations=iterations, solutions_per_iteration=solutions_per_iteration,
+    algorithm = algorithm_model(dataset_name=dataset_name, iterations=iterations, solutions_per_iteration=solutions_per_iteration,
                                 max_evaluations=max_evaluations, init_type=init_type, local_search_type=local_search_type,
                                 path_relinking_mode=path_relinking, seed=seed, execs=execs, tackle_dependencies=tackle_dependencies)
     filepath = "output/metrics/results.json"  # +algorithm.file

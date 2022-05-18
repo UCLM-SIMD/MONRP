@@ -661,6 +661,7 @@ class GRASP:
         return solutions
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 
 
@@ -840,10 +841,9 @@ if __name__ == "__main__":
     we can uniquely identify the execution configuration. 
     """
     def json_description(self):
+=======
+>>>>>>> 0e162a71 (minor issues solved to run all methods from executer)
 
-
-        # convert into JSON:
-        return json.dumps(self.config_dictionary)
 
 
 >>>>>>> 19c7836f (ahora todos los resultados se almacenan en results.json con un id unico para cada conjunto de parametros de lanzamiento)
