@@ -500,14 +500,6 @@ class GRASP(AbstractAlgorithm):
 
         return solutions
 
-    """
-    Creates and returns a json-formatted description of the algorithm configuration, so that 
-    we can uniquely identify the execution configuration. 
-    """
-    def json_description(self):
 
-
-        # convert into JSON:
-        return json.dumps(self.config_dictionary)
 
 
