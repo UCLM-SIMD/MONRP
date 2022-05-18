@@ -18,7 +18,8 @@ class AbstractAlgorithm(ABC):
     """Abstract class for algorithm implementations
     """
 
-    def __init__(self, dataset_name: str = "test", dataset: Dataset = None, random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False):
+    def __init__(self, execs: int, dataset_name: str = "test", dataset: Dataset = None,
+                 random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False):
         """Default init method that sets common arguments such as dataset, seed and modes.
 
         Args:
@@ -27,6 +28,7 @@ class AbstractAlgorithm(ABC):
             debug_mode (bool, optional): [description]. Defaults to False.
             tackle_dependencies (bool, optional): [description]. Defaults to False.
         """
+        self.num_executions = execs
         if dataset is not None:
             self.dataset: Dataset = dataset
             self.dataset_name: str = dataset.id
@@ -43,6 +45,9 @@ class AbstractAlgorithm(ABC):
         self.population_debug = []
 
         self.hyperparameters: List[Hyperparameter] = []
+
+        self.config_dictionary = {'algorithm': 'abstract', 'dependencies': tackle_dependencies,
+                                  'dataset': self.dataset.id, 'seed': self.random_seed}
 
     def set_seed(self, seed: int):
         self.random_seed: int = seed
@@ -189,3 +194,7 @@ class AbstractAlgorithm(ABC):
             self.population_debug.append(population_debug.copy())
         else:
             self.population_debug.append(self.population.copy())
+
+
+
+

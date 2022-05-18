@@ -16,23 +16,28 @@ class UMDAAlgorithm(EDAAlgorithm):
     """Univariate Marginal Distribution Algorithm
     """
 
-    def __init__(self, dataset_name: str = "test", dataset: Dataset = None, random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
+    def __init__(self, execs,dataset_name: str = "test", dataset: Dataset = None, random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
                  population_length: int = 100, max_generations: int = 100, max_evaluations: int = 0,
                  selected_individuals: int = 60, selection_scheme: str = "nds", replacement_scheme: str = "replacement"):
 
-        super().__init__(dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
+        super().__init__(execs,dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
                          population_length, max_generations, max_evaluations)
-        self.executer = UMDAExecuter(algorithm=self)
+
+        self.executer = UMDAExecuter(algorithm=self, execs=execs)
 
         self.selected_individuals: int = selected_individuals
 
         self.selection_scheme: str = selection_scheme
         self.replacement_scheme: str = replacement_scheme
 
+        self.config_dictionary.update({'algorithm': 'umda'})
+
         self.hyperparameters.append(generate_hyperparameter(
             "selection_scheme", selection_scheme))
+        self.config_dictionary['selection_scheme'] = selection_scheme
         self.hyperparameters.append(generate_hyperparameter(
             "replacement_scheme", replacement_scheme))
+        self.config_dictionary['replacement_scheme'] = replacement_scheme
 
     def get_file(self) -> str:
         return (f"{str(self.__class__.__name__)}-{str(self.dataset_name)}-"

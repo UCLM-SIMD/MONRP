@@ -6,11 +6,11 @@ class PBILExecuter(AbstractExecuter):
     """Specific pbil implementation of executer.
     """
 
-    def __init__(self, algorithm):
+    def __init__(self, algorithm,execs:int):
         """Init method extends config and metrics fields with specific pbil algorithm data
         """
         from algorithms.EDA.PBIL.pbil_algorithm import PBILAlgorithm
-        super().__init__(algorithm)
+        super().__init__(algorithm,execs)
         self.algorithm: PBILAlgorithm
         self.algorithm_type: str = "pbil"
 
@@ -19,6 +19,8 @@ class PBILExecuter(AbstractExecuter):
 
         self.metrics_fields.extend(
             ["NumGenerations", "NumEvaluations", ])
+        self.metrics_dictionary["NumGenerations"] = [None] * int(execs)
+        self.metrics_dictionary["NumEvaluations"] = [None] * int(execs)
 
     def get_config_fields(self,) -> List[str]:
         """PBIL algorithm executer extends config fields read from the execution
@@ -40,17 +42,20 @@ class PBILExecuter(AbstractExecuter):
         config_lines.append(str(mutation_shift))
         return config_lines
 
-    def get_metrics_fields(self, result: Dict[str, Any]) -> List[str]:
+    def get_metrics_fields(self, result: Dict[str, Any], repetition) -> List[str]:
         """PBIL algorithm executer extends metrics fields read from the execution
         """
-        metrics_fields: List[str] = super().get_metrics_fields(result)
+        metrics_fields: List[str] = super().get_metrics_fields(result, repetition)
 
         numGenerations = str(
             result["numGenerations"]) if "numGenerations" in result else 'NaN'
         numEvaluations = str(
             result["numEvaluations"]) if "numEvaluations" in result else 'NaN'
 
-        metrics_fields.append(str(numGenerations))
-        metrics_fields.append(str(numEvaluations))
+        #metrics_fields.append(str(numGenerations))
+        #metrics_fields.append(str(numEvaluations))
+
+        self.metrics_dictionary['NumGenerations'][repetition] = numGenerations
+        self.metrics_dictionary['NumEvaluations'][repetition] = numEvaluations
 
         return metrics_fields

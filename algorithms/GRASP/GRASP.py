@@ -1,3 +1,4 @@
+import json
 from typing import Any, Dict, List
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
 import copy
@@ -26,13 +27,14 @@ class GRASP(AbstractAlgorithm):
 
     """
 
-    def __init__(self, dataset_name: str = "test", dataset: Dataset = None, iterations: int = 20, solutions_per_iteration: int = 10, max_evaluations: int = 0,
+    def __init__(self,  execs: int, dataset_name: str = "test", dataset: Dataset = None, iterations: int = 20, solutions_per_iteration: int = 10, max_evaluations: int = 0,
                  init_type: str = "stochastically", local_search_type: str = "best_first_neighbor_random", path_relinking_mode: str = "None", seed: int = None,
                  debug_mode: bool = False, tackle_dependencies: bool = False):
 
-        super().__init__(dataset_name, dataset, seed, debug_mode, tackle_dependencies)
+        super().__init__(execs,dataset_name, dataset, seed, debug_mode, tackle_dependencies)
 
-        self.executer = GRASPExecuter(algorithm=self)
+        self.executer = GRASPExecuter(algorithm=self, execs=execs)
+        self.config_dictionary.update({'algorithm': 'GRASP'})
 
         self.iterations: int = iterations
         self.solutions_per_iteration: int = solutions_per_iteration
@@ -40,16 +42,22 @@ class GRASP(AbstractAlgorithm):
 
         self.hyperparameters.append(generate_hyperparameter(
             "iterations", iterations))
+        self.config_dictionary['iterations'] = iterations
         self.hyperparameters.append(generate_hyperparameter(
             "solutions_per_iteration", solutions_per_iteration))
+        self.config_dictionary['solutions_per_iteration'] = solutions_per_iteration
         self.hyperparameters.append(generate_hyperparameter(
             "max_evaluations", max_evaluations))
+        self.config_dictionary['max_evaluations'] = max_evaluations
         self.hyperparameters.append(generate_hyperparameter(
             "init_type", init_type))
+        self.config_dictionary['init_type'] = init_type
         self.hyperparameters.append(generate_hyperparameter(
             "local_search_type", local_search_type))
+        self.config_dictionary['local_search_type'] = local_search_type
         self.hyperparameters.append(generate_hyperparameter(
             "path_relinking_mode", path_relinking_mode))
+        self.config_dictionary['path_relinking_mode'] = path_relinking_mode
 
         self.nds: List[Solution] = []
         self.num_evaluations: int = 0
@@ -77,6 +85,9 @@ class GRASP(AbstractAlgorithm):
             self.local_search = self.local_search_bitwise_neighborhood_sorted_domination
         elif self.local_search_type == "None":
             self.local_search = "None"
+
+
+
 
     def get_file(self) -> str:
         return (f"{str(self.__class__.__name__)}-{str(self.dataset_name)}-"
@@ -488,3 +499,15 @@ class GRASP(AbstractAlgorithm):
             solutions += new_sols
 
         return solutions
+
+    """
+    Creates and returns a json-formatted description of the algorithm configuration, so that 
+    we can uniquely identify the execution configuration. 
+    """
+    def json_description(self):
+
+
+        # convert into JSON:
+        return json.dumps(self.config_dictionary)
+
+

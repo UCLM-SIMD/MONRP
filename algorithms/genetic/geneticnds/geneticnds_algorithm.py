@@ -14,35 +14,52 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
     """Mono-Objective Genetic Algorithm that stores a set of nondominated solutions and updates it at each generation.
     """
 
-    def __init__(self, dataset_name: str = "test", dataset: Dataset = None, random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
+    def __init__(self, execs,dataset_name: str = "test", dataset: Dataset = None, random_seed: int = None,
+                 debug_mode: bool = False, tackle_dependencies: bool = False,
                  population_length: int = 100, max_generations: int = 100, max_evaluations: int = 0,
                  selection: str = "tournament", selection_candidates: int = 2,
                  crossover: str = "onepoint", crossover_prob: float = 0.9,
                  mutation: str = "flipeachbit", mutation_prob: float = 0.1,
-                 replacement: str = "elitism",):
+                 replacement: str = "elitism"):
 
-        super().__init__(dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
+        super().__init__(execs,dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
                          population_length, max_generations, max_evaluations,
                          selection, selection_candidates, crossover, crossover_prob,
                          mutation, mutation_prob, replacement,)
 
-        self.executer = GeneticNDSExecuter(algorithm=self)
+        self.executer = GeneticNDSExecuter(algorithm=self, execs=execs)
+        self.config_dictionary.update({'algorithm': 'geneticNDS'})
+
+        self.config_dictionary['population_length'] = population_length
+        self.config_dictionary['max_generations'] = max_generations
+        self.config_dictionary['max_evaluations'] = max_evaluations
+        self.config_dictionary['selection_candidates'] = selection_candidates
+        self.config_dictionary['crossover_prob'] = crossover_prob
+        self.config_dictionary['mutation_prob'] = mutation_prob
+
+
 
         if selection == "tournament":
             self.selection = self.selection_tournament
+        self.config_dictionary['selection'] = selection
 
         if crossover == "onepoint":
             self.crossover = self.crossover_one_point
+        self.config_dictionary['crossover'] = crossover
 
         if mutation == "flip1bit":
             self.mutation = self.mutation_flip1bit
         elif mutation == "flipeachbit":
             self.mutation = self.mutation_flipeachbit
+        self.config_dictionary['mutation'] = mutation
 
         if replacement == "elitism":
             self.replacement = self.replacement_elitism
         elif replacement == "elitismnds":
             self.replacement = self.replacement_elitism
+        self.config_dictionary['replacement'] = replacement
+
+
 
     def get_file(self) -> str:
         return (f"{str(self.__class__.__name__)}-{str(self.dataset_name)}-"

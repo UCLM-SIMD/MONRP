@@ -15,16 +15,16 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
     individuals by dominance and crowding distance.
     """
 
-    def __init__(self, dataset_name="test", dataset: Dataset = None, random_seed=None, population_length=20, max_generations=1000, max_evaluations=0,
+    def __init__(self,execs, dataset_name="test", dataset: Dataset = None, random_seed=None, population_length=20, max_generations=1000, max_evaluations=0,
                  selection="tournament", selection_candidates=2,
                  crossover="onepoint", crossover_prob=0.9,
                  mutation="flipeachbit", mutation_prob=0.1,
-                 debug_mode=False, tackle_dependencies=False):
+                 debug_mode=False, tackle_dependencies=False,  replacement='elitism'):
 
-        super().__init__(dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
+        super().__init__(execs,dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
                          population_length, max_generations, max_evaluations)
 
-        self.executer = NSGAIIExecuter(algorithm=self)
+        self.executer = NSGAIIExecuter(algorithm=self, execs=execs)
         self.selection_scheme = selection
         self.selection_candidates = selection_candidates
         self.crossover_scheme = crossover
@@ -41,16 +41,27 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
         self.num_generations: int = 0
         self.best_individual = None
 
+        self.config_dictionary.update({'algorithm': 'nsgaii'})
+        self.config_dictionary['population_length'] = population_length
+        self.config_dictionary['max_generations'] = max_generations
+        self.config_dictionary['max_evaluations'] = max_evaluations
+        self.config_dictionary['selection_candidates'] = selection_candidates
+        self.config_dictionary['crossover_prob'] = crossover_prob
+        self.config_dictionary['mutation_prob'] = mutation_prob
+
         if selection == "tournament":
             self.selection = self.selection_tournament
+        self.config_dictionary['selection'] = selection
 
         if crossover == "onepoint":
             self.crossover = self.crossover_one_point
+        self.config_dictionary['crossover'] = crossover
 
         if mutation == "flip1bit":
             self.mutation = self.mutation_flip1bit
         elif mutation == "flipeachbit":
             self.mutation = self.mutation_flipeachbit
+        self.config_dictionary['mutation'] = mutation
 
     def get_file(self) -> str:
         return (f"{str(self.__class__.__name__)}-{str(self.dataset_name)}-"
