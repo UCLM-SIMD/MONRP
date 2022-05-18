@@ -35,22 +35,22 @@ class AbstractExecuter(ABC):
         }
 
     def execute(self, executions: int, file_path: str) -> None:
-        """Method that executes the algorithm a number of times and writes a new line with config and metrics data for each execution
+        """Method that executes the algorithm a number of times and saves results in json global output file
         """
-
+        paretos_list = [] # list of pareto lists
         for it in range(0, executions):
             self.algorithm.reset()
             result = self.algorithm.run()
             self.get_metrics_fields(result, it)
+            pareto = self.get_pareto(result['population']) # get a list with pareto points
+            paretos_list.insert(0, pareto)
 
+        #  add/update results in json output file
         unique_id = ''.join(str(c) for c in self.algorithm.config_dictionary.values())
         results_dictionary = {'parameters': self.algorithm.config_dictionary,
-                              'metrics': self.metrics_dictionary}
-        #new_json=json.dumps(results_dictionary, indent=4)
+                              'metrics': self.metrics_dictionary,
+                              'paretos': paretos_list}
 
-
-        #    {**self.algorithm.config_dictionary, **self.metrics_dictionary}
-        #insert results in global results json file
         try:
             with open(file_path) as f:
                 all_dictionaries = json.load(f)
@@ -144,21 +144,19 @@ class AbstractExecuter(ABC):
         # f.write("Dataset,AlgorithmName,Cost,Value\n")
         f.close()
 
-    def execute_pareto(self, file_path: str) -> None:
-        """Method that executes the algorithm once and writes the solution points.
+    def get_pareto(self, population) -> List:
+        """converts cost and value of each individual in a pair of coordinates and
+        stores them in a list of duples (x,y)
         """
         self.algorithm.reset()
-        result = self.algorithm.run()
-        for sol in result["population"]:
-            # print("Executing iteration: ", i + 1)
-            cost = sol.total_cost
-            value = sol.total_satisfaction
+        solution_points = []
+        for sol in population:
+           point=(sol.total_cost,sol.total_satisfaction)
+           solution_points.insert(0,point)
+        return solution_points
 
-            f = open(file_path, "a")
-            data = f"{str(cost)},{str(value)}\n"
 
-            f.write(data)
-            f.close()
+
     """
     all_dictionaries is a dict of dicts.
     if id of results_dictionary already exists, values are overwritten in the corresponding dictionary in all_dictionaries.
