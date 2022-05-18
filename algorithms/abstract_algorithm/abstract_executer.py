@@ -137,6 +137,7 @@ class AbstractExecuter(ABC):
             paretos_list.insert(0, pareto)
 
         #  add/update results in json output file
+        self.algorithm.config_dictionary['num_executions'] = executions
         unique_id = ''.join(str(c) for c in self.algorithm.config_dictionary.values())
         results_dictionary = {'parameters': self.algorithm.config_dictionary,
                               'metrics': self.metrics_dictionary,
