@@ -1,3 +1,4 @@
+from algorithms.EDA.FEDA.feda_algorithm import FEDAAlgorithm
 from algorithms.EDA.PBIL.pbil_algorithm import PBILAlgorithm
 from algorithms.EDA.UMDA.umda_algorithm import UMDAAlgorithm
 from algorithms.GRASP.GRASP import GRASP
@@ -92,6 +93,23 @@ elif(params[0] == "eda"):
                                     max_generations=gens, learning_rate=lr,
         mutation_prob=mutprob, mutation_shift=mutshift, random_seed=seed, execs=execs, tackle_dependencies=tackle_dependencies)
         #filepath = "output/metrics/pbil-"+algorithm.file
+        filepath = "output/metrics/results.json"
+
+    elif(params[1] == 'feda'):
+        # -c eda feda p1 5 100 300 10000  5 D
+        # algorithmtype algorithm dataset seed numpop gens max_evaluations num_execs dependencies
+        algorithm_model = FEDAAlgorithm
+
+        algorithm_name, dataset_name, seed, numpop, gens, max_evaluations, execs, dependencies = \
+            [str(params[1]), str(params[2]), int(params[3]),
+             int(params[4]),  int(params[5]), int(params[6]),
+             int(params[7]), str(params[8])]
+        tackle_dependencies = True if dependencies == 'D' else False
+
+        algorithm = algorithm_model(dataset_name=dataset_name, population_length=numpop, max_evaluations=max_evaluations,
+                        max_generations=gens, random_seed=seed, execs=execs,
+                        tackle_dependencies=tackle_dependencies)
+        # filepath = "output/metrics/pbil-"+algorithm.file
         filepath = "output/metrics/results.json"
 
 # try:

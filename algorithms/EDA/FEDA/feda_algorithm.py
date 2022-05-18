@@ -46,24 +46,27 @@ class FEDAAlgorithm(EDAAlgorithm):
     while(!stop_criterion)
     """
 
-    def __init__(self, dataset_name: str = "2", dataset: Dataset = None, random_seed: int = None, debug_mode: bool = False,
+    def __init__(self, execs, dataset_name: str = "p2", dataset: Dataset = None, random_seed: int = None, debug_mode: bool = False,
                  tackle_dependencies: bool = False,
                  population_length: int = 100, selection_scheme: str = "nds", selected_individuals: int = 60, max_generations: int = 100,
                  max_evaluations: int = 0):
 
-        super().__init__(dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
+        super().__init__(execs,dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
                          population_length, max_generations, max_evaluations)
 
         self.population = None
         self.selection_scheme: str = selection_scheme
         self.selected_individuals: int = selected_individuals
+        self.config_dictionary.update({'algorithm': 'feda'})
 
         self.hyperparameters.append(generate_hyperparameter(
             "selection_scheme", selection_scheme))
+        self.config_dictionary['selection_scheme'] = selection_scheme
         self.hyperparameters.append(generate_hyperparameter(
             "selected_individuals", selected_individuals))
+        self.config_dictionary['selected_individuals'] = selected_individuals
 
-        self.executer = FEDAExecuter(algorithm=self)
+        self.executer = FEDAExecuter(algorithm=self, execs=execs)
 
         self.probs = np.full(self.dataset.num_pbis, 0)
 
