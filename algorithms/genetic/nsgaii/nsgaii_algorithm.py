@@ -16,6 +16,7 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
     individuals by dominance and crowding distance.
     """
 
+<<<<<<< HEAD
     def __init__(self,execs, dataset_name="test", dataset: Dataset = None, random_seed=None, population_length=20,
                  max_generations=1000, max_evaluations=0,
                  selection="tournament", selection_candidates=2,
@@ -25,6 +26,16 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
 
         super().__init__(execs,dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
                          population_length, max_generations, max_evaluations, subset_size=subset_size)
+=======
+    def __init__(self,execs, dataset_name="test", dataset: Dataset = None, random_seed=None, population_length=20, max_generations=1000, max_evaluations=0,
+                 selection="tournament", selection_candidates=2,
+                 crossover="onepoint", crossover_prob=0.9,
+                 mutation="flipeachbit", mutation_prob=0.1,
+                 debug_mode=False, tackle_dependencies=False,  replacement='elitism'):
+
+        super().__init__(execs,dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
+                         population_length, max_generations, max_evaluations)
+>>>>>>> 19c7836f (ahora todos los resultados se almacenan en results.json con un id unico para cada conjunto de parametros de lanzamiento)
 
         self.executer = NSGAIIExecuter(algorithm=self, execs=execs)
         self.selection_scheme = selection
@@ -64,9 +75,12 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
         elif mutation == "flipeachbit":
             self.mutation = self.mutation_flipeachbit
         self.config_dictionary['mutation'] = mutation
+<<<<<<< HEAD
 
         self.config_dictionary['replacement'] = self.replacement_scheme
         self.deepcopy=True
+=======
+>>>>>>> 19c7836f (ahora todos los resultados se almacenan en results.json con un id unico para cada conjunto de parametros de lanzamiento)
 
     def get_file(self) -> str:
         return (f"{str(self.__class__.__name__)}-{str(self.dataset_name)}-"

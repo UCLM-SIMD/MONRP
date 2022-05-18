@@ -1,6 +1,10 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
+=======
+import json
+>>>>>>> 19c7836f (ahora todos los resultados se almacenan en results.json con un id unico para cada conjunto de parametros de lanzamiento)
 from typing import Any, Dict, List
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
 import copy
@@ -63,6 +67,7 @@ class GRASP:
 <<<<<<< HEAD
     """
 
+<<<<<<< HEAD
     def __init__(self,  execs: int, dataset_name: str = "test", dataset: Dataset = None, iterations: int = 20,
                  solutions_per_iteration: int = 10, max_evaluations: int = 0,
                  init_type: str = "stochastically", local_search_type: str = "best_first_neighbor_random",
@@ -70,6 +75,13 @@ class GRASP:
                  debug_mode: bool = False, tackle_dependencies: bool = False, subset_size: int = 5):
 
         super().__init__(execs,dataset_name, dataset, seed, debug_mode, tackle_dependencies, subset_size=subset_size)
+=======
+    def __init__(self,  execs: int, dataset_name: str = "test", dataset: Dataset = None, iterations: int = 20, solutions_per_iteration: int = 10, max_evaluations: int = 0,
+                 init_type: str = "stochastically", local_search_type: str = "best_first_neighbor_random", path_relinking_mode: str = "None", seed: int = None,
+                 debug_mode: bool = False, tackle_dependencies: bool = False):
+
+        super().__init__(execs,dataset_name, dataset, seed, debug_mode, tackle_dependencies)
+>>>>>>> 19c7836f (ahora todos los resultados se almacenan en results.json con un id unico para cada conjunto de parametros de lanzamiento)
 
         self.executer = GRASPExecuter(algorithm=self, execs=execs)
         self.config_dictionary.update({'algorithm': 'GRASP'})
@@ -648,6 +660,7 @@ class GRASP:
 
         return solutions
 
+<<<<<<< HEAD
 
 
 
@@ -821,3 +834,16 @@ if __name__ == "__main__":
     for y in results:
         print(y, ':', results[y])
 >>>>>>> 2fb57e2a (GRASP terminado)
+=======
+    """
+    Creates and returns a json-formatted description of the algorithm configuration, so that 
+    we can uniquely identify the execution configuration. 
+    """
+    def json_description(self):
+
+
+        # convert into JSON:
+        return json.dumps(self.config_dictionary)
+
+
+>>>>>>> 19c7836f (ahora todos los resultados se almacenan en results.json con un id unico para cada conjunto de parametros de lanzamiento)

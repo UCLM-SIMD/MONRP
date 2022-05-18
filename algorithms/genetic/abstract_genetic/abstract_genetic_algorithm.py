@@ -23,7 +23,11 @@ class AbstractGeneticAlgorithm(AbstractAlgorithm):
         """Init method calls parent init and includes specific parameters of genetic algorithms
         """
         super().__init__(execs,dataset_name=dataset_name, dataset=dataset, random_seed=random_seed, debug_mode=debug_mode,
+<<<<<<< HEAD
                          tackle_dependencies=tackle_dependencies,  subset_size=subset_size)
+=======
+                         tackle_dependencies=tackle_dependencies)
+>>>>>>> 19c7836f (ahora todos los resultados se almacenan en results.json con un id unico para cada conjunto de parametros de lanzamiento)
 
         self.population_length: int = population_length
         self.max_generations: int = max_generations

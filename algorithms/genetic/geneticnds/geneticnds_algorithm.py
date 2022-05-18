@@ -25,7 +25,11 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
                  selection: str = "tournament", selection_candidates: int = 2,
                  crossover: str = "onepoint", crossover_prob: float = 0.9,
                  mutation: str = "flipeachbit", mutation_prob: float = 0.1,
+<<<<<<< HEAD
                  replacement: str = "elitism", subset_size: int = 5):
+=======
+                 replacement: str = "elitism"):
+>>>>>>> 19c7836f (ahora todos los resultados se almacenan en results.json con un id unico para cada conjunto de parametros de lanzamiento)
 
         super().__init__(execs,dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
                          population_length, max_generations, max_evaluations,
@@ -43,6 +47,20 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
         self.config_dictionary['mutation_prob'] = mutation_prob
 
 
+<<<<<<< HEAD
+=======
+        self.executer = GeneticNDSExecuter(algorithm=self, execs=execs)
+        self.config_dictionary.update({'algorithm': 'geneticNDS'})
+
+        self.config_dictionary['population_length'] = population_length
+        self.config_dictionary['max_generations'] = max_generations
+        self.config_dictionary['max_evaluations'] = max_evaluations
+        self.config_dictionary['selection_candidates'] = selection_candidates
+        self.config_dictionary['crossover_prob'] = crossover_prob
+        self.config_dictionary['mutation_prob'] = mutation_prob
+
+
+>>>>>>> 19c7836f (ahora todos los resultados se almacenan en results.json con un id unico para cada conjunto de parametros de lanzamiento)
 
         if selection == "tournament":
             self.selection = self.selection_tournament

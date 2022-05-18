@@ -31,8 +31,12 @@ class AbstractAlgorithm(ABC):
     """
 
     def __init__(self, execs: int, dataset_name: str = "test", dataset: Dataset = None,
+<<<<<<< HEAD
                  random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
                  subset_size: int = 5):
+=======
+                 random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False):
+>>>>>>> 19c7836f (ahora todos los resultados se almacenan en results.json con un id unico para cada conjunto de parametros de lanzamiento)
         """Default init method that sets common arguments such as dataset, seed and modes.
 
         Args:
@@ -60,11 +64,16 @@ class AbstractAlgorithm(ABC):
 
         self.hyperparameters: List[Hyperparameter] = []
 
+<<<<<<< HEAD
         self.hyperparameters.append(generate_hyperparameter(
             "subset_size", subset_size))
 
         self.config_dictionary = {'algorithm': 'abstract', 'dependencies': tackle_dependencies,
                                   'dataset': self.dataset.id, 'seed': self.random_seed, 'subset_size': self.subset_size}
+=======
+        self.config_dictionary = {'algorithm': 'abstract', 'dependencies': tackle_dependencies,
+                                  'dataset': self.dataset.id, 'seed': self.random_seed}
+>>>>>>> 19c7836f (ahora todos los resultados se almacenan en results.json con un id unico para cada conjunto de parametros de lanzamiento)
 
     def set_seed(self, seed: int):
         self.random_seed: int = seed
@@ -214,3 +223,7 @@ class AbstractAlgorithm(ABC):
 
 
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 19c7836f (ahora todos los resultados se almacenan en results.json con un id unico para cada conjunto de parametros de lanzamiento)

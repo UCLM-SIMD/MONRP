@@ -1,5 +1,8 @@
 import json
+<<<<<<< HEAD
 import warnings
+=======
+>>>>>>> 19c7836f (ahora todos los resultados se almacenan en results.json con un id unico para cada conjunto de parametros de lanzamiento)
 from abc import ABC
 from typing import List
 
@@ -8,14 +11,24 @@ import evaluation.metrics as metrics
 from models.Solution import Solution
 
 
+
+
+
 class AbstractExecuter(ABC):
     """Executer class used to delegate configuration, execution and formatting of algorithm outputs
     """
 
+<<<<<<< HEAD
     def __init__(self, algorithm: AbstractAlgorithm, num_execs: int):
         """All executers store default config and metrics fields. Specific implementations might include more fields
         """
         self.executions = int(num_execs)
+=======
+    def __init__(self, algorithm: AbstractAlgorithm, excecs: int):
+        """All executers store default config and metrics fields. Specific implementations might include more fields
+        """
+        self.executions = int(excecs)
+>>>>>>> 19c7836f (ahora todos los resultados se almacenan en results.json con un id unico para cada conjunto de parametros de lanzamiento)
         self.algorithm: AbstractAlgorithm = algorithm
         self.config_fields: List[str] = ["Dataset", "Algorithm"]
         self.metrics_fields: List[str] = ["Time(s)", "HV", "Spread", "NumSolutions", "Spacing",
@@ -23,7 +36,10 @@ class AbstractExecuter(ABC):
 
         self.metrics_dictionary = {
             'time': [None] * self.executions,
+<<<<<<< HEAD
             'NDS_size': [None] * self.executions,
+=======
+>>>>>>> 19c7836f (ahora todos los resultados se almacenan en results.json con un id unico para cada conjunto de parametros de lanzamiento)
             'HV': [None] * self.executions,
             'spread': [None] * self.executions,
             'numSolutions': [None] * self.executions,
@@ -31,6 +47,7 @@ class AbstractExecuter(ABC):
             'mean_bits_per_sol': [None] * self.executions,
             'avgValue': [None] * self.executions,
             'bestAvgValue': [None] * self.executions,
+<<<<<<< HEAD
             'gdplus': "GD+ not calculated yet. You may need to run extract_postMetrics.py",
             'unfr': "UNFR not calculated yet. You may need to run extract_postMetrics.py"
 
@@ -104,6 +121,42 @@ class AbstractExecuter(ABC):
 
         return [], []
 
+=======
+
+        }
+
+    def execute(self, executions: int, file_path: str) -> None:
+        """Method that executes the algorithm a number of times and writes a new line with config and metrics data for each execution
+        """
+
+        for it in range(0, executions):
+            self.algorithm.reset()
+            result = self.algorithm.run()
+            self.get_metrics_fields(result, it)
+
+        unique_id = ''.join(str(c) for c in self.algorithm.config_dictionary.values())
+        results_dictionary = {'parameters': self.algorithm.config_dictionary,
+                              'metrics': self.metrics_dictionary}
+        #new_json=json.dumps(results_dictionary, indent=4)
+
+
+        #    {**self.algorithm.config_dictionary, **self.metrics_dictionary}
+        #insert results in global results json file
+        try:
+            with open(file_path) as f:
+                all_dictionaries = json.load(f)
+                if unique_id in all_dictionaries:
+                    all_dictionaries[unique_id].update(results_dictionary)
+                else:
+                    all_dictionaries[unique_id] = results_dictionary
+        except IOError:  # first time so output file does not exist yet
+            all_dictionaries = {unique_id: results_dictionary}
+
+        with open(file_path, 'w', encoding='utf-8') as f:
+            json.dump(all_dictionaries, f, ensure_ascii=False, indent=4)
+
+
+>>>>>>> 19c7836f (ahora todos los resultados se almacenan en results.json con un id unico para cada conjunto de parametros de lanzamiento)
     def get_metrics_fields(self, result, repetition):
         """adds metrics of current repetition of the algorithm in the dictionary, for later insertion in json
         """
@@ -136,6 +189,11 @@ class AbstractExecuter(ABC):
         # metrics_fields.append(str(mean_bits_per_sol))
         # metrics_fields.append(str(avgValue))
         # metrics_fields.append(str(bestAvgValue))
+<<<<<<< HEAD
+=======
+
+        # return metrics_fields
+>>>>>>> 19c7836f (ahora todos los resultados se almacenan en results.json con un id unico para cada conjunto de parametros de lanzamiento)
 
         # return metrics_fields
 
@@ -194,4 +252,30 @@ class AbstractExecuter(ABC):
         f = open(file_path, "w")
         # f.write("Dataset,AlgorithmName,Cost,Value\n")
         f.close()
+<<<<<<< HEAD
 """
+=======
+
+    def execute_pareto(self, file_path: str) -> None:
+        """Method that executes the algorithm once and writes the solution points.
+        """
+        self.algorithm.reset()
+        result = self.algorithm.run()
+        for sol in result["population"]:
+            # print("Executing iteration: ", i + 1)
+            cost = sol.total_cost
+            value = sol.total_satisfaction
+
+            f = open(file_path, "a")
+            data = f"{str(cost)},{str(value)}\n"
+
+            f.write(data)
+            f.close()
+    """
+    all_dictionaries is a dict of dicts.
+    if id of results_dictionary already exists, values are overwritten in the corresponding dictionary in all_dictionaries.
+    otherwise, it is inserted as a new dictionary
+    """
+
+
+>>>>>>> 19c7836f (ahora todos los resultados se almacenan en results.json con un id unico para cada conjunto de parametros de lanzamiento)

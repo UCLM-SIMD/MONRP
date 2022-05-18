@@ -23,7 +23,11 @@ class UMDAAlgorithm(EDAAlgorithm):
                  replacement_scheme: str = "replacement", subset_size: int = 20):
 
         super().__init__(execs,dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
+<<<<<<< HEAD
                          population_length, max_generations, max_evaluations, subset_size=subset_size)
+=======
+                         population_length, max_generations, max_evaluations)
+>>>>>>> 19c7836f (ahora todos los resultados se almacenan en results.json con un id unico para cada conjunto de parametros de lanzamiento)
 
         self.executer = UMDAExecuter(algorithm=self, execs=execs)
 
