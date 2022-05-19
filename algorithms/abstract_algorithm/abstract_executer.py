@@ -134,7 +134,7 @@ class AbstractExecuter(ABC):
             result = self.algorithm.run()
             self.get_metrics_fields(result, it)
             pareto = self.get_pareto(result['population']) # get a list with pareto points
-            paretos_list.insert(0, pareto)
+            paretos_list.insert(len(paretos_list), pareto)
 
         #  add/update results in json output file
         self.algorithm.config_dictionary['num_executions'] = executions
@@ -265,16 +265,11 @@ class AbstractExecuter(ABC):
         solution_points = []
         for sol in population:
            point=(sol.total_cost,sol.total_satisfaction)
-           solution_points.insert(0,point)
+           solution_points.insert(len(solution_points),point)
         return solution_points
 
 
 
-    """
-    all_dictionaries is a dict of dicts.
-    if id of results_dictionary already exists, values are overwritten in the corresponding dictionary in all_dictionaries.
-    otherwise, it is inserted as a new dictionary
-    """
 
 
 >>>>>>> 19c7836f (ahora todos los resultados se almacenan en results.json con un id unico para cada conjunto de parametros de lanzamiento)
