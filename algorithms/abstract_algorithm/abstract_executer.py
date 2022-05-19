@@ -11,9 +11,6 @@ import evaluation.metrics as metrics
 from models.Solution import Solution
 
 
-
-
-
 class AbstractExecuter(ABC):
     """Executer class used to delegate configuration, execution and formatting of algorithm outputs
     """
@@ -125,11 +122,11 @@ class AbstractExecuter(ABC):
 
         }
 
-    def execute(self, executions: int, file_path: str) -> None:
-        """Method that executes the algorithm a number of times and saves results in json global output file
+    def execute(self, output_folder: str) -> None:
+        """Method that executes the algorithm a number of times and saves results in json  output file
         """
         paretos_list = [] # list of pareto lists
-        for it in range(0, executions):
+        for it in range(0,  self.executions):
             self.algorithm.reset()
             result = self.algorithm.run()
             self.get_metrics_fields(result, it)
@@ -137,24 +134,24 @@ class AbstractExecuter(ABC):
             paretos_list.insert(len(paretos_list), pareto)
 
         #  add/update results in json output file
-        self.algorithm.config_dictionary['num_executions'] = executions
+        self.algorithm.config_dictionary['num_executions'] =  self.executions
         unique_id = ''.join(str(c) for c in self.algorithm.config_dictionary.values())
         results_dictionary = {'parameters': self.algorithm.config_dictionary,
                               'metrics': self.metrics_dictionary,
                               'paretos': paretos_list}
 
-        try:
-            with open(file_path) as f:
-                all_dictionaries = json.load(f)
-                if unique_id in all_dictionaries:
-                    all_dictionaries[unique_id].update(results_dictionary)
-                else:
-                    all_dictionaries[unique_id] = results_dictionary
-        except IOError:  # first time so output file does not exist yet
-            all_dictionaries = {unique_id: results_dictionary}
+       # try:
+        #    with open(output_folder+id+'.json') as f:
+                #all_dictionaries = json.load(f)
+                #if unique_id in all_dictionaries:
+                #    all_dictionaries[unique_id].update(results_dictionary)
+                #else:
+                #    all_dictionaries[unique_id] = results_dictionary
+        #except IOError:  # first time so output file does not exist yet
+            #all_dictionaries = {unique_id: results_dictionary}
 
-        with open(file_path, 'w', encoding='utf-8') as f:
-            json.dump(all_dictionaries, f, ensure_ascii=False, indent=4)
+        with open(output_folder+unique_id+'.json', 'w', encoding='utf-8') as f:
+            json.dump(results_dictionary, f, ensure_ascii=False, indent=4)
 
 
 >>>>>>> 19c7836f (ahora todos los resultados se almacenan en results.json con un id unico para cada conjunto de parametros de lanzamiento)
@@ -205,11 +202,17 @@ class AbstractExecuter(ABC):
         self.algorithm.reset()
         solution_points = []
         for sol in population:
+<<<<<<< HEAD
             point = (sol.total_cost, sol.total_satisfaction)
             solution_points.insert(len(solution_points), point)
         return solution_points
 
 
+=======
+           point=(sol.total_cost,sol.total_satisfaction)
+           solution_points.insert(len(solution_points),point)
+        return solution_points
+>>>>>>> 5f26e099 (each experiment result is stored in a dedicated file with unique name based on experiment hyperparameters)
 """
     def file_write_line(self, file_path: str, line: str) -> None:
         #Aux method to write a line in a file
@@ -254,6 +257,7 @@ class AbstractExecuter(ABC):
         # f.write("Dataset,AlgorithmName,Cost,Value\n")
         f.close()
 <<<<<<< HEAD
+<<<<<<< HEAD
 """
 =======
 
@@ -267,6 +271,10 @@ class AbstractExecuter(ABC):
            point=(sol.total_cost,sol.total_satisfaction)
            solution_points.insert(len(solution_points),point)
         return solution_points
+=======
+"""
+
+>>>>>>> 5f26e099 (each experiment result is stored in a dedicated file with unique name based on experiment hyperparameters)
 
 
 
