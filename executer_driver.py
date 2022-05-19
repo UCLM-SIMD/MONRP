@@ -7,7 +7,7 @@ from algorithms.genetic.nsgaii.nsgaii_algorithm import NSGAIIAlgorithm
 import argparse
 import os
 
-from datasets.Dataset import Dataset
+OUTPUT_FOLDER = "output/"
 
 curpath = os.path.abspath(os.curdir)
 
@@ -40,7 +40,7 @@ if(params[0] == "genetic"):
                                 max_generations=max_gens, max_evaluations=max_evaluations,
                                 selection=sel_scheme, crossover=cross_scheme, crossover_prob=cross_prob, mutation=mut_scheme,
                                 mutation_prob=mut_prob, replacement=repl_scheme, execs=execs, tackle_dependencies=tackle_dependencies)
-    filepath = "output/metrics/results.json"
+
 
 elif(params[0] == "grasp"):
     # "-c grasp grasp p1 5 10 10 10000 stochastically best_first_neighbor_random None 5 D"
@@ -57,7 +57,7 @@ elif(params[0] == "grasp"):
     algorithm = algorithm_model(dataset_name=dataset_name, iterations=iterations, solutions_per_iteration=solutions_per_iteration,
                                 max_evaluations=max_evaluations, init_type=init_type, local_search_type=local_search_type,
                                 path_relinking_mode=path_relinking, seed=seed, execs=execs, tackle_dependencies=tackle_dependencies)
-    filepath = "output/metrics/results.json"  # +algorithm.file
+
 
 elif(params[0] == "eda"):
     if(params[1] == "umda"):
@@ -77,10 +77,10 @@ elif(params[0] == "eda"):
                                     selection_scheme=selscheme, replacement_scheme=replscheme,
                                     random_seed=seed, execs=execs, tackle_dependencies=tackle_dependencies)
         #filepath = "output/metrics/umda-"+algorithm.file
-        filepath = "output/metrics/results.json"
+
 
     elif(params[1] == "pbil"):
-        # -c eda pbil p1 5 100 300 10000 0.1 0.1 0.1 5 D
+        # "-c eda pbil p1 5 100 300 10000 0.1 0.1 0.1 5 D"
         # algorithmtype algorithm dataset seed numpop gens max_evaluations lr mutprob mutshift num_execs dependencies
         algorithm_model = PBILAlgorithm
 
@@ -93,7 +93,7 @@ elif(params[0] == "eda"):
                                     max_generations=gens, learning_rate=lr,
         mutation_prob=mutprob, mutation_shift=mutshift, random_seed=seed, execs=execs, tackle_dependencies=tackle_dependencies)
         #filepath = "output/metrics/pbil-"+algorithm.file
-        filepath = "output/metrics/results.json"
+
 
     elif(params[1] == 'feda'):
         # -c eda feda p1 5 100 300 10000  5 D
@@ -109,10 +109,8 @@ elif(params[0] == "eda"):
         algorithm = algorithm_model(dataset_name=dataset_name, population_length=numpop, max_evaluations=max_evaluations,
                         max_generations=gens, random_seed=seed, execs=execs,
                         tackle_dependencies=tackle_dependencies)
-        # filepath = "output/metrics/pbil-"+algorithm.file
-        filepath = "output/metrics/results.json"
 
-# try:
-algorithm.executer.execute(executions=int(algorithm.num_executions), file_path=filepath)
-# except:
-#    print("wrong algorithm type")
+
+
+algorithm.executer.execute(output_folder=OUTPUT_FOLDER)
+

@@ -6,9 +6,6 @@ from algorithms.abstract_algorithm.abstract_algorithm import AbstractAlgorithm
 import evaluation.metrics as metrics
 
 
-
-
-
 class AbstractExecuter(ABC):
     """Executer class used to delegate configuration, execution and formatting of algorithm outputs
     """
@@ -34,11 +31,11 @@ class AbstractExecuter(ABC):
 
         }
 
-    def execute(self, executions: int, file_path: str) -> None:
-        """Method that executes the algorithm a number of times and saves results in json global output file
+    def execute(self, output_folder: str) -> None:
+        """Method that executes the algorithm a number of times and saves results in json  output file
         """
         paretos_list = [] # list of pareto lists
-        for it in range(0, executions):
+        for it in range(0,  self.executions):
             self.algorithm.reset()
             result = self.algorithm.run()
             self.get_metrics_fields(result, it)
@@ -46,24 +43,24 @@ class AbstractExecuter(ABC):
             paretos_list.insert(len(paretos_list), pareto)
 
         #  add/update results in json output file
-        self.algorithm.config_dictionary['num_executions'] = executions
+        self.algorithm.config_dictionary['num_executions'] =  self.executions
         unique_id = ''.join(str(c) for c in self.algorithm.config_dictionary.values())
         results_dictionary = {'parameters': self.algorithm.config_dictionary,
                               'metrics': self.metrics_dictionary,
                               'paretos': paretos_list}
 
-        try:
-            with open(file_path) as f:
-                all_dictionaries = json.load(f)
-                if unique_id in all_dictionaries:
-                    all_dictionaries[unique_id].update(results_dictionary)
-                else:
-                    all_dictionaries[unique_id] = results_dictionary
-        except IOError:  # first time so output file does not exist yet
-            all_dictionaries = {unique_id: results_dictionary}
+       # try:
+        #    with open(output_folder+id+'.json') as f:
+                #all_dictionaries = json.load(f)
+                #if unique_id in all_dictionaries:
+                #    all_dictionaries[unique_id].update(results_dictionary)
+                #else:
+                #    all_dictionaries[unique_id] = results_dictionary
+        #except IOError:  # first time so output file does not exist yet
+            #all_dictionaries = {unique_id: results_dictionary}
 
-        with open(file_path, 'w', encoding='utf-8') as f:
-            json.dump(all_dictionaries, f, ensure_ascii=False, indent=4)
+        with open(output_folder+unique_id+'.json', 'w', encoding='utf-8') as f:
+            json.dump(results_dictionary, f, ensure_ascii=False, indent=4)
 
 
     def get_metrics_fields(self, result, repetition):
@@ -103,30 +100,42 @@ class AbstractExecuter(ABC):
 
         # return metrics_fields
 
-    def file_write_line(self, file_path: str, line: str) -> None:
-        """Aux method to write a line in a file
+    def get_pareto(self, population) -> List:
+        """converts cost and value of each individual in a pair of coordinates and
+        stores them in a list of duples (x,y)
         """
+        self.algorithm.reset()
+        solution_points = []
+        for sol in population:
+           point=(sol.total_cost,sol.total_satisfaction)
+           solution_points.insert(len(solution_points),point)
+        return solution_points
+"""
+    def file_write_line(self, file_path: str, line: str) -> None:
+        #Aux method to write a line in a file
+        
         f = open(file_path, "a")
         f.write(line)
         f.close()
+"""
 
-    def initialize_file(self, file_path: str) -> None:
-        """Aux method to write the header of the file.
-        """
+""" def initialize_file(self, file_path: str) -> None:
+        #Aux method to write the header of the file.
+        
         # add all fields
         fields = self.config_fields + self.metrics_fields
         header: str = self.get_string_from_fields(fields, end_line=True)
         file = open(file_path, "w")
         file.write(header)
         file.close()
-
-    def reset_file(self, file_path: str) -> None:
+"""
+"""   def reset_file(self, file_path: str) -> None:
         file = open(file_path, "w")
         file.close()
-
-    def get_string_from_fields(self, fields_array: List[str], end_line: bool = True) -> str:
-        """Aux method to generate a string line from a list of fields
-        """
+"""
+"""   def get_string_from_fields(self, fields_array: List[str], end_line: bool = True) -> str:
+        #Aux method to generate a string line from a list of fields
+        
         line: str = ""
         for field_index in range(len(fields_array) - 1):
             line += f"{fields_array[field_index]},"
@@ -138,23 +147,14 @@ class AbstractExecuter(ABC):
         else:
             line += ","
         return line
-
-    def initialize_file_pareto(self, file_path: str) -> None:
+"""
+"""   def initialize_file_pareto(self, file_path: str) -> None:
         # print("Running...")
         f = open(file_path, "w")
         # f.write("Dataset,AlgorithmName,Cost,Value\n")
         f.close()
+"""
 
-    def get_pareto(self, population) -> List:
-        """converts cost and value of each individual in a pair of coordinates and
-        stores them in a list of duples (x,y)
-        """
-        self.algorithm.reset()
-        solution_points = []
-        for sol in population:
-           point=(sol.total_cost,sol.total_satisfaction)
-           solution_points.insert(len(solution_points),point)
-        return solution_points
 
 
 
