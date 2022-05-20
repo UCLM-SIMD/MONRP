@@ -67,6 +67,10 @@ def calculate_spacing(population: List[Solution]) -> float:
     return spacing
 
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 50863ec1 (HV calculado usando biblioteca pymoo y punto de referencia = nadir_point + range/10)
 def calculate_hypervolume_old(population: List[Solution]) -> float:
     objectives_diff = []
     aux_max_cost, aux_max_sat = population[0].get_max_cost_satisfactions()
@@ -101,6 +105,40 @@ def calculate_hypervolume_old(population: List[Solution]) -> float:
         hypervolume *= objectives_diff[i]
 
     return hypervolume
+
+def calculate_hypervolume(population: List[Solution]) -> float:
+
+    points = []
+    nadir_x = float("-inf")
+    nadir_y = float("-inf")
+    best_x = float("+inf")
+    best_y = float("+inf")
+
+    for ind in population:
+        #se revierte el orden, más es peor, para compatibilidad con pymoo
+        x = 1 - ind.total_cost
+        y = 1 - ind.total_satisfaction
+        points.append([x, y])
+        nadir_x = x if x > nadir_x else nadir_x
+        nadir_y = y if y > nadir_y else nadir_y
+        best_x = x if x < best_x else best_x
+        best_y = y if y < best_y else best_y
+    np_points = np.array(points)
+    range_x = nadir_x - best_x
+    range_y = nadir_y - best_y
+
+    ref_x = nadir_x + range_x/10
+    ref_y = nadir_y + range_y / 10
+    ref_x = 1 if ref_x > 1 else ref_x
+    ref_y = 1 if ref_y > 1 else ref_y
+
+    Scatter().add(np_points).show()
+
+    hv = get_performance_indicator("hv", ref_point=np.array(np.array([ref_x, ref_y])))
+    hypervolume = hv.do(np_points)
+    print(hypervolume)
+    return hypervolume
+
 
 
 def calculate_gdplus(nds: [[float, float]],
