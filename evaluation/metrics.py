@@ -118,6 +118,7 @@ def calculate_hypervolume(population: List[Solution]) -> float:
         #se revierte el orden, más es peor, para compatibilidad con pymoo
         x = 1 - ind.total_cost
         y = 1 - ind.total_satisfaction
+
         points.append([x, y])
         nadir_x = x if x > nadir_x else nadir_x
         nadir_y = y if y > nadir_y else nadir_y
@@ -132,11 +133,14 @@ def calculate_hypervolume(population: List[Solution]) -> float:
     ref_x = 1 if ref_x > 1 else ref_x
     ref_y = 1 if ref_y > 1 else ref_y
 
-    Scatter().add(np_points).show()
 
     hv = get_performance_indicator("hv", ref_point=np.array(np.array([ref_x, ref_y])))
     hypervolume = hv.do(np_points)
-    print(hypervolume)
+
+    #Scatter(title=f"HV = {hypervolume}").add(np_points).show()
+
+
+
     return hypervolume
 
 
