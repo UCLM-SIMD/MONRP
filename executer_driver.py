@@ -178,7 +178,7 @@ algorithm.executer.execute(output_folder=OUTPUT_FOLDER)
 
 elif(params[0] == "grasp"):
     # "-c grasp grasp p1 5 10 10 10000 stochastically best_first_neighbor_random None 5 D"
-    # algorithmtype algorithm dataset seed iterations solutions_per_iteration max_evaluations init_type local_search_type path_relinking_mode num_execs
+    # algorithmtype algorithm dataset seed iterations solutions_per_iteration max_evaluations init_type local_search_type path_relinking_mode num_execs tackle_dependencies
     algorithm_model = GRASP
 
     algorithm_name, dataset_name, seed, iterations, solutions_per_iteration, max_evaluations, init_type, \

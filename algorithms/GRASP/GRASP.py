@@ -1,10 +1,14 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 import json
 >>>>>>> 19c7836f (ahora todos los resultados se almacenan en results.json con un id unico para cada conjunto de parametros de lanzamiento)
+=======
+
+>>>>>>> 62552ac7 (extract_postMetrics.py created. Now a set of experiments hyperparameters can be set in order to generate the)
 from typing import Any, Dict, List
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
 import copy

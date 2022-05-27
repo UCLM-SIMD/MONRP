@@ -33,12 +33,20 @@ def calculate_spacing(population: List[Solution]) -> float:
     N = 2
     spacing = 0
     mean_objectives = []
+<<<<<<< HEAD
     points = []
+=======
+    points=[]
+>>>>>>> 62552ac7 (extract_postMetrics.py created. Now a set of experiments hyperparameters can be set in order to generate the)
 
     objective = 0
     for j in range(0, len(population)):
         objective += population[j].total_cost
+<<<<<<< HEAD
         points.append([population[j].total_cost, population[j].total_satisfaction])
+=======
+        points.append([population[j].total_cost,population[j].total_satisfaction])
+>>>>>>> 62552ac7 (extract_postMetrics.py created. Now a set of experiments hyperparameters can be set in order to generate the)
     objective /= len(population)
     mean_objectives.append(objective)
 
@@ -62,7 +70,11 @@ def calculate_spacing(population: List[Solution]) -> float:
         spacing += aux_spacing
 
     spacing /= (n * N)
+<<<<<<< HEAD
     # Scatter(title=f"Spacing = {spacing}").add(np.array(points)).show()
+=======
+    #Scatter(title=f"Spacing = {spacing}").add(np.array(points)).show()
+>>>>>>> 62552ac7 (extract_postMetrics.py created. Now a set of experiments hyperparameters can be set in order to generate the)
 
     return spacing
 
@@ -137,7 +149,7 @@ def calculate_hypervolume(population: List[Solution]) -> float:
     hv = get_performance_indicator("hv", ref_point=np.array(np.array([ref_x, ref_y])))
     hypervolume = hv.do(np_points)
 
-    #Scatter(title=f"HV = {hypervolume}").add(np_points).show()
+    #Scatter(title=f"HV = {hypervolume} (dibujado chepa del reves por pymoo").add(np_points).show()
 
 
 
@@ -303,7 +315,11 @@ def calculate_spread(population: List[Solution]) -> float:
     dist_count = 0
     points = []
     for i in range(0, len(population)):
+<<<<<<< HEAD
         points.append([population[i].total_cost, population[i].total_satisfaction])
+=======
+        points.append([population[i].total_cost,  population[i].total_satisfaction])
+>>>>>>> 62552ac7 (extract_postMetrics.py created. Now a set of experiments hyperparameters can be set in order to generate the)
         for j in range(0, len(population)):
             # avoid distance from a point to itself
             if i != j:
@@ -324,7 +340,11 @@ def calculate_spread(population: List[Solution]) -> float:
     # spread formula
     spread = (df + dl + sum_dist) / (df + dl + (N - 1) * davg)
 
+<<<<<<< HEAD
     # Scatter(title=f"Spread = {spread}").add(np.array(points)).show()
+=======
+    #Scatter(title=f"Spread = {spread}").add(np.array(points)).show()
+>>>>>>> 62552ac7 (extract_postMetrics.py created. Now a set of experiments hyperparameters can be set in order to generate the)
     return spread
 
 

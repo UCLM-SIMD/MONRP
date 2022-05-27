@@ -178,17 +178,18 @@ class FEDAAlgorithm(EDAAlgorithm):
         self.population = None
         self.selection_scheme: str = selection_scheme
 <<<<<<< HEAD
+<<<<<<< HEAD
         self.executer = FEDAExecuter(algorithm=self)
 =======
         self.selected_individuals: int = selected_individuals
+=======
+
+>>>>>>> 62552ac7 (extract_postMetrics.py created. Now a set of experiments hyperparameters can be set in order to generate the)
         self.config_dictionary.update({'algorithm': 'feda'})
 
         self.hyperparameters.append(generate_hyperparameter(
             "selection_scheme", selection_scheme))
         self.config_dictionary['selection_scheme'] = selection_scheme
-        self.hyperparameters.append(generate_hyperparameter(
-            "selected_individuals", selected_individuals))
-        self.config_dictionary['selected_individuals'] = selected_individuals
 
         self.executer = FEDAExecuter(algorithm=self, execs=execs)
 >>>>>>> 032bf379 (executer_driver extendido para lanzar FEDA)
@@ -205,6 +206,15 @@ class FEDAAlgorithm(EDAAlgorithm):
         self.topological_order = self.compute_topological_order()
         self.orphans = self.find_orphans()
 
+<<<<<<< HEAD
+=======
+    def get_file(self) -> str:
+        return (f"{str(self.__class__.__name__)}-{str(self.dataset_name)}-"
+                f"{self.dependencies_to_string()}-{str(self.random_seed)}-{str(self.population_length)}-"
+                f"{str(self.max_generations)}-{str(self.max_evaluations)}-"
+                f"{str(self.selection_scheme)}.txt")
+
+>>>>>>> 62552ac7 (extract_postMetrics.py created. Now a set of experiments hyperparameters can be set in order to generate the)
     def get_name(self) -> str:
         return (f"FEDA{str(self.population_length)}+{str(self.max_generations)}+"
                 f"{str(self.max_evaluations)}")
