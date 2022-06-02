@@ -36,7 +36,11 @@ def get_nondominated_solutions(solutions: List[Solution], nds=None) -> List[Solu
             for dominated in now_dominated:
                 nds.remove(dominated)
 
+<<<<<<< HEAD
    #plot_solutions(nds)
+=======
+    # plot_solutions(nds)
+>>>>>>> 9617fc4f (extract_postMetrics.py computes and updates outputs .json with: gd+, unfr and reference pareto front.)
     return nds
 
 

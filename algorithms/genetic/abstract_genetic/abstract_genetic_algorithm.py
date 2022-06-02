@@ -118,9 +118,13 @@ class AbstractGeneticAlgorithm(AbstractAlgorithm):
         population = []
         for i in range(0, self.population_length):
             individual = Solution(self.dataset,None, uniform=True)
+<<<<<<< HEAD
             if not 1 in individual.selected:
                 i=i -1
             else: population.append(individual)
+=======
+            population.append(individual)
+>>>>>>> 9617fc4f (extract_postMetrics.py computes and updates outputs .json with: gd+, unfr and reference pareto front.)
         return population
 
     # LAST GENERATION ENHANCE------------------------------------------------------------------

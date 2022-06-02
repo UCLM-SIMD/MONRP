@@ -77,6 +77,7 @@ class FEDAExecuter(AbstractExecuter):
 
         numGenerations = result["numGenerations"] if "numGenerations" in result else 'NaN'
         numEvaluations = result["numEvaluations"] if "numEvaluations" in result else 'NaN'
+<<<<<<< HEAD
 
         #metrics_fields.append(str(numGenerations))
         #metrics_fields.append(str(numEvaluations))
@@ -96,6 +97,8 @@ class FEDAExecuter(AbstractExecuter):
             result["numGenerations"]) if "numGenerations" in result else 'NaN'
         numEvaluations = str(
             result["numEvaluations"]) if "numEvaluations" in result else 'NaN'
+=======
+>>>>>>> 9617fc4f (extract_postMetrics.py computes and updates outputs .json with: gd+, unfr and reference pareto front.)
 
 <<<<<<< HEAD
         metrics_fields.append(str(numGenerations))

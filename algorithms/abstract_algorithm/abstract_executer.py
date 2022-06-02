@@ -45,6 +45,7 @@ class AbstractExecuter(ABC):
             'avgValue': [None] * self.executions,
             'bestAvgValue': [None] * self.executions,
 <<<<<<< HEAD
+<<<<<<< HEAD
             'gdplus': "GD+ not calculated yet. You may need to run extract_postMetrics.py",
             'unfr': "UNFR not calculated yet. You may need to run extract_postMetrics.py"
 
@@ -119,13 +120,17 @@ class AbstractExecuter(ABC):
         return [], []
 
 =======
+=======
+            'gdplus': "GD+ not calculated yet. You may need to run extract_postMetrics.py",
+            'unfr': "UNFR not calculated yet. You may need to run extract_postMetrics.py"
+>>>>>>> 9617fc4f (extract_postMetrics.py computes and updates outputs .json with: gd+, unfr and reference pareto front.)
 
         }
 
     def execute(self, output_folder: str) -> None:
         """Method that executes the algorithm a number of times and saves results in json  output file
         """
-        paretos_list = [] # list of pareto lists
+        paretos_list = [] # list of pareto lists, one pareto per execution
         for it in range(0,  self.executions):
             self.algorithm.reset()
             result = self.algorithm.run()
@@ -138,7 +143,9 @@ class AbstractExecuter(ABC):
         unique_id = ''.join(str(c) for c in self.algorithm.config_dictionary.values())
         results_dictionary = {'parameters': self.algorithm.config_dictionary,
                               'metrics': self.metrics_dictionary,
-                              'paretos': paretos_list}
+                              'paretos': paretos_list,
+                              'Reference_Pareto': 'Not constructed yet.  You may need to run extract_postMetrics.py'
+                              }
 
        # try:
         #    with open(output_folder+id+'.json') as f:
@@ -161,14 +168,22 @@ class AbstractExecuter(ABC):
         metrics_fields: List[str] = []
 
         time = result["time"] if "time" in result else 'NaN'
+<<<<<<< HEAD
         # ref point: nadir point + (nadir - best)/10 = 1 + (1-0)/10 = 1.1
         hv = metrics.calculate_hypervolume(result["population"], ref_x=1.1, ref_y=1.1)
+=======
+        hv = metrics.calculate_hypervolume(result["population"])
+>>>>>>> 9617fc4f (extract_postMetrics.py computes and updates outputs .json with: gd+, unfr and reference pareto front.)
         spread = metrics.calculate_spread(result["population"])
         numSolutions = metrics.calculate_numSolutions(result["population"])
         spacing = metrics.calculate_spacing(result["population"])
         mean_bits_per_sol = metrics.calculate_mean_bits_per_sol(result["population"])
         avgValue = metrics.calculate_avgValue(result["population"])
+<<<<<<< HEAD
         bestAvgValue = metrics.calculate_bestAvgValue(result["population"])
+=======
+        bestAvgValue =  metrics.calculate_bestAvgValue(result["population"])
+>>>>>>> 9617fc4f (extract_postMetrics.py computes and updates outputs .json with: gd+, unfr and reference pareto front.)
 
         self.metrics_dictionary['time'][repetition] = time
         self.metrics_dictionary['HV'][repetition] = hv

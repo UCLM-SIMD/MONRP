@@ -8,7 +8,11 @@ import imageio
 import matplotlib.pyplot as plt
 from pymoo.visualization.scatter import Scatter
 
+<<<<<<< HEAD
 from models.Hyperparameter import Hyperparameter, generate_hyperparameter
+=======
+from models.Hyperparameter import Hyperparameter
+>>>>>>> 9617fc4f (extract_postMetrics.py computes and updates outputs .json with: gd+, unfr and reference pareto front.)
 
 from models.Solution import Solution
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
@@ -224,6 +228,9 @@ class AbstractAlgorithm(ABC):
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 >>>>>>> 19c7836f (ahora todos los resultados se almacenan en results.json con un id unico para cada conjunto de parametros de lanzamiento)
+=======
+>>>>>>> 9617fc4f (extract_postMetrics.py computes and updates outputs .json with: gd+, unfr and reference pareto front.)

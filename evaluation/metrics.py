@@ -34,19 +34,27 @@ def calculate_spacing(population: List[Solution]) -> float:
     spacing = 0
     mean_objectives = []
 <<<<<<< HEAD
+<<<<<<< HEAD
     points = []
 =======
     points=[]
 >>>>>>> 62552ac7 (extract_postMetrics.py created. Now a set of experiments hyperparameters can be set in order to generate the)
+=======
+    points = []
+>>>>>>> 9617fc4f (extract_postMetrics.py computes and updates outputs .json with: gd+, unfr and reference pareto front.)
 
     objective = 0
     for j in range(0, len(population)):
         objective += population[j].total_cost
 <<<<<<< HEAD
+<<<<<<< HEAD
         points.append([population[j].total_cost, population[j].total_satisfaction])
 =======
         points.append([population[j].total_cost,population[j].total_satisfaction])
 >>>>>>> 62552ac7 (extract_postMetrics.py created. Now a set of experiments hyperparameters can be set in order to generate the)
+=======
+        points.append([population[j].total_cost, population[j].total_satisfaction])
+>>>>>>> 9617fc4f (extract_postMetrics.py computes and updates outputs .json with: gd+, unfr and reference pareto front.)
     objective /= len(population)
     mean_objectives.append(objective)
 
@@ -71,18 +79,25 @@ def calculate_spacing(population: List[Solution]) -> float:
 
     spacing /= (n * N)
 <<<<<<< HEAD
+<<<<<<< HEAD
     # Scatter(title=f"Spacing = {spacing}").add(np.array(points)).show()
 =======
     #Scatter(title=f"Spacing = {spacing}").add(np.array(points)).show()
 >>>>>>> 62552ac7 (extract_postMetrics.py created. Now a set of experiments hyperparameters can be set in order to generate the)
+=======
+    # Scatter(title=f"Spacing = {spacing}").add(np.array(points)).show()
+>>>>>>> 9617fc4f (extract_postMetrics.py computes and updates outputs .json with: gd+, unfr and reference pareto front.)
 
     return spacing
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 >>>>>>> 50863ec1 (HV calculado usando biblioteca pymoo y punto de referencia = nadir_point + range/10)
+=======
+>>>>>>> 9617fc4f (extract_postMetrics.py computes and updates outputs .json with: gd+, unfr and reference pareto front.)
 def calculate_hypervolume_old(population: List[Solution]) -> float:
     objectives_diff = []
     aux_max_cost, aux_max_sat = population[0].get_max_cost_satisfactions()
@@ -118,8 +133,33 @@ def calculate_hypervolume_old(population: List[Solution]) -> float:
 
     return hypervolume
 
-def calculate_hypervolume(population: List[Solution]) -> float:
 
+def calculate_gdplus(nds: [[float, float]],
+                     reference_pareto: [[float, float]]) -> float:
+    points = []
+    reference_points = []
+    for [total_cost, total_satisfaction] in nds:
+        # se revierte la satisfaccion para que más sea peor, para compatibilidad con pymoo
+        x =  total_cost
+        y = 1- total_satisfaction
+        points.append([x, y])
+    np_points = np.array(points)
+
+    for [total_cost, total_satisfaction] in reference_pareto:
+        # se revierte la satisfaccion para que más sea peor, para compatibilidad con pymoo
+        x =  total_cost
+        y = 1- total_satisfaction
+        reference_points.append([x, y])
+    np_reference = np.array(reference_points)
+
+    gd_indicator = get_performance_indicator("gd+", np_reference)
+    gd_plus = gd_indicator.do(np_points)
+    #Scatter(legend=True, title=f"GD+ = {gd_plus:.4f}").add(np_reference, label="Pareto-front").add(np_points, label="Result").show()
+    return gd_plus
+
+
+
+def calculate_hypervolume(population: List[Solution]) -> float:
     points = []
     nadir_x = float("-inf")
     nadir_y = float("-inf")
@@ -127,8 +167,8 @@ def calculate_hypervolume(population: List[Solution]) -> float:
     best_y = float("+inf")
 
     for ind in population:
-        #se revierte el orden, más es peor, para compatibilidad con pymoo
-        x = 1 - ind.total_cost
+        # se revierte la satisfaccion para que más sea peor, para compatibilidad con pymoo
+        x = ind.total_cost
         y = 1 - ind.total_satisfaction
 
         points.append([x, y])
@@ -140,22 +180,43 @@ def calculate_hypervolume(population: List[Solution]) -> float:
     range_x = nadir_x - best_x
     range_y = nadir_y - best_y
 
-    ref_x = nadir_x + range_x/10
+    ref_x = nadir_x + range_x / 10
     ref_y = nadir_y + range_y / 10
     ref_x = 1 if ref_x > 1 else ref_x
     ref_y = 1 if ref_y > 1 else ref_y
 
-
     hv = get_performance_indicator("hv", ref_point=np.array(np.array([ref_x, ref_y])))
     hypervolume = hv.do(np_points)
 
-    #Scatter(title=f"HV = {hypervolume} (dibujado chepa del reves por pymoo").add(np_points).show()
-
-
+    # Scatter(title=f"HV = {hypervolume} (dibujado chepa del reves por pymoo").add(np_points).show()
 
     return hypervolume
 
+def calculate_unfr(pareto, rpf):
 
+    num_non_dominated = count_contributions_to_pf(pareto, rpf)
+    unf_ratio = num_non_dominated / len(rpf)
+    #Scatter(legend=True, title=f"UNFR = {unf_ratio:.4f}").add(np.array(rpf), label="Pareto-front").show()
+    #Scatter(legend=True, title=f"UNFR = {unf_ratio:.4f}").add(np.array(rpf), label="Pareto-front").add(np.array(pareto),label="Result").show()
+    return unf_ratio
+
+# count the number of solutions in 'front' that contributed to create the reference pareto front
+# note that the sum of unfr from all experiments may sum up >1.0, because the same solution from rpf
+# might be found in several algorithms.
+def count_contributions_to_pf(front: List[Solution], pf: List[Solution]):
+    count = 0
+
+    for [x1, y1] in front:
+        #sol = Solution(dataset=None, probabilities=None, cost=x1, satisfaction=y1)
+        found = False
+        for [x2, y2] in pf:
+            if math.isclose(x1, x2, abs_tol=0.01):
+                found = True
+                break
+        if found:
+            count = count +1;
+
+    return count
 
 def calculate_gdplus(nds: [[float, float]],
                      reference_pareto: [[float, float]]) -> float:
@@ -316,10 +377,14 @@ def calculate_spread(population: List[Solution]) -> float:
     points = []
     for i in range(0, len(population)):
 <<<<<<< HEAD
+<<<<<<< HEAD
         points.append([population[i].total_cost, population[i].total_satisfaction])
 =======
         points.append([population[i].total_cost,  population[i].total_satisfaction])
 >>>>>>> 62552ac7 (extract_postMetrics.py created. Now a set of experiments hyperparameters can be set in order to generate the)
+=======
+        points.append([population[i].total_cost, population[i].total_satisfaction])
+>>>>>>> 9617fc4f (extract_postMetrics.py computes and updates outputs .json with: gd+, unfr and reference pareto front.)
         for j in range(0, len(population)):
             # avoid distance from a point to itself
             if i != j:
@@ -341,10 +406,14 @@ def calculate_spread(population: List[Solution]) -> float:
     spread = (df + dl + sum_dist) / (df + dl + (N - 1) * davg)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     # Scatter(title=f"Spread = {spread}").add(np.array(points)).show()
 =======
     #Scatter(title=f"Spread = {spread}").add(np.array(points)).show()
 >>>>>>> 62552ac7 (extract_postMetrics.py created. Now a set of experiments hyperparameters can be set in order to generate the)
+=======
+    # Scatter(title=f"Spread = {spread}").add(np.array(points)).show()
+>>>>>>> 9617fc4f (extract_postMetrics.py computes and updates outputs .json with: gd+, unfr and reference pareto front.)
     return spread
 
 

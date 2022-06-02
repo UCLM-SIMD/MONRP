@@ -11,7 +11,11 @@ class Solution:
     It represents a solution handled by algorithm search.
     """
 
+<<<<<<< HEAD
     def __init__(self, dataset, probabilities, selected=None, uniform=False, *, cost=None, satisfaction=None):
+=======
+    def __init__(self, dataset: Dataset, probabilities, selected=None, uniform=False, *, cost=None, satisfaction=None):
+>>>>>>> 9617fc4f (extract_postMetrics.py computes and updates outputs .json with: gd+, unfr and reference pareto front.)
         """
         """
         if cost is None or satisfaction is None:
@@ -25,12 +29,19 @@ class Solution:
                 self.total_cost = costs[indexes].sum()
                 self.total_satisfaction = values[indexes].sum()
             elif selected is not None:
+<<<<<<< HEAD
 
                 self.selected = np.zeros(dataset.num_pbis, dtype=int)
                 self.selected[selected] = 1
                 # indexes = np.array(self.selected).nonzero()
                 self.total_cost = costs[selected].sum()
                 self.total_satisfaction = values[selected].sum()
+=======
+                self.selected = np.array(selected, dtype=int)
+                indexes = np.array(self.selected).nonzero()
+                self.total_cost = costs[indexes].sum()
+                self.total_satisfaction = values[indexes].sum()
+>>>>>>> 9617fc4f (extract_postMetrics.py computes and updates outputs .json with: gd+, unfr and reference pareto front.)
             else:
                 num_candidates = len(probabilities)
                 self.selected = np.zeros(num_candidates, dtype=int)
@@ -42,8 +53,11 @@ class Solution:
                 self.total_cost = costs[sampled].sum()
                 self.total_satisfaction = values[sampled].sum()
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 9617fc4f (extract_postMetrics.py computes and updates outputs .json with: gd+, unfr and reference pareto front.)
             self.mono_objective_score = self.compute_mono_objective_score()
         else: # this branch should be used only from ./extract_postMetrics.py scrip
             self.total_cost = cost
@@ -117,7 +131,11 @@ class Solution:
         return (new_cost, new_satisfaction,
                 new_satisfaction / (new_cost + 1 / smooth))
     # read https://davidamos.dev/the-right-way-to-compare-floats-in-python/ for floats comparison
+<<<<<<< HEAD
     # we chose 0.001 as abs_tol difference as margin to decide values are equals. otherwise,
+=======
+    # we chose 0.01 as abs_tol difference as margin to decide values are equals. otherwise,
+>>>>>>> 9617fc4f (extract_postMetrics.py computes and updates outputs .json with: gd+, unfr and reference pareto front.)
     # when plotting solutions they seem equal since the difference is too tiny. it might be
     #changed to 0.001 or even 0.0001.
     #by default, one solution equals to other dominates it.
@@ -133,17 +151,30 @@ class Solution:
         dominates = (this_cost < other_cost) and (this_satisfaction > other_satisfaction)
 
         dominates = dominates or (
+<<<<<<< HEAD
             math.isclose(self.total_cost,solution.total_cost,abs_tol=0.0001) and
             this_satisfaction > other_satisfaction)
 
         dominates = dominates or (this_cost < other_cost and
                 math.isclose(self.total_satisfaction,solution.total_satisfaction,abs_tol=0.0001))
+=======
+            math.isclose(self.total_cost,solution.total_cost,abs_tol=0.01) and
+            this_satisfaction > other_satisfaction)
+
+        dominates = dominates or (this_cost < other_cost and
+                math.isclose(self.total_satisfaction,solution.total_satisfaction,abs_tol=0.01))
+>>>>>>> 9617fc4f (extract_postMetrics.py computes and updates outputs .json with: gd+, unfr and reference pareto front.)
 
         #if both are equals, let one dominate the other and thus remove it
         if equals_dominates:
             dominates = dominates or (
+<<<<<<< HEAD
                 math.isclose(self.total_cost,solution.total_cost,abs_tol=0.0001) and
                 math.isclose(self.total_satisfaction,solution.total_satisfaction,abs_tol=0.0001))
+=======
+                math.isclose(self.total_cost,solution.total_cost,abs_tol=0.01) and
+                math.isclose(self.total_satisfaction,solution.total_satisfaction,abs_tol=0.01))
+>>>>>>> 9617fc4f (extract_postMetrics.py computes and updates outputs .json with: gd+, unfr and reference pareto front.)
 
         return dominates
 
