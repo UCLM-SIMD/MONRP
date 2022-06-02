@@ -6,12 +6,24 @@ import numpy as np
 import os
 import imageio
 import matplotlib.pyplot as plt
+from pymoo.visualization.scatter import Scatter
+
 from models.Hyperparameter import Hyperparameter
 
 from models.Solution import Solution
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
 
 from datasets.Dataset import Dataset
+
+
+def plot_solutions(solutions: List[Solution]):
+    points = []
+    for ind in solutions:
+        # se revierte la satisfaccion para que más sea peor, para compatibilidad con pymoo
+        x = ind.total_cost
+        y = 1 - ind.total_satisfaction
+        points.append([x, y])
+    Scatter(title="NDS found").add(np.array(points)).show()
 
 
 class AbstractAlgorithm(ABC):
@@ -194,7 +206,6 @@ class AbstractAlgorithm(ABC):
             self.population_debug.append(population_debug.copy())
         else:
             self.population_debug.append(self.population.copy())
-
 
 
 

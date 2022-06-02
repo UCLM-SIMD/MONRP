@@ -1,5 +1,6 @@
 from typing import Any, Dict, List
 from algorithms.EDA.eda_algorithm import EDAAlgorithm
+from algorithms.abstract_algorithm.abstract_algorithm import plot_solutions
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
 from datasets import Dataset
 from evaluation.get_nondominated_solutions import get_nondominated_solutions
@@ -117,7 +118,7 @@ class UMDAAlgorithm(EDAAlgorithm):
 
                 # update nds with solutions constructed and evolved in this iteration
                 get_nondominated_solutions(self.population, self.nds)
-
+                #plot_solutions(self.nds)
                 self.num_generations += 1
 
                 if self.debug_mode:
@@ -127,6 +128,7 @@ class UMDAAlgorithm(EDAAlgorithm):
             pass
 
         end = time.time()
+        #plot_solutions(self.nds)
 
         print("\nNDS created has", self.nds.__len__(), "solution(s)")
 

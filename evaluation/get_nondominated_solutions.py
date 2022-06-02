@@ -1,6 +1,7 @@
 from typing import List
 import numpy as np
 
+from algorithms.abstract_algorithm.abstract_algorithm import plot_solutions
 from models.Solution import Solution
 
 
@@ -18,7 +19,7 @@ def get_nondominated_solutions(solutions: List[Solution], nds=None) -> List[Solu
         # if sol is dominated by any solution in self.NDS, then search is stopped and sol is discarded
         now_dominated = []
         for nds_sol in nds:
-            if np.array_equal(sol.selected, nds_sol.selected):
+            if hasattr(sol, 'selected') and np.array_equal(sol.selected, nds_sol.selected):
                 insert = False
                 break
             else:
@@ -28,7 +29,6 @@ def get_nondominated_solutions(solutions: List[Solution], nds=None) -> List[Solu
                 if nds_sol.dominates(sol):
                     insert = False
                     break
-
         # sol is inserted if it is not dominated by any solution in self.NDS,
         # then all solutions in self.NDS dominated by sol are removed
         if insert:
@@ -36,4 +36,8 @@ def get_nondominated_solutions(solutions: List[Solution], nds=None) -> List[Solu
             for dominated in now_dominated:
                 nds.remove(dominated)
 
+    # plot_solutions(nds)
     return nds
+
+
+

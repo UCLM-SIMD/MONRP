@@ -2,7 +2,7 @@
 from typing import Any, Dict, List
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
 import copy
-from algorithms.abstract_algorithm.abstract_algorithm import AbstractAlgorithm
+from algorithms.abstract_algorithm.abstract_algorithm import AbstractAlgorithm, plot_solutions
 from algorithms.GRASP.grasp_executer import GRASPExecuter
 import time
 
@@ -176,7 +176,7 @@ class GRASP(AbstractAlgorithm):
 
         seconds = time.time() - self.start
         print("\nNDS created has", self.nds.__len__(), "solution(s)")
-
+        #plot_solutions(self.nds)
         return {
             "population": self.nds,
             "time": seconds,

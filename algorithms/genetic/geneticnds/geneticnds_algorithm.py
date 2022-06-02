@@ -1,4 +1,9 @@
 from typing import Any, Dict, List
+
+import numpy as np
+from pymoo.visualization.scatter import Scatter
+
+from algorithms.abstract_algorithm.abstract_algorithm import plot_solutions
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
 from algorithms.genetic.abstract_genetic.abstract_genetic_algorithm import AbstractGeneticAlgorithm
 from algorithms.genetic.geneticnds.geneticnds_executer import GeneticNDSExecuter
@@ -135,6 +140,8 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
             pass
 
         end = time.time()
+        #plot_solutions(self.nds)
+
 
         return {
             "population": self.nds,
@@ -146,6 +153,8 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
             "nds_debug": self.nds_debug,
             "population_debug": self.population_debug
         }
+
+
 
     def add_evaluation(self, new_population: List[Solution]) -> None:
         """Handles evaluation count, finishing algorithm execution if stop criterion is met by raising an exception.

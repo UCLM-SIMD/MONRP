@@ -51,10 +51,8 @@ class UMDAExecuter(AbstractExecuter):
         """
         metrics_fields: List[str] = super().get_metrics_fields(result, repetition)
 
-        numGenerations = str(
-            result["numGenerations"]) if "numGenerations" in result else 'NaN'
-        numEvaluations = str(
-            result["numEvaluations"]) if "numEvaluations" in result else 'NaN'
+        numGenerations = result["numGenerations"] if "numGenerations" in result else 'NaN'
+        numEvaluations = result["numEvaluations"] if "numEvaluations" in result else 'NaN'
 
         #metrics_fields.append(str(numGenerations))
         #metrics_fields.append(str(numEvaluations))

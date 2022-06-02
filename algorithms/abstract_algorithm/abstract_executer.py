@@ -28,13 +28,15 @@ class AbstractExecuter(ABC):
             'mean_bits_per_sol': [None] * self.executions,
             'avgValue': [None] * self.executions,
             'bestAvgValue': [None] * self.executions,
+            'gdplus': "GD+ not calculated yet. You may need to run extract_postMetrics.py",
+            'unfr': "UNFR not calculated yet. You may need to run extract_postMetrics.py"
 
         }
 
     def execute(self, output_folder: str) -> None:
         """Method that executes the algorithm a number of times and saves results in json  output file
         """
-        paretos_list = [] # list of pareto lists
+        paretos_list = [] # list of pareto lists, one pareto per execution
         for it in range(0,  self.executions):
             self.algorithm.reset()
             result = self.algorithm.run()
@@ -47,7 +49,9 @@ class AbstractExecuter(ABC):
         unique_id = ''.join(str(c) for c in self.algorithm.config_dictionary.values())
         results_dictionary = {'parameters': self.algorithm.config_dictionary,
                               'metrics': self.metrics_dictionary,
-                              'paretos': paretos_list}
+                              'paretos': paretos_list,
+                              'Reference_Pareto': 'Not constructed yet.  You may need to run extract_postMetrics.py'
+                              }
 
        # try:
         #    with open(output_folder+id+'.json') as f:
@@ -68,17 +72,14 @@ class AbstractExecuter(ABC):
         """
         metrics_fields: List[str] = []
 
-        time = str(result["time"]) if "time" in result else 'NaN'
-        hv = str(metrics.calculate_hypervolume(result["population"]))
-        spread = str(metrics.calculate_spread(result["population"]))
-        numSolutions = str(
-            metrics.calculate_numSolutions(result["population"]))
-        spacing = str(metrics.calculate_spacing(result["population"]))
-        mean_bits_per_sol = str(
-            metrics.calculate_mean_bits_per_sol(result["population"]))
-        avgValue = str(metrics.calculate_avgValue(result["population"]))
-        bestAvgValue = str(
-            metrics.calculate_bestAvgValue(result["population"]))
+        time = result["time"] if "time" in result else 'NaN'
+        hv = metrics.calculate_hypervolume(result["population"])
+        spread = metrics.calculate_spread(result["population"])
+        numSolutions = metrics.calculate_numSolutions(result["population"])
+        spacing = metrics.calculate_spacing(result["population"])
+        mean_bits_per_sol = metrics.calculate_mean_bits_per_sol(result["population"])
+        avgValue = metrics.calculate_avgValue(result["population"])
+        bestAvgValue =  metrics.calculate_bestAvgValue(result["population"])
 
         self.metrics_dictionary['time'][repetition] = time
         self.metrics_dictionary['HV'][repetition] = hv

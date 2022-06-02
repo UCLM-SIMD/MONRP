@@ -112,7 +112,7 @@ class AbstractGeneticAlgorithm(AbstractAlgorithm):
         """
         population = []
         for i in range(0, self.population_length):
-            individual = Solution(self.dataset, None, uniform=True)
+            individual = Solution(self.dataset,None, uniform=True)
             population.append(individual)
         return population
 
