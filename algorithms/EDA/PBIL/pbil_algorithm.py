@@ -20,6 +20,7 @@ class PBILAlgorithm(EDAAlgorithm):
     def __init__(self,execs, dataset_name: str = "test", dataset: Dataset = None, random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
                  population_length: int = 100, max_generations: int = 100, max_evaluations: int = 0,
 <<<<<<< HEAD
+<<<<<<< HEAD
                  learning_rate: float = 0.1, mutation_prob: float = 0.1,
                  mutation_shift: float = 0.1, subset_size: int = 5):
 
@@ -31,6 +32,13 @@ class PBILAlgorithm(EDAAlgorithm):
         super().__init__(execs,dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
                          population_length, max_generations, max_evaluations)
 >>>>>>> 19c7836f (ahora todos los resultados se almacenan en results.json con un id unico para cada conjunto de parametros de lanzamiento)
+=======
+                 learning_rate: float = 0.1, mutation_prob: float = 0.1,
+                 mutation_shift: float = 0.1, subset_size: int = 5):
+
+        super().__init__(execs,dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
+                         population_length, max_generations, max_evaluations, subset_size=subset_size)
+>>>>>>> 5efa3a53 (new hyperparameter created: subset_size used to choose a subset of solutions from the final set of solutions returned by the executed algorithm. Also, nsgaii is added in extract_postMetrics.py.)
 
         self.executer = PBILExecuter(algorithm=self, execs=execs)
 

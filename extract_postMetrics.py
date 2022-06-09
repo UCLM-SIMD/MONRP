@@ -1,5 +1,6 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import copy
 import json
 import string
@@ -43,6 +44,8 @@ import numpy as np
 >>>>>>> 9617fc4f (extract_postMetrics.py computes and updates outputs .json with: gd+, unfr and reference pareto front.)
 from pymoo.factory import get_performance_indicator
 from pymoo.visualization.scatter import Scatter
+=======
+>>>>>>> 5efa3a53 (new hyperparameter created: subset_size used to choose a subset of solutions from the final set of solutions returned by the executed algorithm. Also, nsgaii is added in extract_postMetrics.py.)
 import json
 
 from evaluation.get_nondominated_solutions import get_nondominated_solutions
@@ -54,14 +57,16 @@ will be taken into account to find the reference Pareto for GD+ and UNFR"""
 
 output_folder = "output/"
 # COMMON HYPER-PARAMETERS #
-algorithms = ['GRASP', 'geneticNDS', 'umda', 'pbil', 'feda']  # {'GRASP', 'feda', 'geneticNDS', 'pbil', 'umda'}
+# possible algorithm values: {'GRASP', 'feda', 'geneticNDS', 'pbil', 'umda', nsgaii}
+algorithms = ['GRASP', 'geneticNDS', 'umda', 'pbil', 'feda', 'nsgaii']
 dataset = ['p1']  # {'p1','p2','s1','s2','s3','a1','a2','a3','a4','c1','c2','c3','c4','c5','c6'}
-max_evaluations = [10000]
 dependencies = ['True']  # {'True','False'}
 seed = 5
 num_executions = 5
+subset_size = [20]  # number of solutions to choose from final NDS in each algorithm to compute metrics
 
-# geneticNDS hyper-parameters #
+# geneticNDS and NSGAii hyperparameters #
+max_evals_genetic = [10000]
 selection_candidates = [2]
 crossover_prob = [0.8]
 mutation_prob = [0.1]
@@ -74,7 +79,9 @@ selection = ['tournament']  # only 'tournament' available
 crossover = ['onepoint']  # only 'onepoint' available
 
 # GRASP hyper-parameters #
+max_evals_grasp = [10000]
 init_type = ['stochastically']  # {'stochastically', 'uniform'}
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 path_relinking_mode = ['None', 'after_local']  # {'None', 'after_local'}
@@ -85,6 +92,9 @@ local_search_type = ['best_first_neighbor_random']
 >>>>>>> 62552ac7 (extract_postMetrics.py created. Now a set of experiments hyperparameters can be set in order to generate the)
 =======
 path_relinking_mode = ['None']  # {'None', 'PR'}
+=======
+path_relinking_mode = ['PR']  # {'None', 'PR'}
+>>>>>>> 5efa3a53 (new hyperparameter created: subset_size used to choose a subset of solutions from the final set of solutions returned by the executed algorithm. Also, nsgaii is added in extract_postMetrics.py.)
 local_search_type = ['best_first_neighbor_random']
 grasp_iterations = [10]
 solutions_per_iteration = [10]
@@ -93,12 +103,14 @@ solutions_per_iteration = [10]
 # best_first_neighbor_sorted_score_r' , 'best_first_neighbor_random_domination','best_first_neighbor_sorted_domination'}
 
 # umda hyper-parameters #
+max_evals_umda = [10000]
 selection_scheme = ['nds']  # {'nds','monoscore'}
 replacement_scheme = ['elitism']  # {'elitism','replacement'}
 population_length_umda = [100]
 max_generations_umda = [300]
 
 # pbil hyper-parameters #
+max_evals_pbil = [10000]
 learning_rate = [0.1]
 mutation_prob_pbil = [0.1]
 mutation_shift = [0.1]
@@ -106,6 +118,7 @@ population_length_pbil = [100]
 max_generations_pbil = [300]
 
 # feda hyper-parameters #
+max_evals_feda = [10000]
 selection_scheme_feda = ['nds']  # {'nds','monoscore'}
 population_size_feda = [100]
 num_iterations_feda = [300]
@@ -146,12 +159,12 @@ def get_genetic_uids(name: str, d: str) -> [str]:
 ''' returns a list of uid files created from geneticNDS hyper-parameters '''
 
 
-def get_geneticnds_uids() -> [str]:
+def get_genetic_uids(name: str) -> [str]:
     uids_list = []
 
     for dependency in dependencies:
         for data in dataset:
-            for max_evals in max_evaluations:
+            for max_evals in max_evals_genetic:
                 for pop_size in population_size:
                     for iterations in num_iterations:
                         for sel in selection:
@@ -161,6 +174,7 @@ def get_geneticnds_uids() -> [str]:
                                         for mut_prob in mutation_prob:
                                             for mut in mutation:
                                                 for rep in replacement:
+<<<<<<< HEAD
                                                     uid = output_folder + 'geneticNDS' + dependency + data + \
                                                           str(seed) + str(pop_size) + str(iterations) + \
                                                           str(max_evals) + str(candidates) + str(xover_prob) + \
@@ -169,6 +183,16 @@ def get_geneticnds_uids() -> [str]:
                                                     print(uid)
                                                     uids_list.append(uid)
 >>>>>>> 62552ac7 (extract_postMetrics.py created. Now a set of experiments hyperparameters can be set in order to generate the)
+=======
+                                                    for size in subset_size:
+                                                        uid = output_folder + name + dependency + data + \
+                                                              str(seed) + str(size) + str(pop_size) \
+                                                              + str(iterations) + str(max_evals) + str(candidates) + \
+                                                              str(xover_prob) + str(mut_prob) + sel + xover + mut + \
+                                                              rep + str(num_executions) + '.json'
+                                                        print(uid)
+                                                        uids_list.append(uid)
+>>>>>>> 5efa3a53 (new hyperparameter created: subset_size used to choose a subset of solutions from the final set of solutions returned by the executed algorithm. Also, nsgaii is added in extract_postMetrics.py.)
     return uids_list
 
 
@@ -199,18 +223,27 @@ def get_grasp_uids() -> [str]:
 
     for dependency in dependencies:
         for data in dataset:
-            for max_evals in max_evaluations:
+            for max_evals in max_evals_grasp:
                 for pop_size in solutions_per_iteration:
                     for iterations in grasp_iterations:
                         for init in init_type:
                             for pr in path_relinking_mode:
                                 for search in local_search_type:
+<<<<<<< HEAD
                                     uid = output_folder + 'GRASP' + dependency + data + str(seed) + str(iterations) + \
                                           str(pop_size) + str(max_evals) + init + search + pr + \
                                           str(num_executions) + '.json'
                                     print(uid)
                                     uids_list.append(uid)
 >>>>>>> 62552ac7 (extract_postMetrics.py created. Now a set of experiments hyperparameters can be set in order to generate the)
+=======
+                                    for size in subset_size:
+                                        uid = output_folder + 'GRASP' + dependency + data + str(seed) + str(size) + \
+                                              str(iterations) + str(pop_size) + str(max_evals) + init + search + pr + \
+                                              str(num_executions) + '.json'
+                                        print(uid)
+                                        uids_list.append(uid)
+>>>>>>> 5efa3a53 (new hyperparameter created: subset_size used to choose a subset of solutions from the final set of solutions returned by the executed algorithm. Also, nsgaii is added in extract_postMetrics.py.)
     return uids_list
 
 
@@ -240,17 +273,26 @@ def get_umda_uids() -> [str]:
 
     for dependency in dependencies:
         for data in dataset:
-            for max_evals in max_evaluations:
+            for max_evals in max_evals_umda:
                 for pop_size in population_length_umda:
                     for iterations in max_generations_umda:
                         for sel_scheme in selection_scheme:
                             for rep_scheme in replacement_scheme:
+<<<<<<< HEAD
                                 uid = output_folder + 'umda' + dependency + data + str(seed) + str(pop_size) + \
                                       str(iterations) + str(max_evals) + sel_scheme + rep_scheme + \
                                       str(num_executions) + '.json'
                                 print(uid)
                                 uids_list.append(uid)
 >>>>>>> 62552ac7 (extract_postMetrics.py created. Now a set of experiments hyperparameters can be set in order to generate the)
+=======
+                                for size in subset_size:
+                                    uid = output_folder + 'umda' + dependency + data + str(seed) + str(size) + \
+                                          str(pop_size) + str(iterations) + str(max_evals) + sel_scheme + rep_scheme + \
+                                          str(num_executions) + '.json'
+                                    print(uid)
+                                    uids_list.append(uid)
+>>>>>>> 5efa3a53 (new hyperparameter created: subset_size used to choose a subset of solutions from the final set of solutions returned by the executed algorithm. Also, nsgaii is added in extract_postMetrics.py.)
     return uids_list
 
 
@@ -306,18 +348,28 @@ def get_pbil_uids() -> [str]:
 
     for dependency in dependencies:
         for data in dataset:
-            for max_evals in max_evaluations:
+            for max_evals in max_evals_pbil:
                 for pop_size in population_length_pbil:
                     for iterations in max_generations_pbil:
                         for l_rate in learning_rate:
                             for mut_prob_pbil in mutation_prob_pbil:
                                 for shift in mutation_shift:
+<<<<<<< HEAD
                                     uid = output_folder + 'pbil' + dependency + data + str(seed) + str(pop_size) + \
                                           str(iterations) + str(max_evals) + str(l_rate) + str(mut_prob_pbil) + \
                                           str(shift) + str(num_executions) + '.json'
                                     print(uid)
                                     uids_list.append(uid)
 >>>>>>> 62552ac7 (extract_postMetrics.py created. Now a set of experiments hyperparameters can be set in order to generate the)
+=======
+                                    for size in subset_size:
+                                        uid = output_folder + 'pbil' + dependency + data + str(seed) + str(size) + \
+                                              str(pop_size) + \
+                                              str(iterations) + str(max_evals) + str(l_rate) + str(mut_prob_pbil) + \
+                                              str(shift) + str(num_executions) + '.json'
+                                        print(uid)
+                                        uids_list.append(uid)
+>>>>>>> 5efa3a53 (new hyperparameter created: subset_size used to choose a subset of solutions from the final set of solutions returned by the executed algorithm. Also, nsgaii is added in extract_postMetrics.py.)
     return uids_list
 
 
@@ -478,16 +530,18 @@ def get_feda_uids() -> [str]:
 
     for dependency in dependencies:
         for data in dataset:
-            for max_evals in max_evaluations:
+            for max_evals in max_evals_feda:
                 for pop_size in population_size_feda:
                     for iterations in num_iterations_feda:
                         for sel_scheme in selection_scheme_feda:
-                            uid = output_folder + 'feda' + dependency + data + str(seed) + str(pop_size) + \
-                                  str(iterations) + str(max_evals) + sel_scheme + str(num_executions) + '.json'
-                            print(uid)
-                            uids_list.append(uid)
-    return uids_list
+                            for size in subset_size:
+                                uid = output_folder + 'feda' + dependency + data + str(seed) + str(size) + \
+                                      str(pop_size) + \
+                                      str(iterations) + str(max_evals) + sel_scheme + str(num_executions) + '.json'
 
+                                print(uid)
+                                uids_list.append(uid)
+    return uids_list
 
 
 def construct_store_reference_pareto(uids):
@@ -559,7 +613,9 @@ if __name__ == '__main__':
     if 'GRASP' in algorithms:
         files_uid = files_uid + get_grasp_uids()
     if 'geneticNDS' in algorithms:
-        files_uid = files_uid + get_geneticnds_uids()
+        files_uid = files_uid + get_genetic_uids('geneticNDS')
+    if 'nsgaii' in algorithms:
+        files_uid = files_uid + get_genetic_uids('nsgaii')
     if 'umda' in algorithms:
         files_uid = files_uid + get_umda_uids()
     if 'pbil' in algorithms:

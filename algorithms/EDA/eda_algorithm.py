@@ -17,6 +17,7 @@ class EDAAlgorithm(AbstractAlgorithm):
     def __init__(self, execs: int, dataset_name: str = "1", dataset: Dataset = None, random_seed: int = None,
                  debug_mode: bool = False, tackle_dependencies: bool = False,
 <<<<<<< HEAD
+<<<<<<< HEAD
                  population_length: int = 100, max_generations: int = 100,
                  max_evaluations: int = 0, subset_size: int = 5):
 
@@ -27,6 +28,13 @@ class EDAAlgorithm(AbstractAlgorithm):
 
         super().__init__(execs,dataset_name, dataset, random_seed, debug_mode, tackle_dependencies)
 >>>>>>> 19c7836f (ahora todos los resultados se almacenan en results.json con un id unico para cada conjunto de parametros de lanzamiento)
+=======
+                 population_length: int = 100, max_generations: int = 100,
+                 max_evaluations: int = 0, subset_size: int = 5):
+
+        super().__init__(execs,dataset_name, dataset, random_seed, debug_mode, \
+                         tackle_dependencies, subset_size = subset_size)
+>>>>>>> 5efa3a53 (new hyperparameter created: subset_size used to choose a subset of solutions from the final set of solutions returned by the executed algorithm. Also, nsgaii is added in extract_postMetrics.py.)
 
         self.nds = []
         self.num_evaluations: int = 0

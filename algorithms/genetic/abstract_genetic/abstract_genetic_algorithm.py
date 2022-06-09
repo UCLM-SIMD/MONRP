@@ -24,10 +24,14 @@ class AbstractGeneticAlgorithm(AbstractAlgorithm):
         """
         super().__init__(execs,dataset_name=dataset_name, dataset=dataset, random_seed=random_seed, debug_mode=debug_mode,
 <<<<<<< HEAD
+<<<<<<< HEAD
                          tackle_dependencies=tackle_dependencies,  subset_size=subset_size)
 =======
                          tackle_dependencies=tackle_dependencies)
 >>>>>>> 19c7836f (ahora todos los resultados se almacenan en results.json con un id unico para cada conjunto de parametros de lanzamiento)
+=======
+                         tackle_dependencies=tackle_dependencies,  subset_size=subset_size)
+>>>>>>> 5efa3a53 (new hyperparameter created: subset_size used to choose a subset of solutions from the final set of solutions returned by the executed algorithm. Also, nsgaii is added in extract_postMetrics.py.)
 
         self.population_length: int = population_length
         self.max_generations: int = max_generations

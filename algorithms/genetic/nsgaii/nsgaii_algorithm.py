@@ -17,6 +17,7 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
     """
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     def __init__(self,execs, dataset_name="test", dataset: Dataset = None, random_seed=None, population_length=20,
                  max_generations=1000, max_evaluations=0,
                  selection="tournament", selection_candidates=2,
@@ -28,14 +29,22 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
                          population_length, max_generations, max_evaluations, subset_size=subset_size)
 =======
     def __init__(self,execs, dataset_name="test", dataset: Dataset = None, random_seed=None, population_length=20, max_generations=1000, max_evaluations=0,
+=======
+    def __init__(self,execs, dataset_name="test", dataset: Dataset = None, random_seed=None, population_length=20,
+                 max_generations=1000, max_evaluations=0,
+>>>>>>> 5efa3a53 (new hyperparameter created: subset_size used to choose a subset of solutions from the final set of solutions returned by the executed algorithm. Also, nsgaii is added in extract_postMetrics.py.)
                  selection="tournament", selection_candidates=2,
                  crossover="onepoint", crossover_prob=0.9,
                  mutation="flipeachbit", mutation_prob=0.1,
-                 debug_mode=False, tackle_dependencies=False,  replacement='elitism'):
+                 debug_mode=False, tackle_dependencies=False, subset_size=5, replacement='elitism'):
 
         super().__init__(execs,dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
+<<<<<<< HEAD
                          population_length, max_generations, max_evaluations)
 >>>>>>> 19c7836f (ahora todos los resultados se almacenan en results.json con un id unico para cada conjunto de parametros de lanzamiento)
+=======
+                         population_length, max_generations, max_evaluations, subset_size=subset_size)
+>>>>>>> 5efa3a53 (new hyperparameter created: subset_size used to choose a subset of solutions from the final set of solutions returned by the executed algorithm. Also, nsgaii is added in extract_postMetrics.py.)
 
         self.executer = NSGAIIExecuter(algorithm=self, execs=execs)
         self.selection_scheme = selection
@@ -81,6 +90,8 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
         self.deepcopy=True
 =======
 >>>>>>> 19c7836f (ahora todos los resultados se almacenan en results.json con un id unico para cada conjunto de parametros de lanzamiento)
+
+        self.config_dictionary['replacement'] = self.replacement_scheme
 
     def get_file(self) -> str:
         return (f"{str(self.__class__.__name__)}-{str(self.dataset_name)}-"

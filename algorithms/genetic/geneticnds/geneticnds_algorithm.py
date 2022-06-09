@@ -26,10 +26,14 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
                  crossover: str = "onepoint", crossover_prob: float = 0.9,
                  mutation: str = "flipeachbit", mutation_prob: float = 0.1,
 <<<<<<< HEAD
+<<<<<<< HEAD
                  replacement: str = "elitism", subset_size: int = 5):
 =======
                  replacement: str = "elitism"):
 >>>>>>> 19c7836f (ahora todos los resultados se almacenan en results.json con un id unico para cada conjunto de parametros de lanzamiento)
+=======
+                 replacement: str = "elitism", subset_size: int = 5):
+>>>>>>> 5efa3a53 (new hyperparameter created: subset_size used to choose a subset of solutions from the final set of solutions returned by the executed algorithm. Also, nsgaii is added in extract_postMetrics.py.)
 
         super().__init__(execs,dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
                          population_length, max_generations, max_evaluations,

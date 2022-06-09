@@ -9,10 +9,14 @@ import matplotlib.pyplot as plt
 from pymoo.visualization.scatter import Scatter
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 from models.Hyperparameter import Hyperparameter, generate_hyperparameter
 =======
 from models.Hyperparameter import Hyperparameter
 >>>>>>> 9617fc4f (extract_postMetrics.py computes and updates outputs .json with: gd+, unfr and reference pareto front.)
+=======
+from models.Hyperparameter import Hyperparameter, generate_hyperparameter
+>>>>>>> 5efa3a53 (new hyperparameter created: subset_size used to choose a subset of solutions from the final set of solutions returned by the executed algorithm. Also, nsgaii is added in extract_postMetrics.py.)
 
 from models.Solution import Solution
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
@@ -36,11 +40,16 @@ class AbstractAlgorithm(ABC):
 
     def __init__(self, execs: int, dataset_name: str = "test", dataset: Dataset = None,
 <<<<<<< HEAD
+<<<<<<< HEAD
                  random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
                  subset_size: int = 5):
 =======
                  random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False):
 >>>>>>> 19c7836f (ahora todos los resultados se almacenan en results.json con un id unico para cada conjunto de parametros de lanzamiento)
+=======
+                 random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
+                 subset_size: int = 5):
+>>>>>>> 5efa3a53 (new hyperparameter created: subset_size used to choose a subset of solutions from the final set of solutions returned by the executed algorithm. Also, nsgaii is added in extract_postMetrics.py.)
         """Default init method that sets common arguments such as dataset, seed and modes.
 
         Args:
@@ -61,13 +70,18 @@ class AbstractAlgorithm(ABC):
         self.tackle_dependencies: bool = tackle_dependencies
         self.random_seed: int = random_seed
         self.set_seed(random_seed)
+<<<<<<< HEAD
         self.subset_size = subset_size
+=======
+        self.subset_size=subset_size
+>>>>>>> 5efa3a53 (new hyperparameter created: subset_size used to choose a subset of solutions from the final set of solutions returned by the executed algorithm. Also, nsgaii is added in extract_postMetrics.py.)
 
         self.nds_debug = []
         self.population_debug = []
 
         self.hyperparameters: List[Hyperparameter] = []
 
+<<<<<<< HEAD
 <<<<<<< HEAD
         self.hyperparameters.append(generate_hyperparameter(
             "subset_size", subset_size))
@@ -78,6 +92,13 @@ class AbstractAlgorithm(ABC):
         self.config_dictionary = {'algorithm': 'abstract', 'dependencies': tackle_dependencies,
                                   'dataset': self.dataset.id, 'seed': self.random_seed}
 >>>>>>> 19c7836f (ahora todos los resultados se almacenan en results.json con un id unico para cada conjunto de parametros de lanzamiento)
+=======
+        self.hyperparameters.append(generate_hyperparameter(
+            "subset_size", subset_size))
+
+        self.config_dictionary = {'algorithm': 'abstract', 'dependencies': tackle_dependencies,
+                                  'dataset': self.dataset.id, 'seed': self.random_seed, 'subset_size': self.subset_size}
+>>>>>>> 5efa3a53 (new hyperparameter created: subset_size used to choose a subset of solutions from the final set of solutions returned by the executed algorithm. Also, nsgaii is added in extract_postMetrics.py.)
 
     def set_seed(self, seed: int):
         self.random_seed: int = seed

@@ -166,14 +166,18 @@ class FEDAAlgorithm(EDAAlgorithm):
 >>>>>>> 032bf379 (executer_driver extendido para lanzar FEDA)
                  tackle_dependencies: bool = False,
                  population_length: int = 100, selection_scheme: str = "nds", max_generations: int = 100,
-                 max_evaluations: int = 0):
+                 max_evaluations: int = 0, subset_size: int = 5):
 
 <<<<<<< HEAD
         super().__init__(dataset_name, random_seed, debug_mode, tackle_dependencies,
 =======
         super().__init__(execs,dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
+<<<<<<< HEAD
 >>>>>>> 032bf379 (executer_driver extendido para lanzar FEDA)
                          population_length, max_generations, max_evaluations)
+=======
+                         population_length, max_generations, max_evaluations, subset_size=subset_size)
+>>>>>>> 5efa3a53 (new hyperparameter created: subset_size used to choose a subset of solutions from the final set of solutions returned by the executed algorithm. Also, nsgaii is added in extract_postMetrics.py.)
 
         self.population = None
         self.selection_scheme: str = selection_scheme
