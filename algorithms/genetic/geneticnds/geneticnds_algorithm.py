@@ -25,12 +25,12 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
                  selection: str = "tournament", selection_candidates: int = 2,
                  crossover: str = "onepoint", crossover_prob: float = 0.9,
                  mutation: str = "flipeachbit", mutation_prob: float = 0.1,
-                 replacement: str = "elitism"):
+                 replacement: str = "elitism", subset_size: int = 5):
 
         super().__init__(execs,dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
                          population_length, max_generations, max_evaluations,
                          selection, selection_candidates, crossover, crossover_prob,
-                         mutation, mutation_prob, replacement,)
+                         mutation, mutation_prob, replacement, subset_size=subset_size)
 
         self.executer = GeneticNDSExecuter(algorithm=self, execs=execs)
         self.config_dictionary.update({'algorithm': 'geneticNDS'})

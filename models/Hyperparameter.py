@@ -32,6 +32,7 @@ HYPERPARAMETER_TRANSLATIONS = {
     "selected_individuals": "Selected Individuals",
     "learning_rate": "Learning Rate",
     "mutation_shift": "Mutation Shift",
+    "subset_size": "Subset Size to choose from final set",
 }
 
 

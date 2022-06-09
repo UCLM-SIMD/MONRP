@@ -19,11 +19,11 @@ class AbstractGeneticAlgorithm(AbstractAlgorithm):
                  population_length: int = 100, max_generations: int = 100, max_evaluations: int = 0,
                  selection: str = "tournament", selection_candidates: int = 2, crossover: str = "onepoint", crossover_prob: float = 0.9,
                  mutation: str = "flipeachbit", mutation_prob: float = 0.1,
-                 replacement: str = "elitism",):
+                 replacement: str = "elitism", subset_size: int = 5):
         """Init method calls parent init and includes specific parameters of genetic algorithms
         """
         super().__init__(execs,dataset_name=dataset_name, dataset=dataset, random_seed=random_seed, debug_mode=debug_mode,
-                         tackle_dependencies=tackle_dependencies)
+                         tackle_dependencies=tackle_dependencies,  subset_size=subset_size)
 
         self.population_length: int = population_length
         self.max_generations: int = max_generations
@@ -36,6 +36,7 @@ class AbstractGeneticAlgorithm(AbstractAlgorithm):
         self.mutation_scheme: str = mutation
         self.mutation_prob: float = mutation_prob
         self.replacement_scheme: str = replacement
+
 
         self.hyperparameters.append(generate_hyperparameter(
             "population_length", population_length))

@@ -49,10 +49,10 @@ class FEDAAlgorithm(EDAAlgorithm):
     def __init__(self, execs, dataset_name: str = "p2", dataset: Dataset = None, random_seed: int = None, debug_mode: bool = False,
                  tackle_dependencies: bool = False,
                  population_length: int = 100, selection_scheme: str = "nds", max_generations: int = 100,
-                 max_evaluations: int = 0):
+                 max_evaluations: int = 0, subset_size: int = 5):
 
         super().__init__(execs,dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
-                         population_length, max_generations, max_evaluations)
+                         population_length, max_generations, max_evaluations, subset_size=subset_size)
 
         self.population = None
         self.selection_scheme: str = selection_scheme

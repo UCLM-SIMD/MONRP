@@ -15,14 +15,15 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
     individuals by dominance and crowding distance.
     """
 
-    def __init__(self,execs, dataset_name="test", dataset: Dataset = None, random_seed=None, population_length=20, max_generations=1000, max_evaluations=0,
+    def __init__(self,execs, dataset_name="test", dataset: Dataset = None, random_seed=None, population_length=20,
+                 max_generations=1000, max_evaluations=0,
                  selection="tournament", selection_candidates=2,
                  crossover="onepoint", crossover_prob=0.9,
                  mutation="flipeachbit", mutation_prob=0.1,
-                 debug_mode=False, tackle_dependencies=False,  replacement='elitism'):
+                 debug_mode=False, tackle_dependencies=False, subset_size=5, replacement='elitism'):
 
         super().__init__(execs,dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
-                         population_length, max_generations, max_evaluations)
+                         population_length, max_generations, max_evaluations, subset_size=subset_size)
 
         self.executer = NSGAIIExecuter(algorithm=self, execs=execs)
         self.selection_scheme = selection
@@ -62,6 +63,8 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
         elif mutation == "flipeachbit":
             self.mutation = self.mutation_flipeachbit
         self.config_dictionary['mutation'] = mutation
+
+        self.config_dictionary['replacement'] = self.replacement_scheme
 
     def get_file(self) -> str:
         return (f"{str(self.__class__.__name__)}-{str(self.dataset_name)}-"
