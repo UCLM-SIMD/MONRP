@@ -23,6 +23,7 @@ class AbstractExecuter(ABC):
 
         self.metrics_dictionary = {
             'time': [None] * self.executions,
+            'NDS_size': [None] * self.executions,
             'HV': [None] * self.executions,
             'spread': [None] * self.executions,
             'numSolutions': [None] * self.executions,
@@ -42,7 +43,10 @@ class AbstractExecuter(ABC):
         for it in range(0, self.executions):
             self.algorithm.reset()
             result = self.algorithm.run()
+
+            self.metrics_dictionary['NDS_size'][it] = len(result['population']) # store original NDS size created in search
             result['population'] = self.search_solution_subset(result['population'])
+
             self.get_metrics_fields(result, it)
             pareto = self.get_pareto(result['population'])  # get a list with pareto points
             paretos_list.insert(len(paretos_list), pareto)
