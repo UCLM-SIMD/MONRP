@@ -53,7 +53,7 @@ class AbstractAlgorithm(ABC):
         self.tackle_dependencies: bool = tackle_dependencies
         self.random_seed: int = random_seed
         self.set_seed(random_seed)
-        self.subset_size=subset_size
+        self.subset_size = subset_size
 
         self.nds_debug = []
         self.population_debug = []

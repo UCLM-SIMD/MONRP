@@ -15,7 +15,7 @@ dataset = ['p1']  # {'p1','p2','s1','s2','s3','a1','a2','a3','a4','c1','c2','c3'
 dependencies = ['True']  # {'True','False'}
 seed = 5
 num_executions = 5
-subset_size = [20]  # number of solutions to choose from final NDS in each algorithm to compute metrics
+subset_size = [4]  # number of solutions to choose from final NDS in each algorithm to compute metrics
 
 # geneticNDS and NSGAii hyperparameters #
 max_evals_genetic = [10000]
