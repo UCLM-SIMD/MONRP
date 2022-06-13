@@ -71,10 +71,14 @@ class AbstractAlgorithm(ABC):
         self.random_seed: int = random_seed
         self.set_seed(random_seed)
 <<<<<<< HEAD
+<<<<<<< HEAD
         self.subset_size = subset_size
 =======
         self.subset_size=subset_size
 >>>>>>> 5efa3a53 (new hyperparameter created: subset_size used to choose a subset of solutions from the final set of solutions returned by the executed algorithm. Also, nsgaii is added in extract_postMetrics.py.)
+=======
+        self.subset_size = subset_size
+>>>>>>> f73da6a5 (HV-based solutions subset selection is performed so that indicators comparison is fair. the .json outputs stores the selected subset, not the whole NDS created by the algorithm.)
 
         self.nds_debug = []
         self.population_debug = []

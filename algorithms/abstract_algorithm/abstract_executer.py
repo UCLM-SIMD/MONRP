@@ -1,8 +1,12 @@
 import json
 <<<<<<< HEAD
+<<<<<<< HEAD
 import warnings
 =======
 >>>>>>> 19c7836f (ahora todos los resultados se almacenan en results.json con un id unico para cada conjunto de parametros de lanzamiento)
+=======
+import warnings
+>>>>>>> f73da6a5 (HV-based solutions subset selection is performed so that indicators comparison is fair. the .json outputs stores the selected subset, not the whole NDS created by the algorithm.)
 from abc import ABC
 from typing import List
 
@@ -56,6 +60,7 @@ class AbstractExecuter(ABC):
         """
         paretos_list = []  # list of pareto lists, one pareto per execution
         for it in range(0, self.executions):
+<<<<<<< HEAD
             self.algorithm.reset()
             result = self.algorithm.run()
 
@@ -132,14 +137,17 @@ class AbstractExecuter(ABC):
         """
         paretos_list = [] # list of pareto lists, one pareto per execution
         for it in range(0,  self.executions):
+=======
+>>>>>>> f73da6a5 (HV-based solutions subset selection is performed so that indicators comparison is fair. the .json outputs stores the selected subset, not the whole NDS created by the algorithm.)
             self.algorithm.reset()
             result = self.algorithm.run()
+            result['population'] = self.search_solution_subset(result['population'])
             self.get_metrics_fields(result, it)
-            pareto = self.get_pareto(result['population']) # get a list with pareto points
+            pareto = self.get_pareto(result['population'])  # get a list with pareto points
             paretos_list.insert(len(paretos_list), pareto)
 
         #  add/update results in json output file
-        self.algorithm.config_dictionary['num_executions'] =  self.executions
+        self.algorithm.config_dictionary['num_executions'] = self.executions
         unique_id = ''.join(str(c) for c in self.algorithm.config_dictionary.values())
         results_dictionary = {'parameters': self.algorithm.config_dictionary,
                               'metrics': self.metrics_dictionary,
@@ -147,19 +155,49 @@ class AbstractExecuter(ABC):
                               'Reference_Pareto': 'Not constructed yet.  You may need to run extract_postMetrics.py'
                               }
 
-       # try:
-        #    with open(output_folder+id+'.json') as f:
-                #all_dictionaries = json.load(f)
-                #if unique_id in all_dictionaries:
-                #    all_dictionaries[unique_id].update(results_dictionary)
-                #else:
-                #    all_dictionaries[unique_id] = results_dictionary
-        #except IOError:  # first time so output file does not exist yet
-            #all_dictionaries = {unique_id: results_dictionary}
-
-        with open(output_folder+unique_id+'.json', 'w', encoding='utf-8') as f:
+        with open(output_folder + unique_id + '.json', 'w', encoding='utf-8') as f:
             json.dump(results_dictionary, f, ensure_ascii=False, indent=4)
 
+    """ finds the subset which maximizes HV with self.subset_size of solutions.
+    The search is a basic/tradicional greedy forward search based on the HV metric
+    A fixed reference point is assumed during the search (always the same), as in 
+    'Greedy Hypervolume Subset Selection in Low Dimensions,Evolutionary Computation 24(3): 521-544'
+    where fixed r is upper bounds (in minimizatino problems), that is, the nadir point
+    
+    """
+
+    def search_solution_subset(self, solutions: [Solution]) -> [Solution]:
+
+        if len(solutions) < self.algorithm.subset_size:
+            warnings.warn('final solution length is < subset_size parameter!! Solution subset selected will be the '
+                          'original final solution', UserWarning)
+            return solutions
+
+        nadir_x, nadir_y = metrics.find_nadir_point(solutions)
+        indices_selected = []
+        subset = []
+        for _ in range(0, self.algorithm.subset_size):
+            best_hv = -1
+            best_index = -1
+            for i in range(0, len(solutions)):
+                if not i in indices_selected:
+                    subset.insert(len(subset), solutions[i])
+                    hv = metrics.calculate_hypervolume(subset, fixed_nadir_x=nadir_x, fixed_nadir_y=nadir_y)
+                    if hv > best_hv:
+                        best_hv = hv
+                        best_index = i
+                    del subset[-1]
+            if best_index != -1:
+                subset.insert(len(subset), solutions[best_index])
+                indices_selected.insert(len(indices_selected), best_index)
+
+        return subset
+
+    """ search for the solution which maximizes satisfaction, and other which minimizes cost"""
+
+    def init_subset_selection(self, solutions: [Solution]) -> [Solution]:
+
+        return [], []
 
 >>>>>>> 19c7836f (ahora todos los resultados se almacenan en results.json con un id unico para cada conjunto de parametros de lanzamiento)
     def get_metrics_fields(self, result, repetition):
@@ -180,10 +218,14 @@ class AbstractExecuter(ABC):
         mean_bits_per_sol = metrics.calculate_mean_bits_per_sol(result["population"])
         avgValue = metrics.calculate_avgValue(result["population"])
 <<<<<<< HEAD
+<<<<<<< HEAD
         bestAvgValue = metrics.calculate_bestAvgValue(result["population"])
 =======
         bestAvgValue =  metrics.calculate_bestAvgValue(result["population"])
 >>>>>>> 9617fc4f (extract_postMetrics.py computes and updates outputs .json with: gd+, unfr and reference pareto front.)
+=======
+        bestAvgValue = metrics.calculate_bestAvgValue(result["population"])
+>>>>>>> f73da6a5 (HV-based solutions subset selection is performed so that indicators comparison is fair. the .json outputs stores the selected subset, not the whole NDS created by the algorithm.)
 
         self.metrics_dictionary['time'][repetition] = time
         self.metrics_dictionary['HV'][repetition] = hv
@@ -218,6 +260,7 @@ class AbstractExecuter(ABC):
         solution_points = []
         for sol in population:
 <<<<<<< HEAD
+<<<<<<< HEAD
             point = (sol.total_cost, sol.total_satisfaction)
             solution_points.insert(len(solution_points), point)
         return solution_points
@@ -228,6 +271,13 @@ class AbstractExecuter(ABC):
            solution_points.insert(len(solution_points),point)
         return solution_points
 >>>>>>> 5f26e099 (each experiment result is stored in a dedicated file with unique name based on experiment hyperparameters)
+=======
+            point = (sol.total_cost, sol.total_satisfaction)
+            solution_points.insert(len(solution_points), point)
+        return solution_points
+
+
+>>>>>>> f73da6a5 (HV-based solutions subset selection is performed so that indicators comparison is fair. the .json outputs stores the selected subset, not the whole NDS created by the algorithm.)
 """
     def file_write_line(self, file_path: str, line: str) -> None:
         #Aux method to write a line in a file
@@ -288,6 +338,7 @@ class AbstractExecuter(ABC):
         return solution_points
 =======
 """
+<<<<<<< HEAD
 
 >>>>>>> 5f26e099 (each experiment result is stored in a dedicated file with unique name based on experiment hyperparameters)
 
@@ -296,3 +347,5 @@ class AbstractExecuter(ABC):
 
 
 >>>>>>> 19c7836f (ahora todos los resultados se almacenan en results.json con un id unico para cada conjunto de parametros de lanzamiento)
+=======
+>>>>>>> f73da6a5 (HV-based solutions subset selection is performed so that indicators comparison is fair. the .json outputs stores the selected subset, not the whole NDS created by the algorithm.)
