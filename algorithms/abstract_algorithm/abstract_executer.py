@@ -38,9 +38,13 @@ class AbstractExecuter(ABC):
         self.metrics_dictionary = {
             'time': [None] * self.executions,
 <<<<<<< HEAD
+<<<<<<< HEAD
             'NDS_size': [None] * self.executions,
 =======
 >>>>>>> 19c7836f (ahora todos los resultados se almacenan en results.json con un id unico para cada conjunto de parametros de lanzamiento)
+=======
+            'NDS_size': [None] * self.executions,
+>>>>>>> e8f167fd (Now we also store the size of the NDS created in the search, before choosing 'subset_size' solutions)
             'HV': [None] * self.executions,
             'spread': [None] * self.executions,
             'numSolutions': [None] * self.executions,
@@ -141,7 +145,10 @@ class AbstractExecuter(ABC):
 >>>>>>> f73da6a5 (HV-based solutions subset selection is performed so that indicators comparison is fair. the .json outputs stores the selected subset, not the whole NDS created by the algorithm.)
             self.algorithm.reset()
             result = self.algorithm.run()
+
+            self.metrics_dictionary['NDS_size'][it] = len(result['population']) # store original NDS size created in search
             result['population'] = self.search_solution_subset(result['population'])
+
             self.get_metrics_fields(result, it)
             pareto = self.get_pareto(result['population'])  # get a list with pareto points
             paretos_list.insert(len(paretos_list), pareto)
