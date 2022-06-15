@@ -1,6 +1,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import copy
 import json
 import string
@@ -46,6 +47,9 @@ from pymoo.factory import get_performance_indicator
 from pymoo.visualization.scatter import Scatter
 =======
 >>>>>>> 5efa3a53 (new hyperparameter created: subset_size used to choose a subset of solutions from the final set of solutions returned by the executed algorithm. Also, nsgaii is added in extract_postMetrics.py.)
+=======
+import copy
+>>>>>>> f9cc4a35 (jupyter notebook created to automatically get the best configuration in a list of output files for a given algorithm)
 import json
 
 from evaluation.get_nondominated_solutions import get_nondominated_solutions
@@ -56,10 +60,12 @@ from models.Solution import Solution
 will be taken into account to find the reference Pareto for GD+ and UNFR"""
 
 output_folder = "output/"
+dataset = ['p1', 'p2']  # {'p1','p2','s1','s2','s3','a1','a2','a3','a4','c1','c2','c3','c4','c5','c6'}
+# post metrics are not computed among results for all indicated datasets.Only 1 dataset is taken into account each time.
+
 # COMMON HYPER-PARAMETERS #
 # possible algorithm values: {'GRASP', 'feda', 'geneticNDS', 'pbil', 'umda', nsgaii}
-algorithms = ['GRASP', 'geneticNDS', 'umda', 'pbil', 'feda', 'nsgaii']
-dataset = ['p1']  # {'p1','p2','s1','s2','s3','a1','a2','a3','a4','c1','c2','c3','c4','c5','c6'}
+algorithms = ['GRASP']  # ['GRASP', 'geneticNDS', 'umda', 'pbil', 'feda', 'nsgaii']
 dependencies = ['True']  # {'True','False'}
 seed = 5
 num_executions = 5
@@ -69,8 +75,8 @@ subset_size = [4]  # number of solutions to choose from final NDS in each algori
 max_evals_genetic = [10000]
 selection_candidates = [2]
 crossover_prob = [0.8]
-mutation_prob = [0.1]
-population_size = [10]
+mutation_prob = [0.1, 0.3]
+population_size = [10, 20, 40]
 num_iterations = [10]
 mutation = ['flip1bit']  # {'flip1bit', 'flipeachbit'}
 replacement = ['elitism']  # {'elitism', 'elitismnds'}
@@ -96,9 +102,14 @@ path_relinking_mode = ['None']  # {'None', 'PR'}
 path_relinking_mode = ['PR']  # {'None', 'PR'}
 >>>>>>> 5efa3a53 (new hyperparameter created: subset_size used to choose a subset of solutions from the final set of solutions returned by the executed algorithm. Also, nsgaii is added in extract_postMetrics.py.)
 local_search_type = ['best_first_neighbor_random']
+<<<<<<< HEAD
 grasp_iterations = [10]
 solutions_per_iteration = [10]
 >>>>>>> 9617fc4f (extract_postMetrics.py computes and updates outputs .json with: gd+, unfr and reference pareto front.)
+=======
+grasp_iterations = [10, 20]
+solutions_per_iteration = [10, 20]
+>>>>>>> f9cc4a35 (jupyter notebook created to automatically get the best configuration in a list of output files for a given algorithm)
 # local_search_type values: {'None', 'best_first_neighbor_random','best_first_neighbor_sorted_score',
 # best_first_neighbor_sorted_score_r' , 'best_first_neighbor_random_domination','best_first_neighbor_sorted_domination'}
 
@@ -159,10 +170,11 @@ def get_genetic_uids(name: str, d: str) -> [str]:
 ''' returns a list of uid files created from geneticNDS hyper-parameters '''
 
 
-def get_genetic_uids(name: str) -> [str]:
+def get_genetic_uids(name: str, data: str) -> [str]:
     uids_list = []
 
     for dependency in dependencies:
+<<<<<<< HEAD
         for data in dataset:
             for max_evals in max_evals_genetic:
                 for pop_size in population_size:
@@ -193,12 +205,33 @@ def get_genetic_uids(name: str) -> [str]:
                                                         print(uid)
                                                         uids_list.append(uid)
 >>>>>>> 5efa3a53 (new hyperparameter created: subset_size used to choose a subset of solutions from the final set of solutions returned by the executed algorithm. Also, nsgaii is added in extract_postMetrics.py.)
+=======
+        for max_evals in max_evals_genetic:
+            for pop_size in population_size:
+                for iterations in num_iterations:
+                    for sel in selection:
+                        for xover in crossover:
+                            for candidates in selection_candidates:
+                                for xover_prob in crossover_prob:
+                                    for mut_prob in mutation_prob:
+                                        for mut in mutation:
+                                            for rep in replacement:
+                                                for size in subset_size:
+                                                    uid = output_folder + name + dependency + data + \
+                                                          str(seed) + str(size) + str(pop_size) \
+                                                          + str(iterations) + str(max_evals) + str(candidates) + \
+                                                          str(xover_prob) + str(mut_prob) + sel + xover + mut + \
+                                                          rep + str(num_executions) + '.json'
+                                                    print('\'../' + uid + '\',')
+                                                    uids_list.append(uid)
+>>>>>>> f9cc4a35 (jupyter notebook created to automatically get the best configuration in a list of output files for a given algorithm)
     return uids_list
 
 
 ''' get_grasp_uids returns a list of uid files created from GRASP hyper-parameters '''
 
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 def get_grasp_uids(d: str) -> [str]:
     uids_list = []
@@ -244,12 +277,32 @@ def get_grasp_uids() -> [str]:
                                         print(uid)
                                         uids_list.append(uid)
 >>>>>>> 5efa3a53 (new hyperparameter created: subset_size used to choose a subset of solutions from the final set of solutions returned by the executed algorithm. Also, nsgaii is added in extract_postMetrics.py.)
+=======
+def get_grasp_uids(data: str) -> [str]:
+    uids_list = []
+
+    for dependency in dependencies:
+
+        for max_evals in max_evals_grasp:
+            for pop_size in solutions_per_iteration:
+                for iterations in grasp_iterations:
+                    for init in init_type:
+                        for pr in path_relinking_mode:
+                            for search in local_search_type:
+                                for size in subset_size:
+                                    uid = output_folder + 'GRASP' + dependency + data + str(seed) + str(size) + \
+                                          str(iterations) + str(pop_size) + str(max_evals) + init + search + pr + \
+                                          str(num_executions) + '.json'
+                                    print('\'../' + uid + '\',')
+                                    uids_list.append(uid)
+>>>>>>> f9cc4a35 (jupyter notebook created to automatically get the best configuration in a list of output files for a given algorithm)
     return uids_list
 
 
 ''' returns a list of uid files created from umda hyper-parameters '''
 
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 def get_umda_uids(d: str) -> [str]:
     uids_list = []
@@ -293,12 +346,31 @@ def get_umda_uids() -> [str]:
                                     print(uid)
                                     uids_list.append(uid)
 >>>>>>> 5efa3a53 (new hyperparameter created: subset_size used to choose a subset of solutions from the final set of solutions returned by the executed algorithm. Also, nsgaii is added in extract_postMetrics.py.)
+=======
+def get_umda_uids(data: str) -> [str]:
+    uids_list = []
+
+    for dependency in dependencies:
+
+        for max_evals in max_evals_umda:
+            for pop_size in population_length_umda:
+                for iterations in max_generations_umda:
+                    for sel_scheme in selection_scheme:
+                        for rep_scheme in replacement_scheme:
+                            for size in subset_size:
+                                uid = output_folder + 'umda' + dependency + data + str(seed) + str(size) + \
+                                      str(pop_size) + str(iterations) + str(max_evals) + sel_scheme + rep_scheme + \
+                                      str(num_executions) + '.json'
+                                print('\'../' + uid + '\',')
+                                uids_list.append(uid)
+>>>>>>> f9cc4a35 (jupyter notebook created to automatically get the best configuration in a list of output files for a given algorithm)
     return uids_list
 
 
 ''' returns a list of uid files created from pbil hyper-parameters '''
 
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 def get_pbil_uids(d: str) -> [str]:
     uids_list = []
@@ -370,12 +442,33 @@ def get_pbil_uids() -> [str]:
                                         print(uid)
                                         uids_list.append(uid)
 >>>>>>> 5efa3a53 (new hyperparameter created: subset_size used to choose a subset of solutions from the final set of solutions returned by the executed algorithm. Also, nsgaii is added in extract_postMetrics.py.)
+=======
+def get_pbil_uids(data: str) -> [str]:
+    uids_list = []
+
+    for dependency in dependencies:
+
+        for max_evals in max_evals_pbil:
+            for pop_size in population_length_pbil:
+                for iterations in max_generations_pbil:
+                    for l_rate in learning_rate:
+                        for mut_prob_pbil in mutation_prob_pbil:
+                            for shift in mutation_shift:
+                                for size in subset_size:
+                                    uid = output_folder + 'pbil' + dependency + data + str(seed) + str(size) + \
+                                          str(pop_size) + \
+                                          str(iterations) + str(max_evals) + str(l_rate) + str(mut_prob_pbil) + \
+                                          str(shift) + str(num_executions) + '.json'
+                                    print('\'../' + uid + '\',')
+                                    uids_list.append(uid)
+>>>>>>> f9cc4a35 (jupyter notebook created to automatically get the best configuration in a list of output files for a given algorithm)
     return uids_list
 
 
 ''' returns a list of uid files created from feda hyper-parameters '''
 
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 def get_feda_uids(d: str) -> [str]:
     uids_list = []
@@ -526,21 +619,24 @@ if __name__ == '__main__':
     print(f"File list {container_name} created to be used from analisis/findBestHyperparam jupyter notebook")
 =======
 def get_feda_uids() -> [str]:
+=======
+def get_feda_uids(data: str) -> [str]:
+>>>>>>> f9cc4a35 (jupyter notebook created to automatically get the best configuration in a list of output files for a given algorithm)
     uids_list = []
 
     for dependency in dependencies:
-        for data in dataset:
-            for max_evals in max_evals_feda:
-                for pop_size in population_size_feda:
-                    for iterations in num_iterations_feda:
-                        for sel_scheme in selection_scheme_feda:
-                            for size in subset_size:
-                                uid = output_folder + 'feda' + dependency + data + str(seed) + str(size) + \
-                                      str(pop_size) + \
-                                      str(iterations) + str(max_evals) + sel_scheme + str(num_executions) + '.json'
 
-                                print(uid)
-                                uids_list.append(uid)
+        for max_evals in max_evals_feda:
+            for pop_size in population_size_feda:
+                for iterations in num_iterations_feda:
+                    for sel_scheme in selection_scheme_feda:
+                        for size in subset_size:
+                            uid = output_folder + 'feda' + dependency + data + str(seed) + str(size) + \
+                                  str(pop_size) + \
+                                  str(iterations) + str(max_evals) + sel_scheme + str(num_executions) + '.json'
+
+                            print('\'../' + uid + '\',')
+                            uids_list.append(uid)
     return uids_list
 
 
@@ -560,7 +656,7 @@ def construct_store_reference_pareto(uids):
                                    cost=xy[0], satisfaction=xy[1])
                     all_solutions.append(sol)
     nds = get_nondominated_solutions(solutions=all_solutions)
-    print(f"Reference Pareto contains {len(nds)} solutions.")
+    #print(f"Reference Pareto contains {len(nds)} solutions.")
     pareto = []
     for sol in nds:
         pareto.append([sol.total_cost, sol.total_satisfaction])
@@ -607,22 +703,41 @@ def compute_and_store_unfr(rpf, uids):
 
 
 if __name__ == '__main__':
-    files_uid = []
+    print('GD+ and UNFR will be calculated using as reference the best pareto found in the output files given + \
+                 the hyperparameters, for each dataset.')
+    all_files_uid = []
+    for data in dataset:
 
-    # find unique file ids from the list of hyperparameters set at the beginning of this file, above.
-    if 'GRASP' in algorithms:
-        files_uid = files_uid + get_grasp_uids()
-    if 'geneticNDS' in algorithms:
-        files_uid = files_uid + get_genetic_uids('geneticNDS')
-    if 'nsgaii' in algorithms:
-        files_uid = files_uid + get_genetic_uids('nsgaii')
-    if 'umda' in algorithms:
-        files_uid = files_uid + get_umda_uids()
-    if 'pbil' in algorithms:
-        files_uid = files_uid + get_pbil_uids()
-    if 'feda' in algorithms:
-        files_uid = files_uid + get_feda_uids()
+        files_uid = []
+        # find unique file ids from the list of hyperparameters set at the beginning of this file, above.
+        if 'GRASP' in algorithms:
+            files_uid = files_uid + get_grasp_uids(data)
+        if 'geneticNDS' in algorithms:
+            files_uid = files_uid + get_genetic_uids('geneticNDS', data)
+        if 'nsgaii' in algorithms:
+            files_uid = files_uid + get_genetic_uids('nsgaii', data)
+        if 'umda' in algorithms:
+            files_uid = files_uid + get_umda_uids(data)
+        if 'pbil' in algorithms:
+            files_uid = files_uid + get_pbil_uids(data)
+        if 'feda' in algorithms:
+            files_uid = files_uid + get_feda_uids(data)
 
+        # find Reference Pareto and compute metrics
+        reference_pareto = construct_store_reference_pareto(files_uid)
+        compute_and_store_gdplus(rpf=reference_pareto, uids=files_uid)
+        compute_and_store_unfr(rpf=reference_pareto, uids=files_uid)
+        print()
+        for f in files_uid:
+            all_files_uid.append(f)
+
+    # store all uids in container file (for use in analysis jupyter notebook)
+    container_name = 'filest_list_' +''.join(algorithms)
+    with open('output/'+container_name,'w') as f:
+        for uid in all_files_uid:
+            f.write(uid+"\n")
+
+<<<<<<< HEAD
     print(f"\nGD+ and UNFR will be calculated using as reference the best pareto found in the {len(files_uid)}"
           f" files above.")
 <<<<<<< HEAD
@@ -634,3 +749,6 @@ if __name__ == '__main__':
     compute_and_store_gdplus(rpf=reference_pareto, uids=files_uid)
     compute_and_store_unfr(rpf=reference_pareto, uids=files_uid)
 >>>>>>> 9617fc4f (extract_postMetrics.py computes and updates outputs .json with: gd+, unfr and reference pareto front.)
+=======
+
+>>>>>>> f9cc4a35 (jupyter notebook created to automatically get the best configuration in a list of output files for a given algorithm)
