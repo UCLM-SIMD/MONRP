@@ -1,0 +1,8 @@
+grasp grasp a1 5 10 50 10000 stochastically best_first_neighbor_random PR 5 True 10
+grasp grasp a1 5 20 50 10000 stochastically best_first_neighbor_random PR 5 True 10
+grasp grasp a1 5 10 100 10000 stochastically best_first_neighbor_random PR 5 True 10
+grasp grasp a1 5 20 100 10000 stochastically best_first_neighbor_random PR 5 True 10
+grasp grasp c5 5 10 50 10000 stochastically best_first_neighbor_random PR 5 True 10
+grasp grasp c5 5 20 50 10000 stochastically best_first_neighbor_random PR 5 True 10
+grasp grasp c5 5 10 100 10000 stochastically best_first_neighbor_random PR 5 True 10
+grasp grasp c5 5 20 100 10000 stochastically best_first_neighbor_random PR 5 True 10
