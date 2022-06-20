@@ -1,7 +1,13 @@
 #!/bin/sh 
+<<<<<<< HEAD
  #PBS -N mimic 
  #PBS -l mem=2500mb 
  #PBS -J 1-200 
+=======
+ #PBS -N MONRP 
+ #PBS -l mem=2500mb 
+ #PBS -J 1-384
+>>>>>>> 8397cdd4 (solved error in jupyther notebook to find the best counts for hyperparam. configuration)
 
 export PATH=/home/pbermejo/.local/lib/python3.8/site-packages:$PATH
 export PYTHONPATH=/home/pbermejo/.local/lib/python3.8/site-packages:$PYTHONPATH
