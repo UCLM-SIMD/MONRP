@@ -8,17 +8,18 @@ from models.Solution import Solution
 """ Please fill the experiments hyper-parameters, which will be used to define the which results
 will be taken into account to find the reference Pareto for GD+ and UNFR"""
 
-output_folder = "output/"
-dataset = ['p1', 'p2']  # {'p1','p2','s1','s2','s3','a1','a2','a3','a4','c1','c2','c3','c4','c5','c6'}
 # post metrics are not computed among results for all indicated datasets.Only 1 dataset is taken into account each time.
+output_folder = "output/"
+
+dataset = ['p1','p2','a1','a2','a3','a4','c1','c2','c3','c4','c5','c6']  # {'p1','p2','s1','s2','s3','a1','a2','a3','a4','c1','c2','c3','c4','c5','c6'}
 
 # COMMON HYPER-PARAMETERS #
 # possible algorithm values: {'GRASP', 'feda', 'geneticNDS', 'pbil', 'umda', nsgaii}
-algorithms = ['GRASP']  # ['GRASP', 'geneticNDS', 'umda', 'pbil', 'feda', 'nsgaii']
+algorithms = ['GRASP']  # ['GRASP', 'geneticNDS', 'nsgaii', 'umda', 'pbil', 'feda']
 dependencies = ['True']  # {'True','False'}
 seed = 5
 num_executions = 5
-subset_size = [4]  # number of solutions to choose from final NDS in each algorithm to compute metrics
+subset_size = [10]  # number of solutions to choose from final NDS in each algorithm to compute metrics
 
 # geneticNDS and NSGAii hyperparameters #
 max_evals_genetic = [10000]
@@ -35,10 +36,10 @@ crossover = ['onepoint']  # only 'onepoint' available
 # GRASP hyper-parameters #
 max_evals_grasp = [10000]
 init_type = ['stochastically']  # {'stochastically', 'uniform'}
-path_relinking_mode = ['PR']  # {'None', 'PR'}
+path_relinking_mode = ['None', 'PR']  # {'None', 'PR'}
 local_search_type = ['best_first_neighbor_random']
-grasp_iterations = [10, 20]
-solutions_per_iteration = [10, 20]
+grasp_iterations = [10, 50, 100, 200]
+solutions_per_iteration = [50, 100, 200, 500]
 # local_search_type values: {'None', 'best_first_neighbor_random','best_first_neighbor_sorted_score',
 # best_first_neighbor_sorted_score_r' , 'best_first_neighbor_random_domination','best_first_neighbor_sorted_domination'}
 
