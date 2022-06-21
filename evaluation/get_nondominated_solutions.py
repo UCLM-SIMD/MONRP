@@ -37,10 +37,14 @@ def get_nondominated_solutions(solutions: List[Solution], nds=None) -> List[Solu
                 nds.remove(dominated)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
    #plot_solutions(nds)
 =======
     # plot_solutions(nds)
 >>>>>>> 9617fc4f (extract_postMetrics.py computes and updates outputs .json with: gd+, unfr and reference pareto front.)
+=======
+   # plot_solutions(nds)
+>>>>>>> a1359f27 (solved issue when comparing new solutions to nds (.isclose). now solution subset search has a better general ref point.)
     return nds
 
 

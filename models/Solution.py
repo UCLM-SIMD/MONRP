@@ -12,10 +12,14 @@ class Solution:
     """
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     def __init__(self, dataset, probabilities, selected=None, uniform=False, *, cost=None, satisfaction=None):
 =======
     def __init__(self, dataset: Dataset, probabilities, selected=None, uniform=False, *, cost=None, satisfaction=None):
 >>>>>>> 9617fc4f (extract_postMetrics.py computes and updates outputs .json with: gd+, unfr and reference pareto front.)
+=======
+    def __init__(self, dataset, probabilities, selected=None, uniform=False, *, cost=None, satisfaction=None):
+>>>>>>> a1359f27 (solved issue when comparing new solutions to nds (.isclose). now solution subset search has a better general ref point.)
         """
         """
         if cost is None or satisfaction is None:
@@ -132,10 +136,14 @@ class Solution:
                 new_satisfaction / (new_cost + 1 / smooth))
     # read https://davidamos.dev/the-right-way-to-compare-floats-in-python/ for floats comparison
 <<<<<<< HEAD
+<<<<<<< HEAD
     # we chose 0.001 as abs_tol difference as margin to decide values are equals. otherwise,
 =======
     # we chose 0.01 as abs_tol difference as margin to decide values are equals. otherwise,
 >>>>>>> 9617fc4f (extract_postMetrics.py computes and updates outputs .json with: gd+, unfr and reference pareto front.)
+=======
+    # we chose 0.001 as abs_tol difference as margin to decide values are equals. otherwise,
+>>>>>>> a1359f27 (solved issue when comparing new solutions to nds (.isclose). now solution subset search has a better general ref point.)
     # when plotting solutions they seem equal since the difference is too tiny. it might be
     #changed to 0.001 or even 0.0001.
     #by default, one solution equals to other dominates it.
@@ -152,6 +160,7 @@ class Solution:
 
         dominates = dominates or (
 <<<<<<< HEAD
+<<<<<<< HEAD
             math.isclose(self.total_cost,solution.total_cost,abs_tol=0.0001) and
             this_satisfaction > other_satisfaction)
 
@@ -164,10 +173,18 @@ class Solution:
         dominates = dominates or (this_cost < other_cost and
                 math.isclose(self.total_satisfaction,solution.total_satisfaction,abs_tol=0.01))
 >>>>>>> 9617fc4f (extract_postMetrics.py computes and updates outputs .json with: gd+, unfr and reference pareto front.)
+=======
+            math.isclose(self.total_cost,solution.total_cost,abs_tol=0.0001) and
+            this_satisfaction > other_satisfaction)
+
+        dominates = dominates or (this_cost < other_cost and
+                math.isclose(self.total_satisfaction,solution.total_satisfaction,abs_tol=0.0001))
+>>>>>>> a1359f27 (solved issue when comparing new solutions to nds (.isclose). now solution subset search has a better general ref point.)
 
         #if both are equals, let one dominate the other and thus remove it
         if equals_dominates:
             dominates = dominates or (
+<<<<<<< HEAD
 <<<<<<< HEAD
                 math.isclose(self.total_cost,solution.total_cost,abs_tol=0.0001) and
                 math.isclose(self.total_satisfaction,solution.total_satisfaction,abs_tol=0.0001))
@@ -175,6 +192,10 @@ class Solution:
                 math.isclose(self.total_cost,solution.total_cost,abs_tol=0.01) and
                 math.isclose(self.total_satisfaction,solution.total_satisfaction,abs_tol=0.01))
 >>>>>>> 9617fc4f (extract_postMetrics.py computes and updates outputs .json with: gd+, unfr and reference pareto front.)
+=======
+                math.isclose(self.total_cost,solution.total_cost,abs_tol=0.0001) and
+                math.isclose(self.total_satisfaction,solution.total_satisfaction,abs_tol=0.0001))
+>>>>>>> a1359f27 (solved issue when comparing new solutions to nds (.isclose). now solution subset search has a better general ref point.)
 
         return dominates
 
