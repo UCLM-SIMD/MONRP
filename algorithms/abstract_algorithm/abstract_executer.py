@@ -74,11 +74,11 @@ class AbstractExecuter(ABC):
     def search_solution_subset(self, solutions: [Solution]) -> [Solution]:
 
         if len(solutions) < self.algorithm.subset_size:
-            warnings.warn('final solution length is < subset_size parameter!! Solution subset selected will be the '
-                          'original final solution', UserWarning)
+
+            warnings.warn('|solutions| < subset_size parameter!! Solution subset set to original final solution', UserWarning)
             return solutions
 
-        nadir_x, nadir_y = metrics.find_nadir_point(solutions)
+        ref_x, ref_y = metrics.find_ref_points(solutions) # need ref points taking all solutions into account
         indices_selected = []
         subset = []
         for _ in range(0, self.algorithm.subset_size):
@@ -87,7 +87,7 @@ class AbstractExecuter(ABC):
             for i in range(0, len(solutions)):
                 if not i in indices_selected:
                     subset.insert(len(subset), solutions[i])
-                    hv = metrics.calculate_hypervolume(subset, fixed_nadir_x=nadir_x, fixed_nadir_y=nadir_y)
+                    hv = metrics.calculate_hypervolume(subset, ref_x=ref_x, ref_y=ref_y)
                     if hv > best_hv:
                         best_hv = hv
                         best_index = i

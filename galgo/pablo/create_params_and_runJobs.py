@@ -1,18 +1,19 @@
 
 import datetime
+dependencies = ['D']  # {'D', 'd'}
 
-dataset = ['p1','p2','a1','a2','a3','a4','c1','c2','c3','c4','c5','c6']  # {'p1','p2','s1','s2','s3','a1','a2','a3','a4','c1','c2','c3','c4','c5','c6'}
+
+dataset = ['p1','p2','a1','a2','a3','a4','c1','c2','c3','c4','c5','c6']  # {'p1','p2','a1','a2','a3','a4','c1','c2','c3','c4','c5','c6'}
 
 # COMMON HYPER-PARAMETERS #
 # possible algorithm values: {'GRASP', 'feda', 'geneticNDS', 'pbil', 'umda', nsgaii}
 algorithms = ['GRASP']  # ['GRASP', 'geneticNDS', 'nsgaii', 'umda', 'pbil', 'feda']
-dependencies = ['D']  # {'D','d'} # d is for no dependencies, could be any letter differnet to D
 seed = 5
-num_executions = 5
+num_executions = 30
 subset_size = [10]  # number of solutions to choose from final NDS in each algorithm to compute metrics
 
 # geneticNDS and NSGAii hyperparameters #
-max_evals_genetic = [10000]
+max_evals_genetic = [100000]
 selection_candidates = [2]
 crossover_prob = [0.8]
 mutation_prob = [0.1, 0.3]
@@ -24,11 +25,11 @@ selection = ['tournament']  # only 'tournament' available
 crossover = ['onepoint']  # only 'onepoint' available
 
 # GRASP hyper-parameters #
-max_evals_grasp = [10000]
+max_evals_grasp = [0] # stop criteria is grasp_iterations
 init_type = ['stochastically']  # {'stochastically', 'uniform'}
 path_relinking_mode = ['None', 'PR']  # {'None', 'PR'}
 local_search_type = ['best_first_neighbor_random']
-grasp_iterations = [10, 50, 100, 200]
+grasp_iterations = [5, 10, 50, 100, 200]
 solutions_per_iteration = [50, 100, 200, 500]
 # local_search_type values: {'None', 'best_first_neighbor_random','best_first_neighbor_sorted_score',
 # best_first_neighbor_sorted_score_r' , 'best_first_neighbor_random_domination','best_first_neighbor_sorted_domination'}

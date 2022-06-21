@@ -109,28 +109,29 @@ def calculate_gdplus(nds: [[float, float]],
     reference_points = []
     for [total_cost, total_satisfaction] in nds:
         # se revierte la satisfaccion para que más sea peor, para compatibilidad con pymoo
-        x =  total_cost
-        y = 1- total_satisfaction
+        x = total_cost
+        y = 1 - total_satisfaction
         points.append([x, y])
     np_points = np.array(points)
 
     for [total_cost, total_satisfaction] in reference_pareto:
         # se revierte la satisfaccion para que más sea peor, para compatibilidad con pymoo
-        x =  total_cost
-        y = 1- total_satisfaction
+        x = total_cost
+        y = 1 - total_satisfaction
         reference_points.append([x, y])
     np_reference = np.array(reference_points)
 
     gd_indicator = get_performance_indicator("gd+", np_reference)
     gd_plus = gd_indicator.do(np_points)
-    #Scatter(legend=True, title=f"GD+ = {gd_plus:.4f}").add(np_reference, label="Pareto-front").add(np_points, label="Result").show()
+    # Scatter(legend=True, title=f"GD+ = {gd_plus:.4f}").add(np_reference, label="Pareto-front").add(np_points, label="Result").show()
     return gd_plus
-
 
 
 """ if nadir point is not given, it is computed as the worst points in population
 nadir should be given when HV is computed from a HV subset selection search"""
-def calculate_hypervolume(population: List[Solution], fixed_nadir_x=None, fixed_nadir_y=None) -> float:
+
+
+def calculate_hypervolume(population: List[Solution], ref_x=None, ref_y=None) -> float:
     points = []
 
     nadir_x = float("-inf")
@@ -142,7 +143,7 @@ def calculate_hypervolume(population: List[Solution], fixed_nadir_x=None, fixed_
         # se revierte la satisfaccion para que más sea peor, para compatibilidad con pymoo
         x = ind.total_cost
         y = 1 - ind.total_satisfaction
-        if fixed_nadir_x is None:
+        if ref_x is None:
             nadir_x = x if x > nadir_x else nadir_x
             nadir_y = y if y > nadir_y else nadir_y
             best_x = x if x < best_x else best_x
@@ -151,7 +152,7 @@ def calculate_hypervolume(population: List[Solution], fixed_nadir_x=None, fixed_
 
     np_points = np.array(points)
 
-    if fixed_nadir_x is None:
+    if ref_x is None:
         range_x = nadir_x - best_x
         range_y = nadir_y - best_y
 
@@ -159,10 +160,8 @@ def calculate_hypervolume(population: List[Solution], fixed_nadir_x=None, fixed_
         ref_y = nadir_y + range_y / 10
         ref_x = 1 if ref_x > 1 else ref_x
         ref_y = 1 if ref_y > 1 else ref_y
-        hv = get_performance_indicator("hv", ref_point=np.array(np.array([ref_x, ref_y])))
-    else:
-        hv = get_performance_indicator("hv", ref_point=np.array(np.array([fixed_nadir_x, fixed_nadir_y])))
 
+    hv = get_performance_indicator("hv", ref_point=np.array(np.array([ref_x, ref_y])))
     hypervolume = hv.do(np_points)
 
     # Scatter(title=f"HV = {hypervolume} (dibujado chepa del reves por pymoo").add(np_points).show()
@@ -170,28 +169,39 @@ def calculate_hypervolume(population: List[Solution], fixed_nadir_x=None, fixed_
     return hypervolume
 
 
+def find_ref_points(population: List[Solution]):
+    nadir_x = float("-inf")
+    nadir_y = float("-inf")
+    best_x = float("+inf")
+    best_y = float("+inf")
 
-def find_nadir_point(population: List[Solution]):
-   nadir_x = float("-inf")
-   nadir_y = float("-inf")
-   for ind in population:
+    for ind in population:
         # se revierte la satisfaccion para que más sea peor, para compatibilidad con pymoo
         x = ind.total_cost
         y = 1 - ind.total_satisfaction
 
         nadir_x = x if x > nadir_x else nadir_x
         nadir_y = y if y > nadir_y else nadir_y
+        best_x = x if x < best_x else best_x
+        best_y = y if y < best_y else best_y
 
-   return nadir_x, nadir_y
+    range_x = nadir_x - best_x
+    range_y = nadir_y - best_y
+    ref_x = nadir_x + range_x / 10
+    ref_y = nadir_y + range_y / 10
+    ref_x = 1 if ref_x > 1 else ref_x
+    ref_y = 1 if ref_y > 1 else ref_y
+
+    return ref_x, ref_y
 
 
 def calculate_unfr(pareto, rpf):
-
     num_non_dominated = count_contributions_to_pf(pareto, rpf)
     unf_ratio = num_non_dominated / len(rpf)
-    #Scatter(legend=True, title=f"UNFR = {unf_ratio:.4f}").add(np.array(rpf), label="Pareto-front").show()
-    #Scatter(legend=True, title=f"UNFR = {unf_ratio:.4f}").add(np.array(rpf), label="Pareto-front").add(np.array(pareto),label="Result").show()
+    # Scatter(legend=True, title=f"UNFR = {unf_ratio:.4f}").add(np.array(rpf), label="Pareto-front").show()
+    # Scatter(legend=True, title=f"UNFR = {unf_ratio:.4f}").add(np.array(rpf), label="Pareto-front").add(np.array(pareto),label="Result").show()
     return unf_ratio
+
 
 # count the number of solutions in 'front' that contributed to create the reference pareto front
 # note that the sum of unfr from all experiments may sum up >1.0, because the same solution from rpf
@@ -200,16 +210,17 @@ def count_contributions_to_pf(front: List[Solution], pf: List[Solution]):
     count = 0
 
     for [x1, y1] in front:
-        #sol = Solution(dataset=None, probabilities=None, cost=x1, satisfaction=y1)
+        # sol = Solution(dataset=None, probabilities=None, cost=x1, satisfaction=y1)
         found = False
         for [x2, y2] in pf:
             if math.isclose(x1, x2, abs_tol=0.01):
                 found = True
                 break
         if found:
-            count = count +1;
+            count = count + 1;
 
     return count
+
 
 def eudis2(v1: float, v2: float) -> float:
     return math.dist(v1, v2)
@@ -254,6 +265,7 @@ def calculate_spread(population: List[Solution]) -> float:
                 dist_count += 1
                 davg += eudis2([population[i].total_satisfaction, population[i].total_cost],
                                [population[j].total_satisfaction, population[j].total_cost])
+
     davg /= dist_count
 
     # calculate sumatory(i=1->N-1) |di-davg|

@@ -36,7 +36,7 @@ def get_nondominated_solutions(solutions: List[Solution], nds=None) -> List[Solu
             for dominated in now_dominated:
                 nds.remove(dominated)
 
-    # plot_solutions(nds)
+   # plot_solutions(nds)
     return nds
 
 

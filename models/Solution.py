@@ -11,7 +11,7 @@ class Solution:
     It represents a solution handled by algorithm search.
     """
 
-    def __init__(self, dataset: Dataset, probabilities, selected=None, uniform=False, *, cost=None, satisfaction=None):
+    def __init__(self, dataset, probabilities, selected=None, uniform=False, *, cost=None, satisfaction=None):
         """
         """
         if cost is None or satisfaction is None:
@@ -110,7 +110,7 @@ class Solution:
         return (new_cost, new_satisfaction,
                 new_satisfaction / (new_cost + 1 / smooth))
     # read https://davidamos.dev/the-right-way-to-compare-floats-in-python/ for floats comparison
-    # we chose 0.01 as abs_tol difference as margin to decide values are equals. otherwise,
+    # we chose 0.001 as abs_tol difference as margin to decide values are equals. otherwise,
     # when plotting solutions they seem equal since the difference is too tiny. it might be
     #changed to 0.001 or even 0.0001.
     #by default, one solution equals to other dominates it.
@@ -126,17 +126,17 @@ class Solution:
         dominates = (this_cost < other_cost) and (this_satisfaction > other_satisfaction)
 
         dominates = dominates or (
-            math.isclose(self.total_cost,solution.total_cost,abs_tol=0.01) and
+            math.isclose(self.total_cost,solution.total_cost,abs_tol=0.0001) and
             this_satisfaction > other_satisfaction)
 
         dominates = dominates or (this_cost < other_cost and
-                math.isclose(self.total_satisfaction,solution.total_satisfaction,abs_tol=0.01))
+                math.isclose(self.total_satisfaction,solution.total_satisfaction,abs_tol=0.0001))
 
         #if both are equals, let one dominate the other and thus remove it
         if equals_dominates:
             dominates = dominates or (
-                math.isclose(self.total_cost,solution.total_cost,abs_tol=0.01) and
-                math.isclose(self.total_satisfaction,solution.total_satisfaction,abs_tol=0.01))
+                math.isclose(self.total_cost,solution.total_cost,abs_tol=0.0001) and
+                math.isclose(self.total_satisfaction,solution.total_satisfaction,abs_tol=0.0001))
 
         return dominates
 
