@@ -38,6 +38,7 @@ def get_nondominated_solutions(solutions: List[Solution], nds=None) -> List[Solu
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
    #plot_solutions(nds)
 =======
     # plot_solutions(nds)
@@ -45,6 +46,9 @@ def get_nondominated_solutions(solutions: List[Solution], nds=None) -> List[Solu
 =======
    # plot_solutions(nds)
 >>>>>>> a1359f27 (solved issue when comparing new solutions to nds (.isclose). now solution subset search has a better general ref point.)
+=======
+   #plot_solutions(nds)
+>>>>>>> 7456a86c (now ref point por hv is always 1,1 (worst possible cost and satisfaction, pymoo compatible values))
     return nds
 
 
