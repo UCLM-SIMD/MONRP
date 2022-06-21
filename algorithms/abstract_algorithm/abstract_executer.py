@@ -78,7 +78,7 @@ class AbstractExecuter(ABC):
             warnings.warn('|solutions| < subset_size parameter!! Solution subset set to original final solution', UserWarning)
             return solutions
 
-        ref_x, ref_y = metrics.find_ref_points(solutions) # need ref points taking all solutions into account
+        #ref_x, ref_y = metrics.find_ref_points(solutions) # need ref points taking all solutions into account
         indices_selected = []
         subset = []
         for _ in range(0, self.algorithm.subset_size):
@@ -87,7 +87,7 @@ class AbstractExecuter(ABC):
             for i in range(0, len(solutions)):
                 if not i in indices_selected:
                     subset.insert(len(subset), solutions[i])
-                    hv = metrics.calculate_hypervolume(subset, ref_x=ref_x, ref_y=ref_y)
+                    hv = metrics.calculate_hypervolume(subset, ref_x=1, ref_y=1)
                     if hv > best_hv:
                         best_hv = hv
                         best_index = i
@@ -110,7 +110,8 @@ class AbstractExecuter(ABC):
         metrics_fields: List[str] = []
 
         time = result["time"] if "time" in result else 'NaN'
-        hv = metrics.calculate_hypervolume(result["population"])
+        # worst possible values as ref points (solutions are scaled)
+        hv = metrics.calculate_hypervolume(result["population"], ref_x=1, ref_y=1)
         spread = metrics.calculate_spread(result["population"])
         numSolutions = metrics.calculate_numSolutions(result["population"])
         spacing = metrics.calculate_spacing(result["population"])

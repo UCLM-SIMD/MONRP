@@ -127,8 +127,9 @@ def calculate_gdplus(nds: [[float, float]],
     return gd_plus
 
 
-""" if nadir point is not given, it is computed as the worst points in population
-nadir should be given when HV is computed from a HV subset selection search"""
+""" if ref point is not given, nadir point is computed as the worst points in population
+ref point  should be given when HV is computed from a HV subset selection search
+(as in abstract_executer.search_solution_subset)"""
 
 
 def calculate_hypervolume(population: List[Solution], ref_x=None, ref_y=None) -> float:
@@ -164,7 +165,7 @@ def calculate_hypervolume(population: List[Solution], ref_x=None, ref_y=None) ->
     hv = get_performance_indicator("hv", ref_point=np.array(np.array([ref_x, ref_y])))
     hypervolume = hv.do(np_points)
 
-    # Scatter(title=f"HV = {hypervolume} (dibujado chepa del reves por pymoo").add(np_points).show()
+    Scatter(title=f"HV = {hypervolume} (dibujado chepa del reves por pymoo").add(np_points).show()
 
     return hypervolume
 

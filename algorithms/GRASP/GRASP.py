@@ -155,16 +155,18 @@ class GRASP(AbstractAlgorithm):
                 if self.local_search != "None":
                     initiated_solutions = self.local_search(
                         initiated_solutions)
+                #plot_solutions(initiated_solutions)
 
                 if self.path_relinking_mode == "after_local":
                     initiated_solutions = self.path_relinking(
                         initiated_solutions)
+                #plot_solutions(initiated_solutions)
 
                 # repair population if dependencies tackled:
                 if(self.tackle_dependencies):
                     initiated_solutions = self.repair_population_dependencies(
                         initiated_solutions)
-
+                plot_solutions(initiated_solutions)
                 # update NDS with solutions constructed and evolved in this iteration
                 get_nondominated_solutions(initiated_solutions, self.nds)
 
