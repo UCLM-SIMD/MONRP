@@ -183,6 +183,7 @@ class AbstractExecuter(ABC):
         #ref_x, ref_y = metrics.find_ref_points(solutions) # need ref points taking all solutions into account
         indices_selected = []
         subset = []
+        #metrics.calculate_hypervolume(solutions, ref_x=1, ref_y=1) #for plotting whold nds before subset selection
         for _ in range(0, self.algorithm.subset_size):
             best_hv = -1
             best_index = -1
@@ -197,7 +198,7 @@ class AbstractExecuter(ABC):
             if best_index != -1:
                 subset.insert(len(subset), solutions[best_index])
                 indices_selected.insert(len(indices_selected), best_index)
-
+        #plot_solutions(subset)
         return subset
 
     """ search for the solution which maximizes satisfaction, and other which minimizes cost"""

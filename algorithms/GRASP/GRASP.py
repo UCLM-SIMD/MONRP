@@ -230,10 +230,14 @@ class GRASP:
                     initiated_solutions = self.repair_population_dependencies(
                         initiated_solutions)
 <<<<<<< HEAD
+<<<<<<< HEAD
                 #plot_solutions(initiated_solutions)
 =======
                 plot_solutions(initiated_solutions)
 >>>>>>> 7456a86c (now ref point por hv is always 1,1 (worst possible cost and satisfaction, pymoo compatible values))
+=======
+                #plot_solutions(initiated_solutions)
+>>>>>>> c97956d2 (PR in GRASP is now applied when setting it form hyperparam.s)
                 # update NDS with solutions constructed and evolved in this iteration
                 get_nondominated_solutions(initiated_solutions, self.nds)
                 #plot_solutions(self.nds)

@@ -209,6 +209,7 @@ elif (params[0] == "grasp"):
          int(params[4]), int(params[5]), int(params[6]), str(params[7]), str(params[8]),
          str(params[9]), str(params[10]), str(params[11]), int(params[12])]
 
+    path_relinking = "after_local" if path_relinking == 'PR' else None
     tackle_dependencies = True if dependencies == 'D' else False
     algorithm = algorithm_model(dataset_name=dataset_name, iterations=iterations,
                                 solutions_per_iteration=solutions_per_iteration,

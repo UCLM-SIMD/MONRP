@@ -7,11 +7,15 @@
  #PBS -N MONRP 
  #PBS -l mem=2500mb 
 <<<<<<< HEAD
+<<<<<<< HEAD
  #PBS -J 1-384
 >>>>>>> 8397cdd4 (solved error in jupyther notebook to find the best counts for hyperparam. configuration)
 =======
  #PBS -J 1-480
 >>>>>>> a1359f27 (solved issue when comparing new solutions to nds (.isclose). now solution subset search has a better general ref point.)
+=======
+ #PBS -J 1-192
+>>>>>>> c97956d2 (PR in GRASP is now applied when setting it form hyperparam.s)
 
 export PATH=/home/pbermejo/.local/lib/python3.8/site-packages:$PATH
 export PYTHONPATH=/home/pbermejo/.local/lib/python3.8/site-packages:$PYTHONPATH
