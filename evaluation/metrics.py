@@ -165,7 +165,7 @@ def calculate_hypervolume(population: List[Solution], ref_x=None, ref_y=None) ->
     hv = get_performance_indicator("hv", ref_point=np.array(np.array([ref_x, ref_y])))
     hypervolume = hv.do(np_points)
 
-    Scatter(title=f"HV = {hypervolume} (dibujado chepa del reves por pymoo").add(np_points).show()
+    #Scatter(title=f"HV = {hypervolume} (dibujado chepa del reves por pymoo").add(np_points).show()
 
     return hypervolume
 

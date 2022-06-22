@@ -29,8 +29,8 @@ max_evals_grasp = [0] # stop criteria is grasp_iterations
 init_type = ['stochastically']  # {'stochastically', 'uniform'}
 path_relinking_mode = ['None', 'PR']  # {'None', 'PR'}
 local_search_type = ['best_first_neighbor_random']
-grasp_iterations = [5, 10, 50, 100, 200]
-solutions_per_iteration = [50, 100, 200, 500]
+grasp_iterations = [5, 10, 50, 100, 200, 300, 400]
+solutions_per_iteration = [50, 100, 200, 500, 700, 1000]
 # local_search_type values: {'None', 'best_first_neighbor_random','best_first_neighbor_sorted_score',
 # best_first_neighbor_sorted_score_r' , 'best_first_neighbor_random_domination','best_first_neighbor_sorted_domination'}
 

@@ -166,9 +166,10 @@ class GRASP(AbstractAlgorithm):
                 if(self.tackle_dependencies):
                     initiated_solutions = self.repair_population_dependencies(
                         initiated_solutions)
-                plot_solutions(initiated_solutions)
+                #plot_solutions(initiated_solutions)
                 # update NDS with solutions constructed and evolved in this iteration
                 get_nondominated_solutions(initiated_solutions, self.nds)
+                #plot_solutions(self.nds)
 
                 self.num_iterations += 1
 
