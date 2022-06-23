@@ -165,3 +165,7 @@ temp-plot.*
 .vscode/*
 .gitignore
 .vscode/launch.json
+
+#galgo
+galgo/pablo/params_file
+galgo/pablo/runJobs.pbs

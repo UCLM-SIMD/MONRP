@@ -13,7 +13,7 @@ num_executions = 30
 subset_size = [10]  # number of solutions to choose from final NDS in each algorithm to compute metrics
 
 # geneticNDS and NSGAii hyperparameters #
-max_evals_genetic = [100000]
+max_evals_genetic = [0]
 selection_candidates = [2]
 crossover_prob = [0.8]
 mutation_prob = [0.1, 0.3]
@@ -175,7 +175,7 @@ for data in dataset:
 
 
 
-params_file = open("pablo/params_file", "w")
+params_file = open("pablo/params_file", "w",newline='\n')
 for line in options_list:
     params_file.write(line+"\n")
 params_file.close()

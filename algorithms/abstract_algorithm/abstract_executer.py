@@ -88,7 +88,7 @@ class AbstractExecuter(ABC):
             for i in range(0, len(solutions)):
                 if not i in indices_selected:
                     subset.insert(len(subset), solutions[i])
-                    hv = metrics.calculate_hypervolume(subset, ref_x=1, ref_y=1)
+                    hv = metrics.calculate_hypervolume(subset, ref_x=1.1, ref_y=1.1)
                     if hv > best_hv:
                         best_hv = hv
                         best_index = i
@@ -111,8 +111,8 @@ class AbstractExecuter(ABC):
         metrics_fields: List[str] = []
 
         time = result["time"] if "time" in result else 'NaN'
-        # worst possible values as ref points (solutions are scaled)
-        hv = metrics.calculate_hypervolume(result["population"], ref_x=1, ref_y=1)
+        # ref point: nadir point + (nadir - best)/10 = 1 + (1-0)/10 = 1.1
+        hv = metrics.calculate_hypervolume(result["population"], ref_x=1.1, ref_y=1.1)
         spread = metrics.calculate_spread(result["population"])
         numSolutions = metrics.calculate_numSolutions(result["population"])
         spacing = metrics.calculate_spacing(result["population"])
