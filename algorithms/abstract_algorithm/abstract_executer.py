@@ -190,7 +190,7 @@ class AbstractExecuter(ABC):
             for i in range(0, len(solutions)):
                 if not i in indices_selected:
                     subset.insert(len(subset), solutions[i])
-                    hv = metrics.calculate_hypervolume(subset, ref_x=1, ref_y=1)
+                    hv = metrics.calculate_hypervolume(subset, ref_x=1.1, ref_y=1.1)
                     if hv > best_hv:
                         best_hv = hv
                         best_index = i
@@ -216,6 +216,7 @@ class AbstractExecuter(ABC):
         time = result["time"] if "time" in result else 'NaN'
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         # ref point: nadir point + (nadir - best)/10 = 1 + (1-0)/10 = 1.1
         hv = metrics.calculate_hypervolume(result["population"], ref_x=1.1, ref_y=1.1)
 =======
@@ -225,6 +226,10 @@ class AbstractExecuter(ABC):
         # worst possible values as ref points (solutions are scaled)
         hv = metrics.calculate_hypervolume(result["population"], ref_x=1, ref_y=1)
 >>>>>>> 7456a86c (now ref point por hv is always 1,1 (worst possible cost and satisfaction, pymoo compatible values))
+=======
+        # ref point: nadir point + (nadir - best)/10 = 1 + (1-0)/10 = 1.1
+        hv = metrics.calculate_hypervolume(result["population"], ref_x=1.1, ref_y=1.1)
+>>>>>>> 1c3cdb42 (ref point for HV is definetly 1.1 (nadir + range/10()
         spread = metrics.calculate_spread(result["population"])
         numSolutions = metrics.calculate_numSolutions(result["population"])
         spacing = metrics.calculate_spacing(result["population"])

@@ -8,6 +8,7 @@
  #PBS -l mem=2500mb 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
  #PBS -J 1-384
 >>>>>>> 8397cdd4 (solved error in jupyther notebook to find the best counts for hyperparam. configuration)
 =======
@@ -16,6 +17,9 @@
 =======
  #PBS -J 1-192
 >>>>>>> c97956d2 (PR in GRASP is now applied when setting it form hyperparam.s)
+=======
+ #PBS -J 1-1008
+>>>>>>> 1c3cdb42 (ref point for HV is definetly 1.1 (nadir + range/10()
 
 export PATH=/home/pbermejo/.local/lib/python3.8/site-packages:$PATH
 export PYTHONPATH=/home/pbermejo/.local/lib/python3.8/site-packages:$PYTHONPATH
