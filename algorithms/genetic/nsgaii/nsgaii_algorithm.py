@@ -1,4 +1,5 @@
 import random
+import sys
 from typing import Any, Dict, List, Tuple
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
 from algorithms.genetic.abstract_genetic.abstract_genetic_algorithm import AbstractGeneticAlgorithm
@@ -82,7 +83,7 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
         """Handles evaluation count, finishing algorithm execution if stop criterion is met by raising an exception.
         """
         self.num_evaluations += 1
-        if (self.stop_criterion(self.num_generations, self.num_evaluations)):
+        if self.stop_criterion(self.num_generations, self.num_evaluations):
             self.returned_population = copy.deepcopy(new_population)
             self.fast_nondominated_sort(self.returned_population)
             self.best_generation, self.best_generation_avgValue = self.calculate_last_generation_with_enhance(
@@ -113,7 +114,7 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
         offsprings = self.mutation(offsprings)
 
         try:
-            while (not self.stop_criterion(self.num_generations, self.num_evaluations)):
+            while not self.stop_criterion(self.num_generations, self.num_evaluations):
                 self.population.extend(offsprings)
                 self.evaluate(self.population, self.best_individual)
 
@@ -140,7 +141,9 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
                 # choose first N elements of Pt+1
                 new_population.extend(
                     fronts[front_num][0:self.population_length - len(new_population)])
-                self.population = copy.deepcopy(new_population)
+                deepcopy=True
+                if deepcopy: self.population = copy.deepcopy(new_population)
+                else: self.population = new_population
                 # ordenar por NDS y crowding distance
                 self.population, fronts = self.fast_nondominated_sort(
                     self.population)

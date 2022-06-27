@@ -112,15 +112,16 @@ elif (params[0] == "eda"):
         # algorithmtype algorithm dataset seed numpop gens max_evaluations num_execs dependencies subset_size
         algorithm_model = FEDAAlgorithm
 
-        algorithm_name, dataset_name, seed, numpop, gens, max_evaluations, execs, dependencies, subset_size = \
+        algorithm_name, dataset_name, seed, numpop, gens, max_evaluations, execs,\
+        dependencies, subset_size, sel_scheme = \
             [str(params[1]), str(params[2]), int(params[3]),
              int(params[4]), int(params[5]), int(params[6]),
-             int(params[7]), str(params[8]),  int(params[9])]
+             int(params[7]), str(params[8]),  int(params[9]), str(params[10])]
         tackle_dependencies = True if dependencies == 'D' else False
 
         algorithm = algorithm_model(dataset_name=dataset_name, population_length=numpop,
                                     max_evaluations=max_evaluations,
-                                    max_generations=gens, random_seed=seed, execs=execs,
+                                    max_generations=gens, selection_scheme=sel_scheme, random_seed=seed, execs=execs,
                                     tackle_dependencies=tackle_dependencies, subset_size=subset_size)
 
 algorithm.executer.execute(output_folder=OUTPUT_FOLDER)
