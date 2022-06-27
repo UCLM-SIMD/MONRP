@@ -167,7 +167,12 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
                 # choose first N elements of Pt+1
                 new_population.extend(
                     fronts[front_num][0:self.population_length - len(new_population)])
+<<<<<<< HEAD
                 if self.deepcopy: self.population = copy.deepcopy(new_population)
+=======
+                deepcopy=True
+                if deepcopy: self.population = copy.deepcopy(new_population)
+>>>>>>> a20168f3 (refactoring en create_params_and_runJobs.py y arreglo de algunos bug en parametros en extract_postMetrics.py)
                 else: self.population = new_population
                 # ordenar por NDS y crowding distance
                 self.population, fronts = self.fast_nondominated_sort(

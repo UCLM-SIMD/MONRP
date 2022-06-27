@@ -1,5 +1,6 @@
 #!/bin/sh 
 <<<<<<< HEAD
+<<<<<<< HEAD
  #PBS -N mimic 
  #PBS -l mem=2500mb 
  #PBS -J 1-200 
@@ -20,6 +21,11 @@
 =======
  #PBS -J 1-1008
 >>>>>>> 1c3cdb42 (ref point for HV is definetly 1.1 (nadir + range/10()
+=======
+ #PBS -N nsgaii 
+ #PBS -l mem=2500mb 
+ #PBS -J 1-600 
+>>>>>>> a20168f3 (refactoring en create_params_and_runJobs.py y arreglo de algunos bug en parametros en extract_postMetrics.py)
 
 export PATH=/home/pbermejo/.local/lib/python3.8/site-packages:$PATH
 export PYTHONPATH=/home/pbermejo/.local/lib/python3.8/site-packages:$PYTHONPATH
