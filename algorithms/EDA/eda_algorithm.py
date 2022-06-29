@@ -3,7 +3,7 @@ from typing import List
 import numpy as np
 from datasets import Dataset
 from models.Solution import Solution
-from algorithms.abstract_algorithm.abstract_algorithm import AbstractAlgorithm
+from algorithms.abstract_algorithm.abstract_algorithm import AbstractAlgorithm, plot_solutions
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
 from evaluation.get_nondominated_solutions import get_nondominated_solutions
 
@@ -45,9 +45,11 @@ class EDAAlgorithm(AbstractAlgorithm):
         population = []
         candidates_score_scaled = np.full(
             self.dataset.pbis_score.size, 1/self.dataset.pbis_score.size)
+
         for _ in np.arange(self.population_length):
             ind = Solution(self.dataset, candidates_score_scaled)
             population.append(ind)
+        #plot_solutions(population)
         return population
 
     def select_individuals(self, population: List[Solution]) -> List[Solution]:

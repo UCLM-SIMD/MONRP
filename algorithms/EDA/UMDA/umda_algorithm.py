@@ -90,8 +90,10 @@ class UMDAAlgorithm(EDAAlgorithm):
         start = time.time()
 
         self.population = self.generate_initial_population()
+
         self.evaluate(self.population, self.best_individual)
         get_nondominated_solutions(self.population, self.nds)
+
 
         if self.debug_mode:
             self.debug_data()
@@ -118,6 +120,7 @@ class UMDAAlgorithm(EDAAlgorithm):
                 self.evaluate(self.population, self.best_individual)
 
                 # update nds with solutions constructed and evolved in this iteration
+                #plot_solutions(self.population)
                 get_nondominated_solutions(self.population, self.nds)
                 #plot_solutions(self.nds)
                 self.num_generations += 1
@@ -129,7 +132,7 @@ class UMDAAlgorithm(EDAAlgorithm):
             pass
 
         end = time.time()
-        #plot_solutions(self.nds)
+        plot_solutions(self.nds)
 
         print("\nNDS created has", self.nds.__len__(), "solution(s)")
 

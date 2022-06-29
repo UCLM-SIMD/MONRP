@@ -10,7 +10,7 @@ will be taken into account to find the reference Pareto for GD+ and UNFR"""
 dependencies = ['True']  # {'True','False'}
 
 # post metrics are not computed among results for all indicated datasets.Only 1 dataset is taken into account each time.
-dataset = ['p1', 'a3', 'c3', 'c4', 'c5', 'c6'] # ['p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'c5', 'c6']
+dataset = ['p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'c5', 'c6']
 algorithm = 'feda'  # 'GRASP', 'geneticnds', 'nsgaii', 'umda', 'pbil', 'feda'
 
 # COMMON HYPER-PARAMETERS #
@@ -34,7 +34,7 @@ crossover = ['onepoint']  # only 'onepoint' available
 # GRASP hyper-parameters #
 init_type = ['stochastically']  # {'stochastically', 'uniform'}
 path_relinking_mode = ['None', 'after_local']  # {'None', 'after_local'}
-local_search_type = ['best_first_neighbor_random']
+local_search_type = ['best_first_neighbor_random', 'best_first_neighbor_random_domination']
 # local_search_type values: {'None', 'best_first_neighbor_random','best_first_neighbor_sorted_score',
 # best_first_neighbor_sorted_score_r' , 'best_first_neighbor_random_domination','best_first_neighbor_sorted_domination'}
 

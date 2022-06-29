@@ -150,7 +150,7 @@ class GRASP(AbstractAlgorithm):
             while (not self.stop_criterion(self.num_iterations, self.num_evaluations)):
                 # construction phase
                 initiated_solutions = self.initialize()
-
+                #plot_solutions(initiated_solutions)
                 # local search phase
                 if self.local_search != "None":
                     initiated_solutions = self.local_search(
@@ -163,6 +163,7 @@ class GRASP(AbstractAlgorithm):
                 #plot_solutions(initiated_solutions)
 
                 # repair population if dependencies tackled:
+                #plot_solutions(initiated_solutions)
                 if(self.tackle_dependencies):
                     initiated_solutions = self.repair_population_dependencies(
                         initiated_solutions)
@@ -181,7 +182,7 @@ class GRASP(AbstractAlgorithm):
 
         seconds = time.time() - self.start
         print("\nNDS created has", self.nds.__len__(), "solution(s)")
-        #plot_solutions(self.nds)
+        plot_solutions(self.nds)
         return {
             "population": self.nds,
             "time": seconds,
@@ -264,6 +265,7 @@ class GRASP(AbstractAlgorithm):
                     sol.flip(
                         i, self.dataset.pbis_cost_scaled[i], self.dataset.pbis_satisfaction_scaled[i])
                     self.add_evaluation(initiated_solutions)
+
 
         return initiated_solutions
 
@@ -360,6 +362,7 @@ class GRASP(AbstractAlgorithm):
                 (c2, s2, mo2) = sol.try_flip(i, self.dataset.pbis_cost_scaled[i],
                                              self.dataset.pbis_satisfaction_scaled[i])
                 self.add_evaluation(initiated_solutions)
+                #plot_solutions(initiated_solutions)
 
                 # if neighbor has greater mono_objective_score, then overwrite former solution with neighbor
                 if mo2 > mo1 and np.count_nonzero(
@@ -367,6 +370,7 @@ class GRASP(AbstractAlgorithm):
                     sol.flip(
                         i, self.dataset.pbis_cost_scaled[i], self.dataset.pbis_satisfaction_scaled[i])
                     self.add_evaluation(initiated_solutions)
+            #plot_solutions(initiated_solutions)
 
         return initiated_solutions
 

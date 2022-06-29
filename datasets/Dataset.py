@@ -104,15 +104,23 @@ class Dataset:
         # now two escalation follows, based on
         # https://en.wikipedia.org/wiki/Feature_scaling#Rescaling_(min-max_normalization)
         # scale pbis cost in range [0-1]
-        margin = 1 / num_pbis  # used to avoid zeros
+        """margin = 1 / num_pbis  # used to avoid zeros
         diff = np.sum(self.pbis_cost) - np.min(self.pbis_cost)
         self.pbis_cost_scaled = (self.pbis_cost - np.min(self.pbis_cost) +
                                  margin) / (diff + margin)
+        
 
         # scale pbis satisfaction in range[0-1]
         diff = np.sum(self.pbis_satisfaction) - np.min(self.pbis_satisfaction)
         self.pbis_satisfaction_scaled = (
             self.pbis_satisfaction - np.min(self.pbis_satisfaction) + margin) / (diff + margin)
+        """
+
+        self.pbis_cost_scaled = self.pbis_cost / sum(self.pbis_cost)
+        self.pbis_satisfaction_scaled = self.pbis_satisfaction / sum(self.pbis_satisfaction)
+        #print(np.sum(self.pbis_cost_scaled))
+        #print(np.sum(self.pbis_satisfaction_scaled))
+
 
         # each pbi score is computed from the scaled versions of pbi satisfaction and cost
         self.pbis_score = self.pbis_satisfaction_scaled / self.pbis_cost_scaled

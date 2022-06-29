@@ -40,6 +40,8 @@ class Solution:
                 self.total_cost = costs[sampled].sum()
                 self.total_satisfaction = values[sampled].sum()
 
+
+
             self.mono_objective_score = self.compute_mono_objective_score()
         else: # this branch should be used only from ./extract_postMetrics.py scrip
             self.total_cost = cost
@@ -79,13 +81,16 @@ class Solution:
         """
         if self.selected[i] == 0:
             self.selected[i] = 1
-            self.total_cost += i_cost
-            self.total_satisfaction += i_value
+            self.total_cost = self.total_cost + i_cost
+            self.total_satisfaction =  self.total_satisfaction+  i_value
+            self.total_satisfaction = 1 if self.total_satisfaction > 1 else self.total_satisfaction
+            #by precision loss
 
         elif self.selected[i] == 1:
             self.selected[i] = 0
-            self.total_cost -= i_cost
-            self.total_satisfaction -= i_value
+            self.total_cost = self.total_cost - i_cost
+            self.total_satisfaction = self.total_satisfaction - i_value
+
         self.mono_objective_score = self.compute_mono_objective_score()
 
     def try_flip(self, i: int, i_cost: float, i_value: float) -> float:
