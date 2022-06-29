@@ -66,6 +66,7 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
         self.config_dictionary['mutation'] = mutation
 
         self.config_dictionary['replacement'] = self.replacement_scheme
+        self.deepcopy=True
 
     def get_file(self) -> str:
         return (f"{str(self.__class__.__name__)}-{str(self.dataset_name)}-"
@@ -141,8 +142,7 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
                 # choose first N elements of Pt+1
                 new_population.extend(
                     fronts[front_num][0:self.population_length - len(new_population)])
-                deepcopy=True
-                if deepcopy: self.population = copy.deepcopy(new_population)
+                if self.deepcopy: self.population = copy.deepcopy(new_population)
                 else: self.population = new_population
                 # ordenar por NDS y crowding distance
                 self.population, fronts = self.fast_nondominated_sort(
@@ -198,7 +198,8 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
                 candidate = population[random_index]
 
                 if (best_candidate is None or self.crowding_operator(candidate, best_candidate) == 1):
-                    best_candidate = copy.deepcopy(candidate)
+                    if self.deepcopy: best_candidate = copy.deepcopy(candidate)
+                    else: best_candidate = copy.copy(candidate)
 
             new_population.append(best_candidate)
 

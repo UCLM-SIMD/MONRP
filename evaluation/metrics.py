@@ -199,8 +199,8 @@ def find_ref_points(population: List[Solution]):
 def calculate_unfr(pareto, rpf):
     num_non_dominated = count_contributions_to_pf(pareto, rpf)
     unf_ratio = num_non_dominated / len(rpf)
-    # Scatter(legend=True, title=f"UNFR = {unf_ratio:.4f}").add(np.array(rpf), label="Pareto-front").show()
-    # Scatter(legend=True, title=f"UNFR = {unf_ratio:.4f}").add(np.array(rpf), label="Pareto-front").add(np.array(pareto),label="Result").show()
+    #Scatter(legend=True, title=f"UNFR = {unf_ratio:.4f}").add(np.array(rpf), label="Pareto-front").show()
+    #Scatter(legend=True, title=f"UNFR = {unf_ratio:.4f}").add(np.array(rpf), label="Pareto-front").add(np.array(pareto),label="Result").show()
     return unf_ratio
 
 
@@ -214,7 +214,7 @@ def count_contributions_to_pf(front: List[Solution], pf: List[Solution]):
         # sol = Solution(dataset=None, probabilities=None, cost=x1, satisfaction=y1)
         found = False
         for [x2, y2] in pf:
-            if math.isclose(x1, x2, abs_tol=0.01):
+            if math.isclose(x1, x2, abs_tol=0.001) and math.isclose(y1, y2, abs_tol=0.001):
                 found = True
                 break
         if found:
@@ -267,6 +267,7 @@ def calculate_spread(population: List[Solution]) -> float:
                 davg += eudis2([population[i].total_satisfaction, population[i].total_cost],
                                [population[j].total_satisfaction, population[j].total_cost])
 
+    dist_count = 0.1 if dist_count == 0 else dist_count
     davg /= dist_count
 
     # calculate sumatory(i=1->N-1) |di-davg|
