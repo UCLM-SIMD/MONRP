@@ -2,6 +2,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
  #PBS -N mimic 
  #PBS -l mem=2500mb 
  #PBS -J 1-200 
@@ -32,6 +33,11 @@
  #PBS -l mem=2500mb 
  #PBS -J 1-150 
 >>>>>>> 3d3b5acc (jupyter analysis creates plots with all paretos and algorithms. minor bugs in code solved.)
+=======
+ #PBS -N GRASP 
+ #PBS -l mem=2500mb 
+ #PBS -J 1-600 
+>>>>>>> 73926cb9 (now satisfaction and cost are scaled such that all together sum up 1)
 
 export PATH=/home/pbermejo/.local/lib/python3.8/site-packages:$PATH
 export PYTHONPATH=/home/pbermejo/.local/lib/python3.8/site-packages:$PYTHONPATH

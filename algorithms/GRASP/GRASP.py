@@ -210,9 +210,13 @@ class GRASP:
             while (not self.stop_criterion(self.num_iterations, self.num_evaluations)):
                 # construction phase
                 initiated_solutions = self.initialize()
+<<<<<<< HEAD
                 #get_nondominated_solutions(initiated_solutions, self.nds)
                 #plot_solutions(initiated_solutions)
 
+=======
+                #plot_solutions(initiated_solutions)
+>>>>>>> 73926cb9 (now satisfaction and cost are scaled such that all together sum up 1)
                 # local search phase
                 if self.local_search != "None":
                     initiated_solutions = self.local_search(
@@ -252,7 +256,7 @@ class GRASP:
 
         seconds = time.time() - self.start
         print("\nNDS created has", self.nds.__len__(), "solution(s)")
-        #plot_solutions(self.nds)
+        plot_solutions(self.nds)
         return {
             "population": self.nds,
             "time": seconds,

@@ -69,7 +69,7 @@ will be taken into account to find the reference Pareto for GD+ and UNFR"""
 dependencies = ['True']  # {'True','False'}
 
 # post metrics are not computed among results for all indicated datasets.Only 1 dataset is taken into account each time.
-dataset = ['p1', 'a3', 'c3', 'c4', 'c5', 'c6'] # ['p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'c5', 'c6']
+dataset = ['p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'c5', 'c6']
 algorithm = 'feda'  # 'GRASP', 'geneticnds', 'nsgaii', 'umda', 'pbil', 'feda'
 
 # COMMON HYPER-PARAMETERS #
@@ -103,6 +103,7 @@ init_type = ['stochastically']  # {'stochastically', 'uniform'}
 <<<<<<< HEAD
 <<<<<<< HEAD
 path_relinking_mode = ['None', 'after_local']  # {'None', 'after_local'}
+<<<<<<< HEAD
 local_search_type = ['best_first_neighbor_random_domination']
 =======
 path_relinking_mode = ['None', 'PR']  # {'None', 'PR'}
@@ -144,6 +145,9 @@ solutions_per_iteration = [50, 100, 200, 500, 700, 1000]
 >>>>>>> c97956d2 (PR in GRASP is now applied when setting it form hyperparam.s)
 =======
 >>>>>>> a20168f3 (refactoring en create_params_and_runJobs.py y arreglo de algunos bug en parametros en extract_postMetrics.py)
+=======
+local_search_type = ['best_first_neighbor_random', 'best_first_neighbor_random_domination']
+>>>>>>> 73926cb9 (now satisfaction and cost are scaled such that all together sum up 1)
 # local_search_type values: {'None', 'best_first_neighbor_random','best_first_neighbor_sorted_score',
 # best_first_neighbor_sorted_score_r' , 'best_first_neighbor_random_domination','best_first_neighbor_sorted_domination'}
 

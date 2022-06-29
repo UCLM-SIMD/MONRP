@@ -58,10 +58,15 @@ class Solution:
                 self.total_satisfaction = values[sampled].sum()
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 
 =======
 >>>>>>> 9617fc4f (extract_postMetrics.py computes and updates outputs .json with: gd+, unfr and reference pareto front.)
+=======
+
+
+>>>>>>> 73926cb9 (now satisfaction and cost are scaled such that all together sum up 1)
             self.mono_objective_score = self.compute_mono_objective_score()
         else: # this branch should be used only from ./extract_postMetrics.py scrip
             self.total_cost = cost
