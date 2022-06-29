@@ -69,12 +69,11 @@ will be taken into account to find the reference Pareto for GD+ and UNFR"""
 dependencies = ['True']  # {'True','False'}
 
 # post metrics are not computed among results for all indicated datasets.Only 1 dataset is taken into account each time.
-output_folder = "output/"
-dataset = ['p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'c5', 'c6']
+dataset = ['p1', 'a3', 'c3', 'c4', 'c5', 'c6'] # ['p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'c5', 'c6']
+algorithm = 'feda'  # 'GRASP', 'geneticnds', 'nsgaii', 'umda', 'pbil', 'feda'
 
 # COMMON HYPER-PARAMETERS #
 # possible algorithm values: {'GRASP', 'feda', 'geneticnds', 'pbil', 'umda', nsgaii}
-algorithms = ['nsgaii']  # ['GRASP', 'geneticnds', 'nsgaii', 'umda', 'pbil', 'feda']
 seed = 5
 num_executions = 30
 subset_size = [10]  # number of solutions to choose from final NDS in each algorithm to compute metrics
@@ -102,10 +101,14 @@ init_type = ['stochastically']  # {'stochastically', 'uniform'}
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 path_relinking_mode = ['None', 'after_local']  # {'None', 'after_local'}
 local_search_type = ['best_first_neighbor_random_domination']
 =======
 path_relinking_mode = ['None', 'PR']  # {'None', 'PR'}
+=======
+path_relinking_mode = ['None', 'after_local']  # {'None', 'after_local'}
+>>>>>>> 3d3b5acc (jupyter analysis creates plots with all paretos and algorithms. minor bugs in code solved.)
 local_search_type = ['best_first_neighbor_random']
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -807,22 +810,23 @@ def compute_and_store_unfr(rpf, uids):
 if __name__ == '__main__':
     print('GD+ and UNFR will be calculated using as reference the best pareto found in the output files given + \
                  the hyperparameters, for each dataset.')
+    output_folder = "output/" + algorithm + '/'  # folder with output files from which to extract
     all_files_uid = []
     for data in dataset:
 
         files_uid = []
         # find unique file ids from the list of hyperparameters set at the beginning of this file, above.
-        if 'GRASP' in algorithms:
+        if 'GRASP' == algorithm:
             files_uid = files_uid + get_grasp_uids(data)
-        if 'geneticNDS' in algorithms:
+        if 'geneticnds' == algorithm:
             files_uid = files_uid + get_genetic_uids('geneticNDS', data)
-        if 'nsgaii' in algorithms:
+        if 'nsgaii' == algorithm:
             files_uid = files_uid + get_genetic_uids('nsgaii', data)
-        if 'umda' in algorithms:
+        if 'umda' == algorithm:
             files_uid = files_uid + get_umda_uids(data)
-        if 'pbil' in algorithms:
+        if 'pbil' == algorithm:
             files_uid = files_uid + get_pbil_uids(data)
-        if 'feda' in algorithms:
+        if 'feda' == algorithm:
             files_uid = files_uid + get_feda_uids(data)
 
         # find Reference Pareto and compute metrics
@@ -842,7 +846,7 @@ if __name__ == '__main__':
             all_files_uid.append(f)
 
     # store all uids in container file (for use in analysis jupyter notebook)
-    container_name = 'filest_list_' + ''.join(algorithms)
+    container_name = 'filest_list_' + algorithm
     with open('output/' + container_name, 'w') as container_file:
         for uid in all_files_uid:
 <<<<<<< HEAD

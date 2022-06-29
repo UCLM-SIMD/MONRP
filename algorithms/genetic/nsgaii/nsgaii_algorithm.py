@@ -92,6 +92,7 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
 >>>>>>> 19c7836f (ahora todos los resultados se almacenan en results.json con un id unico para cada conjunto de parametros de lanzamiento)
 
         self.config_dictionary['replacement'] = self.replacement_scheme
+        self.deepcopy=True
 
     def get_file(self) -> str:
         return (f"{str(self.__class__.__name__)}-{str(self.dataset_name)}-"
@@ -168,11 +169,15 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
                 new_population.extend(
                     fronts[front_num][0:self.population_length - len(new_population)])
 <<<<<<< HEAD
+<<<<<<< HEAD
                 if self.deepcopy: self.population = copy.deepcopy(new_population)
 =======
                 deepcopy=True
                 if deepcopy: self.population = copy.deepcopy(new_population)
 >>>>>>> a20168f3 (refactoring en create_params_and_runJobs.py y arreglo de algunos bug en parametros en extract_postMetrics.py)
+=======
+                if self.deepcopy: self.population = copy.deepcopy(new_population)
+>>>>>>> 3d3b5acc (jupyter analysis creates plots with all paretos and algorithms. minor bugs in code solved.)
                 else: self.population = new_population
                 # ordenar por NDS y crowding distance
                 self.population, fronts = self.fast_nondominated_sort(

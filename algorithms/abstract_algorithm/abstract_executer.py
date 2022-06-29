@@ -176,14 +176,13 @@ class AbstractExecuter(ABC):
     def search_solution_subset(self, solutions: [Solution]) -> [Solution]:
 
         if len(solutions) < self.algorithm.subset_size:
-
-            warnings.warn('|solutions| < subset_size parameter!! Solution subset set to original final solution', UserWarning)
+            print('|solutions| < subset_size parameter!! Solution subset set to original final solution');
+            #warnings.warn('|solutions| < subset_size parameter!! Solution subset set to original final solution', UserWarning)
             return solutions
 
-        #ref_x, ref_y = metrics.find_ref_points(solutions) # need ref points taking all solutions into account
         indices_selected = []
         subset = []
-        #metrics.calculate_hypervolume(solutions, ref_x=1, ref_y=1) #for plotting whold nds before subset selection
+        #metrics.calculate_hypervolume(solutions, ref_x=1.1, ref_y=1.1) #for plotting whold nds before subset selection
         for _ in range(0, self.algorithm.subset_size):
             best_hv = -1
             best_index = -1
