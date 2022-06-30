@@ -256,7 +256,7 @@ class GRASP:
 
         seconds = time.time() - self.start
         print("\nNDS created has", self.nds.__len__(), "solution(s)")
-        plot_solutions(self.nds)
+      #  plot_solutions(self.nds)
         return {
             "population": self.nds,
             "time": seconds,
