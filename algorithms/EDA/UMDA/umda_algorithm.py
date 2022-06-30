@@ -132,7 +132,7 @@ class UMDAAlgorithm(EDAAlgorithm):
             pass
 
         end = time.time()
-        plot_solutions(self.nds)
+       # plot_solutions(self.nds)
 
         print("\nNDS created has", self.nds.__len__(), "solution(s)")
 
