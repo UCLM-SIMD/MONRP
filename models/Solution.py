@@ -34,18 +34,24 @@ class Solution:
                 self.total_satisfaction = values[indexes].sum()
             elif selected is not None:
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> a636b2d9 (error in initialization in FEDA solved)
 
                 self.selected = np.zeros(dataset.num_pbis, dtype=int)
                 self.selected[selected] = 1
                 # indexes = np.array(self.selected).nonzero()
                 self.total_cost = costs[selected].sum()
                 self.total_satisfaction = values[selected].sum()
+<<<<<<< HEAD
 =======
                 self.selected = np.array(selected, dtype=int)
                 indexes = np.array(self.selected).nonzero()
                 self.total_cost = costs[indexes].sum()
                 self.total_satisfaction = values[indexes].sum()
 >>>>>>> 9617fc4f (extract_postMetrics.py computes and updates outputs .json with: gd+, unfr and reference pareto front.)
+=======
+>>>>>>> a636b2d9 (error in initialization in FEDA solved)
             else:
                 num_candidates = len(probabilities)
                 self.selected = np.zeros(num_candidates, dtype=int)

@@ -1,6 +1,9 @@
 from typing import Any, Dict, List
 from algorithms.EDA.eda_algorithm import EDAAlgorithm
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> a636b2d9 (error in initialization in FEDA solved)
 from algorithms.abstract_algorithm.abstract_algorithm import plot_solutions
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
 from datasets import Dataset
@@ -284,24 +287,25 @@ class FEDAAlgorithm(EDAAlgorithm):
 
         self.population = self.init_population()
         self.evaluate(self.population, self.best_individual)
+        #plot_solutions(self.population)
 
         try:
             while not self.stop_criterion(self.num_generations, self.num_evaluations):
                 # select individuals from self.population based on self.selection_scheme
                 local_nds = self.select_individuals(self.population)
-
+                #plot_solutions(local_nds)
                 # learning
                 self.probs = self.learn_probability_model(local_nds)
 
                 # sampling
                 self.population = self.sample_new_population(self.probs)
-
+                #plot_solutions(self.population)
                 # evaluation
                 self.evaluate(self.population, self.best_individual)
 
                 # update nds with solutions constructed and evolved in this iteration
                 get_nondominated_solutions(self.population, self.nds)
-
+                #plot_solutions(self.nds)
                 self.num_generations += 1
 
                 if self.debug_mode:
@@ -317,9 +321,13 @@ class FEDAAlgorithm(EDAAlgorithm):
 
         end = time.time()
 <<<<<<< HEAD
+<<<<<<< HEAD
         #plot_solutions(self.nds)
 =======
 >>>>>>> 1e9aefc3 (Simple inititation of FEDA object, and comment added to explain the algorithm.)
+=======
+        plot_solutions(self.nds)
+>>>>>>> a636b2d9 (error in initialization in FEDA solved)
 
         print("\nNDS created has", self.nds.__len__(), "solution(s)")
 
@@ -441,6 +449,7 @@ class FEDAAlgorithm(EDAAlgorithm):
             selected = np.where(individual == 1)
             new_population.append(
                 Solution(self.dataset, None, selected=selected))
+<<<<<<< HEAD
 
         return new_population
 
@@ -472,6 +481,8 @@ class FEDAAlgorithm(EDAAlgorithm):
             selected = np.where(individual == 1)
             new_population.append(
                 Solution(self.dataset, None, selected=selected))
+=======
+>>>>>>> a636b2d9 (error in initialization in FEDA solved)
 
         return new_population
 

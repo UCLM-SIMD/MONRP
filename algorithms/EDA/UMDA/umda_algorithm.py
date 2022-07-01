@@ -148,12 +148,16 @@ class UMDAAlgorithm(EDAAlgorithm):
 
         self.population = self.generate_initial_population()
 <<<<<<< HEAD
+<<<<<<< HEAD
         #plot_solutions(self.population)
         if (self.tackle_dependencies):
             self.population = self.repair_population_dependencies(
                 self.population)
 =======
 
+=======
+        #plot_solutions(self.population)
+>>>>>>> a636b2d9 (error in initialization in FEDA solved)
         self.evaluate(self.population, self.best_individual)
 >>>>>>> 73926cb9 (now satisfaction and cost are scaled such that all together sum up 1)
         get_nondominated_solutions(self.population, self.nds)
