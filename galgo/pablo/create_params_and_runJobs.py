@@ -4,7 +4,7 @@ dataset =  ['p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'c5', 'c
 
 # COMMON HYPER-PARAMETERS #
 # possible algorithm values: {'GRASP', 'feda', 'geneticnds', 'pbil', 'umda', nsgaii}
-algorithm = 'GRASP'  # 'GRASP', 'geneticnds', 'nsgaii', 'umda', 'pbil', 'feda'
+algorithm = 'feda'  # 'GRASP', 'geneticnds', 'nsgaii', 'umda', 'pbil', 'feda'
 seed = 5
 num_executions = 30
 subset_size = [10]  # number of solutions to choose from final NDS in each algorithm to compute metrics

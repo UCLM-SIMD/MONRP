@@ -1,17 +1,18 @@
 import json
+import string
 
 from evaluation.get_nondominated_solutions import get_nondominated_solutions
 from evaluation.metrics import calculate_gdplus, calculate_unfr
 from models.Solution import Solution
 
-""" Please fill the experiments hyper-parameters, which will be used to define the which results
+""" Please fill the experiments hyper-parameters for all algorihtms, which will be used to define the which results
 will be taken into account to find the reference Pareto for GD+ and UNFR"""
 
 dependencies = ['True']  # {'True','False'}
 
 # post metrics are not computed among results for all indicated datasets.Only 1 dataset is taken into account each time.
 dataset = ['p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'c5', 'c6']
-algorithm = 'feda'  # 'GRASP', 'geneticnds', 'nsgaii', 'umda', 'pbil', 'feda'
+algorithm = ['umda', 'pbil', 'geneticnds']  # 'GRASP', 'geneticnds', 'nsgaii', 'umda', 'pbil', 'feda'
 
 # COMMON HYPER-PARAMETERS #
 # possible algorithm values: {'GRASP', 'feda', 'geneticnds', 'pbil', 'umda', nsgaii}
@@ -248,23 +249,29 @@ def compute_and_store_unfr(rpf, uids):
 if __name__ == '__main__':
     print('GD+ and UNFR will be calculated using as reference the best pareto found in the output files given + \
                  the hyperparameters, for each dataset.')
-    output_folder = "output/" + algorithm + '/'  # folder with output files from which to extract
+    # folder with output files from which to extract
     all_files_uid = []
     for data in dataset:
 
         files_uid = []
         # find unique file ids from the list of hyperparameters set at the beginning of this file, above.
-        if 'GRASP' == algorithm:
+        if 'GRASP' in algorithm:
+            output_folder = 'output/GRASP/'
             files_uid = files_uid + get_grasp_uids(data)
-        if 'geneticnds' == algorithm:
+        if 'geneticnds' in algorithm:
+            output_folder = 'output/geneticnds/'
             files_uid = files_uid + get_genetic_uids('geneticNDS', data)
-        if 'nsgaii' == algorithm:
+        if 'nsgaii' in algorithm:
+            output_folder = 'output/nsgaii/'
             files_uid = files_uid + get_genetic_uids('nsgaii', data)
-        if 'umda' == algorithm:
+        if 'umda' in algorithm:
+            output_folder = 'output/umda/'
             files_uid = files_uid + get_umda_uids(data)
-        if 'pbil' == algorithm:
+        if 'pbil' in algorithm:
+            output_folder = 'output/pbil/'
             files_uid = files_uid + get_pbil_uids(data)
-        if 'feda' == algorithm:
+        if 'feda' in algorithm:
+            output_folder = 'output/feda/'
             files_uid = files_uid + get_feda_uids(data)
 
         # find Reference Pareto and compute metrics
@@ -284,7 +291,10 @@ if __name__ == '__main__':
             all_files_uid.append(f)
 
     # store all uids in container file (for use in analysis jupyter notebook)
-    container_name = 'filest_list_' + algorithm
+    sufix =''
+    for alg in algorithm:
+        sufix += alg +'-'
+    container_name = 'filest_list_' + sufix[0:len(sufix)-1]
     with open('output/' + container_name, 'w') as container_file:
         for uid in all_files_uid:
             container_file.write(uid + "\n")
