@@ -1,5 +1,6 @@
 from typing import Any, Dict, List
 from algorithms.EDA.eda_algorithm import EDAAlgorithm
+from algorithms.abstract_algorithm.abstract_algorithm import plot_solutions
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
 from datasets import Dataset
 from evaluation.get_nondominated_solutions import get_nondominated_solutions
@@ -95,24 +96,25 @@ class FEDAAlgorithm(EDAAlgorithm):
 
         self.population = self.init_population()
         self.evaluate(self.population, self.best_individual)
+        #plot_solutions(self.population)
 
         try:
             while not self.stop_criterion(self.num_generations, self.num_evaluations):
                 # select individuals from self.population based on self.selection_scheme
                 local_nds = self.select_individuals(self.population)
-
+                #plot_solutions(local_nds)
                 # learning
                 self.probs = self.learn_probability_model(local_nds)
 
                 # sampling
                 self.population = self.sample_new_population(self.probs)
-
+                #plot_solutions(self.population)
                 # evaluation
                 self.evaluate(self.population, self.best_individual)
 
                 # update nds with solutions constructed and evolved in this iteration
                 get_nondominated_solutions(self.population, self.nds)
-
+                #plot_solutions(self.nds)
                 self.num_generations += 1
 
                 if self.debug_mode:
@@ -122,6 +124,7 @@ class FEDAAlgorithm(EDAAlgorithm):
             pass
 
         end = time.time()
+        plot_solutions(self.nds)
 
         print("\nNDS created has", self.nds.__len__(), "solution(s)")
 
@@ -143,22 +146,28 @@ class FEDAAlgorithm(EDAAlgorithm):
     def init_population(self) -> List[Solution]:
 
         population = []
-        probs = np.full(self.dataset.num_pbis, 1 / self.dataset.num_pbis)
+        probs = np.full(self.dataset.pbis_score.size, 1 / self.dataset.pbis_score.size)
 
         for _ in np.arange(self.population_length):
             sample_selected = np.full(self.dataset.num_pbis, 0)
             # sample whole individual using P(X)= 1/self.dataset.num_pbis for all X
+            replace = False # if True, less individuals do not reach cost=1
             while 1 not in sample_selected:
-                sample_selected = np.random.binomial(1, probs)
-            solution = Solution(self.dataset, None, selected=sample_selected)
+                sample_selected = np.random.choice(np.arange(self.dataset.num_pbis),
+                                                   size=np.random.randint(self.dataset.num_pbis),
+                                           replace=replace, p=probs) # np.random.binomial(1, probs)
 
+            if replace: sample_selected = np.unique(sample_selected)
             # now follow topological order to check if any X must be set to 1
             for x in self.topological_order:
                 for p in self.parents_of[x]:
-                    if solution.selected[p] == 1:
-                        solution.selected[x] = 1
+                    if p in sample_selected and not x in sample_selected:
+                        sample_selected = np.append(sample_selected, x)
+            solution = Solution(self.dataset, None, selected=sample_selected)
             population.append(solution)
 
+
+        #plot_solutions(population)
         return population
 
     '''
@@ -232,8 +241,9 @@ class FEDAAlgorithm(EDAAlgorithm):
         #  convert population into List of Solution
         new_population = []
         for individual in population:
+            selected = np.where(individual == 1)
             new_population.append(
-                Solution(self.dataset, None, selected=individual))
+                Solution(self.dataset, None, selected=selected))
 
         return new_population
 

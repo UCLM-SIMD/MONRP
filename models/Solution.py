@@ -25,10 +25,12 @@ class Solution:
                 self.total_cost = costs[indexes].sum()
                 self.total_satisfaction = values[indexes].sum()
             elif selected is not None:
-                self.selected = np.array(selected, dtype=int)
-                indexes = np.array(self.selected).nonzero()
-                self.total_cost = costs[indexes].sum()
-                self.total_satisfaction = values[indexes].sum()
+
+                self.selected = np.zeros(dataset.num_pbis, dtype=int)
+                self.selected[selected] = 1
+                # indexes = np.array(self.selected).nonzero()
+                self.total_cost = costs[selected].sum()
+                self.total_satisfaction = values[selected].sum()
             else:
                 num_candidates = len(probabilities)
                 self.selected = np.zeros(num_candidates, dtype=int)

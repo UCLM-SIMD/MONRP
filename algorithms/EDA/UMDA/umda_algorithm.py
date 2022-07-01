@@ -90,7 +90,7 @@ class UMDAAlgorithm(EDAAlgorithm):
         start = time.time()
 
         self.population = self.generate_initial_population()
-
+        #plot_solutions(self.population)
         self.evaluate(self.population, self.best_individual)
         get_nondominated_solutions(self.population, self.nds)
 
