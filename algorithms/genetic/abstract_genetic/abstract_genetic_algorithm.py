@@ -162,10 +162,13 @@ class AbstractGeneticAlgorithm(AbstractAlgorithm):
         offspring_genes2 = np.concatenate((parent2.selected[0:crossover_point],
                                            parent1.selected[crossover_point:]))
 
+        selected_offspring_genes1 = np.where(offspring_genes1 == 1)
+        selected_offspring_genes2 = np.where(offspring_genes2 == 1)
+
         offspring1 = Solution(
-            self.dataset, None, selected=offspring_genes1)
+            self.dataset, None, selected=selected_offspring_genes1)
         offspring2 = Solution(
-            self.dataset, None, selected=offspring_genes2)
+            self.dataset, None, selected=selected_offspring_genes2)
 
         return offspring1, offspring2
 

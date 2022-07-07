@@ -103,6 +103,8 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
             while (not self.stop_criterion(self.num_generations, self.num_evaluations)):
                 # selection
                 new_population = self.selection(self.population)
+
+
                 # crossover
                 new_population = self.crossover(new_population)
 
@@ -117,12 +119,15 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
                 # evaluation
                 self.evaluate(self.population, self.best_individual)
 
+
                 # update NDS
                 get_nondominated_solutions(new_population, self.nds)
+
 
                 returned_population = copy.deepcopy(new_population)
                 self.best_generation, self.best_generation_avgValue = self.calculate_last_generation_with_enhance(
                     self.best_generation, self.best_generation_avgValue, self.num_generations, returned_population)
+
 
                 # replacement
                 if self.replacement_scheme == "elitismnds":
@@ -140,6 +145,7 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
             pass
 
         end = time.time()
+
         #plot_solutions(self.nds)
 
 
