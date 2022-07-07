@@ -88,6 +88,7 @@ class EDAAlgorithm(AbstractAlgorithm):
         while(x <= 0):
             sample_selected = np.random.binomial(1, probabilities)
             x = np.count_nonzero(sample_selected)
+        sample_selected = np.where(sample_selected == 1)
         sample = Solution(self.dataset, None, selected=sample_selected)
         return sample
 

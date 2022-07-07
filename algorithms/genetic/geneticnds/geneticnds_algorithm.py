@@ -174,13 +174,17 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
             best_total_score = 0
             # select individual from a set of X candidates
             for j in range(0, self.selection_candidates):
-                random_index = random.randint(0, len(population)-1)
-                candidate = population[random_index]
-                total_score = candidate.mono_objective_score
+                while True:
+                    random_index = random.randint(0, len(population)-1)
+                    candidate = population[random_index]
+                    total_score = candidate.mono_objective_score # avoid empty individuals selected self.selection_candidates times
+                    if total_score > 0: break
                 # store best scoring individual
                 if(total_score > best_total_score):
                     best_total_score = total_score
                     best_candidate = candidate
+
+
 
             # append individual in new population
             new_population.append(best_candidate)

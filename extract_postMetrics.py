@@ -11,8 +11,10 @@ will be taken into account to find the reference Pareto for GD+ and UNFR"""
 dependencies = ['True']  # {'True','False'}
 
 # post metrics are not computed among results for all indicated datasets.Only 1 dataset is taken into account each time.
-dataset = ['p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'c5', 'c6']
-algorithm = ['umda', 'pbil', 'geneticnds']  # 'GRASP', 'geneticnds', 'nsgaii', 'umda', 'pbil', 'feda'
+# dX files are classic (like cX files) but with a larger number of implied pbis by dependency
+# do not use c5 and c6 because with 500 pbis its too slow
+dataset = ['p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'd1', 'd2', 'd3', 'd4', 'd5', 'd6']
+algorithm = ['umda', 'pbil', 'geneticnds', 'feda' ]  # 'GRASP', 'geneticnds', 'nsgaii', 'umda', 'pbil', 'feda'
 
 # COMMON HYPER-PARAMETERS #
 # possible algorithm values: {'GRASP', 'feda', 'geneticnds', 'pbil', 'umda', nsgaii}
@@ -35,7 +37,7 @@ crossover = ['onepoint']  # only 'onepoint' available
 # GRASP hyper-parameters #
 init_type = ['stochastically']  # {'stochastically', 'uniform'}
 path_relinking_mode = ['None', 'after_local']  # {'None', 'after_local'}
-local_search_type = ['best_first_neighbor_random', 'best_first_neighbor_random_domination']
+local_search_type = ['best_first_neighbor_random_domination']
 # local_search_type values: {'None', 'best_first_neighbor_random','best_first_neighbor_sorted_score',
 # best_first_neighbor_sorted_score_r' , 'best_first_neighbor_random_domination','best_first_neighbor_sorted_domination'}
 
@@ -188,7 +190,9 @@ def construct_store_reference_pareto(uids):
                                        cost=xy[0], satisfaction=xy[1])
                         all_solutions.append(sol)
         except (FileNotFoundError, IOError):
+            uids.remove(file)
             print("File not found so not used to extract metrics: ", file)
+
 
     nds = get_nondominated_solutions(solutions=all_solutions)
     # print(f"Reference Pareto contains {len(nds)} solutions.")
@@ -294,7 +298,7 @@ if __name__ == '__main__':
     sufix =''
     for alg in algorithm:
         sufix += alg +'-'
-    container_name = 'filest_list_' + sufix[0:len(sufix)-1]
+    container_name = 'files_list_' + sufix[0:len(sufix)-1]
     with open('output/' + container_name, 'w') as container_file:
         for uid in all_files_uid:
             container_file.write(uid + "\n")

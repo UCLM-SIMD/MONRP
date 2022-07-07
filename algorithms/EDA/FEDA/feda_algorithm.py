@@ -97,6 +97,7 @@ class FEDAAlgorithm(EDAAlgorithm):
         self.population = self.init_population()
         self.evaluate(self.population, self.best_individual)
         #plot_solutions(self.population)
+        get_nondominated_solutions(self.population, self.nds)
 
         try:
             while not self.stop_criterion(self.num_generations, self.num_evaluations):
@@ -124,7 +125,7 @@ class FEDAAlgorithm(EDAAlgorithm):
             pass
 
         end = time.time()
-        plot_solutions(self.nds)
+        #plot_solutions(self.nds)
 
         print("\nNDS created has", self.nds.__len__(), "solution(s)")
 

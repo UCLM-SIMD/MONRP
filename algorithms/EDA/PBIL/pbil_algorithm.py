@@ -1,5 +1,6 @@
 from typing import Any, Dict, List, Tuple
 from algorithms.EDA.eda_algorithm import EDAAlgorithm
+from algorithms.abstract_algorithm.abstract_algorithm import plot_solutions
 from datasets import Dataset
 from evaluation.get_nondominated_solutions import get_nondominated_solutions
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
@@ -59,8 +60,8 @@ class PBILAlgorithm(EDAAlgorithm):
                   ]
 
     def initialize_probability_vector(self) -> np.ndarray:
-        probabilities = np.full(self.dataset.pbis_score.size, 0.5)
-        # probabilities = np.full(self.dataset.pbis_score.size, 1/self.dataset.pbis_score.size)
+        #probabilities = np.full(self.dataset.pbis_score.size, 0.5)
+        probabilities = np.full(self.dataset.pbis_score.size, 1/self.dataset.pbis_score.size)
 
         return probabilities
 
@@ -127,12 +128,13 @@ class PBILAlgorithm(EDAAlgorithm):
 
                 self.population = self.sample_new_population(
                     self.probability_vector)
+                #plot_solutions(self.population)
 
                 # repair population if dependencies tackled:
                 if(self.tackle_dependencies):
                     self.population = self.repair_population_dependencies(
                         self.population)
-
+                #plot_solutions(self.population)
                 self.evaluate(self.population, self.best_individual)
 
                 max_sample = self.select_individuals(self.population)
@@ -142,7 +144,7 @@ class PBILAlgorithm(EDAAlgorithm):
 
                 # update nds with solutions constructed and evolved in this iteration
                 get_nondominated_solutions(self.population, self.nds)
-
+                #plot_solutions(self.nds)
                 self.num_generations += 1
 
                 if self.debug_mode:
@@ -150,7 +152,7 @@ class PBILAlgorithm(EDAAlgorithm):
 
         except EvaluationLimit:
             pass
-
+        plot_solutions(self.population)
         end = time.time()
 
         print("\nNDS created has", self.nds.__len__(), "solution(s)")

@@ -114,7 +114,9 @@ class AbstractGeneticAlgorithm(AbstractAlgorithm):
         population = []
         for i in range(0, self.population_length):
             individual = Solution(self.dataset,None, uniform=True)
-            population.append(individual)
+            if not 1 in individual.selected:
+                i=i -1
+            else: population.append(individual)
         return population
 
     # LAST GENERATION ENHANCE------------------------------------------------------------------

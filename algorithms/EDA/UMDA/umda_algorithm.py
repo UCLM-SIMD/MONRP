@@ -91,7 +91,12 @@ class UMDAAlgorithm(EDAAlgorithm):
 
         self.population = self.generate_initial_population()
         #plot_solutions(self.population)
+        if (self.tackle_dependencies):
+            self.population = self.repair_population_dependencies(
+                self.population)
+        #plot_solutions(self.population)
         self.evaluate(self.population, self.best_individual)
+
         get_nondominated_solutions(self.population, self.nds)
 
 
@@ -111,11 +116,12 @@ class UMDAAlgorithm(EDAAlgorithm):
 
                 # replacement
                 self.population = self.sample_new_population(probability_model)
+                #plot_solutions(self.population)
                 # repair population if dependencies tackled:
                 if(self.tackle_dependencies):
                     self.population = self.repair_population_dependencies(
                         self.population)
-
+                #plot_solutions(self.population)
                 # evaluation
                 self.evaluate(self.population, self.best_individual)
 
@@ -132,7 +138,7 @@ class UMDAAlgorithm(EDAAlgorithm):
             pass
 
         end = time.time()
-       # plot_solutions(self.nds)
+        #plot_solutions(self.nds)
 
         print("\nNDS created has", self.nds.__len__(), "solution(s)")
 
