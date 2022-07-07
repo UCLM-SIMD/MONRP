@@ -167,6 +167,7 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
             pass
 
         end = time.time()
+
         #plot_solutions(self.nds)
 
 

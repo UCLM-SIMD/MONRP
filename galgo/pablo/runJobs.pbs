@@ -5,6 +5,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
  #PBS -N mimic 
  #PBS -l mem=2500mb 
  #PBS -J 1-200 
@@ -50,6 +51,11 @@
  #PBS -l mem=2500mb 
  #PBS -J 1-850 
 >>>>>>> ecb85730 (now pbil and geneticnds keep nds from initial population, then pareto is now wider)
+=======
+ #PBS -N pbil 
+ #PBS -l mem=2500mb 
+ #PBS -J 1-2 
+>>>>>>> 4f333b31 (geneticnds now evaluates satisfaction right after one point xover)
 
 export PATH=/home/pbermejo/.local/lib/python3.8/site-packages:$PATH
 export PYTHONPATH=/home/pbermejo/.local/lib/python3.8/site-packages:$PYTHONPATH
