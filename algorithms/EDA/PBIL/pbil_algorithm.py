@@ -150,7 +150,11 @@ class PBILAlgorithm(EDAAlgorithm):
                     self.population = self.repair_population_dependencies(
                         self.population)
                 #plot_solutions(self.population)
+<<<<<<< HEAD
 
+=======
+                self.evaluate(self.population, self.best_individual)
+>>>>>>> ecb85730 (now pbil and geneticnds keep nds from initial population, then pareto is now wider)
 
                 max_sample = self.select_individuals(self.population)
 
@@ -167,7 +171,11 @@ class PBILAlgorithm(EDAAlgorithm):
 
         except EvaluationLimit:
             pass
+<<<<<<< HEAD
         #plot_solutions(self.population)
+=======
+        plot_solutions(self.population)
+>>>>>>> ecb85730 (now pbil and geneticnds keep nds from initial population, then pareto is now wider)
         end = time.time()
 
         print("\nNDS created has", self.nds.__len__(), "solution(s)")

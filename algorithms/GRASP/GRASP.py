@@ -211,12 +211,18 @@ class GRASP:
                 # construction phase
                 initiated_solutions = self.initialize()
 <<<<<<< HEAD
+<<<<<<< HEAD
                 #get_nondominated_solutions(initiated_solutions, self.nds)
                 #plot_solutions(initiated_solutions)
 
 =======
                 #plot_solutions(initiated_solutions)
 >>>>>>> 73926cb9 (now satisfaction and cost are scaled such that all together sum up 1)
+=======
+                #get_nondominated_solutions(initiated_solutions, self.nds)
+                #plot_solutions(initiated_solutions)
+
+>>>>>>> ecb85730 (now pbil and geneticnds keep nds from initial population, then pareto is now wider)
                 # local search phase
                 if self.local_search != "None":
                     initiated_solutions = self.local_search(
@@ -256,7 +262,7 @@ class GRASP:
 
         seconds = time.time() - self.start
         print("\nNDS created has", self.nds.__len__(), "solution(s)")
-      #  plot_solutions(self.nds)
+        #plot_solutions(self.nds)
         return {
             "population": self.nds,
             "time": seconds,

@@ -153,6 +153,7 @@ class UMDAAlgorithm(EDAAlgorithm):
         if (self.tackle_dependencies):
             self.population = self.repair_population_dependencies(
                 self.population)
+<<<<<<< HEAD
 =======
 
 =======
@@ -160,6 +161,11 @@ class UMDAAlgorithm(EDAAlgorithm):
 >>>>>>> a636b2d9 (error in initialization in FEDA solved)
         self.evaluate(self.population, self.best_individual)
 >>>>>>> 73926cb9 (now satisfaction and cost are scaled such that all together sum up 1)
+=======
+        #plot_solutions(self.population)
+        self.evaluate(self.population, self.best_individual)
+
+>>>>>>> ecb85730 (now pbil and geneticnds keep nds from initial population, then pareto is now wider)
         get_nondominated_solutions(self.population, self.nds)
         #plot_solutions(self.population)
 
@@ -184,15 +190,23 @@ class UMDAAlgorithm(EDAAlgorithm):
 
                 # replacement
                 self.population = self.sample_new_population(probability_model)
+<<<<<<< HEAD
 
+=======
+                #plot_solutions(self.population)
+>>>>>>> ecb85730 (now pbil and geneticnds keep nds from initial population, then pareto is now wider)
                 # repair population if dependencies tackled:
                 if(self.tackle_dependencies):
                     self.population = self.repair_population_dependencies(
                         self.population)
+<<<<<<< HEAD
 
 <<<<<<< HEAD
                 # evaluation  # update nds with solutions constructed and evolved in this iteration
 =======
+=======
+                #plot_solutions(self.population)
+>>>>>>> ecb85730 (now pbil and geneticnds keep nds from initial population, then pareto is now wider)
                 # evaluation
                 self.evaluate(self.population, self.best_individual)
 
@@ -210,7 +224,7 @@ class UMDAAlgorithm(EDAAlgorithm):
             pass
 
         end = time.time()
-       # plot_solutions(self.nds)
+        #plot_solutions(self.nds)
 
         print("\nNDS created has", self.nds.__len__(), "solution(s)")
 

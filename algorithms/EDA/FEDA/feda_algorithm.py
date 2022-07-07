@@ -288,6 +288,7 @@ class FEDAAlgorithm(EDAAlgorithm):
         self.population = self.init_population()
         self.evaluate(self.population, self.best_individual)
         #plot_solutions(self.population)
+        get_nondominated_solutions(self.population, self.nds)
 
         try:
             while not self.stop_criterion(self.num_generations, self.num_evaluations):
@@ -322,12 +323,16 @@ class FEDAAlgorithm(EDAAlgorithm):
         end = time.time()
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         #plot_solutions(self.nds)
 =======
 >>>>>>> 1e9aefc3 (Simple inititation of FEDA object, and comment added to explain the algorithm.)
 =======
         plot_solutions(self.nds)
 >>>>>>> a636b2d9 (error in initialization in FEDA solved)
+=======
+        #plot_solutions(self.nds)
+>>>>>>> ecb85730 (now pbil and geneticnds keep nds from initial population, then pareto is now wider)
 
         print("\nNDS created has", self.nds.__len__(), "solution(s)")
 

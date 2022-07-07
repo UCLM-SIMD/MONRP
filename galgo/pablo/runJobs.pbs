@@ -4,6 +4,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
  #PBS -N mimic 
  #PBS -l mem=2500mb 
  #PBS -J 1-200 
@@ -44,6 +45,11 @@
  #PBS -l mem=2500mb 
  #PBS -J 1-300 
 >>>>>>> df6c84ce (extract_postMetrics.py now computes reference pareto with results from all algorithms indicated)
+=======
+ #PBS -N GRASP 
+ #PBS -l mem=2500mb 
+ #PBS -J 1-850 
+>>>>>>> ecb85730 (now pbil and geneticnds keep nds from initial population, then pareto is now wider)
 
 export PATH=/home/pbermejo/.local/lib/python3.8/site-packages:$PATH
 export PYTHONPATH=/home/pbermejo/.local/lib/python3.8/site-packages:$PYTHONPATH
