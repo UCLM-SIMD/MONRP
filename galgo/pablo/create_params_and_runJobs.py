@@ -1,6 +1,6 @@
 dependencies = ['D']  # {'D', 'd'}
 # do not use c5 and c6 because with 500 pbis its too slow
-dataset = ['d6'] # ['p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'd1', 'd2', 'd3','d4','d5','d6','d7']
+dataset =  ['p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'd1', 'd2', 'd3','d4','d5','d6','d7']
 
 
 # COMMON HYPER-PARAMETERS #
@@ -9,8 +9,8 @@ algorithm = 'pbil'  # 'GRASP', 'geneticnds', 'nsgaii', 'umda', 'pbil', 'feda'
 seed = 5
 num_executions = 30
 subset_size = [10]  # number of solutions to choose from final NDS in each algorithm to compute metrics
-population_size = [1000] # [100, 200, 500, 700, 1000]
-num_generations =[400] # [50, 100, 200, 300, 400]
+population_size = [100, 200, 500, 700, 1000]
+num_generations = [50, 100, 200, 300, 400]
 max_evals = [0]
 
 # geneticNDS and NSGAii hyperparameters #
