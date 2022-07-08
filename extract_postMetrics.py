@@ -4,6 +4,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import copy
 =======
 
@@ -57,6 +58,9 @@ import copy
 >>>>>>> f9cc4a35 (jupyter notebook created to automatically get the best configuration in a list of output files for a given algorithm)
 =======
 >>>>>>> a20168f3 (refactoring en create_params_and_runJobs.py y arreglo de algunos bug en parametros en extract_postMetrics.py)
+=======
+import copy
+>>>>>>> 227fb424 (solved wrong removal of output files not available yet)
 import json
 import string
 
@@ -73,7 +77,7 @@ dependencies = ['True']  # {'True','False'}
 # dX files are classic (like cX files) but with a larger number of implied pbis by dependency
 # do not use c5 and c6 because with 500 pbis its too slow
 dataset = ['p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'd1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7']
-algorithm = ['umda', 'pbil', 'geneticnds']  # 'GRASP', 'geneticnds', 'nsgaii', 'umda', 'pbil', 'feda'
+algorithm = ['umda', 'pbil', 'geneticnds', 'feda']  # 'GRASP', 'geneticnds', 'nsgaii', 'umda', 'pbil', 'feda'
 
 # COMMON HYPER-PARAMETERS #
 # possible algorithm values: {'GRASP', 'feda', 'geneticnds', 'pbil', 'umda', nsgaii}
@@ -749,6 +753,7 @@ def construct_store_reference_pareto(uids):
 
     # construct reference pareto front
     all_solutions = []
+    updated_uids = copy.deepcopy(uids)
     for file in uids:
         try:
             with open(file, 'r') as f_temp:
@@ -760,10 +765,10 @@ def construct_store_reference_pareto(uids):
                                        cost=xy[0], satisfaction=xy[1])
                         all_solutions.append(sol)
         except (FileNotFoundError, IOError):
-            uids.remove(file)
+            updated_uids.remove(file)
             print("File not found so not used to extract metrics: ", file)
 
-
+    uids = copy.deepcopy(updated_uids)
     nds = get_nondominated_solutions(solutions=all_solutions)
     # print(f"Reference Pareto contains {len(nds)} solutions.")
     pareto = []
@@ -781,7 +786,7 @@ def construct_store_reference_pareto(uids):
         except (FileNotFoundError, IOError):
             pass
 
-    return pareto
+    return pareto,uids
 
 
 # for each pareto in each file in files_uid, compute and store gd_plus respect to reference pareto front
@@ -848,17 +853,12 @@ if __name__ == '__main__':
             output_folder = 'output/feda/'
             files_uid = files_uid + get_feda_uids(data)
 
-        # find Reference Pareto and compute metrics
-        reference_pareto = construct_store_reference_pareto(files_uid)
-        try:
-            compute_and_store_gdplus(rpf=reference_pareto, uids=files_uid)
-        except:
-            print("en compute_and_store_gdplus")
+        # find Reference Pareto and compute metrics, and remove files not available yet
+        reference_pareto, files_uid = construct_store_reference_pareto(files_uid)
 
-        try:
-            compute_and_store_unfr(rpf=reference_pareto, uids=files_uid)
-        except:
-            print("en compute_and_store_unfr ")
+        compute_and_store_gdplus(rpf=reference_pareto, uids=files_uid)
+        compute_and_store_unfr(rpf=reference_pareto, uids=files_uid)
+
 
         print()
         for f in files_uid:

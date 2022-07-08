@@ -54,8 +54,12 @@
 =======
  #PBS -N pbil 
  #PBS -l mem=2500mb 
+<<<<<<< HEAD
  #PBS -J 1-2 
 >>>>>>> 4f333b31 (geneticnds now evaluates satisfaction right after one point xover)
+=======
+ #PBS -J 1-425 
+>>>>>>> 227fb424 (solved wrong removal of output files not available yet)
 
 export PATH=/home/pbermejo/.local/lib/python3.8/site-packages:$PATH
 export PYTHONPATH=/home/pbermejo/.local/lib/python3.8/site-packages:$PYTHONPATH
