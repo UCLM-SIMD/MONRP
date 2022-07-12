@@ -2,6 +2,7 @@ import random
 from typing import Any, Dict, List, Tuple
 from algorithms.EDA.bivariate.MIMIC.mimic_executer import MIMICExecuter
 from algorithms.EDA.eda_algorithm import EDAAlgorithm
+from algorithms.abstract_algorithm.abstract_algorithm import plot_solutions
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
 from datasets import Dataset
 from evaluation.get_nondominated_solutions import get_nondominated_solutions
@@ -15,26 +16,42 @@ from scipy import stats as scipy_stats
 
 class MIMICAlgorithm(EDAAlgorithm):
 
-    def __init__(self, dataset_name: str = "test", dataset: Dataset = None, random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
+    def __init__(self, dataset_name: str = "test", dataset: Dataset = None, random_seed: int = None,
+                 debug_mode: bool = False, tackle_dependencies: bool = False,
                  population_length: int = 100, max_generations: int = 100, max_evaluations: int = 0,
-                 selected_individuals: int = 60, selection_scheme: str = "nds", replacement_scheme: str = "replacement"):
+                 selected_individuals: int = 60, selection_scheme: str = "nds", replacement_scheme: str = "replacement",
+                 execs=10, subset_size: int = 10):
 
-        self.executer = MIMICExecuter(algorithm=self)
-        super().__init__(dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
-                         population_length, max_generations, max_evaluations)
+
+        super().__init__(execs=execs, dataset_name=dataset_name, random_seed=random_seed,debug_mode=debug_mode,
+                         tackle_dependencies=tackle_dependencies,population_length=population_length,
+                         subset_size=subset_size, max_generations=max_generations)
+
+        self.executer = MIMICExecuter(algorithm=self, execs=execs)
 
         self.gene_size: int = len(self.dataset.pbis_cost)
         print(self.hyperparameters)
-        self.selected_individuals: int = selected_individuals
+        self.selected_individuals: int =\
+            selected_individuals if selected_individuals<=population_length else population_length
+
+
         self.selection_scheme: str = selection_scheme
         self.replacement_scheme: str = replacement_scheme
 
+        self.config_dictionary.update({'algorithm': 'mimic'})
+
+
         self.hyperparameters.append(generate_hyperparameter(
             "selected_individuals", selected_individuals))
+        self.config_dictionary['selected_individuals'] = selected_individuals
+
         self.hyperparameters.append(generate_hyperparameter(
             "selection_scheme", selection_scheme))
+        self.config_dictionary['selection_scheme'] = selection_scheme
+
         self.hyperparameters.append(generate_hyperparameter(
             "replacement_scheme", replacement_scheme))
+        self.config_dictionary['replacement_scheme'] = replacement_scheme
 
         self.population: List[Solution] = []
 
@@ -248,6 +265,7 @@ class MIMICAlgorithm(EDAAlgorithm):
             pass
 
         end = time.time()
+        #plot_solutions(self.nds)
 
         print("\nNDS created has", self.nds.__len__(), "solution(s)")
 

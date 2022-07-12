@@ -1,6 +1,7 @@
 from algorithms.EDA.FEDA.feda_algorithm import FEDAAlgorithm
 from algorithms.EDA.PBIL.pbil_algorithm import PBILAlgorithm
 from algorithms.EDA.UMDA.umda_algorithm import UMDAAlgorithm
+from algorithms.EDA.bivariate.MIMIC.mimic_algorithm import MIMICAlgorithm
 from algorithms.GRASP.GRASP import GRASP
 from algorithms.genetic.geneticnds.geneticnds_algorithm import GeneticNDSAlgorithm
 from algorithms.genetic.nsgaii.nsgaii_algorithm import NSGAIIAlgorithm
@@ -123,5 +124,25 @@ elif (params[0] == "eda"):
                                     max_evaluations=max_evaluations,
                                     max_generations=gens, selection_scheme=sel_scheme, random_seed=seed, execs=execs,
                                     tackle_dependencies=tackle_dependencies, subset_size=subset_size)
+
+    elif (params[1] == 'mimic'):
+        # -c eda mimic p1 5 50 20 0 replacement 50 nds 10 D 10
+
+        algorithm_model = MIMICAlgorithm
+
+
+        algorithm_name, dataset_name, seed, numpop, gens, max_evaluations, \
+        replscheme, selinds, selcheme, execs, dependencies, subset_size = \
+            [str(params[1]), str(params[2]), int(params[3]),
+             int(params[4]), int(params[5]), int(params[6]),
+             str(params[7]), int(params[8]), str(params[9]), int(params[10]), str(params[11]),
+             int(params[12])]
+        tackle_dependencies = True if dependencies == 'D' else False
+
+        algorithm = algorithm_model(dataset_name=dataset_name, random_seed=seed,
+                                    tackle_dependencies=tackle_dependencies, population_length=numpop,
+                                    max_generations=gens, max_evaluations = max_evaluations,
+                                    selected_individuals=selinds, selection_scheme=selcheme,
+                                    replacement_scheme=replscheme, execs=execs, subset_size=subset_size)
 
 algorithm.executer.execute(output_folder=OUTPUT_FOLDER)

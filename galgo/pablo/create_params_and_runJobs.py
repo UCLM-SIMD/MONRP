@@ -2,15 +2,14 @@ dependencies = ['D']  # {'D', 'd'}
 # do not use c5 and c6 because with 500 pbis its too slow
 dataset =  ['p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'd1', 'd2', 'd3','d4','d5','d6','d7']
 
-
 # COMMON HYPER-PARAMETERS #
 # possible algorithm values: {'GRASP', 'feda', 'geneticnds', 'pbil', 'umda', nsgaii}
-algorithm = 'pbil'  # 'GRASP', 'geneticnds', 'nsgaii', 'umda', 'pbil', 'feda'
+algorithm = 'mimic'  # 'GRASP', 'geneticnds', 'nsgaii', 'umda', 'pbil', 'feda', 'mimic'
 seed = 5
 num_executions = 30
 subset_size = [10]  # number of solutions to choose from final NDS in each algorithm to compute metrics
-population_size = [100, 200, 500, 700, 1000]
-num_generations = [50, 100, 200, 300, 400]
+population_size =  [100, 200, 500, 700, 1000]
+num_generations =  [50, 100, 200, 300, 400]
 max_evals = [0]
 
 # geneticNDS and NSGAii hyperparameters #
@@ -25,10 +24,11 @@ crossover = ['onepoint']  # only 'onepoint' available
 # GRASP hyper-parameters #
 init_type = ['stochastically']  # {'stochastically', 'uniform'}
 path_relinking_mode = ['None', 'PR']  # {'None', 'PR'}
-local_search_type = ['best_first_neighbor_random_domination'] #['best_first_neighbor_random',best_first_neighbor_random_domination']
+local_search_type = [
+    'best_first_neighbor_random_domination']  # ['best_first_neighbor_random',best_first_neighbor_random_domination']
 # {'None', 'best_first_neighbor_random',
-            # 'best_first_neighbor_sorted_score', best_first_neighbor_sorted_score_r' ,
-            # 'best_first_neighbor_random_domination','best_first_neighbor_sorted_domination'}
+# 'best_first_neighbor_sorted_score', best_first_neighbor_sorted_score_r' ,
+# 'best_first_neighbor_random_domination','best_first_neighbor_sorted_domination'}
 
 
 # umda hyper-parameters #
@@ -42,6 +42,11 @@ mutation_shift = [0.1]
 
 # feda hyper-parameters #
 selection_scheme_feda = ['nds']  # {'nds','monoscore'}
+
+# mimic hyper-parameters #
+selection_scheme_mimic = ['nds']  # {'nds','monoscore'}
+rep_scheme_mimic = ["replacement"]  # actually, never used inside algorithm.
+selected_individuals = [50, 100]
 
 
 def get_genetic_options(name: str, dataset_name: str) -> [str]:
@@ -148,6 +153,26 @@ def get_feda_options(dataset_name: str) -> [str]:
     return params_list
 
 
+def get_mimic_options(dataset_name: str) -> [str]:
+    params_list = []
+
+    for pop_size in population_size:
+        for iterations in num_generations:
+            for max_evaluations in max_evals:
+                for rep_scheme in rep_scheme_mimic:
+                    for sel_individuals in selected_individuals:
+                        for sel_scheme in selection_scheme_mimic:
+                            for dependency in dependencies:
+                                for size in subset_size:
+                                    params_line = f"eda mimic {dataset_name} {str(seed)} {str(pop_size)}" \
+                                                  f" {str(iterations)} " \
+                                                  f"{str(max_evaluations)} {str(rep_scheme)} {int(sel_individuals)} " \
+                                                  f"{str(sel_scheme)} {int(num_executions)} {dependency} {str(size)}"
+
+                                    params_list.append(params_line)
+    return params_list
+
+
 """""""""""""CREATE PARAMETERS (OPTIONS) FILES """""""""""""
 options_list = []
 
@@ -165,6 +190,8 @@ for data in dataset:
         options_list = options_list + get_pbil_options(data)
     if 'feda' == algorithm:
         options_list = options_list + get_feda_options(data)
+    if 'mimic' == algorithm:
+        options_list = options_list + get_mimic_options(data)
 
 params_file = open("pablo/params_file", "w", newline='\n')
 for line in options_list:
