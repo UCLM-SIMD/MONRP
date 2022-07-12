@@ -74,13 +74,13 @@ will be taken into account to find the reference Pareto for GD+ and UNFR"""
 dependencies = ['True']  # {'True','False'}
 
 # post metrics are not computed among results for all indicated datasets.Only 1 dataset is taken into account each time.
-# dX files are classic (like cX files) but with a larger number of implied pbis by dependency
+# dX files are classic (like cX files) but with a larger number of implied pbis by dependency and larger number of pbis
 # do not use c5 and c6 because with 500 pbis its too slow
-dataset = ['p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'd1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7']
-algorithm = ['umda', 'pbil', 'geneticnds', 'feda']  # 'GRASP', 'geneticnds', 'nsgaii', 'umda', 'pbil', 'feda'
+dataset =  ['p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'd1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7']
+algorithm = ['umda', 'pbil', 'geneticnds', 'feda']  # 'GRASP', 'geneticnds', 'nsgaii', 'umda', 'pbil', 'feda', 'mimic'
 
 # COMMON HYPER-PARAMETERS #
-# possible algorithm values: {'GRASP', 'feda', 'geneticnds', 'pbil', 'umda', nsgaii}
+# possible algorithm values: {'GRASP', 'feda', 'geneticnds', 'pbil', 'umda', 'mimic''}
 seed = 5
 num_executions = 30
 subset_size = [10]  # number of solutions to choose from final NDS in each algorithm to compute metrics
@@ -175,6 +175,9 @@ mutation_shift = [0.1]
 selection_scheme_feda = ['nds']  # {'nds','monoscore'}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 80ff396a (mimic added to execution framework. swapping of unfr and gdplus in jupyter notebook solved.)
 # mimic hyper-parameters #
 selection_scheme_mimic = ['nds']  # {'nds','monoscore'}
 rep_scheme_mimic = ["replacement"]  # actually, never used inside algorithm.
@@ -477,6 +480,29 @@ def get_pbil_uids(d: str) -> [str]:
                                     print('\'../' + uid_pbil + '\',')
                                     uids_list.append(uid_pbil)
     return uids_list
+
+''' returns a list of uid files created from mimiv hyper-parameters '''
+
+
+def get_mimic_uids(d: str) -> [str]:
+    uids_list = []
+
+    for dependency in dependencies:
+
+        for max_evalu in max_evals:
+            for sel_ind in selected_individuals:
+                for pop_size in population_size:
+                    for iterations in num_generations:
+                        for sel_scheme in selection_scheme_mimic:
+                            for rep_scheme in rep_scheme_mimic:
+                                for size in subset_size:
+                                    uid_umda = output_folder + 'mimic' + dependency + d + str(seed) + str(size) + \
+                                           str(pop_size) + str(iterations) + str(max_evalu) + sel_ind + sel_scheme + \
+                                           rep_scheme + str(num_executions) + '.json'
+                                    print('\'../' + uid_umda + '\',')
+                                    uids_list.append(uid_umda)
+    return uids_list
+
 
 
 ''' returns a list of uid files created from mimiv hyper-parameters '''
@@ -849,6 +875,9 @@ if __name__ == '__main__':
         if 'pbil' in algorithm:
             output_folder = 'output/pbil/'
             files_uid = files_uid + get_pbil_uids(data)
+        if 'mimic' in algorithm:
+            output_folder = 'output/mimic/'
+            files_uid = files_uid + get_mimic_uids(data)
         if 'feda' in algorithm:
             output_folder = 'output/feda/'
             files_uid = files_uid + get_feda_uids(data)
@@ -891,4 +920,8 @@ if __name__ == '__main__':
 >>>>>>> f9cc4a35 (jupyter notebook created to automatically get the best configuration in a list of output files for a given algorithm)
 =======
             container_file.write(uid + "\n")
+<<<<<<< HEAD
 >>>>>>> a1359f27 (solved issue when comparing new solutions to nds (.isclose). now solution subset search has a better general ref point.)
+=======
+    print(f"File list {container_name} created to be used from analisis/findBestHyperparam jupyter notebook")
+>>>>>>> 80ff396a (mimic added to execution framework. swapping of unfr and gdplus in jupyter notebook solved.)

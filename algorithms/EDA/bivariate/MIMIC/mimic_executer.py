@@ -10,7 +10,11 @@ class MIMICExecuter(AbstractExecuter):
         """Init method extends config and metrics fields with specific mimic algorithm data
         """
         from algorithms.EDA.bivariate.MIMIC.mimic_algorithm import MIMICAlgorithm
+<<<<<<< HEAD
         super().__init__(algorithm, num_execs=execs)
+=======
+        super().__init__(algorithm, excecs=execs)
+>>>>>>> 80ff396a (mimic added to execution framework. swapping of unfr and gdplus in jupyter notebook solved.)
         self.algorithm: MIMICAlgorithm
         self.algorithm_type: str = "mimic"
 

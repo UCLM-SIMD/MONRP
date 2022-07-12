@@ -227,11 +227,13 @@ def find_ref_points(population: List[Solution]):
     return ref_x, ref_y
 
 
+# compute ratio of points from RPF which are also present in pareto
 def calculate_unfr(pareto, rpf):
     num_non_dominated = count_contributions_to_pf(pareto, rpf)
     unf_ratio = num_non_dominated / len(rpf)
-    #Scatter(legend=True, title=f"UNFR = {unf_ratio:.4f}").add(np.array(rpf), label="Pareto-front").show()
-    #Scatter(legend=True, title=f"UNFR = {unf_ratio:.4f}").add(np.array(rpf), label="Pareto-front").add(np.array(pareto),label="Result").show()
+    max_unfr = len(pareto) / len(rpf)
+    #Scatter(legend=True, title=f"UNFR = {unf_ratio:.4f} max ={max_unfr:.4f}").add(np.array(rpf), label="Pareto-front").show()
+    #Scatter(legend=True, title=f"UNFR = {unf_ratio:.4f} max ={max_unfr:.4f}").add(np.array(rpf), label="Pareto-front").add(np.array(pareto),label="Result").show()
     return unf_ratio
 
 

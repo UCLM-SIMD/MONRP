@@ -6,6 +6,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
  #PBS -N mimic 
  #PBS -l mem=2500mb 
  #PBS -J 1-200 
@@ -60,6 +61,11 @@
 =======
  #PBS -J 1-425 
 >>>>>>> 227fb424 (solved wrong removal of output files not available yet)
+=======
+ #PBS -N mimic 
+ #PBS -l mem=2500mb 
+ #PBS -J 1-850 
+>>>>>>> 80ff396a (mimic added to execution framework. swapping of unfr and gdplus in jupyter notebook solved.)
 
 export PATH=/home/pbermejo/.local/lib/python3.8/site-packages:$PATH
 export PYTHONPATH=/home/pbermejo/.local/lib/python3.8/site-packages:$PYTHONPATH

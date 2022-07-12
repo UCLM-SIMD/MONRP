@@ -25,7 +25,11 @@ class MIMICAlgorithm(EDAAlgorithm):
 
         super().__init__(execs=execs, dataset_name=dataset_name, random_seed=random_seed,debug_mode=debug_mode,
                          tackle_dependencies=tackle_dependencies,population_length=population_length,
+<<<<<<< HEAD
                          subset_size=subset_size, max_generations=max_generations,  max_evaluations= max_evaluations)
+=======
+                         subset_size=subset_size, max_generations=max_generations)
+>>>>>>> 80ff396a (mimic added to execution framework. swapping of unfr and gdplus in jupyter notebook solved.)
 
         self.executer = MIMICExecuter(algorithm=self, execs=execs)
 

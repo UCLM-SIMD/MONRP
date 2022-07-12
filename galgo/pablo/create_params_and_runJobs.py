@@ -30,15 +30,14 @@ dependencies = ['D']  # {'D', 'd'}
 # do not use c5 and c6 because with 500 pbis its too slow
 dataset =  ['p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'd1', 'd2', 'd3','d4','d5','d6','d7']
 
-
 # COMMON HYPER-PARAMETERS #
 # possible algorithm values: {'GRASP', 'feda', 'geneticnds', 'pbil', 'umda', nsgaii}
-algorithm = 'pbil'  # 'GRASP', 'geneticnds', 'nsgaii', 'umda', 'pbil', 'feda'
+algorithm = 'mimic'  # 'GRASP', 'geneticnds', 'nsgaii', 'umda', 'pbil', 'feda', 'mimic'
 seed = 5
 num_executions = 30
 subset_size = [10]  # number of solutions to choose from final NDS in each algorithm to compute metrics
-population_size = [100, 200, 500, 700, 1000]
-num_generations = [50, 100, 200, 300, 400]
+population_size =  [100, 200, 500, 700, 1000]
+num_generations =  [50, 100, 200, 300, 400]
 max_evals = [0]
 
 # geneticNDS and NSGAii hyperparameters #
@@ -102,10 +101,11 @@ max_evals_grasp = [0] # stop criteria is grasp_iterations
 >>>>>>> a20168f3 (refactoring en create_params_and_runJobs.py y arreglo de algunos bug en parametros en extract_postMetrics.py)
 init_type = ['stochastically']  # {'stochastically', 'uniform'}
 path_relinking_mode = ['None', 'PR']  # {'None', 'PR'}
-local_search_type = ['best_first_neighbor_random_domination'] #['best_first_neighbor_random',best_first_neighbor_random_domination']
+local_search_type = [
+    'best_first_neighbor_random_domination']  # ['best_first_neighbor_random',best_first_neighbor_random_domination']
 # {'None', 'best_first_neighbor_random',
-            # 'best_first_neighbor_sorted_score', best_first_neighbor_sorted_score_r' ,
-            # 'best_first_neighbor_random_domination','best_first_neighbor_sorted_domination'}
+# 'best_first_neighbor_sorted_score', best_first_neighbor_sorted_score_r' ,
+# 'best_first_neighbor_random_domination','best_first_neighbor_sorted_domination'}
 
 
 # umda hyper-parameters #
@@ -119,6 +119,11 @@ mutation_shift = [0.1]
 
 # feda hyper-parameters #
 selection_scheme_feda = ['nds']  # {'nds','monoscore'}
+
+# mimic hyper-parameters #
+selection_scheme_mimic = ['nds']  # {'nds','monoscore'}
+rep_scheme_mimic = ["replacement"]  # actually, never used inside algorithm.
+selected_individuals = [50, 100]
 
 
 def get_genetic_options(name: str, dataset_name: str) -> [str]:
@@ -388,11 +393,14 @@ def get_mimic_options(dataset_name: str) -> [str]:
     return params_list
 
 
+<<<<<<< HEAD
 =======
 >>>>>>> facfd1a9 (galgo/pablo contains scripts to create params file and run jobs in galgo)
 =======
 
 >>>>>>> a20168f3 (refactoring en create_params_and_runJobs.py y arreglo de algunos bug en parametros en extract_postMetrics.py)
+=======
+>>>>>>> 80ff396a (mimic added to execution framework. swapping of unfr and gdplus in jupyter notebook solved.)
 """""""""""""CREATE PARAMETERS (OPTIONS) FILES """""""""""""
 options_list = []
 
@@ -414,6 +422,7 @@ for data in dataset:
         options_list = options_list + get_feda_options(data)
     if 'mimic' == algorithm:
         options_list = options_list + get_mimic_options(data)
+<<<<<<< HEAD
 
 params_file = open("pablo/params_file", "w", newline='\n')
 for line in options_list:
@@ -434,6 +443,8 @@ for line in options_list:
         options_list = options_list + get_pbil_options(data)
     if 'feda' == algorithm:
         options_list = options_list + get_feda_options(data)
+=======
+>>>>>>> 80ff396a (mimic added to execution framework. swapping of unfr and gdplus in jupyter notebook solved.)
 
 params_file = open("pablo/params_file", "w", newline='\n')
 for line in options_list:
