@@ -300,7 +300,7 @@ class FEDAAlgorithm(EDAAlgorithm):
 
                 # sampling
                 self.population = self.sample_new_population(self.probs)
-                #plot_solutions(self.population)
+               # plot_solutions(self.population)
                 # evaluation
                 self.evaluate(self.population, self.best_individual)
 

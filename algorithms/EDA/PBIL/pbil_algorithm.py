@@ -172,10 +172,14 @@ class PBILAlgorithm(EDAAlgorithm):
         except EvaluationLimit:
             pass
 <<<<<<< HEAD
+<<<<<<< HEAD
         #plot_solutions(self.population)
 =======
         plot_solutions(self.population)
 >>>>>>> ecb85730 (now pbil and geneticnds keep nds from initial population, then pareto is now wider)
+=======
+        #plot_solutions(self.population)
+>>>>>>> d98580f6 (solved issue in mimic when sampling individuals)
         end = time.time()
 
         print("\nNDS created has", self.nds.__len__(), "solution(s)")
