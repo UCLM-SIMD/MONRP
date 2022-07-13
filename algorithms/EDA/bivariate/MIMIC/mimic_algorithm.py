@@ -25,7 +25,7 @@ class MIMICAlgorithm(EDAAlgorithm):
 
         super().__init__(execs=execs, dataset_name=dataset_name, random_seed=random_seed,debug_mode=debug_mode,
                          tackle_dependencies=tackle_dependencies,population_length=population_length,
-                         subset_size=subset_size, max_generations=max_generations)
+                         subset_size=subset_size, max_generations=max_generations,  max_evaluations= max_evaluations)
 
         self.executer = MIMICExecuter(algorithm=self, execs=execs)
 
@@ -217,8 +217,8 @@ class MIMICAlgorithm(EDAAlgorithm):
                     sample[variables[j]] = 1
                 else:
                     sample[variables[j]] = 0
-
-        sample_ind = Solution(self.dataset, None, selected=sample)
+        selected = np.where(sample == 1)
+        sample_ind = Solution(self.dataset, None, selected=selected)
         return sample_ind
 
     def run(self) -> Dict[str, Any]:
@@ -229,6 +229,8 @@ class MIMICAlgorithm(EDAAlgorithm):
         self.evaluate(self.population, self.best_individual)
         get_nondominated_solutions(self.population, self.nds)
 
+
+
         if self.debug_mode:
             self.debug_data()
 
@@ -237,6 +239,7 @@ class MIMICAlgorithm(EDAAlgorithm):
                 # selection
                 individuals = self.select_individuals(self.population)
 
+
                 # learning
                 marginals, parents, variables, conditionals = self.learn_probability_model(
                     individuals, len(individuals))
@@ -244,6 +247,7 @@ class MIMICAlgorithm(EDAAlgorithm):
                 # replacement
                 self.population = self.sample_new_population(
                     marginals, parents, variables, conditionals)
+
 
                 # repair population if dependencies tackled:
                 if(self.tackle_dependencies):

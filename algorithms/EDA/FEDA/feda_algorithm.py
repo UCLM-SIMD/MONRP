@@ -35,13 +35,14 @@ class FEDAAlgorithm(EDAAlgorithm):
 
         2. Learning
         -- If X does not have any parents in graph structure, then learn its marginal probability
-        -- Conditional: P(X| each Y in parents(X)==0) In the example above, P(2| 0==0,1==0).
-        Thus, we only need to learn P(X|parents(X)) from individuals where all Y in parents(X) are == 0.
-        This means that conditional probability can be stored in a unidimensional array, using the same array that
-        marginal probabilities, since P(X) is only computed once (marginal, or conditional).
+        -- If X does have parents in graph structure, learn Conditional: P(X| each Y in parents(X)==0) In the example above, P(2| 0==0,1==0).
+        Thus, we only need to learn P(X|parents(X)) from requirements whose parents Y are not selected (if any of them were, then P(X) is fixed to 1).
+        That is, we do not need P(X | any parents(X)==1), just the all parents(X)==0 case.
+        This means that conditional probability can be stored in a unidimensional array,
+         using the same array to store either marginal or conditional probability for each X.
 
         3. Sampling
-        -- In the case of requirements without parents, use learned marginal probability
+        -- In the case of requirements without parents in graph structure, use learned marginal probability
         -- In any Y in parents(X) is set to 1, then X=1, else use P(X|parents(X)==0)
 
     while(!stop_criterion)
@@ -109,7 +110,7 @@ class FEDAAlgorithm(EDAAlgorithm):
 
                 # sampling
                 self.population = self.sample_new_population(self.probs)
-                #plot_solutions(self.population)
+               # plot_solutions(self.population)
                 # evaluation
                 self.evaluate(self.population, self.best_individual)
 
@@ -198,7 +199,7 @@ class FEDAAlgorithm(EDAAlgorithm):
             parents_x = self.parents_of[x]
             if len(parents_x) != 0:  # for each X with parents,
                 subset = np_vectors
-                # iteratively obtain individuals subset where all parents(X)==0
+                # cumulative reduction of individuals filtering by having each Y in parents(X)==0
                 for y in parents_x:
                     subset = subset[subset[:, y] == 0]
                 # if len==0 (no individuals where all parents(X)=0) this lets marginal P(X) remain

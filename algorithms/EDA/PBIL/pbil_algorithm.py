@@ -152,7 +152,7 @@ class PBILAlgorithm(EDAAlgorithm):
 
         except EvaluationLimit:
             pass
-        plot_solutions(self.population)
+        #plot_solutions(self.population)
         end = time.time()
 
         print("\nNDS created has", self.nds.__len__(), "solution(s)")
