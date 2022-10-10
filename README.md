@@ -1,7 +1,8 @@
 # MONRP
 
-[![Python 3.8](https://github.com/UCLM-SIMD/MONRP/actions/workflows/python.yml/badge.svg)](https://github.com/UCLM-SIMD/MONRP/actions/workflows/python.yml)
-[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/UCLM-SIMD/MONRP.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/UCLM-SIMD/MONRP/context:python)
+[![Python 3.8](https://img.shields.io/badge/Python-3.8.8-blue)
+[![CI](https://github.com/UCLM-SIMD/MONRP/actions/workflows/ci.yml/badge.svg)](https://github.com/UCLM-SIMD/MONRP/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/UCLM-SIMD/MONRP/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/UCLM-SIMD/MONRP/actions/workflows/codeql-analysis.yml)
 
 # First steps
 
