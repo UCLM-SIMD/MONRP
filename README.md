@@ -1,6 +1,6 @@
 # MONRP
 
-[![Python 3.8](https://img.shields.io/badge/Python-3.8.8-blue)
+![Python 3.8](https://img.shields.io/badge/Python-3.8.8-blue)
 [![CI](https://github.com/UCLM-SIMD/MONRP/actions/workflows/ci.yml/badge.svg)](https://github.com/UCLM-SIMD/MONRP/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/UCLM-SIMD/MONRP/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/UCLM-SIMD/MONRP/actions/workflows/codeql-analysis.yml)
 
