@@ -226,7 +226,7 @@ class MIMICAlgorithm(EDAAlgorithm):
         start = time.time()
 
         self.population = self.generate_initial_population()
-        self.evaluate(self.population, self.best_individual)
+
         get_nondominated_solutions(self.population, self.nds)
 
 
@@ -254,10 +254,7 @@ class MIMICAlgorithm(EDAAlgorithm):
                     self.population = self.repair_population_dependencies(
                         self.population)
 
-                # evaluation
-                self.evaluate(self.population, self.best_individual)
-
-                # update nds with solutions constructed and evolved in this iteration
+                # evaluation # update nds with solutions constructed and evolved in this iteration
                 get_nondominated_solutions(self.population, self.nds)
 
                 self.num_generations += 1

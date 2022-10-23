@@ -12,10 +12,10 @@ class AbstractExecuter(ABC):
     """Executer class used to delegate configuration, execution and formatting of algorithm outputs
     """
 
-    def __init__(self, algorithm: AbstractAlgorithm, excecs: int):
+    def __init__(self, algorithm: AbstractAlgorithm, num_execs: int):
         """All executers store default config and metrics fields. Specific implementations might include more fields
         """
-        self.executions = int(excecs)
+        self.executions = int(num_execs)
         self.algorithm: AbstractAlgorithm = algorithm
         self.config_fields: List[str] = ["Dataset", "Algorithm"]
         self.metrics_fields: List[str] = ["Time(s)", "HV", "Spread", "NumSolutions", "Spacing",

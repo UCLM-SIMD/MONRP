@@ -10,7 +10,7 @@ class MIMICExecuter(AbstractExecuter):
         """Init method extends config and metrics fields with specific mimic algorithm data
         """
         from algorithms.EDA.bivariate.MIMIC.mimic_algorithm import MIMICAlgorithm
-        super().__init__(algorithm, excecs=execs)
+        super().__init__(algorithm, num_execs=execs)
         self.algorithm: MIMICAlgorithm
         self.algorithm_type: str = "mimic"
 

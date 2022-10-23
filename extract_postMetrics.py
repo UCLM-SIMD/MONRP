@@ -6,7 +6,7 @@ from evaluation.get_nondominated_solutions import get_nondominated_solutions
 from evaluation.metrics import calculate_gdplus, calculate_unfr
 from models.Solution import Solution
 
-""" Please fill the experiments hyper-parameters for all algorihtms, which will be used to define the which results
+""" Please fill the experiments hyper-parameters for all algorithms, which will be used to define the which results
 will be taken into account to find the reference Pareto for GD+ and UNFR"""
 
 dependencies = ['True']  # {'True','False'}
@@ -14,9 +14,8 @@ dependencies = ['True']  # {'True','False'}
 # post metrics are not computed among results for all indicated datasets.Only 1 dataset is taken into account each time.
 # dX files are classic (like cX files) but with a larger number of implied pbis by dependency and larger number of pbis
 # do not use c5 and c6 because with 500 pbis its too slow
-dataset = ['p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'd1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7']
-algorithm = ['umda', 'pbil', 'geneticnds', 'mimic',
-             'feda']  # 'GRASP', 'geneticnds', 'nsgaii', 'umda', 'pbil', 'feda', 'mimic'
+dataset = ['p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'd1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7'] # 'e1', 'e2', 'e3', 'e4', 'e5', 'e6'
+algorithm =   ['umda', 'pbil', 'geneticnds', 'feda']  # 'GRASP', 'geneticnds', 'nsgaii', 'umda', 'pbil', 'feda', 'mimic'
 
 # COMMON HYPER-PARAMETERS #
 # possible algorithm values: {'GRASP', 'feda', 'geneticnds', 'pbil', 'umda', 'mimic''}

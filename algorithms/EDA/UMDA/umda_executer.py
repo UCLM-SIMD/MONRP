@@ -10,7 +10,7 @@ class UMDAExecuter(AbstractExecuter):
         """Init method extends config and metrics fields with specific umda algorithm data
         """
         from algorithms.EDA.UMDA.umda_algorithm import UMDAAlgorithm
-        super().__init__(algorithm, excecs=execs)
+        super().__init__(algorithm, num_execs=execs)
         self.algorithm: UMDAAlgorithm
         self.algorithm_type: str = "umda"
 

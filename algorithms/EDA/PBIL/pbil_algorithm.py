@@ -135,7 +135,7 @@ class PBILAlgorithm(EDAAlgorithm):
                     self.population = self.repair_population_dependencies(
                         self.population)
                 #plot_solutions(self.population)
-                self.evaluate(self.population, self.best_individual)
+
 
                 max_sample = self.select_individuals(self.population)
 
