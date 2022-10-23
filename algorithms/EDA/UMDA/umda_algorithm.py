@@ -154,6 +154,7 @@ class UMDAAlgorithm(EDAAlgorithm):
             self.population = self.repair_population_dependencies(
                 self.population)
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 =======
@@ -166,12 +167,17 @@ class UMDAAlgorithm(EDAAlgorithm):
         self.evaluate(self.population, self.best_individual)
 
 >>>>>>> ecb85730 (now pbil and geneticnds keep nds from initial population, then pareto is now wider)
+=======
+>>>>>>> a7235ed3 (solved comments from pull request, added minor local changes in some files)
         get_nondominated_solutions(self.population, self.nds)
         #plot_solutions(self.population)
 
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> a7235ed3 (solved comments from pull request, added minor local changes in some files)
 
 
         if self.debug_mode:
@@ -191,14 +197,19 @@ class UMDAAlgorithm(EDAAlgorithm):
                 # replacement
                 self.population = self.sample_new_population(probability_model)
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
                 #plot_solutions(self.population)
 >>>>>>> ecb85730 (now pbil and geneticnds keep nds from initial population, then pareto is now wider)
+=======
+
+>>>>>>> a7235ed3 (solved comments from pull request, added minor local changes in some files)
                 # repair population if dependencies tackled:
                 if(self.tackle_dependencies):
                     self.population = self.repair_population_dependencies(
                         self.population)
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 <<<<<<< HEAD
@@ -213,6 +224,10 @@ class UMDAAlgorithm(EDAAlgorithm):
                 # update nds with solutions constructed and evolved in this iteration
                 #plot_solutions(self.population)
 >>>>>>> 73926cb9 (now satisfaction and cost are scaled such that all together sum up 1)
+=======
+
+                # evaluation  # update nds with solutions constructed and evolved in this iteration
+>>>>>>> a7235ed3 (solved comments from pull request, added minor local changes in some files)
                 get_nondominated_solutions(self.population, self.nds)
                 #plot_solutions(self.nds)
                 self.num_generations += 1

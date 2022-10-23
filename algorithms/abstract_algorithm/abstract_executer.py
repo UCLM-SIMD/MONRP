@@ -20,6 +20,7 @@ class AbstractExecuter(ABC):
     """
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     def __init__(self, algorithm: AbstractAlgorithm, num_execs: int):
         """All executers store default config and metrics fields. Specific implementations might include more fields
         """
@@ -30,6 +31,12 @@ class AbstractExecuter(ABC):
         """
         self.executions = int(excecs)
 >>>>>>> 19c7836f (ahora todos los resultados se almacenan en results.json con un id unico para cada conjunto de parametros de lanzamiento)
+=======
+    def __init__(self, algorithm: AbstractAlgorithm, num_execs: int):
+        """All executers store default config and metrics fields. Specific implementations might include more fields
+        """
+        self.executions = int(num_execs)
+>>>>>>> a7235ed3 (solved comments from pull request, added minor local changes in some files)
         self.algorithm: AbstractAlgorithm = algorithm
         self.config_fields: List[str] = ["Dataset", "Algorithm"]
         self.metrics_fields: List[str] = ["Time(s)", "HV", "Spread", "NumSolutions", "Spacing",

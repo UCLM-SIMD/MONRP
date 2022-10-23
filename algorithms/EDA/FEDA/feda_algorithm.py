@@ -239,6 +239,7 @@ class FEDAAlgorithm(EDAAlgorithm):
         start = time.time()
 
         self.population = self.init_population()
+<<<<<<< HEAD
         get_nondominated_solutions(self.population, self.nds)
 
         #plot_solutions(self.population)
@@ -288,7 +289,12 @@ class FEDAAlgorithm(EDAAlgorithm):
         self.population = self.init_population()
         self.evaluate(self.population, self.best_individual)
         #plot_solutions(self.population)
+=======
+>>>>>>> a7235ed3 (solved comments from pull request, added minor local changes in some files)
         get_nondominated_solutions(self.population, self.nds)
+
+        #plot_solutions(self.population)
+
 
         try:
             while not self.stop_criterion(self.num_generations, self.num_evaluations):
@@ -296,16 +302,18 @@ class FEDAAlgorithm(EDAAlgorithm):
                 local_nds = self.select_individuals(self.population)
                 #plot_solutions(local_nds)
                 # learning
+
                 self.probs = self.learn_probability_model(local_nds)
 
-                # sampling
-                self.population = self.sample_new_population(self.probs)
-               # plot_solutions(self.population)
-                # evaluation
-                self.evaluate(self.population, self.best_individual)
 
-                # update nds with solutions constructed and evolved in this iteration
-                get_nondominated_solutions(self.population, self.nds)
+                # sampling
+                #go = time.time()
+                self.population = self.sample_new_population(self.probs)
+                #print("Sampling new pop: ", time.time() - go)
+               # plot_solutions(self.population)
+
+                # evaluation  # update nds with solutions constructed and evolved in this iteration
+                get_nondominated_solutions(self.population, self.nds) #TODO aquí se filtran las nds, y en la siguiente iteración también se filtran para local_nds! se hace doble?
                 #plot_solutions(self.nds)
                 self.num_generations += 1
 
@@ -488,6 +496,37 @@ class FEDAAlgorithm(EDAAlgorithm):
                 Solution(self.dataset, None, selected=selected))
 =======
 >>>>>>> a636b2d9 (error in initialization in FEDA solved)
+
+        return new_population
+
+    def sample_new_population2(self, probs) -> List[Solution]:
+        # init whole np 2d array with empty individuals
+        population = np.zeros(
+            shape=(self.population_length, self.dataset.num_pbis))
+
+        # sample following topological order
+        for x in self.topological_order:
+            # first set x in all individual with its Prob computed (marginal or P(X|parents(X)==0)
+            x_values_in_pop = np.random.binomial(
+                    n=1, p=probs[x], size=self.population_length)
+            population[:, x] = x_values_in_pop
+            # now solve when any parent is set, then x must be 1
+            parents_x = self.parents_of[x]
+            if len(parents_x) > 0:
+                p_values_in_pop = population[:, parents_x]
+                for index, values in enumerate(p_values_in_pop):
+                    if 1 in values:
+                        population[index, x] = 1
+
+
+
+
+        #  convert population into List of Solution
+        new_population = []
+        for individual in population:
+            selected = np.where(individual == 1)
+            new_population.append(
+                Solution(self.dataset, None, selected=selected))
 
         return new_population
 

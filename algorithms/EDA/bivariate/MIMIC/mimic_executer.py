@@ -11,10 +11,14 @@ class MIMICExecuter(AbstractExecuter):
         """
         from algorithms.EDA.bivariate.MIMIC.mimic_algorithm import MIMICAlgorithm
 <<<<<<< HEAD
+<<<<<<< HEAD
         super().__init__(algorithm, num_execs=execs)
 =======
         super().__init__(algorithm, excecs=execs)
 >>>>>>> 80ff396a (mimic added to execution framework. swapping of unfr and gdplus in jupyter notebook solved.)
+=======
+        super().__init__(algorithm, num_execs=execs)
+>>>>>>> a7235ed3 (solved comments from pull request, added minor local changes in some files)
         self.algorithm: MIMICAlgorithm
         self.algorithm_type: str = "mimic"
 

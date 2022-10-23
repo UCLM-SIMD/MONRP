@@ -151,10 +151,14 @@ class PBILAlgorithm(EDAAlgorithm):
                         self.population)
                 #plot_solutions(self.population)
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
                 self.evaluate(self.population, self.best_individual)
 >>>>>>> ecb85730 (now pbil and geneticnds keep nds from initial population, then pareto is now wider)
+=======
+
+>>>>>>> a7235ed3 (solved comments from pull request, added minor local changes in some files)
 
                 max_sample = self.select_individuals(self.population)
 
