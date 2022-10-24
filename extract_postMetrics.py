@@ -14,7 +14,8 @@ dependencies = ['True']  # {'True','False'}
 # post metrics are not computed among results for all indicated datasets.Only 1 dataset is taken into account each time.
 # dX files are classic (like cX files) but with a larger number of implied pbis by dependency and larger number of pbis
 # do not use c5 and c6 because with 500 pbis its too slow
-dataset = ['p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'd1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7'] # 'e1', 'e2', 'e3', 'e4', 'e5', 'e6'
+# p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'd1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7'
+dataset = ['d1', 'd2', 'd3', 'd4'] # 'e1', 'e2', 'e3', 'e4', 'e5', 'e6'
 algorithm =   ['umda', 'pbil', 'geneticnds', 'feda']  # 'GRASP', 'geneticnds', 'nsgaii', 'umda', 'pbil', 'feda', 'mimic'
 
 # COMMON HYPER-PARAMETERS #
