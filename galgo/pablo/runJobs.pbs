@@ -8,6 +8,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
  #PBS -N mimic 
  #PBS -l mem=2500mb 
  #PBS -J 1-200 
@@ -72,6 +73,11 @@
  #PBS -l mem=2500mb 
  #PBS -J 1-2 
 >>>>>>> a7235ed3 (solved comments from pull request, added minor local changes in some files)
+=======
+ #PBS -N mimic 
+ #PBS -l mem=2500mb 
+ #PBS -J 1-200 
+>>>>>>> 181bb83e (solved comments from pull request and changed datasets dX names. added minor local changes in some files)
 
 export PATH=/home/pbermejo/.local/lib/python3.8/site-packages:$PATH
 export PYTHONPATH=/home/pbermejo/.local/lib/python3.8/site-packages:$PYTHONPATH

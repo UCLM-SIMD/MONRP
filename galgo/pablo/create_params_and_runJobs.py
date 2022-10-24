@@ -29,16 +29,16 @@ import datetime
 dependencies = ['D']  # {'D', 'd'}
 # ['p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'd1', 'd2', 'd3','d4','d5','d6','d7',
 #'e1', 'e2', 'e3','e4','e5','e6']
-dataset = ['e5', 'e6']
+dataset = ['d1', 'd2', 'd3', 'd4']
 
 # COMMON HYPER-PARAMETERS #
 # possible algorithm values: {'GRASP', 'feda', 'geneticnds', 'pbil', 'umda', nsgaii}
-algorithm = 'pbil'  # 'GRASP', 'geneticnds', 'nsgaii', 'umda', 'pbil', 'feda', 'mimic'
+algorithm = 'mimic'  # 'GRASP', 'geneticnds', 'nsgaii', 'umda', 'pbil', 'feda', 'mimic'
 seed = 5
 num_executions = 30
 subset_size = [10]  # number of solutions to choose from final NDS in each algorithm to compute metrics
-population_size = [1000] #[100, 200, 500, 700, 1000]
-num_generations = [400] #[50, 100, 200, 300, 400]
+population_size = [100, 200, 500, 700, 1000]
+num_generations = [50, 100, 200, 300, 400]
 max_evals = [0]
 
 # geneticNDS and NSGAii hyperparameters #
