@@ -1,3 +1,5 @@
+import math
+from decimal import Decimal, ROUND_HALF_EVEN
 from typing import List, Tuple
 import numpy as np
 
@@ -9,35 +11,48 @@ class Solution:
     It represents a solution handled by algorithm search.
     """
 
-    def __init__(self, dataset: Dataset, probabilities, selected=None, uniform=False):
+    def __init__(self, dataset, probabilities, selected=None, uniform=False, *, cost=None, satisfaction=None):
         """
         """
-        self.dataset: Dataset = dataset
-        costs = dataset.pbis_cost_scaled
-        values = dataset.pbis_satisfaction_scaled
-        if uniform:
-            genes = np.random.choice(2, len(costs))
-            self.selected = np.array(genes, dtype=int)
-            indexes = np.array(self.selected).nonzero()
-            self.total_cost = costs[indexes].sum()
-            self.total_satisfaction = values[indexes].sum()
-        elif selected is not None:
-            self.selected = np.array(selected, dtype=int)
-            indexes = np.array(self.selected).nonzero()
-            self.total_cost = costs[indexes].sum()
-            self.total_satisfaction = values[indexes].sum()
-        else:
-            num_candidates = len(probabilities)
-            self.selected = np.zeros(num_candidates, dtype=int)
-            # samples a random number of candidates. prob of each candidate to be chosen in received in probabilities
-            sampled = np.random.choice(np.arange(num_candidates), size=np.random.randint(num_candidates),
-                                       replace=False, p=probabilities)
-            self.selected[sampled] = 1
+        if cost is None or satisfaction is None:
+            self.dataset: Dataset = dataset
+            costs = dataset.pbis_cost_scaled
+            values = dataset.pbis_satisfaction_scaled
+            if uniform:
+                genes = np.random.choice(2, len(costs))
+                self.selected = np.array(genes, dtype=int)
+                indexes = np.array(self.selected).nonzero()
+                self.total_cost = costs[indexes].sum()
+                self.total_satisfaction = values[indexes].sum()
+            elif selected is not None:
 
-            self.total_cost = costs[sampled].sum()
-            self.total_satisfaction = values[sampled].sum()
+                self.selected = np.zeros(dataset.num_pbis, dtype=int)
+                self.selected[selected] = 1
+                # indexes = np.array(self.selected).nonzero()
+                self.total_cost = costs[selected].sum()
+                self.total_satisfaction = values[selected].sum()
+            else:
+                num_candidates = len(probabilities)
+                self.selected = np.zeros(num_candidates, dtype=int)
+                # samples a random number of candidates. prob of each candidate to be chosen in received in probabilities
+                sampled = np.random.choice(np.arange(num_candidates), size=np.random.randint(num_candidates),
+                                           replace=False, p=probabilities)
+                self.selected[sampled] = 1
 
-        self.mono_objective_score = self.compute_mono_objective_score()
+                self.total_cost = costs[sampled].sum()
+                self.total_satisfaction = values[sampled].sum()
+
+
+
+            self.mono_objective_score = self.compute_mono_objective_score()
+        else: # this branch should be used only from ./extract_postMetrics.py scrip
+            self.total_cost = cost
+            self.total_satisfaction = satisfaction
+
+
+
+
+
 
     def compute_mono_objective_score(self) -> float:
         """
@@ -68,13 +83,16 @@ class Solution:
         """
         if self.selected[i] == 0:
             self.selected[i] = 1
-            self.total_cost += i_cost
-            self.total_satisfaction += i_value
+            self.total_cost = self.total_cost + i_cost
+            self.total_satisfaction =  self.total_satisfaction+  i_value
+            self.total_satisfaction = 1 if self.total_satisfaction > 1 else self.total_satisfaction
+            #by precision loss
 
         elif self.selected[i] == 1:
             self.selected[i] = 0
-            self.total_cost -= i_cost
-            self.total_satisfaction -= i_value
+            self.total_cost = self.total_cost - i_cost
+            self.total_satisfaction = self.total_satisfaction - i_value
+
         self.mono_objective_score = self.compute_mono_objective_score()
 
     def try_flip(self, i: int, i_cost: float, i_value: float) -> float:
@@ -98,18 +116,34 @@ class Solution:
 
         return (new_cost, new_satisfaction,
                 new_satisfaction / (new_cost + 1 / smooth))
-
-    def dominates(self, solution: "Solution") -> bool:
+    # read https://davidamos.dev/the-right-way-to-compare-floats-in-python/ for floats comparison
+    # we chose 0.001 as abs_tol difference as margin to decide values are equals. otherwise,
+    # when plotting solutions they seem equal since the difference is too tiny. it might be
+    #changed to 0.001 or even 0.0001.
+    #by default, one solution equals to other dominates it.
+    def dominates(self, solution: "Solution", equals_dominates = True) -> bool:
         """Return True if self dominates solution, in terms of cost and satisfaction
         """
-        dominates = (self.total_cost < solution.total_cost) and (
-            self.total_satisfaction > solution.total_satisfaction)
+        this_cost = Decimal(self.total_cost).quantize(Decimal('.12345'), rounding=ROUND_HALF_EVEN)
+        other_cost = Decimal(solution.total_cost).quantize(Decimal('.12345'), rounding=ROUND_HALF_EVEN)
+        this_satisfaction = Decimal(self.total_satisfaction).quantize(Decimal('.12345'), rounding=ROUND_HALF_EVEN)
+        other_satisfaction = Decimal(solution.total_satisfaction).quantize(Decimal('.12345'), rounding=ROUND_HALF_EVEN)
+
+
+        dominates = (this_cost < other_cost) and (this_satisfaction > other_satisfaction)
 
         dominates = dominates or (
-            self.total_cost == solution.total_cost and self.total_satisfaction > solution.total_satisfaction)
+            math.isclose(self.total_cost,solution.total_cost,abs_tol=0.0001) and
+            this_satisfaction > other_satisfaction)
 
-        dominates = dominates or (
-            self.total_cost < solution.total_cost and self.total_satisfaction == solution.total_satisfaction)
+        dominates = dominates or (this_cost < other_cost and
+                math.isclose(self.total_satisfaction,solution.total_satisfaction,abs_tol=0.0001))
+
+        #if both are equals, let one dominate the other and thus remove it
+        if equals_dominates:
+            dominates = dominates or (
+                math.isclose(self.total_cost,solution.total_cost,abs_tol=0.0001) and
+                math.isclose(self.total_satisfaction,solution.total_satisfaction,abs_tol=0.0001))
 
         return dominates
 
@@ -164,7 +198,8 @@ class Solution:
                     continue
                 for other_gene in self.dataset.dependencies[gene_index]:
                     #self.selected[other_gene-1] = 1
-                    self.set_bit((other_gene), 1)
+                    if self.selected[other_gene]!=1:
+                        self.set_bit((other_gene), 1)
 
     def get_max_cost_satisfactions(self) -> float:
         return np.sum(self.dataset.pbis_cost_scaled), np.sum(self.dataset.pbis_satisfaction_scaled)

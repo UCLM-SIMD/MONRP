@@ -108,11 +108,17 @@ class Dataset:
         diff = np.sum(self.pbis_cost) - np.min(self.pbis_cost)
         self.pbis_cost_scaled = (self.pbis_cost - np.min(self.pbis_cost) +
                                  margin) / (diff + margin)
-
-        # scale pbis satisfaction in range[0-1]
+        
         diff = np.sum(self.pbis_satisfaction) - np.min(self.pbis_satisfaction)
         self.pbis_satisfaction_scaled = (
             self.pbis_satisfaction - np.min(self.pbis_satisfaction) + margin) / (diff + margin)
+
+
+        self.pbis_cost_scaled = self.pbis_cost_scaled / sum(self.pbis_cost_scaled)
+        self.pbis_satisfaction_scaled = self.pbis_satisfaction_scaled / sum(self.pbis_satisfaction_scaled)
+        #print(np.sum(self.pbis_cost_scaled))
+        #print(np.sum(self.pbis_satisfaction_scaled))
+
 
         # each pbi score is computed from the scaled versions of pbi satisfaction and cost
         self.pbis_score = self.pbis_satisfaction_scaled / self.pbis_cost_scaled

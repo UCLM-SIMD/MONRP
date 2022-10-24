@@ -3,7 +3,7 @@ from typing import List
 import numpy as np
 from datasets import Dataset
 from models.Solution import Solution
-from algorithms.abstract_algorithm.abstract_algorithm import AbstractAlgorithm
+from algorithms.abstract_algorithm.abstract_algorithm import AbstractAlgorithm, plot_solutions
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
 from evaluation.get_nondominated_solutions import get_nondominated_solutions
 
@@ -14,10 +14,13 @@ class EDAAlgorithm(AbstractAlgorithm):
     """Estimation of Distribution Algorithm
     """
 
-    def __init__(self, dataset_name: str = "1", dataset: Dataset = None, random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
-                 population_length: int = 100, max_generations: int = 100, max_evaluations: int = 0,):
+    def __init__(self, execs: int, dataset_name: str = "1", dataset: Dataset = None, random_seed: int = None,
+                 debug_mode: bool = False, tackle_dependencies: bool = False,
+                 population_length: int = 100, max_generations: int = 100,
+                 max_evaluations: int = 0, subset_size: int = 5):
 
-        super().__init__(dataset_name, dataset, random_seed, debug_mode, tackle_dependencies)
+        super().__init__(execs,dataset_name, dataset, random_seed, debug_mode, \
+                         tackle_dependencies, subset_size = subset_size)
 
         self.nds = []
         self.num_evaluations: int = 0
@@ -30,22 +33,27 @@ class EDAAlgorithm(AbstractAlgorithm):
 
         self.hyperparameters.append(generate_hyperparameter(
             "population_length", population_length))
+        self.config_dictionary['population_length'] = population_length
         self.hyperparameters.append(generate_hyperparameter(
             "max_generations", max_generations))
+        self.config_dictionary['max_generations'] = max_generations
         self.hyperparameters.append(generate_hyperparameter(
             "max_evaluations", max_evaluations))
+        self.config_dictionary['max_evaluations'] = max_evaluations
 
     def generate_initial_population(self) -> List[Solution]:
         population = []
         candidates_score_scaled = np.full(
             self.dataset.pbis_score.size, 1/self.dataset.pbis_score.size)
+
         for _ in np.arange(self.population_length):
             ind = Solution(self.dataset, candidates_score_scaled)
             population.append(ind)
+        #plot_solutions(population)
         return population
 
     def select_individuals(self, population: List[Solution]) -> List[Solution]:
-
+        individuals = None
         if self.selection_scheme == "nds":
             # TODO
             # if len(self.nds) > 0:
@@ -80,6 +88,7 @@ class EDAAlgorithm(AbstractAlgorithm):
         while(x <= 0):
             sample_selected = np.random.binomial(1, probabilities)
             x = np.count_nonzero(sample_selected)
+        sample_selected = np.where(sample_selected == 1)
         sample = Solution(self.dataset, None, selected=sample_selected)
         return sample
 

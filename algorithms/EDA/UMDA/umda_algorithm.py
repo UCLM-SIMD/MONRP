@@ -1,5 +1,6 @@
 from typing import Any, Dict, List
 from algorithms.EDA.eda_algorithm import EDAAlgorithm
+from algorithms.abstract_algorithm.abstract_algorithm import plot_solutions
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
 from datasets import Dataset
 from evaluation.get_nondominated_solutions import get_nondominated_solutions
@@ -16,23 +17,29 @@ class UMDAAlgorithm(EDAAlgorithm):
     """Univariate Marginal Distribution Algorithm
     """
 
-    def __init__(self, dataset_name: str = "test", dataset: Dataset = None, random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
+    def __init__(self, execs,dataset_name: str = "test", dataset: Dataset = None, random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
                  population_length: int = 100, max_generations: int = 100, max_evaluations: int = 0,
-                 selected_individuals: int = 60, selection_scheme: str = "nds", replacement_scheme: str = "replacement"):
+                 selected_individuals: int = 60, selection_scheme: str = "nds",
+                 replacement_scheme: str = "replacement", subset_size: int = 20):
 
-        super().__init__(dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
-                         population_length, max_generations, max_evaluations)
-        self.executer = UMDAExecuter(algorithm=self)
+        super().__init__(execs,dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
+                         population_length, max_generations, max_evaluations, subset_size=subset_size)
+
+        self.executer = UMDAExecuter(algorithm=self, execs=execs)
 
         self.selected_individuals: int = selected_individuals
 
         self.selection_scheme: str = selection_scheme
         self.replacement_scheme: str = replacement_scheme
 
+        self.config_dictionary.update({'algorithm': 'umda'})
+
         self.hyperparameters.append(generate_hyperparameter(
             "selection_scheme", selection_scheme))
+        self.config_dictionary['selection_scheme'] = selection_scheme
         self.hyperparameters.append(generate_hyperparameter(
             "replacement_scheme", replacement_scheme))
+        self.config_dictionary['replacement_scheme'] = replacement_scheme
 
     def get_file(self) -> str:
         return (f"{str(self.__class__.__name__)}-{str(self.dataset_name)}-"
@@ -83,8 +90,16 @@ class UMDAAlgorithm(EDAAlgorithm):
         start = time.time()
 
         self.population = self.generate_initial_population()
-        self.evaluate(self.population, self.best_individual)
+        #plot_solutions(self.population)
+        if (self.tackle_dependencies):
+            self.population = self.repair_population_dependencies(
+                self.population)
         get_nondominated_solutions(self.population, self.nds)
+        #plot_solutions(self.population)
+
+
+
+
 
         if self.debug_mode:
             self.debug_data()
@@ -102,17 +117,15 @@ class UMDAAlgorithm(EDAAlgorithm):
 
                 # replacement
                 self.population = self.sample_new_population(probability_model)
+
                 # repair population if dependencies tackled:
                 if(self.tackle_dependencies):
                     self.population = self.repair_population_dependencies(
                         self.population)
 
-                # evaluation
-                self.evaluate(self.population, self.best_individual)
-
-                # update nds with solutions constructed and evolved in this iteration
+                # evaluation  # update nds with solutions constructed and evolved in this iteration
                 get_nondominated_solutions(self.population, self.nds)
-
+                #plot_solutions(self.nds)
                 self.num_generations += 1
 
                 if self.debug_mode:
@@ -122,6 +135,7 @@ class UMDAAlgorithm(EDAAlgorithm):
             pass
 
         end = time.time()
+        #plot_solutions(self.nds)
 
         print("\nNDS created has", self.nds.__len__(), "solution(s)")
 

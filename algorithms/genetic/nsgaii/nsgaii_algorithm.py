@@ -1,4 +1,5 @@
 import random
+import sys
 from typing import Any, Dict, List, Tuple
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
 from algorithms.genetic.abstract_genetic.abstract_genetic_algorithm import AbstractGeneticAlgorithm
@@ -15,16 +16,17 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
     individuals by dominance and crowding distance.
     """
 
-    def __init__(self, dataset_name="test", dataset: Dataset = None, random_seed=None, population_length=20, max_generations=1000, max_evaluations=0,
+    def __init__(self,execs, dataset_name="test", dataset: Dataset = None, random_seed=None, population_length=20,
+                 max_generations=1000, max_evaluations=0,
                  selection="tournament", selection_candidates=2,
                  crossover="onepoint", crossover_prob=0.9,
                  mutation="flipeachbit", mutation_prob=0.1,
-                 debug_mode=False, tackle_dependencies=False):
+                 debug_mode=False, tackle_dependencies=False, subset_size=5, replacement='elitism'):
 
-        super().__init__(dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
-                         population_length, max_generations, max_evaluations)
+        super().__init__(execs,dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
+                         population_length, max_generations, max_evaluations, subset_size=subset_size)
 
-        self.executer = NSGAIIExecuter(algorithm=self)
+        self.executer = NSGAIIExecuter(algorithm=self, execs=execs)
         self.selection_scheme = selection
         self.selection_candidates = selection_candidates
         self.crossover_scheme = crossover
@@ -41,16 +43,30 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
         self.num_generations: int = 0
         self.best_individual = None
 
+        self.config_dictionary.update({'algorithm': 'nsgaii'})
+        self.config_dictionary['population_length'] = population_length
+        self.config_dictionary['max_generations'] = max_generations
+        self.config_dictionary['max_evaluations'] = max_evaluations
+        self.config_dictionary['selection_candidates'] = selection_candidates
+        self.config_dictionary['crossover_prob'] = crossover_prob
+        self.config_dictionary['mutation_prob'] = mutation_prob
+
         if selection == "tournament":
             self.selection = self.selection_tournament
+        self.config_dictionary['selection'] = selection
 
         if crossover == "onepoint":
             self.crossover = self.crossover_one_point
+        self.config_dictionary['crossover'] = crossover
 
         if mutation == "flip1bit":
             self.mutation = self.mutation_flip1bit
         elif mutation == "flipeachbit":
             self.mutation = self.mutation_flipeachbit
+        self.config_dictionary['mutation'] = mutation
+
+        self.config_dictionary['replacement'] = self.replacement_scheme
+        self.deepcopy=True
 
     def get_file(self) -> str:
         return (f"{str(self.__class__.__name__)}-{str(self.dataset_name)}-"
@@ -68,7 +84,7 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
         """Handles evaluation count, finishing algorithm execution if stop criterion is met by raising an exception.
         """
         self.num_evaluations += 1
-        if (self.stop_criterion(self.num_generations, self.num_evaluations)):
+        if self.stop_criterion(self.num_generations, self.num_evaluations):
             self.returned_population = copy.deepcopy(new_population)
             self.fast_nondominated_sort(self.returned_population)
             self.best_generation, self.best_generation_avgValue = self.calculate_last_generation_with_enhance(
@@ -99,7 +115,7 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
         offsprings = self.mutation(offsprings)
 
         try:
-            while (not self.stop_criterion(self.num_generations, self.num_evaluations)):
+            while not self.stop_criterion(self.num_generations, self.num_evaluations):
                 self.population.extend(offsprings)
                 self.evaluate(self.population, self.best_individual)
 
@@ -126,7 +142,8 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
                 # choose first N elements of Pt+1
                 new_population.extend(
                     fronts[front_num][0:self.population_length - len(new_population)])
-                self.population = copy.deepcopy(new_population)
+                if self.deepcopy: self.population = copy.deepcopy(new_population)
+                else: self.population = new_population
                 # ordenar por NDS y crowding distance
                 self.population, fronts = self.fast_nondominated_sort(
                     self.population)
@@ -181,7 +198,8 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
                 candidate = population[random_index]
 
                 if (best_candidate is None or self.crowding_operator(candidate, best_candidate) == 1):
-                    best_candidate = copy.deepcopy(candidate)
+                    if self.deepcopy: best_candidate = copy.deepcopy(candidate)
+                    else: best_candidate = copy.copy(candidate)
 
             new_population.append(best_candidate)
 

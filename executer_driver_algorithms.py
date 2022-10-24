@@ -15,10 +15,10 @@ parser.add_argument('-c', '--config', nargs="+",
 parser.add_argument('-m', '--mode',
                     help='<Required> mode', required=True)
 
-params = parser.parse_args().config[0].split()  # sh galgo
-# params = parser.parse_args().config # debug local
-mode = parser.parse_args().mode.split()[0]  # sh galgo
-# params = parser.parse_args().config # debug local
+#params = parser.parse_args().config[0].split()  # sh galgo
+params = parser.parse_args().config # debug local
+#mode = parser.parse_args().mode.split()[0]  # sh galgo
+mode = parser.parse_args().config # debug local
 print(params, mode)
 
 if mode != "metrics" and mode != "paretos":

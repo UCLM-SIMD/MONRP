@@ -1,7 +1,8 @@
+
 from typing import Any, Dict, List
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
 import copy
-from algorithms.abstract_algorithm.abstract_algorithm import AbstractAlgorithm
+from algorithms.abstract_algorithm.abstract_algorithm import AbstractAlgorithm, plot_solutions
 from algorithms.GRASP.grasp_executer import GRASPExecuter
 import time
 
@@ -26,13 +27,16 @@ class GRASP(AbstractAlgorithm):
 
     """
 
-    def __init__(self, dataset_name: str = "test", dataset: Dataset = None, iterations: int = 20, solutions_per_iteration: int = 10, max_evaluations: int = 0,
-                 init_type: str = "stochastically", local_search_type: str = "best_first_neighbor_random", path_relinking_mode: str = "None", seed: int = None,
-                 debug_mode: bool = False, tackle_dependencies: bool = False):
+    def __init__(self,  execs: int, dataset_name: str = "test", dataset: Dataset = None, iterations: int = 20,
+                 solutions_per_iteration: int = 10, max_evaluations: int = 0,
+                 init_type: str = "stochastically", local_search_type: str = "best_first_neighbor_random",
+                 path_relinking_mode: str = "None", seed: int = None,
+                 debug_mode: bool = False, tackle_dependencies: bool = False, subset_size: int = 5):
 
-        super().__init__(dataset_name, dataset, seed, debug_mode, tackle_dependencies)
+        super().__init__(execs,dataset_name, dataset, seed, debug_mode, tackle_dependencies, subset_size=subset_size)
 
-        self.executer = GRASPExecuter(algorithm=self)
+        self.executer = GRASPExecuter(algorithm=self, execs=execs)
+        self.config_dictionary.update({'algorithm': 'GRASP'})
 
         self.iterations: int = iterations
         self.solutions_per_iteration: int = solutions_per_iteration
@@ -40,16 +44,22 @@ class GRASP(AbstractAlgorithm):
 
         self.hyperparameters.append(generate_hyperparameter(
             "iterations", iterations))
+        self.config_dictionary['iterations'] = iterations
         self.hyperparameters.append(generate_hyperparameter(
             "solutions_per_iteration", solutions_per_iteration))
+        self.config_dictionary['solutions_per_iteration'] = solutions_per_iteration
         self.hyperparameters.append(generate_hyperparameter(
             "max_evaluations", max_evaluations))
+        self.config_dictionary['max_evaluations'] = max_evaluations
         self.hyperparameters.append(generate_hyperparameter(
             "init_type", init_type))
+        self.config_dictionary['init_type'] = init_type
         self.hyperparameters.append(generate_hyperparameter(
             "local_search_type", local_search_type))
+        self.config_dictionary['local_search_type'] = local_search_type
         self.hyperparameters.append(generate_hyperparameter(
             "path_relinking_mode", path_relinking_mode))
+        self.config_dictionary['path_relinking_mode'] = path_relinking_mode
 
         self.nds: List[Solution] = []
         self.num_evaluations: int = 0
@@ -77,6 +87,9 @@ class GRASP(AbstractAlgorithm):
             self.local_search = self.local_search_bitwise_neighborhood_sorted_domination
         elif self.local_search_type == "None":
             self.local_search = "None"
+
+
+
 
     def get_file(self) -> str:
         return (f"{str(self.__class__.__name__)}-{str(self.dataset_name)}-"
@@ -137,23 +150,29 @@ class GRASP(AbstractAlgorithm):
             while (not self.stop_criterion(self.num_iterations, self.num_evaluations)):
                 # construction phase
                 initiated_solutions = self.initialize()
+                #get_nondominated_solutions(initiated_solutions, self.nds)
+                #plot_solutions(initiated_solutions)
 
                 # local search phase
                 if self.local_search != "None":
                     initiated_solutions = self.local_search(
                         initiated_solutions)
+                #plot_solutions(initiated_solutions)
 
                 if self.path_relinking_mode == "after_local":
                     initiated_solutions = self.path_relinking(
                         initiated_solutions)
+                #plot_solutions(initiated_solutions)
 
                 # repair population if dependencies tackled:
+                #plot_solutions(initiated_solutions)
                 if(self.tackle_dependencies):
                     initiated_solutions = self.repair_population_dependencies(
                         initiated_solutions)
-
+                #plot_solutions(initiated_solutions)
                 # update NDS with solutions constructed and evolved in this iteration
                 get_nondominated_solutions(initiated_solutions, self.nds)
+                #plot_solutions(self.nds)
 
                 self.num_iterations += 1
 
@@ -165,7 +184,7 @@ class GRASP(AbstractAlgorithm):
 
         seconds = time.time() - self.start
         print("\nNDS created has", self.nds.__len__(), "solution(s)")
-
+        #plot_solutions(self.nds)
         return {
             "population": self.nds,
             "time": seconds,
@@ -248,6 +267,7 @@ class GRASP(AbstractAlgorithm):
                     sol.flip(
                         i, self.dataset.pbis_cost_scaled[i], self.dataset.pbis_satisfaction_scaled[i])
                     self.add_evaluation(initiated_solutions)
+
 
         return initiated_solutions
 
@@ -344,6 +364,7 @@ class GRASP(AbstractAlgorithm):
                 (c2, s2, mo2) = sol.try_flip(i, self.dataset.pbis_cost_scaled[i],
                                              self.dataset.pbis_satisfaction_scaled[i])
                 self.add_evaluation(initiated_solutions)
+                #plot_solutions(initiated_solutions)
 
                 # if neighbor has greater mono_objective_score, then overwrite former solution with neighbor
                 if mo2 > mo1 and np.count_nonzero(
@@ -351,6 +372,7 @@ class GRASP(AbstractAlgorithm):
                     sol.flip(
                         i, self.dataset.pbis_cost_scaled[i], self.dataset.pbis_satisfaction_scaled[i])
                     self.add_evaluation(initiated_solutions)
+            #plot_solutions(initiated_solutions)
 
         return initiated_solutions
 
@@ -488,3 +510,7 @@ class GRASP(AbstractAlgorithm):
             solutions += new_sols
 
         return solutions
+
+
+
+

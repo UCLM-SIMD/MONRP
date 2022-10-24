@@ -1,5 +1,6 @@
 from typing import Any, Dict, List
 from algorithms.EDA.eda_algorithm import EDAAlgorithm
+from algorithms.abstract_algorithm.abstract_algorithm import plot_solutions
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
 from datasets import Dataset
 from evaluation.get_nondominated_solutions import get_nondominated_solutions
@@ -34,36 +35,37 @@ class FEDAAlgorithm(EDAAlgorithm):
 
         2. Learning
         -- If X does not have any parents in graph structure, then learn its marginal probability
-        -- Conditional: P(X| each Y in parents(X)==0) In the example above, P(2| 0==0,1==0).
-        Thus, we only need to learn P(X|parents(X)) from individuals where all Y in parents(X) are == 0.
-        This means that conditional probability can be stored in a unidimensional array, using the same array that
-        marginal probabilities, since P(X) is only computed once (marginal, or conditional).
+        -- If X does have parents in graph structure, learn Conditional: P(X| each Y in parents(X)==0) In the example above, P(2| 0==0,1==0).
+        Thus, we only need to learn P(X|parents(X)) from requirements whose parents Y are not selected (if any of them were, then P(X) is fixed to 1).
+        That is, we do not need P(X | any parents(X)==1), just the all parents(X)==0 case.
+        This means that conditional probability can be stored in a unidimensional array,
+         using the same array to store either marginal or conditional probability for each X.
 
         3. Sampling
-        -- In the case of requirements without parents, use learned marginal probability
+        -- In the case of requirements without parents in graph structure, use learned marginal probability
         -- In any Y in parents(X) is set to 1, then X=1, else use P(X|parents(X)==0)
 
     while(!stop_criterion)
     """
 
-    def __init__(self, dataset_name: str = "2", dataset: Dataset = None, random_seed: int = None, debug_mode: bool = False,
+    def __init__(self, execs, dataset_name: str = "p2", dataset: Dataset = None, random_seed: int = None, debug_mode: bool = False,
                  tackle_dependencies: bool = False,
-                 population_length: int = 100, selection_scheme: str = "nds", selected_individuals: int = 60, max_generations: int = 100,
-                 max_evaluations: int = 0):
+                 population_length: int = 100, selection_scheme: str = "nds", max_generations: int = 100,
+                 max_evaluations: int = 0, subset_size: int = 5):
 
-        super().__init__(dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
-                         population_length, max_generations, max_evaluations)
+        super().__init__(execs,dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
+                         population_length, max_generations, max_evaluations, subset_size=subset_size)
 
         self.population = None
         self.selection_scheme: str = selection_scheme
-        self.selected_individuals: int = selected_individuals
+
+        self.config_dictionary.update({'algorithm': 'feda'})
 
         self.hyperparameters.append(generate_hyperparameter(
             "selection_scheme", selection_scheme))
-        self.hyperparameters.append(generate_hyperparameter(
-            "selected_individuals", selected_individuals))
+        self.config_dictionary['selection_scheme'] = selection_scheme
 
-        self.executer = FEDAExecuter(algorithm=self)
+        self.executer = FEDAExecuter(algorithm=self, execs=execs)
 
         self.probs = np.full(self.dataset.num_pbis, 0)
 
@@ -76,7 +78,7 @@ class FEDAAlgorithm(EDAAlgorithm):
     def get_file(self) -> str:
         return (f"{str(self.__class__.__name__)}-{str(self.dataset_name)}-"
                 f"{self.dependencies_to_string()}-{str(self.random_seed)}-{str(self.population_length)}-"
-                f"{str(self.max_generations)}-{str(self.max_evaluations)}-{str(self.selected_individuals)}-"
+                f"{str(self.max_generations)}-{str(self.max_evaluations)}-"
                 f"{str(self.selection_scheme)}.txt")
 
     def get_name(self) -> str:
@@ -85,8 +87,7 @@ class FEDAAlgorithm(EDAAlgorithm):
 
     def df_find_data(self, df: any):
         return df[(df["Population Length"] == self.population_length) & (df["MaxGenerations"] == self.max_generations)
-                  & (df["Selection Scheme"] == self.selection_scheme) & (df["Selected Individuals"] == self.selected_individuals)
-                  & (df["Algorithm"] == self.__class__.__name__)
+                  & (df["Selection Scheme"] == self.selection_scheme) & (df["Algorithm"] == self.__class__.__name__)
                   & (df["Dataset"] == self.dataset_name) & (df["MaxEvaluations"] == self.max_evaluations)
                   ]
 
@@ -95,25 +96,30 @@ class FEDAAlgorithm(EDAAlgorithm):
         start = time.time()
 
         self.population = self.init_population()
-        self.evaluate(self.population, self.best_individual)
+        get_nondominated_solutions(self.population, self.nds)
+
+        #plot_solutions(self.population)
+
 
         try:
             while not self.stop_criterion(self.num_generations, self.num_evaluations):
                 # select individuals from self.population based on self.selection_scheme
                 local_nds = self.select_individuals(self.population)
-
+                #plot_solutions(local_nds)
                 # learning
+
                 self.probs = self.learn_probability_model(local_nds)
 
+
                 # sampling
+                #go = time.time()
                 self.population = self.sample_new_population(self.probs)
+                #print("Sampling new pop: ", time.time() - go)
+               # plot_solutions(self.population)
 
-                # evaluation
-                self.evaluate(self.population, self.best_individual)
-
-                # update nds with solutions constructed and evolved in this iteration
-                get_nondominated_solutions(self.population, self.nds)
-
+                # evaluation  # update nds with solutions constructed and evolved in this iteration
+                get_nondominated_solutions(self.population, self.nds) #TODO aquí se filtran las nds, y en la siguiente iteración también se filtran para local_nds! se hace doble?
+                #plot_solutions(self.nds)
                 self.num_generations += 1
 
                 if self.debug_mode:
@@ -123,6 +129,7 @@ class FEDAAlgorithm(EDAAlgorithm):
             pass
 
         end = time.time()
+        #plot_solutions(self.nds)
 
         print("\nNDS created has", self.nds.__len__(), "solution(s)")
 
@@ -144,22 +151,28 @@ class FEDAAlgorithm(EDAAlgorithm):
     def init_population(self) -> List[Solution]:
 
         population = []
-        probs = np.full(self.dataset.num_pbis, 1 / self.dataset.num_pbis)
+        probs = np.full(self.dataset.pbis_score.size, 1 / self.dataset.pbis_score.size)
 
         for _ in np.arange(self.population_length):
             sample_selected = np.full(self.dataset.num_pbis, 0)
             # sample whole individual using P(X)= 1/self.dataset.num_pbis for all X
+            replace = False # if True, less individuals do not reach cost=1
             while 1 not in sample_selected:
-                sample_selected = np.random.binomial(1, probs)
-            solution = Solution(self.dataset, None, selected=sample_selected)
+                sample_selected = np.random.choice(np.arange(self.dataset.num_pbis),
+                                                   size=np.random.randint(self.dataset.num_pbis),
+                                           replace=replace, p=probs) # np.random.binomial(1, probs)
 
+            if replace: sample_selected = np.unique(sample_selected)
             # now follow topological order to check if any X must be set to 1
             for x in self.topological_order:
                 for p in self.parents_of[x]:
-                    if solution.selected[p] == 1:
-                        solution.selected[x] = 1
+                    if p in sample_selected and not x in sample_selected:
+                        sample_selected = np.append(sample_selected, x)
+            solution = Solution(self.dataset, None, selected=sample_selected)
             population.append(solution)
 
+
+        #plot_solutions(population)
         return population
 
     '''
@@ -189,7 +202,7 @@ class FEDAAlgorithm(EDAAlgorithm):
             parents_x = self.parents_of[x]
             if len(parents_x) != 0:  # for each X with parents,
                 subset = np_vectors
-                # iteratively obtain individuals subset where all parents(X)==0
+                # cumulative reduction of individuals filtering by having each Y in parents(X)==0
                 for y in parents_x:
                     subset = subset[subset[:, y] == 0]
                 # if len==0 (no individuals where all parents(X)=0) this lets marginal P(X) remain
@@ -233,8 +246,40 @@ class FEDAAlgorithm(EDAAlgorithm):
         #  convert population into List of Solution
         new_population = []
         for individual in population:
+            selected = np.where(individual == 1)
             new_population.append(
-                Solution(self.dataset, None, selected=individual))
+                Solution(self.dataset, None, selected=selected))
+
+        return new_population
+
+    def sample_new_population2(self, probs) -> List[Solution]:
+        # init whole np 2d array with empty individuals
+        population = np.zeros(
+            shape=(self.population_length, self.dataset.num_pbis))
+
+        # sample following topological order
+        for x in self.topological_order:
+            # first set x in all individual with its Prob computed (marginal or P(X|parents(X)==0)
+            x_values_in_pop = np.random.binomial(
+                    n=1, p=probs[x], size=self.population_length)
+            population[:, x] = x_values_in_pop
+            # now solve when any parent is set, then x must be 1
+            parents_x = self.parents_of[x]
+            if len(parents_x) > 0:
+                p_values_in_pop = population[:, parents_x]
+                for index, values in enumerate(p_values_in_pop):
+                    if 1 in values:
+                        population[index, x] = 1
+
+
+
+
+        #  convert population into List of Solution
+        new_population = []
+        for individual in population:
+            selected = np.where(individual == 1)
+            new_population.append(
+                Solution(self.dataset, None, selected=selected))
 
         return new_population
 

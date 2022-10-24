@@ -1,112 +1,184 @@
+import json
+import warnings
 from abc import ABC
 from typing import List
 
-from algorithms.abstract_algorithm.abstract_algorithm import AbstractAlgorithm
+from algorithms.abstract_algorithm.abstract_algorithm import AbstractAlgorithm, plot_solutions
 import evaluation.metrics as metrics
+from models.Solution import Solution
 
 
 class AbstractExecuter(ABC):
     """Executer class used to delegate configuration, execution and formatting of algorithm outputs
     """
 
-    def __init__(self, algorithm: AbstractAlgorithm):
+    def __init__(self, algorithm: AbstractAlgorithm, num_execs: int):
         """All executers store default config and metrics fields. Specific implementations might include more fields
         """
+        self.executions = int(num_execs)
         self.algorithm: AbstractAlgorithm = algorithm
         self.config_fields: List[str] = ["Dataset", "Algorithm"]
         self.metrics_fields: List[str] = ["Time(s)", "HV", "Spread", "NumSolutions", "Spacing",
                                           "Requirements per sol", "AvgValue", "BestAvgValue", ]
 
-    def execute(self, executions: int, file_path: str) -> None:
-        """Method that executes the algorithm a number of times and writes a new line with config and metrics data for each execution
+        self.metrics_dictionary = {
+            'time': [None] * self.executions,
+            'NDS_size': [None] * self.executions,
+            'HV': [None] * self.executions,
+            'spread': [None] * self.executions,
+            'numSolutions': [None] * self.executions,
+            'spacing': [None] * self.executions,
+            'mean_bits_per_sol': [None] * self.executions,
+            'avgValue': [None] * self.executions,
+            'bestAvgValue': [None] * self.executions,
+            'gdplus': "GD+ not calculated yet. You may need to run extract_postMetrics.py",
+            'unfr': "UNFR not calculated yet. You may need to run extract_postMetrics.py"
 
-        Args:
-            executions (int): [description]
-            file_path (str): [description]
+        }
+
+    def execute(self, output_folder: str) -> None:
+        """Method that executes the algorithm a number of times and saves results in json  output file
         """
-        config_fields: List[str] = self.get_config_fields()
-        for _ in range(0, executions):
-            #print("Executing iteration: ", i + 1)
+        paretos_list = []  # list of pareto lists, one pareto per execution
+        for it in range(0, self.executions):
             self.algorithm.reset()
             result = self.algorithm.run()
-            metrics_fields: List[str] = self.get_metrics_fields(result)
 
-            config_line = self.get_string_from_fields(
-                config_fields, end_line=False)
-            metrics_line = self.get_string_from_fields(
-                metrics_fields, end_line=True)
-            line = config_line+metrics_line
-            self.file_write_line(file_path, line)
+            self.metrics_dictionary['NDS_size'][it] = len(result['population']) # store original NDS size created in search
+            result['population'] = self.search_solution_subset(result['population'])
 
-        # print("End")
+            self.get_metrics_fields(result, it)
+            pareto = self.get_pareto(result['population'])  # get a list with pareto points
+            paretos_list.insert(len(paretos_list), pareto)
 
-    def get_config_fields(self,) -> List[str]:
-        """Method that returns the config fields of the algorithm. Specific implementations might add new fields.
-        """
-        config_lines: List[str] = []
+        #  add/update results in json output file
+        self.algorithm.config_dictionary['num_executions'] = self.executions
+        unique_id = ''.join(str(c) for c in self.algorithm.config_dictionary.values())
+        results_dictionary = {'parameters': self.algorithm.config_dictionary,
+                              'metrics': self.metrics_dictionary,
+                              'paretos': paretos_list,
+                              'Reference_Pareto': 'Not constructed yet.  You may need to run extract_postMetrics.py'
+                              }
 
-        algorithm_name = self.algorithm.__class__.__name__
-        dataset_name = self.algorithm.dataset_name
+        with open(output_folder + unique_id + '.json', 'w', encoding='utf-8') as f:
+            json.dump(results_dictionary, f, ensure_ascii=False, indent=4)
 
-        config_lines.append(str(dataset_name))
-        config_lines.append(str(algorithm_name))
+    """ finds the subset which maximizes HV with self.subset_size of solutions.
+    The search is a basic/tradicional greedy forward search based on the HV metric
+    A fixed reference point is assumed during the search (always the same), as in 
+    'Greedy Hypervolume Subset Selection in Low Dimensions,Evolutionary Computation 24(3): 521-544'
+    where fixed r is upper bounds (in minimizatino problems), that is, the nadir point
+    
+    """
 
-        return config_lines
+    def search_solution_subset(self, solutions: [Solution]) -> [Solution]:
 
-    def get_metrics_fields(self, result) -> List[str]:
-        """Method that returns the metrics fields of an execution result. Specific implementations might add new fields.
+        if len(solutions) < self.algorithm.subset_size:
+            print('|solutions| < subset_size parameter!! Solution subset set to original final solution');
+            #warnings.warn('|solutions| < subset_size parameter!! Solution subset set to original final solution', UserWarning)
+            return solutions
+
+        indices_selected = []
+        subset = []
+        #metrics.calculate_hypervolume(solutions, ref_x=1.1, ref_y=1.1) #for plotting whold nds before subset selection
+        for _ in range(0, self.algorithm.subset_size):
+            best_hv = -1
+            best_index = -1
+            for i in range(0, len(solutions)):
+                if not i in indices_selected:
+                    subset.insert(len(subset), solutions[i])
+                    hv = metrics.calculate_hypervolume(subset, ref_x=1.1, ref_y=1.1)
+                    if hv > best_hv:
+                        best_hv = hv
+                        best_index = i
+                    del subset[-1]
+            if best_index != -1:
+                subset.insert(len(subset), solutions[best_index])
+                indices_selected.insert(len(indices_selected), best_index)
+        #plot_solutions(subset)
+        return subset
+
+    """ search for the solution which maximizes satisfaction, and other which minimizes cost"""
+
+    def init_subset_selection(self, solutions: [Solution]) -> [Solution]:
+
+        return [], []
+
+    def get_metrics_fields(self, result, repetition):
+        """adds metrics of current repetition of the algorithm in the dictionary, for later insertion in json
         """
         metrics_fields: List[str] = []
 
-        time = str(result["time"]) if "time" in result else 'NaN'
-        hv = str(metrics.calculate_hypervolume(result["population"]))
-        spread = str(metrics.calculate_spread(result["population"]))
-        numSolutions = str(
-            metrics.calculate_numSolutions(result["population"]))
-        spacing = str(metrics.calculate_spacing(result["population"]))
-        mean_bits_per_sol = str(
-            metrics.calculate_mean_bits_per_sol(result["population"]))
-        avgValue = str(metrics.calculate_avgValue(result["population"]))
-        bestAvgValue = str(
-            metrics.calculate_bestAvgValue(result["population"]))
+        time = result["time"] if "time" in result else 'NaN'
+        # ref point: nadir point + (nadir - best)/10 = 1 + (1-0)/10 = 1.1
+        hv = metrics.calculate_hypervolume(result["population"], ref_x=1.1, ref_y=1.1)
+        spread = metrics.calculate_spread(result["population"])
+        numSolutions = metrics.calculate_numSolutions(result["population"])
+        spacing = metrics.calculate_spacing(result["population"])
+        mean_bits_per_sol = metrics.calculate_mean_bits_per_sol(result["population"])
+        avgValue = metrics.calculate_avgValue(result["population"])
+        bestAvgValue = metrics.calculate_bestAvgValue(result["population"])
 
-        metrics_fields.append(str(time))
-        metrics_fields.append(str(hv))
-        metrics_fields.append(str(spread))
-        metrics_fields.append(str(numSolutions))
-        metrics_fields.append(str(spacing))
-        metrics_fields.append(str(mean_bits_per_sol))
-        metrics_fields.append(str(avgValue))
-        metrics_fields.append(str(bestAvgValue))
+        self.metrics_dictionary['time'][repetition] = time
+        self.metrics_dictionary['HV'][repetition] = hv
+        self.metrics_dictionary['spread'][repetition] = spread
+        self.metrics_dictionary['numSolutions'][repetition] = numSolutions
+        self.metrics_dictionary['spacing'][repetition] = spacing
+        self.metrics_dictionary['mean_bits_per_sol'][repetition] = mean_bits_per_sol
+        self.metrics_dictionary['avgValue'][repetition] = avgValue
+        self.metrics_dictionary['bestAvgValue'][repetition] = bestAvgValue
 
-        return metrics_fields
+        # metrics_fields.append(str(time))
+        # metrics_fields.append(str(hv))
+        # metrics_fields.append(str(spread))
+        # metrics_fields.append(str(numSolutions))
+        # metrics_fields.append(str(spacing))
+        # metrics_fields.append(str(mean_bits_per_sol))
+        # metrics_fields.append(str(avgValue))
+        # metrics_fields.append(str(bestAvgValue))
 
-    def file_write_line(self, file_path: str, line: str) -> None:
-        """Aux method to write a line in a file
+        # return metrics_fields
+
+    def get_pareto(self, population) -> List:
+        """converts cost and value of each individual in a pair of coordinates and
+        stores them in a list of duples (x,y)
         """
+        self.algorithm.reset()
+        solution_points = []
+        for sol in population:
+            point = (sol.total_cost, sol.total_satisfaction)
+            solution_points.insert(len(solution_points), point)
+        return solution_points
+
+
+"""
+    def file_write_line(self, file_path: str, line: str) -> None:
+        #Aux method to write a line in a file
+        
         f = open(file_path, "a")
         f.write(line)
         f.close()
+"""
 
-    def initialize_file(self, file_path: str) -> None:
-        """Aux method to write the header of the file.
-        """
+""" def initialize_file(self, file_path: str) -> None:
+        #Aux method to write the header of the file.
+        
         # add all fields
         fields = self.config_fields + self.metrics_fields
         header: str = self.get_string_from_fields(fields, end_line=True)
         file = open(file_path, "w")
         file.write(header)
         file.close()
-
-    def reset_file(self, file_path: str) -> None:
+"""
+"""   def reset_file(self, file_path: str) -> None:
         file = open(file_path, "w")
         file.close()
-
-    def get_string_from_fields(self, fields_array: List[str], end_line: bool = True) -> str:
-        """Aux method to generate a string line from a list of fields
-        """
+"""
+"""   def get_string_from_fields(self, fields_array: List[str], end_line: bool = True) -> str:
+        #Aux method to generate a string line from a list of fields
+        
         line: str = ""
-        for field_index in range(len(fields_array)-1):
+        for field_index in range(len(fields_array) - 1):
             line += f"{fields_array[field_index]},"
         line += f"{fields_array[-1]}"
 
@@ -116,25 +188,10 @@ class AbstractExecuter(ABC):
         else:
             line += ","
         return line
-
-    def initialize_file_pareto(self, file_path: str) -> None:
+"""
+"""   def initialize_file_pareto(self, file_path: str) -> None:
         # print("Running...")
         f = open(file_path, "w")
         # f.write("Dataset,AlgorithmName,Cost,Value\n")
         f.close()
-
-    def execute_pareto(self, file_path: str) -> None:
-        """Method that executes the algorithm once and writes the solution points.
-        """
-        self.algorithm.reset()
-        result = self.algorithm.run()
-        for sol in result["population"]:
-            #print("Executing iteration: ", i + 1)
-            cost = sol.total_cost
-            value = sol.total_satisfaction
-
-            f = open(file_path, "a")
-            data = f"{str(cost)},{str(value)}\n"
-
-            f.write(data)
-            f.close()
+"""

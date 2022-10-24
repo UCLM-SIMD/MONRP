@@ -1,4 +1,9 @@
 from typing import Any, Dict, List
+
+import numpy as np
+from pymoo.visualization.scatter import Scatter
+
+from algorithms.abstract_algorithm.abstract_algorithm import plot_solutions
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
 from algorithms.genetic.abstract_genetic.abstract_genetic_algorithm import AbstractGeneticAlgorithm
 from algorithms.genetic.geneticnds.geneticnds_executer import GeneticNDSExecuter
@@ -14,35 +19,52 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
     """Mono-Objective Genetic Algorithm that stores a set of nondominated solutions and updates it at each generation.
     """
 
-    def __init__(self, dataset_name: str = "test", dataset: Dataset = None, random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
+    def __init__(self, execs,dataset_name: str = "test", dataset: Dataset = None, random_seed: int = None,
+                 debug_mode: bool = False, tackle_dependencies: bool = False,
                  population_length: int = 100, max_generations: int = 100, max_evaluations: int = 0,
                  selection: str = "tournament", selection_candidates: int = 2,
                  crossover: str = "onepoint", crossover_prob: float = 0.9,
                  mutation: str = "flipeachbit", mutation_prob: float = 0.1,
-                 replacement: str = "elitism",):
+                 replacement: str = "elitism", subset_size: int = 5):
 
-        super().__init__(dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
+        super().__init__(execs,dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
                          population_length, max_generations, max_evaluations,
                          selection, selection_candidates, crossover, crossover_prob,
-                         mutation, mutation_prob, replacement,)
+                         mutation, mutation_prob, replacement, subset_size=subset_size)
 
-        self.executer = GeneticNDSExecuter(algorithm=self)
+        self.executer = GeneticNDSExecuter(algorithm=self, execs=execs)
+        self.config_dictionary.update({'algorithm': 'geneticNDS'})
+
+        self.config_dictionary['population_length'] = population_length
+        self.config_dictionary['max_generations'] = max_generations
+        self.config_dictionary['max_evaluations'] = max_evaluations
+        self.config_dictionary['selection_candidates'] = selection_candidates
+        self.config_dictionary['crossover_prob'] = crossover_prob
+        self.config_dictionary['mutation_prob'] = mutation_prob
+
+
 
         if selection == "tournament":
             self.selection = self.selection_tournament
+        self.config_dictionary['selection'] = selection
 
         if crossover == "onepoint":
             self.crossover = self.crossover_one_point
+        self.config_dictionary['crossover'] = crossover
 
         if mutation == "flip1bit":
             self.mutation = self.mutation_flip1bit
         elif mutation == "flipeachbit":
             self.mutation = self.mutation_flipeachbit
+        self.config_dictionary['mutation'] = mutation
 
         if replacement == "elitism":
             self.replacement = self.replacement_elitism
         elif replacement == "elitismnds":
             self.replacement = self.replacement_elitism
+        self.config_dictionary['replacement'] = replacement
+
+
 
     def get_file(self) -> str:
         return (f"{str(self.__class__.__name__)}-{str(self.dataset_name)}-"
@@ -81,6 +103,8 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
             while (not self.stop_criterion(self.num_generations, self.num_evaluations)):
                 # selection
                 new_population = self.selection(self.population)
+
+
                 # crossover
                 new_population = self.crossover(new_population)
 
@@ -95,12 +119,15 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
                 # evaluation
                 self.evaluate(self.population, self.best_individual)
 
+
                 # update NDS
                 get_nondominated_solutions(new_population, self.nds)
+
 
                 returned_population = copy.deepcopy(new_population)
                 self.best_generation, self.best_generation_avgValue = self.calculate_last_generation_with_enhance(
                     self.best_generation, self.best_generation_avgValue, self.num_generations, returned_population)
+
 
                 # replacement
                 if self.replacement_scheme == "elitismnds":
@@ -119,6 +146,9 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
 
         end = time.time()
 
+        #plot_solutions(self.nds)
+
+
         return {
             "population": self.nds,
             "time": end - start,
@@ -129,6 +159,8 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
             "nds_debug": self.nds_debug,
             "population_debug": self.population_debug
         }
+
+
 
     def add_evaluation(self, new_population: List[Solution]) -> None:
         """Handles evaluation count, finishing algorithm execution if stop criterion is met by raising an exception.
@@ -148,13 +180,17 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
             best_total_score = 0
             # select individual from a set of X candidates
             for j in range(0, self.selection_candidates):
-                random_index = random.randint(0, len(population)-1)
-                candidate = population[random_index]
-                total_score = candidate.mono_objective_score
+                while True:
+                    random_index = random.randint(0, len(population)-1)
+                    candidate = population[random_index]
+                    total_score = candidate.mono_objective_score # avoid empty individuals selected self.selection_candidates times
+                    if total_score > 0: break
                 # store best scoring individual
                 if(total_score > best_total_score):
                     best_total_score = total_score
                     best_candidate = candidate
+
+
 
             # append individual in new population
             new_population.append(best_candidate)

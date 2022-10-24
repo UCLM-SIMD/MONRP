@@ -6,7 +6,9 @@ import numpy as np
 import os
 import imageio
 import matplotlib.pyplot as plt
-from models.Hyperparameter import Hyperparameter
+from pymoo.visualization.scatter import Scatter
+
+from models.Hyperparameter import Hyperparameter, generate_hyperparameter
 
 from models.Solution import Solution
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
@@ -14,11 +16,23 @@ from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
 from datasets.Dataset import Dataset
 
 
+def plot_solutions(solutions: List[Solution]):
+    points = []
+    for ind in solutions:
+        # se revierte la satisfaccion para que más sea peor, para compatibilidad con pymoo
+        x = ind.total_cost
+        y = 1 - ind.total_satisfaction
+        points.append([x, y])
+    Scatter(title="NDS found").add(np.array(points)).show()
+
+
 class AbstractAlgorithm(ABC):
     """Abstract class for algorithm implementations
     """
 
-    def __init__(self, dataset_name: str = "test", dataset: Dataset = None, random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False):
+    def __init__(self, execs: int, dataset_name: str = "test", dataset: Dataset = None,
+                 random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
+                 subset_size: int = 5):
         """Default init method that sets common arguments such as dataset, seed and modes.
 
         Args:
@@ -27,6 +41,7 @@ class AbstractAlgorithm(ABC):
             debug_mode (bool, optional): [description]. Defaults to False.
             tackle_dependencies (bool, optional): [description]. Defaults to False.
         """
+        self.num_executions = execs
         if dataset is not None:
             self.dataset: Dataset = dataset
             self.dataset_name: str = dataset.id
@@ -38,11 +53,18 @@ class AbstractAlgorithm(ABC):
         self.tackle_dependencies: bool = tackle_dependencies
         self.random_seed: int = random_seed
         self.set_seed(random_seed)
+        self.subset_size = subset_size
 
         self.nds_debug = []
         self.population_debug = []
 
         self.hyperparameters: List[Hyperparameter] = []
+
+        self.hyperparameters.append(generate_hyperparameter(
+            "subset_size", subset_size))
+
+        self.config_dictionary = {'algorithm': 'abstract', 'dependencies': tackle_dependencies,
+                                  'dataset': self.dataset.id, 'seed': self.random_seed, 'subset_size': self.subset_size}
 
     def set_seed(self, seed: int):
         self.random_seed: int = seed
@@ -189,3 +211,6 @@ class AbstractAlgorithm(ABC):
             self.population_debug.append(population_debug.copy())
         else:
             self.population_debug.append(self.population.copy())
+
+
+

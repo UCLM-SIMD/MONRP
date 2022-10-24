@@ -6,19 +6,22 @@ class UMDAExecuter(AbstractExecuter):
     """Specific umda implementation of executer.
     """
 
-    def __init__(self, algorithm):
+    def __init__(self, algorithm, execs):
         """Init method extends config and metrics fields with specific umda algorithm data
         """
         from algorithms.EDA.UMDA.umda_algorithm import UMDAAlgorithm
-        super().__init__(algorithm)
+        super().__init__(algorithm, num_execs=execs)
         self.algorithm: UMDAAlgorithm
         self.algorithm_type: str = "umda"
 
         self.config_fields.extend(["Population Length", "MaxGenerations", "MaxEvaluations",
                                    "Selected Individuals", "Selection Scheme", "Replacement Scheme"])
 
-        self.metrics_fields.extend(
-            ["NumGenerations", "NumEvaluations", ])
+       # self.metrics_fields.extend(
+        #    ["NumGenerations", "NumEvaluations", ])
+
+        self.metrics_dictionary["NumGenerations"] = [None] * int(execs)
+        self.metrics_dictionary["NumEvaluations"] = [None] * int(execs)
 
     def get_config_fields(self,) -> List[str]:
         """UMDA algorithm executer extends metrics fields read from the execution
@@ -32,25 +35,28 @@ class UMDAExecuter(AbstractExecuter):
         selection_scheme = self.algorithm.selection_scheme
         replacement_scheme = self.algorithm.replacement_scheme
 
-        config_lines.append(str(population_length))
-        config_lines.append(str(max_generations))
-        config_lines.append(str(max_evaluations))
-        config_lines.append(str(selected_individuals))
-        config_lines.append(str(selection_scheme))
-        config_lines.append(str(replacement_scheme))
-        return config_lines
+        #config_lines.append(str(population_length))
+        #config_lines.append(str(max_generations))
+        #config_lines.append(str(max_evaluations))
+        #config_lines.append(str(selected_individuals))
+        #config_lines.append(str(selection_scheme))
+        #config_lines.append(str(replacement_scheme))
 
-    def get_metrics_fields(self, result: Dict[str, Any]) -> List[str]:
+
+
+        #return config_lines
+
+    def get_metrics_fields(self, result: Dict[str, Any], repetition) -> List[str]:
         """UMDA algorithm executer extends metrics fields read from the execution
         """
-        metrics_fields: List[str] = super().get_metrics_fields(result)
+        metrics_fields: List[str] = super().get_metrics_fields(result, repetition)
 
-        numGenerations = str(
-            result["numGenerations"]) if "numGenerations" in result else 'NaN'
-        numEvaluations = str(
-            result["numEvaluations"]) if "numEvaluations" in result else 'NaN'
+        numGenerations = result["numGenerations"] if "numGenerations" in result else 'NaN'
+        numEvaluations = result["numEvaluations"] if "numEvaluations" in result else 'NaN'
 
-        metrics_fields.append(str(numGenerations))
-        metrics_fields.append(str(numEvaluations))
+        #metrics_fields.append(str(numGenerations))
+        #metrics_fields.append(str(numEvaluations))
+        self.metrics_dictionary['NumGenerations'][repetition] = numGenerations
+        self.metrics_dictionary['NumEvaluations'][repetition] = numEvaluations
 
         return metrics_fields

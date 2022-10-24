@@ -3,9 +3,9 @@ from algorithms.abstract_algorithm.abstract_executer import AbstractExecuter
 
 
 class GRASPExecuter(AbstractExecuter):
-    def __init__(self, algorithm):
+    def __init__(self, algorithm, execs: int):
         from algorithms.GRASP.GRASP import GRASP
-        super().__init__(algorithm)
+        super().__init__(algorithm, execs)
         self.algorithm: GRASP
         self.algorithm_type: str = "grasp"
 
@@ -14,6 +14,8 @@ class GRASPExecuter(AbstractExecuter):
 
         self.metrics_fields.extend(
             ["NumGenerations", "NumEvaluations", ])
+        self.metrics_dictionary["NumGenerations"] = [None] * int(execs)
+        self.metrics_dictionary["NumEvaluations"] = [None] * int(execs)
 
     def get_config_fields(self,) -> List[str]:
         config_lines: List[str] = super().get_config_fields()
@@ -33,15 +35,12 @@ class GRASPExecuter(AbstractExecuter):
         config_lines.append(str(path_relinking_mode))
         return config_lines
 
-    def get_metrics_fields(self, result: Dict[str, Any]) -> List[str]:
-        metrics_fields: List[str] = super().get_metrics_fields(result)
+    def get_metrics_fields(self, result: Dict[str, Any], repetition):
+        super().get_metrics_fields(result, repetition)
 
-        numGenerations = str(
-            result["numGenerations"]) if "numGenerations" in result else 'NaN'
-        numEvaluations = str(
-            result["numEvaluations"]) if "numEvaluations" in result else 'NaN'
+        numGenerations = result["numGenerations"] if "numGenerations" in result else 'NaN'
+        numEvaluations = result["numEvaluations"] if "numEvaluations" in result else 'NaN'
 
-        metrics_fields.append(str(numGenerations))
-        metrics_fields.append(str(numEvaluations))
+        self.metrics_dictionary['NumGenerations'][repetition] = numGenerations
+        self.metrics_dictionary['NumEvaluations'][repetition] = numEvaluations
 
-        return metrics_fields

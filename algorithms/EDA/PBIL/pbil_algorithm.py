@@ -1,5 +1,6 @@
 from typing import Any, Dict, List, Tuple
 from algorithms.EDA.eda_algorithm import EDAAlgorithm
+from algorithms.abstract_algorithm.abstract_algorithm import plot_solutions
 from datasets import Dataset
 from evaluation.get_nondominated_solutions import get_nondominated_solutions
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
@@ -16,25 +17,30 @@ class PBILAlgorithm(EDAAlgorithm):
     """Population Based Incremental Learning
     """
 
-    def __init__(self, dataset_name: str = "test", dataset: Dataset = None, random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
+    def __init__(self,execs, dataset_name: str = "test", dataset: Dataset = None, random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
                  population_length: int = 100, max_generations: int = 100, max_evaluations: int = 0,
-                 learning_rate: float = 0.1, mutation_prob: float = 0.1, mutation_shift: float = 0.1):
+                 learning_rate: float = 0.1, mutation_prob: float = 0.1,
+                 mutation_shift: float = 0.1, subset_size: int = 5):
 
-        super().__init__(dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
-                         population_length, max_generations, max_evaluations)
+        super().__init__(execs,dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
+                         population_length, max_generations, max_evaluations, subset_size=subset_size)
 
-        self.executer = PBILExecuter(algorithm=self)
+        self.executer = PBILExecuter(algorithm=self, execs=execs)
 
         self.learning_rate: float = learning_rate
         self.mutation_prob: float = mutation_prob
         self.mutation_shift: float = mutation_shift
+        self.config_dictionary.update({'algorithm': 'pbil'})
 
         self.hyperparameters.append(generate_hyperparameter(
             "learning_rate", learning_rate))
+        self.config_dictionary['learning_rate'] = learning_rate
         self.hyperparameters.append(generate_hyperparameter(
             "mutation_prob", mutation_prob))
+        self.config_dictionary['mutation_prob'] = mutation_prob
         self.hyperparameters.append(generate_hyperparameter(
             "mutation_shift", mutation_shift))
+        self.config_dictionary['mutation_shift'] = mutation_shift
 
     def get_file(self) -> str:
         return (f"{str(self.__class__.__name__)}-{str(self.dataset_name)}-"
@@ -54,8 +60,8 @@ class PBILAlgorithm(EDAAlgorithm):
                   ]
 
     def initialize_probability_vector(self) -> np.ndarray:
-        probabilities = np.full(self.dataset.pbis_score.size, 0.5)
-        # probabilities = np.full(self.dataset.pbis_score.size, 1/self.dataset.pbis_score.size)
+        #probabilities = np.full(self.dataset.pbis_score.size, 0.5)
+        probabilities = np.full(self.dataset.pbis_score.size, 1/self.dataset.pbis_score.size)
 
         return probabilities
 
@@ -122,13 +128,14 @@ class PBILAlgorithm(EDAAlgorithm):
 
                 self.population = self.sample_new_population(
                     self.probability_vector)
+                #plot_solutions(self.population)
 
                 # repair population if dependencies tackled:
                 if(self.tackle_dependencies):
                     self.population = self.repair_population_dependencies(
                         self.population)
+                #plot_solutions(self.population)
 
-                self.evaluate(self.population, self.best_individual)
 
                 max_sample = self.select_individuals(self.population)
 
@@ -137,7 +144,7 @@ class PBILAlgorithm(EDAAlgorithm):
 
                 # update nds with solutions constructed and evolved in this iteration
                 get_nondominated_solutions(self.population, self.nds)
-
+                #plot_solutions(self.nds)
                 self.num_generations += 1
 
                 if self.debug_mode:
@@ -145,7 +152,7 @@ class PBILAlgorithm(EDAAlgorithm):
 
         except EvaluationLimit:
             pass
-
+        #plot_solutions(self.population)
         end = time.time()
 
         print("\nNDS created has", self.nds.__len__(), "solution(s)")
