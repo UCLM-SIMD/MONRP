@@ -124,6 +124,7 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
     def run(self) -> Dict[str, Any]:
         self.reset()
         start = time.time()
+        nds_update_time = 0
 
         # init nsgaii
         self.population = self.generate_starting_population()
@@ -150,6 +151,7 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
                 new_population = []
                 front_num = 0
 
+                update_start = time.time()
                 # till parent population is filled, calculate crowding distance in Fi, include i-th non-dominated front in parent pop
                 while len(new_population) + len(fronts[front_num]) <= self.population_length:
                     self.calculate_crowding_distance(
@@ -185,6 +187,8 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
                 for front in fronts:
                     self.calculate_crowding_distance(front)
 
+                nds_update_time = nds_update_time + (time.time() - update_start)
+
                 # use selection,crossover and mutation to create a new population Qt+1
                 offsprings = self.selection(self.population)
                 offsprings = self.crossover(offsprings)
@@ -214,6 +218,7 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
 
         return {"population": fronts[0],
                 "time": end - start,
+                "nds_update_time": nds_update_time,
                 "numGenerations": self.num_generations,
                 "bestGeneration": self.best_generation,
                 "best_individual": self.best_individual,

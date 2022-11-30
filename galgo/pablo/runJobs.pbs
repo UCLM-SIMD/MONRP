@@ -9,6 +9,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
  #PBS -N mimic 
  #PBS -l mem=2500mb 
  #PBS -J 1-200 
@@ -78,6 +79,11 @@
  #PBS -l mem=2500mb 
  #PBS -J 1-200 
 >>>>>>> 181bb83e (solved comments from pull request and changed datasets dX names. added minor local changes in some files)
+=======
+ #PBS -N feda 
+ #PBS -l mem=2500mb 
+ #PBS -J 1-150 
+>>>>>>> f9ef1beb (total time used to update nds_archive is now measured)
 
 export PATH=/home/pbermejo/.local/lib/python3.8/site-packages:$PATH
 export PYTHONPATH=/home/pbermejo/.local/lib/python3.8/site-packages:$PYTHONPATH

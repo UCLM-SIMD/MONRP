@@ -145,6 +145,7 @@ class UMDAAlgorithm(EDAAlgorithm):
     def run(self) -> Dict[str, Any]:
         self.reset()
         start = time.time()
+        nds_update_time = 0
 
         self.population = self.generate_initial_population()
 <<<<<<< HEAD
@@ -227,8 +228,13 @@ class UMDAAlgorithm(EDAAlgorithm):
 =======
 
                 # evaluation  # update nds with solutions constructed and evolved in this iteration
+<<<<<<< HEAD
 >>>>>>> a7235ed3 (solved comments from pull request, added minor local changes in some files)
+=======
+                update_start = time.time()
+>>>>>>> f9ef1beb (total time used to update nds_archive is now measured)
                 get_nondominated_solutions(self.population, self.nds)
+                nds_update_time = nds_update_time  + (time.time() - update_start)
                 #plot_solutions(self.nds)
                 self.num_generations += 1
 
@@ -245,6 +251,7 @@ class UMDAAlgorithm(EDAAlgorithm):
 
         return {"population": self.nds,
                 "time": end - start,
+                "nds_update_time": nds_update_time,
                 "numGenerations": self.num_generations,
                 "best_individual": self.best_individual,
                 "numEvaluations": self.num_evaluations,

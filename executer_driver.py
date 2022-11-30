@@ -53,8 +53,8 @@ if (params[0] == "genetic"):
     if algorithm_name == "geneticnds":
         algorithm_model = GeneticNDSAlgorithm
     elif algorithm_name == "nsgaii":
-        #algorithm_model = NSGAIIAlgorithm
-        algorithm_model = NSGA2Algorithm
+        algorithm_model = NSGAIIAlgorithm
+        #algorithm_model = NSGA2Algorithm
 
     dataset_name, seed, pop_length, max_gens, max_evaluations, sel_scheme, selection_candidates, cross_scheme, \
 <<<<<<< HEAD

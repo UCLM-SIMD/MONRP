@@ -204,6 +204,7 @@ class GRASP:
         """
         self.reset()
         self.start = time.time()
+        nds_update_time = 0
 
         self.num_iterations = 0
         try:
@@ -249,7 +250,9 @@ class GRASP:
                 #plot_solutions(initiated_solutions)
 >>>>>>> c97956d2 (PR in GRASP is now applied when setting it form hyperparam.s)
                 # update NDS with solutions constructed and evolved in this iteration
+                update_start = time.time()
                 get_nondominated_solutions(initiated_solutions, self.nds)
+                nds_update_time = nds_update_time + (time.time() - update_start)
                 #plot_solutions(self.nds)
 
                 self.num_iterations += 1
@@ -266,6 +269,7 @@ class GRASP:
         return {
             "population": self.nds,
             "time": seconds,
+            "nds_update_time": nds_update_time,
             "numGenerations": self.num_iterations,
             "numEvaluations": self.num_evaluations,
             "nds_debug": self.nds_debug,

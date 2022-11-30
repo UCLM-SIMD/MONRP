@@ -111,6 +111,7 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
     def run(self) -> Dict[str, Any]:
         self.reset()
         start = time.time()
+        nds_update_time = 0
 
         self.num_generations = 0
         self.num_evaluations = 0
@@ -143,7 +144,9 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
 
 
                 # update NDS
+                update_start = time.time()
                 get_nondominated_solutions(new_population, self.nds)
+                nds_update_time = nds_update_time + (time.time() - update_start)
 
 
                 returned_population = copy.deepcopy(new_population)
@@ -177,6 +180,7 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
         return {
             "population": self.nds,
             "time": end - start,
+            "nds_update_time": nds_update_time,
             "numGenerations": self.num_generations,
             "bestGeneration": self.best_generation,
             "best_individual": self.best_individual,

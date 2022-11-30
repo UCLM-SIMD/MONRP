@@ -46,6 +46,10 @@ class AbstractExecuter(ABC):
             'time': [None] * self.executions,
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+            'nds_update_time': [None] * self.executions,
+>>>>>>> f9ef1beb (total time used to update nds_archive is now measured)
             'NDS_size': [None] * self.executions,
 =======
 >>>>>>> 19c7836f (ahora todos los resultados se almacenan en results.json con un id unico para cada conjunto de parametros de lanzamiento)
@@ -223,6 +227,10 @@ class AbstractExecuter(ABC):
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+        nds_update_time = result["nds_update_time"] if "nds_update_time" in result else 'NaN'
+>>>>>>> f9ef1beb (total time used to update nds_archive is now measured)
         # ref point: nadir point + (nadir - best)/10 = 1 + (1-0)/10 = 1.1
         hv = metrics.calculate_hypervolume(result["population"], ref_x=1.1, ref_y=1.1)
 =======
@@ -252,6 +260,7 @@ class AbstractExecuter(ABC):
 >>>>>>> f73da6a5 (HV-based solutions subset selection is performed so that indicators comparison is fair. the .json outputs stores the selected subset, not the whole NDS created by the algorithm.)
 
         self.metrics_dictionary['time'][repetition] = time
+        self.metrics_dictionary['nds_update_time'][repetition] = nds_update_time
         self.metrics_dictionary['HV'][repetition] = hv
         self.metrics_dictionary['spread'][repetition] = spread
         self.metrics_dictionary['numSolutions'][repetition] = numSolutions
