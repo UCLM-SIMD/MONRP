@@ -19,9 +19,10 @@ class EDAAlgorithm(AbstractAlgorithm):
 <<<<<<< HEAD
 <<<<<<< HEAD
                  population_length: int = 100, max_generations: int = 100,
-                 max_evaluations: int = 0, subset_size: int = 5):
+                 max_evaluations: int = 0, subset_size: int = 5, sss_type=0, sss_per_iteration=False):
 
         super().__init__(execs,dataset_name, dataset, random_seed, debug_mode, \
+<<<<<<< HEAD
                          tackle_dependencies, subset_size = subset_size)
 =======
                  population_length: int = 100, max_generations: int = 100, max_evaluations: int = 0,):
@@ -35,6 +36,9 @@ class EDAAlgorithm(AbstractAlgorithm):
         super().__init__(execs,dataset_name, dataset, random_seed, debug_mode, \
                          tackle_dependencies, subset_size = subset_size)
 >>>>>>> 5efa3a53 (new hyperparameter created: subset_size used to choose a subset of solutions from the final set of solutions returned by the executed algorithm. Also, nsgaii is added in extract_postMetrics.py.)
+=======
+                         tackle_dependencies, subset_size=subset_size, sss_type=sss_type, sss_per_iteration=sss_per_iteration)
+>>>>>>> d19d5435 (hyperparms. 'sss_per_iteration' and 'sss_type' added to control the solution subset selection process.)
 
         self.nds = []
         self.num_evaluations: int = 0

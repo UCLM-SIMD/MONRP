@@ -10,6 +10,8 @@ import json
 
 >>>>>>> 62552ac7 (extract_postMetrics.py created. Now a set of experiments hyperparameters can be set in order to generate the)
 from typing import Any, Dict, List
+
+import evaluation
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
 import copy
 from algorithms.abstract_algorithm.abstract_algorithm import AbstractAlgorithm, plot_solutions
@@ -79,6 +81,7 @@ class GRASP:
                  solutions_per_iteration: int = 10, max_evaluations: int = 0,
                  init_type: str = "stochastically", local_search_type: str = "best_first_neighbor_random",
                  path_relinking_mode: str = "None", seed: int = None,
+<<<<<<< HEAD
                  debug_mode: bool = False, tackle_dependencies: bool = False, subset_size: int = 5):
 <<<<<<< HEAD
 
@@ -94,6 +97,14 @@ class GRASP:
 
         super().__init__(execs,dataset_name, dataset, seed, debug_mode, tackle_dependencies, subset_size=subset_size)
 >>>>>>> 5efa3a53 (new hyperparameter created: subset_size used to choose a subset of solutions from the final set of solutions returned by the executed algorithm. Also, nsgaii is added in extract_postMetrics.py.)
+=======
+                 debug_mode: bool = False, tackle_dependencies: bool = False, subset_size: int = 5,
+                 sss_type=0, sss_per_it=False):
+
+        super().__init__(execs,dataset_name, dataset, seed, debug_mode, tackle_dependencies, subset_size=subset_size,
+                         sss_type=sss_type, sss_per_iteration=sss_per_it)
+
+>>>>>>> d19d5435 (hyperparms. 'sss_per_iteration' and 'sss_type' added to control the solution subset selection process.)
 
         self.executer = GRASPExecuter(algorithm=self, execs=execs)
         self.config_dictionary.update({'algorithm': 'GRASP'})
@@ -256,6 +267,10 @@ class GRASP:
                 #plot_solutions(self.nds)
 
                 self.num_iterations += 1
+
+                if self.sss_per_iteration:
+                    self.nds = evaluation.solution_subset_selection.search_solution_subset(self.sss_type,
+                                                                                           self.subset_size, self.nds)
 
                 if self.debug_mode:
                     self.debug_data()

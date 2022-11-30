@@ -1,6 +1,8 @@
 import random
 import sys
 from typing import Any, Dict, List, Tuple
+
+import evaluation
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
 from algorithms.genetic.abstract_genetic.abstract_genetic_algorithm import AbstractGeneticAlgorithm
 from algorithms.genetic.nsgaii.nsgaii_executer import NSGAIIExecuter
@@ -23,9 +25,11 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
                  selection="tournament", selection_candidates=2,
                  crossover="onepoint", crossover_prob=0.9,
                  mutation="flipeachbit", mutation_prob=0.1,
-                 debug_mode=False, tackle_dependencies=False, subset_size=5, replacement='elitism'):
+                 debug_mode=False, tackle_dependencies=False, subset_size=5, replacement='elitism',
+                 sss_type=0, sss_per_it=False):
 
         super().__init__(execs,dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
+<<<<<<< HEAD
                          population_length, max_generations, max_evaluations, subset_size=subset_size)
 =======
     def __init__(self,execs, dataset_name="test", dataset: Dataset = None, random_seed=None, population_length=20, max_generations=1000, max_evaluations=0,
@@ -45,6 +49,10 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
 =======
                          population_length, max_generations, max_evaluations, subset_size=subset_size)
 >>>>>>> 5efa3a53 (new hyperparameter created: subset_size used to choose a subset of solutions from the final set of solutions returned by the executed algorithm. Also, nsgaii is added in extract_postMetrics.py.)
+=======
+                         population_length, max_generations, max_evaluations, subset_size=subset_size,
+                         sss_type=sss_type, sss_per_iteration=sss_per_it)
+>>>>>>> d19d5435 (hyperparms. 'sss_per_iteration' and 'sss_type' added to control the solution subset selection process.)
 
         self.executer = NSGAIIExecuter(algorithm=self, execs=execs)
         self.selection_scheme = selection
@@ -202,11 +210,19 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
                     fronts[0] = self.repair_population_dependencies(
                         fronts[0])
 
+
+
+                self.num_generations += 1
+
+                #SSS should be applied here and also in each front computed after extending the popoluation at
+                #start of each iteration. it makes no sense to change the nsgaii fast filtering
+                #if self.sss_per_iteration:
+                    #self.population = evaluation.solution_subset_selection.search_solution_subset(self.sss_type,
+                                                                                           #self.subset_size, self.population)
                 self.returned_population = copy.deepcopy(self.population)
                 self.best_generation, self.best_generation_avgValue = self.calculate_last_generation_with_enhance(
                     self.best_generation, self.best_generation_avgValue, self.num_generations, self.returned_population)
 
-                self.num_generations += 1
 
                 if self.debug_mode:
                     self.debug_data(nds_debug=fronts[0])

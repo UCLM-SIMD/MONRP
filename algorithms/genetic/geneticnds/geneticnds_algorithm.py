@@ -3,6 +3,7 @@ from typing import Any, Dict, List
 import numpy as np
 from pymoo.visualization.scatter import Scatter
 
+import evaluation
 from algorithms.abstract_algorithm.abstract_algorithm import plot_solutions
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
 from algorithms.genetic.abstract_genetic.abstract_genetic_algorithm import AbstractGeneticAlgorithm
@@ -27,6 +28,7 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
                  mutation: str = "flipeachbit", mutation_prob: float = 0.1,
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                  replacement: str = "elitism", subset_size: int = 5):
 =======
                  replacement: str = "elitism"):
@@ -34,11 +36,15 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
 =======
                  replacement: str = "elitism", subset_size: int = 5):
 >>>>>>> 5efa3a53 (new hyperparameter created: subset_size used to choose a subset of solutions from the final set of solutions returned by the executed algorithm. Also, nsgaii is added in extract_postMetrics.py.)
+=======
+                 replacement: str = "elitism", subset_size: int = 5, sss_type=0, sss_per_it=False):
+>>>>>>> d19d5435 (hyperparms. 'sss_per_iteration' and 'sss_type' added to control the solution subset selection process.)
 
         super().__init__(execs,dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
                          population_length, max_generations, max_evaluations,
                          selection, selection_candidates, crossover, crossover_prob,
-                         mutation, mutation_prob, replacement, subset_size=subset_size)
+                         mutation, mutation_prob, replacement, subset_size=subset_size,
+                         sss_type=sss_type, sss_per_iteration=sss_per_it)
 
         self.executer = GeneticNDSExecuter(algorithm=self, execs=execs)
         self.config_dictionary.update({'algorithm': 'geneticNDS'})
@@ -161,6 +167,10 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
                 else:
                     self.population = self.replacement(
                         self.population, new_population)
+
+                if self.sss_per_iteration:
+                    self.nds = evaluation.solution_subset_selection.search_solution_subset(self.sss_type,
+                                                                                           self.subset_size, self.nds)
 
                 self.num_generations += 1
                 if self.debug_mode:

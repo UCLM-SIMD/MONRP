@@ -42,6 +42,7 @@ class AbstractAlgorithm(ABC):
 <<<<<<< HEAD
 <<<<<<< HEAD
                  random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
+<<<<<<< HEAD
                  subset_size: int = 5):
 =======
                  random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False):
@@ -50,6 +51,9 @@ class AbstractAlgorithm(ABC):
                  random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
                  subset_size: int = 5):
 >>>>>>> 5efa3a53 (new hyperparameter created: subset_size used to choose a subset of solutions from the final set of solutions returned by the executed algorithm. Also, nsgaii is added in extract_postMetrics.py.)
+=======
+                 subset_size: int = 5, sss_type: int = 0,  sss_per_iteration: bool = False):
+>>>>>>> d19d5435 (hyperparms. 'sss_per_iteration' and 'sss_type' added to control the solution subset selection process.)
         """Default init method that sets common arguments such as dataset, seed and modes.
 
         Args:
@@ -57,6 +61,8 @@ class AbstractAlgorithm(ABC):
             random_seed (int, optional): [description]. Defaults to None.
             debug_mode (bool, optional): [description]. Defaults to False.
             tackle_dependencies (bool, optional): [description]. Defaults to False.
+            sss_per_iteration (bool, optional): [perform solution subset selection after each iteration. if False, only at the end of the search.] Defaults to False.
+            sss_type (int, optional): [0 for greedy HV based, 1.... ]. Defaults to 0.
         """
         self.num_executions = execs
         if dataset is not None:
@@ -73,12 +79,17 @@ class AbstractAlgorithm(ABC):
 <<<<<<< HEAD
 <<<<<<< HEAD
         self.subset_size = subset_size
+<<<<<<< HEAD
 =======
         self.subset_size=subset_size
 >>>>>>> 5efa3a53 (new hyperparameter created: subset_size used to choose a subset of solutions from the final set of solutions returned by the executed algorithm. Also, nsgaii is added in extract_postMetrics.py.)
 =======
         self.subset_size = subset_size
 >>>>>>> f73da6a5 (HV-based solutions subset selection is performed so that indicators comparison is fair. the .json outputs stores the selected subset, not the whole NDS created by the algorithm.)
+=======
+        self.sss_type = sss_type
+        self.sss_per_iteration = sss_per_iteration
+>>>>>>> d19d5435 (hyperparms. 'sss_per_iteration' and 'sss_type' added to control the solution subset selection process.)
 
         self.nds_debug = []
         self.population_debug = []
@@ -91,6 +102,7 @@ class AbstractAlgorithm(ABC):
             "subset_size", subset_size))
 
         self.config_dictionary = {'algorithm': 'abstract', 'dependencies': tackle_dependencies,
+<<<<<<< HEAD
                                   'dataset': self.dataset.id, 'seed': self.random_seed, 'subset_size': self.subset_size}
 =======
         self.config_dictionary = {'algorithm': 'abstract', 'dependencies': tackle_dependencies,
@@ -103,6 +115,11 @@ class AbstractAlgorithm(ABC):
         self.config_dictionary = {'algorithm': 'abstract', 'dependencies': tackle_dependencies,
                                   'dataset': self.dataset.id, 'seed': self.random_seed, 'subset_size': self.subset_size}
 >>>>>>> 5efa3a53 (new hyperparameter created: subset_size used to choose a subset of solutions from the final set of solutions returned by the executed algorithm. Also, nsgaii is added in extract_postMetrics.py.)
+=======
+                                  'dataset': self.dataset.id, 'seed': self.random_seed,
+                                  'subset_size': self.subset_size, 'sss_type': self.sss_type,
+                                  'sss_per_iteration': self.sss_per_iteration}
+>>>>>>> d19d5435 (hyperparms. 'sss_per_iteration' and 'sss_type' added to control the solution subset selection process.)
 
     def set_seed(self, seed: int):
         self.random_seed: int = seed
