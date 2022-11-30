@@ -1,4 +1,6 @@
 from typing import Any, Dict, List
+
+import evaluation
 from algorithms.EDA.eda_algorithm import EDAAlgorithm
 from algorithms.abstract_algorithm.abstract_algorithm import plot_solutions
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
@@ -51,10 +53,11 @@ class FEDAAlgorithm(EDAAlgorithm):
     def __init__(self, execs, dataset_name: str = "p2", dataset: Dataset = None, random_seed: int = None, debug_mode: bool = False,
                  tackle_dependencies: bool = False,
                  population_length: int = 100, selection_scheme: str = "nds", max_generations: int = 100,
-                 max_evaluations: int = 0, subset_size: int = 5):
+                 max_evaluations: int = 0, subset_size: int = 5, sss_type=0, sss_per_it=False):
 
         super().__init__(execs,dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
-                         population_length, max_generations, max_evaluations, subset_size=subset_size)
+                         population_length, max_generations, max_evaluations, subset_size=subset_size,
+                         sss_type=sss_type, sss_per_iteration=sss_per_it)
 
         self.population = None
         self.selection_scheme: str = selection_scheme
@@ -125,6 +128,10 @@ class FEDAAlgorithm(EDAAlgorithm):
                 nds_update_time = nds_update_time + (time.time() - update_start)
                 #plot_solutions(self.nds)
                 self.num_generations += 1
+
+                if self.sss_per_iteration:
+                    self.nds = evaluation.solution_subset_selection.search_solution_subset(self.sss_type,
+                                                                                           self.subset_size, self.nds)
 
                 if self.debug_mode:
                     self.debug_data()

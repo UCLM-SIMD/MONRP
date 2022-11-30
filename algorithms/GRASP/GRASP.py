@@ -1,5 +1,7 @@
 
 from typing import Any, Dict, List
+
+import evaluation
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
 import copy
 from algorithms.abstract_algorithm.abstract_algorithm import AbstractAlgorithm, plot_solutions
@@ -31,9 +33,12 @@ class GRASP(AbstractAlgorithm):
                  solutions_per_iteration: int = 10, max_evaluations: int = 0,
                  init_type: str = "stochastically", local_search_type: str = "best_first_neighbor_random",
                  path_relinking_mode: str = "None", seed: int = None,
-                 debug_mode: bool = False, tackle_dependencies: bool = False, subset_size: int = 5):
+                 debug_mode: bool = False, tackle_dependencies: bool = False, subset_size: int = 5,
+                 sss_type=0, sss_per_it=False):
 
-        super().__init__(execs,dataset_name, dataset, seed, debug_mode, tackle_dependencies, subset_size=subset_size)
+        super().__init__(execs,dataset_name, dataset, seed, debug_mode, tackle_dependencies, subset_size=subset_size,
+                         sss_type=sss_type, sss_per_iteration=sss_per_it)
+
 
         self.executer = GRASPExecuter(algorithm=self, execs=execs)
         self.config_dictionary.update({'algorithm': 'GRASP'})
@@ -178,6 +183,10 @@ class GRASP(AbstractAlgorithm):
                 #plot_solutions(self.nds)
 
                 self.num_iterations += 1
+
+                if self.sss_per_iteration:
+                    self.nds = evaluation.solution_subset_selection.search_solution_subset(self.sss_type,
+                                                                                           self.subset_size, self.nds)
 
                 if self.debug_mode:
                     self.debug_data()

@@ -3,6 +3,7 @@ from typing import Any, Dict, List
 import numpy as np
 from pymoo.visualization.scatter import Scatter
 
+import evaluation
 from algorithms.abstract_algorithm.abstract_algorithm import plot_solutions
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
 from algorithms.genetic.abstract_genetic.abstract_genetic_algorithm import AbstractGeneticAlgorithm
@@ -25,12 +26,13 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
                  selection: str = "tournament", selection_candidates: int = 2,
                  crossover: str = "onepoint", crossover_prob: float = 0.9,
                  mutation: str = "flipeachbit", mutation_prob: float = 0.1,
-                 replacement: str = "elitism", subset_size: int = 5):
+                 replacement: str = "elitism", subset_size: int = 5, sss_type=0, sss_per_it=False):
 
         super().__init__(execs,dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
                          population_length, max_generations, max_evaluations,
                          selection, selection_candidates, crossover, crossover_prob,
-                         mutation, mutation_prob, replacement, subset_size=subset_size)
+                         mutation, mutation_prob, replacement, subset_size=subset_size,
+                         sss_type=sss_type, sss_per_iteration=sss_per_it)
 
         self.executer = GeneticNDSExecuter(algorithm=self, execs=execs)
         self.config_dictionary.update({'algorithm': 'geneticNDS'})
@@ -139,6 +141,10 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
                 else:
                     self.population = self.replacement(
                         self.population, new_population)
+
+                if self.sss_per_iteration:
+                    self.nds = evaluation.solution_subset_selection.search_solution_subset(self.sss_type,
+                                                                                           self.subset_size, self.nds)
 
                 self.num_generations += 1
                 if self.debug_mode:
