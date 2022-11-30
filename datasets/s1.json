@@ -66,7 +66,7 @@
       4, 3, 2, 0, 2, 0, 1, 1, 3, 1, 5, 4, 5, 1, 1
     ]
   ],
-  "dependencies": null,
+  "dependencies": [],
   "_len_pbis_cost": 40,
   "_len_stakeholders_importances": 15,
   "_len_stakeholders_pbis_priorities": 15,
