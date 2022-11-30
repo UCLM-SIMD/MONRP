@@ -1,11 +1,11 @@
 dependencies = ['D']  # {'D', 'd'}
 # ['p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'd1', 'd2', 'd3','d4','d5','d6','d7',
 #'e1', 'e2', 'e3','e4','e5','e6']
-dataset = ['d1', 'd2', 'd3', 'd4']
+dataset = ['e1', 'e2', 'e3','e4','e5','e6']
 
 # COMMON HYPER-PARAMETERS #
 # possible algorithm values: {'GRASP', 'feda', 'geneticnds', 'pbil', 'umda', nsgaii}
-algorithm = 'mimic'  # 'GRASP', 'geneticnds', 'nsgaii', 'umda', 'pbil', 'feda', 'mimic'
+algorithm = 'feda'  # 'GRASP', 'geneticnds', 'nsgaii', 'umda', 'pbil', 'feda', 'mimic'
 seed = 5
 num_executions = 30
 subset_size = [10]  # number of solutions to choose from final NDS in each algorithm to compute metrics

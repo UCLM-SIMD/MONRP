@@ -88,6 +88,7 @@ class UMDAAlgorithm(EDAAlgorithm):
     def run(self) -> Dict[str, Any]:
         self.reset()
         start = time.time()
+        nds_update_time = 0
 
         self.population = self.generate_initial_population()
         #plot_solutions(self.population)
@@ -124,7 +125,9 @@ class UMDAAlgorithm(EDAAlgorithm):
                         self.population)
 
                 # evaluation  # update nds with solutions constructed and evolved in this iteration
+                update_start = time.time()
                 get_nondominated_solutions(self.population, self.nds)
+                nds_update_time = nds_update_time  + (time.time() - update_start)
                 #plot_solutions(self.nds)
                 self.num_generations += 1
 
@@ -141,6 +144,7 @@ class UMDAAlgorithm(EDAAlgorithm):
 
         return {"population": self.nds,
                 "time": end - start,
+                "nds_update_time": nds_update_time,
                 "numGenerations": self.num_generations,
                 "best_individual": self.best_individual,
                 "numEvaluations": self.num_evaluations,

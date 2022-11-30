@@ -23,6 +23,7 @@ class AbstractExecuter(ABC):
 
         self.metrics_dictionary = {
             'time': [None] * self.executions,
+            'nds_update_time': [None] * self.executions,
             'NDS_size': [None] * self.executions,
             'HV': [None] * self.executions,
             'spread': [None] * self.executions,
@@ -110,6 +111,7 @@ class AbstractExecuter(ABC):
         metrics_fields: List[str] = []
 
         time = result["time"] if "time" in result else 'NaN'
+        nds_update_time = result["nds_update_time"] if "nds_update_time" in result else 'NaN'
         # ref point: nadir point + (nadir - best)/10 = 1 + (1-0)/10 = 1.1
         hv = metrics.calculate_hypervolume(result["population"], ref_x=1.1, ref_y=1.1)
         spread = metrics.calculate_spread(result["population"])
@@ -120,6 +122,7 @@ class AbstractExecuter(ABC):
         bestAvgValue = metrics.calculate_bestAvgValue(result["population"])
 
         self.metrics_dictionary['time'][repetition] = time
+        self.metrics_dictionary['nds_update_time'][repetition] = nds_update_time
         self.metrics_dictionary['HV'][repetition] = hv
         self.metrics_dictionary['spread'][repetition] = spread
         self.metrics_dictionary['numSolutions'][repetition] = numSolutions

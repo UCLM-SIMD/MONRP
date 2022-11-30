@@ -118,6 +118,7 @@ class PBILAlgorithm(EDAAlgorithm):
 
     def run(self) -> Dict[str, Any]:
         start = time.time()
+        nds_update_time = 0
         self.reset()
 
         self.probability_vector = self.initialize_probability_vector()
@@ -143,7 +144,9 @@ class PBILAlgorithm(EDAAlgorithm):
                     self.probability_vector, max_sample)
 
                 # update nds with solutions constructed and evolved in this iteration
+                update_start = time.time()
                 get_nondominated_solutions(self.population, self.nds)
+                nds_update_time = nds_update_time + (time.time() - update_start)
                 #plot_solutions(self.nds)
                 self.num_generations += 1
 
@@ -159,6 +162,7 @@ class PBILAlgorithm(EDAAlgorithm):
 
         return {"population": self.nds,
                 "time": end - start,
+                "nds_update_time": nds_update_time,
                 "numGenerations": self.num_generations,
                 "best_individual": self.best_individual,
                 "numEvaluations": self.num_evaluations,
