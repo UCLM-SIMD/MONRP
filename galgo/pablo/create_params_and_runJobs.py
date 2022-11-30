@@ -1,7 +1,7 @@
 dependencies = ['D']  # {'D', 'd'}
 # ['p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'd1', 'd2', 'd3','d4','d5','d6','d7',
 #'e1', 'e2', 'e3','e4','e5','e6']
-dataset = ['e1', 'e2', 'e3','e4','e5','e6']
+dataset = ['p1', 'p2', 's1','s2','s3']
 
 # COMMON HYPER-PARAMETERS #
 # possible algorithm values: {'GRASP', 'feda', 'geneticnds', 'pbil', 'umda', nsgaii}
