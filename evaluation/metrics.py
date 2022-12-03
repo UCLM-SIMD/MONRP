@@ -5,6 +5,7 @@ from datasets.Dataset import Dataset
 from pymoo.factory import get_performance_indicator
 from pymoo.visualization.scatter import Scatter
 from models.Solution import Solution
+from pymoo.indicators.gd_plus import GDPlus
 
 
 def calculate_avgValue(population: List[Solution]) -> float:
@@ -121,8 +122,10 @@ def calculate_gdplus(nds: [[float, float]],
         reference_points.append([x, y])
     np_reference = np.array(reference_points)
 
-    gd_indicator = get_performance_indicator("gd+", np_reference)
-    gd_plus = gd_indicator.do(np_points)
+    #gd_indicator = get_performance_indicator("gd+", np_reference) # deprecated
+    gd_indicator = GDPlus(np_reference)
+    #gd_plus = gd_indicator.do(np_points)
+    gd_plus = gd_indicator(np_points)
     # Scatter(legend=True, title=f"GD+ = {gd_plus:.4f}").add(np_reference, label="Pareto-front").add(np_points, label="Result").show()
     return gd_plus
 
