@@ -10,6 +10,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
  #PBS -N mimic 
  #PBS -l mem=2500mb 
  #PBS -J 1-200 
@@ -84,6 +85,11 @@
  #PBS -l mem=2500mb 
  #PBS -J 1-150 
 >>>>>>> f9ef1beb (total time used to update nds_archive is now measured)
+=======
+ #PBS -N geneticnds 
+ #PBS -l mem=2500mb 
+ #PBS -J 1-500 
+>>>>>>> 0c49c3d7 (comenzando analisis de resultados)
 
 export PATH=/home/pbermejo/.local/lib/python3.8/site-packages:$PATH
 export PYTHONPATH=/home/pbermejo/.local/lib/python3.8/site-packages:$PYTHONPATH
