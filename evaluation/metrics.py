@@ -6,6 +6,7 @@ from pymoo.factory import get_performance_indicator
 from pymoo.visualization.scatter import Scatter
 from models.Solution import Solution
 from pymoo.indicators.gd_plus import GDPlus
+from pymoo.indicators.hv import HV
 
 
 def calculate_avgValue(population: List[Solution]) -> float:
@@ -165,8 +166,12 @@ def calculate_hypervolume(population: List[Solution], ref_x=None, ref_y=None) ->
         ref_x = 1 if ref_x > 1 else ref_x
         ref_y = 1 if ref_y > 1 else ref_y
 
-    hv = get_performance_indicator("hv", ref_point=np.array(np.array([ref_x, ref_y])))
-    hypervolume = hv.do(np_points)
+
+
+    #gd_plus = gd_indicator(np_points) #depecrated
+    #hv = get_performance_indicator("hv", ref_point=np.array(np.array([ref_x, ref_y]))) # depecrated
+    hv_indicator = HV(np.array(np.array([ref_x, ref_y])))
+    hypervolume = hv_indicator(np_points)
 
     #Scatter(title=f"HV = {hypervolume} (dibujado chepa del reves por pymoo").add(np_points).show()
 
