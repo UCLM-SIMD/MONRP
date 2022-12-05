@@ -5,6 +5,7 @@ from typing import List
 
 from algorithms.abstract_algorithm.abstract_algorithm import AbstractAlgorithm, plot_solutions
 import evaluation.metrics as metrics
+from evaluation import solution_subset_selection
 from models.Solution import Solution
 
 
@@ -23,6 +24,7 @@ class AbstractExecuter(ABC):
 
         self.metrics_dictionary = {
             'time': [None] * self.executions,
+            'nds_update_time': [None] * self.executions,
             'NDS_size': [None] * self.executions,
             'HV': [None] * self.executions,
             'spread': [None] * self.executions,
@@ -44,8 +46,11 @@ class AbstractExecuter(ABC):
             self.algorithm.reset()
             result = self.algorithm.run()
 
-            self.metrics_dictionary['NDS_size'][it] = len(result['population']) # store original NDS size created in search
-            result['population'] = self.search_solution_subset(result['population'])
+            self.metrics_dictionary['NDS_size'][it] = len(
+                result['population'])  # store original NDS size created in search
+            result['population'] = solution_subset_selection.search_solution_subset(sss_type=self.algorithm.sss_type,
+                                                                                    subset_size=self.algorithm.subset_size,
+                                                                                    solutions=result['population'])
 
             self.get_metrics_fields(result, it)
             pareto = self.get_pareto(result['population'])  # get a list with pareto points
@@ -63,41 +68,6 @@ class AbstractExecuter(ABC):
         with open(output_folder + unique_id + '.json', 'w', encoding='utf-8') as f:
             json.dump(results_dictionary, f, ensure_ascii=False, indent=4)
 
-    """ finds the subset which maximizes HV with self.subset_size of solutions.
-    The search is a basic/tradicional greedy forward search based on the HV metric
-    A fixed reference point is assumed during the search (always the same), as in 
-    'Greedy Hypervolume Subset Selection in Low Dimensions,Evolutionary Computation 24(3): 521-544'
-    where fixed r is upper bounds (in minimizatino problems), that is, the nadir point
-    
-    """
-
-    def search_solution_subset(self, solutions: [Solution]) -> [Solution]:
-
-        if len(solutions) < self.algorithm.subset_size:
-            print('|solutions| < subset_size parameter!! Solution subset set to original final solution');
-            #warnings.warn('|solutions| < subset_size parameter!! Solution subset set to original final solution', UserWarning)
-            return solutions
-
-        indices_selected = []
-        subset = []
-        #metrics.calculate_hypervolume(solutions, ref_x=1.1, ref_y=1.1) #for plotting whold nds before subset selection
-        for _ in range(0, self.algorithm.subset_size):
-            best_hv = -1
-            best_index = -1
-            for i in range(0, len(solutions)):
-                if not i in indices_selected:
-                    subset.insert(len(subset), solutions[i])
-                    hv = metrics.calculate_hypervolume(subset, ref_x=1.1, ref_y=1.1)
-                    if hv > best_hv:
-                        best_hv = hv
-                        best_index = i
-                    del subset[-1]
-            if best_index != -1:
-                subset.insert(len(subset), solutions[best_index])
-                indices_selected.insert(len(indices_selected), best_index)
-        #plot_solutions(subset)
-        return subset
-
     """ search for the solution which maximizes satisfaction, and other which minimizes cost"""
 
     def init_subset_selection(self, solutions: [Solution]) -> [Solution]:
@@ -110,6 +80,7 @@ class AbstractExecuter(ABC):
         metrics_fields: List[str] = []
 
         time = result["time"] if "time" in result else 'NaN'
+        nds_update_time = result["nds_update_time"] if "nds_update_time" in result else 'NaN'
         # ref point: nadir point + (nadir - best)/10 = 1 + (1-0)/10 = 1.1
         hv = metrics.calculate_hypervolume(result["population"], ref_x=1.1, ref_y=1.1)
         spread = metrics.calculate_spread(result["population"])
@@ -120,6 +91,7 @@ class AbstractExecuter(ABC):
         bestAvgValue = metrics.calculate_bestAvgValue(result["population"])
 
         self.metrics_dictionary['time'][repetition] = time
+        self.metrics_dictionary['nds_update_time'][repetition] = nds_update_time
         self.metrics_dictionary['HV'][repetition] = hv
         self.metrics_dictionary['spread'][repetition] = spread
         self.metrics_dictionary['numSolutions'][repetition] = numSolutions

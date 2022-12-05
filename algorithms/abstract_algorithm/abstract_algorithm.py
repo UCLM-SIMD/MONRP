@@ -32,7 +32,7 @@ class AbstractAlgorithm(ABC):
 
     def __init__(self, execs: int, dataset_name: str = "test", dataset: Dataset = None,
                  random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
-                 subset_size: int = 5):
+                 subset_size: int = 5, sss_type: int = 0,  sss_per_iteration: bool = False):
         """Default init method that sets common arguments such as dataset, seed and modes.
 
         Args:
@@ -40,6 +40,8 @@ class AbstractAlgorithm(ABC):
             random_seed (int, optional): [description]. Defaults to None.
             debug_mode (bool, optional): [description]. Defaults to False.
             tackle_dependencies (bool, optional): [description]. Defaults to False.
+            sss_per_iteration (bool, optional): [perform solution subset selection after each iteration. if False, only at the end of the search.] Defaults to False.
+            sss_type (int, optional): [0 for greedy HV based, 1.... ]. Defaults to 0.
         """
         self.num_executions = execs
         if dataset is not None:
@@ -54,6 +56,8 @@ class AbstractAlgorithm(ABC):
         self.random_seed: int = random_seed
         self.set_seed(random_seed)
         self.subset_size = subset_size
+        self.sss_type = sss_type
+        self.sss_per_iteration = sss_per_iteration
 
         self.nds_debug = []
         self.population_debug = []
@@ -64,7 +68,9 @@ class AbstractAlgorithm(ABC):
             "subset_size", subset_size))
 
         self.config_dictionary = {'algorithm': 'abstract', 'dependencies': tackle_dependencies,
-                                  'dataset': self.dataset.id, 'seed': self.random_seed, 'subset_size': self.subset_size}
+                                  'dataset': self.dataset.id, 'seed': self.random_seed,
+                                  'subset_size': self.subset_size, 'sss_type': self.sss_type,
+                                  'sss_per_iteration': self.sss_per_iteration}
 
     def set_seed(self, seed: int):
         self.random_seed: int = seed
