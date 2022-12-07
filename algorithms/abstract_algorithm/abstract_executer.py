@@ -86,9 +86,9 @@ class AbstractExecuter(ABC):
         spread = metrics.calculate_spread(result["population"])
         numSolutions = metrics.calculate_numSolutions(result["population"])
         spacing = metrics.calculate_spacing(result["population"])
-        mean_bits_per_sol = metrics.calculate_mean_bits_per_sol(result["population"])
-        avgValue = metrics.calculate_avgValue(result["population"])
-        bestAvgValue = metrics.calculate_bestAvgValue(result["population"])
+        #mean_bits_per_sol = metrics.calculate_mean_bits_per_sol(result["population"])
+        #avgValue = metrics.calculate_avgValue(result["population"])
+        #bestAvgValue = metrics.calculate_bestAvgValue(result["population"])
 
         self.metrics_dictionary['time'][repetition] = time
         self.metrics_dictionary['nds_update_time'][repetition] = nds_update_time
@@ -96,9 +96,9 @@ class AbstractExecuter(ABC):
         self.metrics_dictionary['spread'][repetition] = spread
         self.metrics_dictionary['numSolutions'][repetition] = numSolutions
         self.metrics_dictionary['spacing'][repetition] = spacing
-        self.metrics_dictionary['mean_bits_per_sol'][repetition] = mean_bits_per_sol
-        self.metrics_dictionary['avgValue'][repetition] = avgValue
-        self.metrics_dictionary['bestAvgValue'][repetition] = bestAvgValue
+        #self.metrics_dictionary['mean_bits_per_sol'][repetition] = mean_bits_per_sol
+        #self.metrics_dictionary['avgValue'][repetition] = avgValue
+        #self.metrics_dictionary['bestAvgValue'][repetition] = bestAvgValue
 
         # metrics_fields.append(str(time))
         # metrics_fields.append(str(hv))

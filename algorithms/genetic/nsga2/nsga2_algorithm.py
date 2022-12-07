@@ -4,6 +4,9 @@ from typing import Any, Dict, List, Tuple
 
 from pymoo.algorithms.moo.nsga2 import NSGA2
 from pymoo.factory import get_crossover, get_mutation, get_sampling
+from pymoo.operators.crossover.pntx import SinglePointCrossover
+from pymoo.operators.mutation.bitflip import BitflipMutation
+from pymoo.operators.sampling.rnd import BinaryRandomSampling
 from pymoo.optimize import minimize
 from pymoo.visualization.scatter import Scatter
 
@@ -28,13 +31,16 @@ class MONRProblem(Problem):
         self.satisfactions = satisfactions
 
     def _evaluate(self, x, out, *args, **kwargs):
-        selected = np.zeros(len(x), dtype=int)
-        selected[x[0,:]] = 1
 
-        total_cost = self.costs[selected].sum()
-        total_satisfaction = self.satisfactions[selected].sum()
+        out["F"] = []
+        for ind in x:
+            selected = np.zeros(len(ind), dtype=int)
+            selected[ind] = 1
+            c = self.costs[selected].sum()
+            s = self.satisfactions[selected].sum()
+            out["F"] = out["F"] + [[c,s]]
 
-        out["F"] = [total_cost, total_satisfaction]
+
 
 
 
@@ -48,10 +54,13 @@ class NSGA2Algorithm(AbstractGeneticAlgorithm):
                  selection="tournament", selection_candidates=2,
                  crossover="onepoint", crossover_prob=0.9,
                  mutation="flipeachbit", mutation_prob=0.1,
-                 debug_mode=False, tackle_dependencies=False, subset_size=5, replacement='elitism'):
+                 debug_mode=False, tackle_dependencies=False, subset_size=5, replacement='elitism',
+                 sss_type=0, sss_per_it=False):
 
         super().__init__(execs, dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
-                         population_length, max_generations, max_evaluations, subset_size=subset_size)
+                         population_length, max_generations, max_evaluations, subset_size=subset_size,
+                         sss_type=sss_type, sss_per_iteration=sss_per_it
+                         )
 
         self.executer = NSGAIIExecuter(algorithm=self, execs=execs)
         self.selection_scheme = selection
@@ -129,13 +138,13 @@ class NSGA2Algorithm(AbstractGeneticAlgorithm):
         problem = MONRProblem(self.dataset.num_pbis, self.dataset.pbis_cost_scaled,
                               self.dataset.pbis_satisfaction_scaled)
 
-        algorithm = NSGA2(pop_size=self.population_length, sampling=get_sampling("bin_random"),
-                          crossover=get_crossover("real_one_point"),
-                          mutation=get_mutation("bin_bitflip", prob=self.mutation_prob))
+        algorithm = NSGA2(pop_size=self.population_length, sampling=BinaryRandomSampling(),
+                          crossover=SinglePointCrossover(),
+                          mutation=BitflipMutation(prob=self.mutation_prob),   )
 
         res = minimize(problem,
                        algorithm,
-                       ('n_gen', self.num_generations),
+                       ('n_gen', self.max_generations),
                        seed=self.random_seed,
                        verbose=False)
 
@@ -145,8 +154,13 @@ class NSGA2Algorithm(AbstractGeneticAlgorithm):
         plot.show()
 
         end = time.time()
+        solutions = []
+        for x in np.arange(len(problem.costs)):
+            sol = Solution(dataset = self.dataset, probabilities=None, cost=problem.costs[x], satisfaction=problem.satisfactions[x])
+            solutions = solutions + [sol]
 
-        return {"population": problem.pareto_front(),
+
+        return {"population": solutions,
                 "time": end - start,
                 "numGenerations": self.num_generations,
                 "bestGeneration": self.best_generation,
