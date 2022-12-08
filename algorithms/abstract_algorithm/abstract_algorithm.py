@@ -32,7 +32,7 @@ class AbstractAlgorithm(ABC):
 
     def __init__(self, execs: int, dataset_name: str = "test", dataset: Dataset = None,
                  random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
-                 subset_size: int = 5, sss_type: int = 0,  sss_per_iteration: bool = False):
+                 subset_size: int = 5, sss_type: int = 0, sss_per_iteration: bool = False):
         """Default init method that sets common arguments such as dataset, seed and modes.
 
         Args:
@@ -117,6 +117,10 @@ class AbstractAlgorithm(ABC):
     def stop_criterion(self) -> bool:
         pass
 
+    @abstractmethod
+    def add_evaluation(self, population: List[Solution]) -> None:
+        pass
+
     def evaluate(self, population: List[Solution], best_individual: Solution) -> Solution:
         try:
             best_score = 0
@@ -124,14 +128,14 @@ class AbstractAlgorithm(ABC):
             for ind in population:
                 ind.evaluate()
                 if ind.mono_objective_score > best_score:
-                    new_best_individual = copy.deepcopy(ind)
+                    new_best_individual = ind
                     best_score = ind.mono_objective_score
                 self.add_evaluation(population)
             if best_individual is not None:
                 if new_best_individual.mono_objective_score > best_individual.mono_objective_score:
-                    best_individual = copy.deepcopy(new_best_individual)
+                    best_individual = copy.copy(new_best_individual)
             else:
-                best_individual = copy.deepcopy(new_best_individual)
+                best_individual = copy.copy(new_best_individual)
         except EvaluationLimit:
             pass
         return best_individual
@@ -187,7 +191,7 @@ class AbstractAlgorithm(ABC):
             plt.grid(True)
             plt.draw()
             # store frame
-            filename = f'{input_folder}/temp{str(pareto_index+1)}.png'
+            filename = f'{input_folder}/temp{str(pareto_index + 1)}.png'
             filenames.append(filename)
             plt.savefig(filename, dpi=dpi)
 
@@ -197,7 +201,7 @@ class AbstractAlgorithm(ABC):
             for filename in filenames:
                 image = imageio.imread(filename)
                 writer.append_data(image)
-            for i in range(fps*5):
+            for i in range(fps * 5):
                 writer.append_data(image)
 
         print('Gif saved\n')
@@ -217,6 +221,3 @@ class AbstractAlgorithm(ABC):
             self.population_debug.append(population_debug.copy())
         else:
             self.population_debug.append(self.population.copy())
-
-
-
