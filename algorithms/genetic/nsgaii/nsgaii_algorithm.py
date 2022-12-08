@@ -2,6 +2,8 @@ import random
 import sys
 from typing import Any, Dict, List, Tuple
 
+import numpy as np
+
 import evaluation
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
 from algorithms.genetic.abstract_genetic.abstract_genetic_algorithm import AbstractGeneticAlgorithm
@@ -18,7 +20,7 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
     individuals by dominance and crowding distance.
     """
 
-    def __init__(self,execs, dataset_name="test", dataset: Dataset = None, random_seed=None, population_length=20,
+    def __init__(self, execs, dataset_name="test", dataset: Dataset = None, random_seed=None, population_length=20,
                  max_generations=1000, max_evaluations=0,
                  selection="tournament", selection_candidates=2,
                  crossover="onepoint", crossover_prob=0.9,
@@ -26,7 +28,7 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
                  debug_mode=False, tackle_dependencies=False, subset_size=5, replacement='elitism',
                  sss_type=0, sss_per_it=False):
 
-        super().__init__(execs,dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
+        super().__init__(execs, dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
                          population_length, max_generations, max_evaluations, subset_size=subset_size,
                          sss_type=sss_type, sss_per_iteration=sss_per_it)
 
@@ -70,7 +72,6 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
         self.config_dictionary['mutation'] = mutation
 
         self.config_dictionary['replacement'] = self.replacement_scheme
-        self.deepcopy=True
 
     def get_file(self) -> str:
         return (f"{str(self.__class__.__name__)}-{str(self.dataset_name)}-"
@@ -89,15 +90,14 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
         """
         self.num_evaluations += 1
         if self.stop_criterion(self.num_generations, self.num_evaluations):
-            self.returned_population = copy.deepcopy(new_population)
-            self.fast_nondominated_sort(self.returned_population)
+            new_population, fronts = self.fast_nondominated_sort(new_population)
             self.best_generation, self.best_generation_avgValue = self.calculate_last_generation_with_enhance(
-                self.best_generation, self.best_generation_avgValue, self.num_generations, self.returned_population)
+                self.best_generation, self.best_generation_avgValue, self.num_generations,
+                new_population)
             raise EvaluationLimit
 
     def reset(self) -> None:
         super().reset()
-        self.returned_population = None
 
     def run(self) -> Dict[str, Any]:
         self.reset()
@@ -106,7 +106,7 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
 
         # init nsgaii
         self.population = self.generate_starting_population()
-        self.returned_population = copy.deepcopy(self.population)
+
         self.evaluate(self.population, self.best_individual)
 
         # sort by nds and crowding distance
@@ -126,15 +126,15 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
 
                 self.population, fronts = self.fast_nondominated_sort(
                     self.population)
-                new_population = []
+                self.population = []
                 front_num = 0
 
                 update_start = time.time()
                 # till parent population is filled, calculate crowding distance in Fi, include i-th non-dominated front in parent pop
-                while len(new_population) + len(fronts[front_num]) <= self.population_length:
+                while len(self.population) + len(fronts[front_num]) <= self.population_length:
                     self.calculate_crowding_distance(
                         fronts[front_num])
-                    new_population.extend(fronts[front_num])
+                    self.population.extend(fronts[front_num])
                     front_num += 1
 
                 # ordenar los individuos del ultimo front por crowding distance y agregar los X que falten para completar la poblacion
@@ -146,13 +146,12 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
                     key=lambda individual: individual.crowding_distance, reverse=True)
 
                 # choose first N elements of Pt+1
-                new_population.extend(
-                    fronts[front_num][0:self.population_length - len(new_population)])
-                if self.deepcopy: self.population = copy.deepcopy(new_population)
-                else: self.population = new_population
+                self.population.extend(
+                    fronts[front_num][0:self.population_length - len(self.population)])
+
                 # ordenar por NDS y crowding distance
-                self.population, fronts = self.fast_nondominated_sort(
-                    self.population)
+                self.population, fronts = self.fast_nondominated_sort(self.population)
+
                 for front in fronts:
                     self.calculate_crowding_distance(front)
 
@@ -164,26 +163,23 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
                 offsprings = self.mutation(offsprings)
 
                 # repair population if dependencies tackled:
-                if(self.tackle_dependencies):
-
+                if (self.tackle_dependencies):
                     self.population = self.repair_population_dependencies(
                         self.population)
                     fronts[0] = self.repair_population_dependencies(
                         fronts[0])
 
-
-
                 self.num_generations += 1
 
-                #SSS should be applied here and also in each front computed after extending the popoluation at
-                #start of each iteration. it makes no sense to change the nsgaii fast filtering
-                #if self.sss_per_iteration:
-                    #self.population = evaluation.solution_subset_selection.search_solution_subset(self.sss_type,
-                                                                                           #self.subset_size, self.population)
-                self.returned_population = copy.deepcopy(self.population)
-                self.best_generation, self.best_generation_avgValue = self.calculate_last_generation_with_enhance(
-                    self.best_generation, self.best_generation_avgValue, self.num_generations, self.returned_population)
+                # SSS should be applied here and also in each front computed after extending the popoluation at
+                # start of each iteration. it makes no sense to change the nsgaii fast filtering
+                # if self.sss_per_iteration:
+                # self.population = evaluation.solution_subset_selection.search_solution_subset(self.sss_type,
+                # self.subset_size, self.population)
 
+                self.best_generation, self.best_generation_avgValue = self.calculate_last_generation_with_enhance(
+                    self.best_generation, self.best_generation_avgValue, self.num_generations,
+                    self.population)
 
                 if self.debug_mode:
                     self.debug_data(nds_debug=fronts[0])
@@ -215,32 +211,15 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
                 candidate = population[random_index]
 
                 if (best_candidate is None or self.crowding_operator(candidate, best_candidate) == 1):
-                    if self.deepcopy: best_candidate = copy.deepcopy(candidate)
-                    else: best_candidate = copy.copy(candidate)
+                    best_candidate = candidate
 
+            rank, crowding_distance = best_candidate.rank, best_candidate.crowding_distance
+            best_candidate = Solution(self.dataset, None, selected=np.where(best_candidate.selected == 1))
+            best_candidate.rank = rank
+            best_candidate.crowding_distance = crowding_distance
             new_population.append(best_candidate)
 
         return new_population
-
-    # def replacement_elitism(self, population: List[Solution], newpopulation: List[Solution]) -> List[Solution]:
-    #    """Specific replacement implementation that compares individuals by crowding operator
-    #    """
-    #    best_individual = None
-    #    for ind in population:
-    #        if (best_individual is None or self.crowding_operator(ind, best_individual) == 1):
-    #            best_individual = copy.deepcopy(ind)
-    #
-    #    newpopulation_replaced = []
-    #    newpopulation_replaced.extend(newpopulation)
-    #    worst_individual_index = None
-    #    worst_individual = None
-    #    for ind in newpopulation_replaced:
-    #        if (worst_individual is None or self.crowding_operator(ind, worst_individual) == -1):
-    #            worst_individual = copy.deepcopy(ind)
-    #            worst_individual_index = newpopulation_replaced.index(ind)
-    #
-    #    newpopulation_replaced[worst_individual_index] = best_individual
-    #    return newpopulation_replaced
 
     def fast_nondominated_sort(self, population: List[Solution]) -> Tuple[List[Solution], List[Solution]]:
         """Fast method that sorts a population in fronts, where each front contains solutions that are nondominated between them.
@@ -250,7 +229,7 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
             individual.domination_count = 0
             individual.dominated_solutions = []
             for other_individual in population:
-                #if not individual.__eq__(other_individual):##########################################
+                # if not individual.__eq__(other_individual):##########################################
                 if individual.dominates(other_individual):
                     individual.dominated_solutions.append(other_individual)
                 elif other_individual.dominates(individual):
@@ -292,8 +271,7 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
             if scale == 0:
                 scale = 1
             for i in range(1, solutions_num - 1):
-                front[i].crowding_distance += (
-                    front[i + 1].total_cost - front[i - 1].total_cost) / scale
+                front[i].crowding_distance += (front[i + 1].total_cost - front[i - 1].total_cost) / scale
 
             front.sort(
                 key=lambda individual: individual.total_satisfaction)
@@ -309,7 +287,8 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
                 scale = 1
             for i in range(1, solutions_num - 1):
                 front[i].crowding_distance += (
-                    front[i + 1].total_satisfaction - front[i - 1].total_satisfaction) / scale
+                                                      front[i + 1].total_satisfaction - front[
+                                                  i - 1].total_satisfaction) / scale
 
             return front
 
@@ -317,8 +296,8 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
         """Compares two individuals by their dominance and/or crowding distance.
         """
         if (individual.rank < other_individual.rank) or \
-            ((individual.rank == other_individual.rank) and (
-                individual.crowding_distance > other_individual.crowding_distance)):
+                ((individual.rank == other_individual.rank) and (
+                        individual.crowding_distance > other_individual.crowding_distance)):
             return 1
         else:
             return -1
