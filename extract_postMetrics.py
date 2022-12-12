@@ -16,8 +16,8 @@ dependencies = ['False']  # {'True','False'}
 # do not use c5 and c6 because with 500 pbis its too slow
 # p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'd1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7'
 # 'p1', 'p2', 's1','s2','s3','s4'
-dataset = ['p1', 'p2', 's1','s2','s3']
-algorithm =   ['umda', 'pbil', 'GRASP', 'geneticnds', 'mimic']  # 'GRASP', 'geneticnds', 'nsgaii', 'umda', 'pbil', 'feda', 'mimic'
+dataset = ['p1', 'p2', 's1','s2','s3','s4']
+algorithm =   ['umda', 'pbil', 'GRASP', 'geneticnds', 'mimic','nsgaii']  # 'umda', 'pbil', 'GRASP', 'geneticnds', 'mimic','nsgaii'
 
 # COMMON HYPER-PARAMETERS #
 # possible algorithm values: {'GRASP', 'feda', 'geneticnds', 'pbil', 'umda', 'mimic''}
@@ -80,6 +80,7 @@ def get_genetic_uids(name: str, d: str) -> [str]:
                                     for mut_prob in mutation_prob:
                                         for mut in mutation:
                                             for rep in replacement:
+                                                rep = 'elitism' if name == 'nsgaii' and rep=='elitismnds' else rep
                                                 for size in subset_size:
                                                     for s_type in sss_type:
                                                         for s_per_it in sss_per_iteration:
@@ -232,6 +233,8 @@ def construct_store_reference_pareto(uids):
         try:
             with open(file, 'r') as f_temp:
                 dictio = json.load(f_temp)
+
+
                 paretos = dictio['paretos']
                 for pareto in paretos:
                     for xy in pareto:
@@ -241,6 +244,8 @@ def construct_store_reference_pareto(uids):
         except (FileNotFoundError, IOError):
             updated_uids.remove(file)
             print("File not found so not used to extract metrics: ", file)
+
+
 
     uids = copy.deepcopy(updated_uids)
     nds = get_nondominated_solutions(solutions=all_solutions)
