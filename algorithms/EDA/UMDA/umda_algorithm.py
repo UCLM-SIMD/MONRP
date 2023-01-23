@@ -19,12 +19,12 @@ class UMDAAlgorithm(EDAAlgorithm):
     """Univariate Marginal Distribution Algorithm
     """
 
-    def __init__(self, execs,dataset_name: str = "test", dataset: Dataset = None, random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
+    def __init__(self, execs, dataset_name: str = "test", dataset: Dataset = None, random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
                  population_length: int = 100, max_generations: int = 100, max_evaluations: int = 0,
                  selected_individuals: int = 60, selection_scheme: str = "nds",
                  replacement_scheme: str = "replacement", subset_size: int = 20, sss_type=0, sss_per_it=False):
 
-        super().__init__(execs,dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
+        super().__init__(execs, dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
                          population_length, max_generations, max_evaluations, subset_size=subset_size,
                          sss_type=sss_type, sss_per_iteration=sss_per_it)
 
@@ -94,16 +94,10 @@ class UMDAAlgorithm(EDAAlgorithm):
         nds_update_time = 0
 
         self.population = self.generate_initial_population()
-        #plot_solutions(self.population)
         if (self.tackle_dependencies):
             self.population = self.repair_population_dependencies(
                 self.population)
         get_nondominated_solutions(self.population, self.nds)
-        #plot_solutions(self.population)
-
-
-
-
 
         if self.debug_mode:
             self.debug_data()
@@ -111,33 +105,31 @@ class UMDAAlgorithm(EDAAlgorithm):
         try:
             while (not self.stop_criterion(self.num_generations, self.num_evaluations)):
                 # selection
-                # TODO individuals = self.select_individuals(self.population+old_pop)
                 individuals = self.select_individuals(self.population)
 
                 # learning
                 probability_model = self.learn_probability_model(
                     individuals)
-                # old_pop = self.population.copy()
 
                 # replacement
                 self.population = self.sample_new_population(probability_model)
 
                 # repair population if dependencies tackled:
-                if(self.tackle_dependencies):
+                if (self.tackle_dependencies):
                     self.population = self.repair_population_dependencies(
                         self.population)
 
                 # evaluation  # update nds with solutions constructed and evolved in this iteration
                 update_start = time.time()
                 get_nondominated_solutions(self.population, self.nds)
-                nds_update_time = nds_update_time + (time.time() - update_start)
-                #plot_solutions(self.nds)
+                nds_update_time = nds_update_time + \
+                    (time.time() - update_start)
+                # plot_solutions(self.nds)
                 self.num_generations += 1
 
                 if self.sss_per_iteration:
                     self.nds = evaluation.solution_subset_selection.search_solution_subset(self.sss_type,
                                                                                            self.subset_size, self.nds)
-
 
                 if self.debug_mode:
                     self.debug_data()
@@ -146,7 +138,6 @@ class UMDAAlgorithm(EDAAlgorithm):
             pass
 
         end = time.time()
-        #plot_solutions(self.nds)
 
         print("\nNDS created has", self.nds.__len__(), "solution(s)")
 

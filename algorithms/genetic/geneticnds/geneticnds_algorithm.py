@@ -20,7 +20,7 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
     """Mono-Objective Genetic Algorithm that stores a set of nondominated solutions and updates it at each generation.
     """
 
-    def __init__(self, execs,dataset_name: str = "test", dataset: Dataset = None, random_seed: int = None,
+    def __init__(self, execs, dataset_name: str = "test", dataset: Dataset = None, random_seed: int = None,
                  debug_mode: bool = False, tackle_dependencies: bool = False,
                  population_length: int = 100, max_generations: int = 100, max_evaluations: int = 0,
                  selection: str = "tournament", selection_candidates: int = 2,
@@ -28,7 +28,7 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
                  mutation: str = "flipeachbit", mutation_prob: float = 0.1,
                  replacement: str = "elitism", subset_size: int = 5, sss_type=0, sss_per_it=False):
 
-        super().__init__(execs,dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
+        super().__init__(execs, dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
                          population_length, max_generations, max_evaluations,
                          selection, selection_candidates, crossover, crossover_prob,
                          mutation, mutation_prob, replacement, subset_size=subset_size,
@@ -43,8 +43,6 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
         self.config_dictionary['selection_candidates'] = selection_candidates
         self.config_dictionary['crossover_prob'] = crossover_prob
         self.config_dictionary['mutation_prob'] = mutation_prob
-
-
 
         if selection == "tournament":
             self.selection = self.selection_tournament
@@ -65,8 +63,6 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
         elif replacement == "elitismnds":
             self.replacement = self.replacement_elitism
         self.config_dictionary['replacement'] = replacement
-
-
 
     def get_file(self) -> str:
         return (f"{str(self.__class__.__name__)}-{str(self.dataset_name)}-"
@@ -107,7 +103,6 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
                 # selection
                 new_population = self.selection(self.population)
 
-
                 # crossover
                 new_population = self.crossover(new_population)
 
@@ -115,24 +110,22 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
                 new_population = self.mutation(new_population)
 
                 # repair population if dependencies tackled:
-                if(self.tackle_dependencies):
+                if (self.tackle_dependencies):
                     new_population = self.repair_population_dependencies(
                         new_population)
 
                 # evaluation
                 self.evaluate(self.population, self.best_individual)
 
-
                 # update NDS
                 update_start = time.time()
                 get_nondominated_solutions(new_population, self.nds)
-                nds_update_time = nds_update_time + (time.time() - update_start)
-
+                nds_update_time = nds_update_time + \
+                    (time.time() - update_start)
 
                 returned_population = copy.deepcopy(new_population)
                 self.best_generation, self.best_generation_avgValue = self.calculate_last_generation_with_enhance(
                     self.best_generation, self.best_generation_avgValue, self.num_generations, returned_population)
-
 
                 # replacement
                 if self.replacement_scheme == "elitismnds":
@@ -155,9 +148,6 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
 
         end = time.time()
 
-        #plot_solutions(self.nds)
-
-
         return {
             "population": self.nds,
             "time": end - start,
@@ -169,8 +159,6 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
             "nds_debug": self.nds_debug,
             "population_debug": self.population_debug
         }
-
-
 
     def add_evaluation(self, new_population: List[Solution]) -> None:
         """Handles evaluation count, finishing algorithm execution if stop criterion is met by raising an exception.
@@ -193,14 +181,14 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
                 while True:
                     random_index = random.randint(0, len(population)-1)
                     candidate = population[random_index]
-                    total_score = candidate.mono_objective_score # avoid empty individuals selected self.selection_candidates times
-                    if total_score > 0: break
+                    # avoid empty individuals selected self.selection_candidates times
+                    total_score = candidate.mono_objective_score
+                    if total_score > 0:
+                        break
                 # store best scoring individual
-                if(total_score > best_total_score):
+                if (total_score > best_total_score):
                     best_total_score = total_score
                     best_candidate = candidate
-
-
 
             # append individual in new population
             new_population.append(best_candidate)

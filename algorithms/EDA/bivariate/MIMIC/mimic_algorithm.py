@@ -24,10 +24,9 @@ class MIMICAlgorithm(EDAAlgorithm):
                  selected_individuals: int = 60, selection_scheme: str = "nds", replacement_scheme: str = "replacement",
                  execs=10, subset_size: int = 10, sss_type=0, sss_per_it=False):
 
-
-        super().__init__(execs=execs, dataset_name=dataset_name, random_seed=random_seed,debug_mode=debug_mode,
-                         tackle_dependencies=tackle_dependencies,population_length=population_length,
-                         subset_size=subset_size, max_generations=max_generations,  max_evaluations= max_evaluations,
+        super().__init__(execs=execs, dataset_name=dataset_name, random_seed=random_seed, debug_mode=debug_mode,
+                         tackle_dependencies=tackle_dependencies, population_length=population_length,
+                         subset_size=subset_size, max_generations=max_generations,  max_evaluations=max_evaluations,
                          sss_type=sss_type, sss_per_iteration=sss_per_it)
 
         self.executer = MIMICExecuter(algorithm=self, execs=execs)
@@ -35,14 +34,12 @@ class MIMICAlgorithm(EDAAlgorithm):
         self.gene_size: int = len(self.dataset.pbis_cost)
         print(self.hyperparameters)
         self.selected_individuals: int =\
-            selected_individuals if selected_individuals<=population_length else population_length
-
+            selected_individuals if selected_individuals <= population_length else population_length
 
         self.selection_scheme: str = selection_scheme
         self.replacement_scheme: str = replacement_scheme
 
         self.config_dictionary.update({'algorithm': 'mimic'})
-
 
         self.hyperparameters.append(generate_hyperparameter(
             "selected_individuals", selected_individuals))
@@ -116,7 +113,7 @@ class MIMICAlgorithm(EDAAlgorithm):
     def learn_marginals(self, population: List[Solution], selected_individuals: int, laplace: int = 0):
         marginals = np.zeros(self.gene_size)
         # if fixed number -> self.selected_individuals. if selection by NDS ->unknown ->len
-        #selected_individuals = len(population)
+        # selected_individuals = len(population)
         for i in range(selected_individuals):
             for j in range(self.gene_size):
                 if population[i].selected[j] == 1:
@@ -148,7 +145,7 @@ class MIMICAlgorithm(EDAAlgorithm):
         for j in range(2):
             entropy2 = 0.0
             for i in range(2):
-                if(prob_xy[i][j] > 0):
+                if (prob_xy[i][j] > 0):
                     entropy2 += prob_xy[i][j]*math.log2(prob_xy[i][j])
             if entropy2 != 0:
                 entropy2 *= -1
@@ -159,10 +156,10 @@ class MIMICAlgorithm(EDAAlgorithm):
         index: int = -1
         min_ce = float("inf")
         for i in range(self.gene_size):
-            if(used[i]):
+            if (used[i]):
                 continue
             ce = self.get_conditional_entropy(population, parent, i, N)
-            if(ce < min_ce):
+            if (ce < min_ce):
                 min_ce = ce
                 index = i
         return index
@@ -209,14 +206,14 @@ class MIMICAlgorithm(EDAAlgorithm):
     def generate_sample(self, marginals: List[float], parents: List[int], variables: List[int], conditionals: List[List[float]]) -> Solution:
         sample = np.zeros(self.gene_size, dtype=int)
         for j in range(self.gene_size):
-            if(parents[j] == -1):
-                if(random.random() < marginals[variables[j]]):
+            if (parents[j] == -1):
+                if (random.random() < marginals[variables[j]]):
                     sample[variables[j]] = 1
                 else:
                     sample[variables[j]] = 0
 
             else:
-                if(random.random() < conditionals[j][sample[parents[j]]]):
+                if (random.random() < conditionals[j][sample[parents[j]]]):
                     sample[variables[j]] = 1
                 else:
                     sample[variables[j]] = 0
@@ -233,8 +230,6 @@ class MIMICAlgorithm(EDAAlgorithm):
 
         get_nondominated_solutions(self.population, self.nds)
 
-
-
         if self.debug_mode:
             self.debug_data()
 
@@ -242,7 +237,6 @@ class MIMICAlgorithm(EDAAlgorithm):
             while (not self.stop_criterion(self.num_generations, self.num_evaluations)):
                 # selection
                 individuals = self.select_individuals(self.population)
-
 
                 # learning
                 marginals, parents, variables, conditionals = self.learn_probability_model(
@@ -252,16 +246,16 @@ class MIMICAlgorithm(EDAAlgorithm):
                 self.population = self.sample_new_population(
                     marginals, parents, variables, conditionals)
 
-
                 # repair population if dependencies tackled:
-                if(self.tackle_dependencies):
+                if (self.tackle_dependencies):
                     self.population = self.repair_population_dependencies(
                         self.population)
 
                 # evaluation # update nds with solutions constructed and evolved in this iteration
                 update_start = time.time()
                 get_nondominated_solutions(self.population, self.nds)
-                nds_update_time = nds_update_time + (time.time() - update_start)
+                nds_update_time = nds_update_time + \
+                    (time.time() - update_start)
 
                 self.num_generations += 1
 
@@ -276,7 +270,6 @@ class MIMICAlgorithm(EDAAlgorithm):
             pass
 
         end = time.time()
-        #plot_solutions(self.nds)
 
         print("\nNDS created has", self.nds.__len__(), "solution(s)")
 
