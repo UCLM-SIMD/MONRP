@@ -1,7 +1,7 @@
 #!/bin/sh 
  #PBS -N nsgaii 
  #PBS -l mem=2500mb 
- #PBS -J 1-120 
+ #PBS -J 1-30 
 
 export PATH=/home/pbermejo/.local/lib/python3.8/site-packages:$PATH
 export PYTHONPATH=/home/pbermejo/.local/lib/python3.8/site-packages:$PYTHONPATH

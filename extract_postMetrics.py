@@ -17,7 +17,7 @@ dependencies = ['False']  # {'True','False'}
 # p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'd1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7'
 # 'p1', 'p2', 's1','s2','s3','s4'
 dataset = ['p1', 'p2', 's1','s2','s3','s4']
-algorithm =   ['umda', 'pbil', 'GRASP', 'geneticnds', 'mimic','nsgaii']  # 'umda', 'pbil', 'GRASP', 'geneticnds', 'mimic','nsgaii'
+algorithm =   ['umda', 'pbil', 'geneticnds', 'mimic','nsgaii']  # 'umda', 'pbil', 'GRASP', 'geneticnds', 'mimic','nsgaii'
 
 # COMMON HYPER-PARAMETERS #
 # possible algorithm values: {'GRASP', 'feda', 'geneticnds', 'pbil', 'umda', 'mimic''}
@@ -26,8 +26,8 @@ num_executions = 30
 subset_size = [10]  # number of solutions to choose from final NDS in each algorithm to compute metrics
 sss_type = [0] # 0 for greedy hv
 sss_per_iteration = [True, False] # [True, False]
-population_size = [100, 200, 500, 700, 1000]
-num_generations = [50, 100, 200, 300, 400]
+population_size = [100, 200, 500, 700, 1000] # [100, 200, 500, 700, 1000, 2000, 3000] # 2000 and 3000 not in nsgaii (too slow)
+num_generations = [50, 100, 200, 300, 400] #[50, 100, 200, 300, 400, 500, 600] #500 and 600 not in nsgaii
 max_evals = [0]
 
 # geneticNDS and NSGAii hyperparameters #
@@ -91,8 +91,9 @@ def get_genetic_uids(name: str, d: str) -> [str]:
                                                                           str(candidates) + str(xover_prob) + str(mut_prob) + \
                                                                           sel + xover + mut + rep + str(num_executions) + \
                                                                           '.json'
-                                                            print('\'../' + uid_genetic + '\',')
-                                                            uids_list.append(uid_genetic)
+                                                            if not (name == 'nsgaii' and s_per_it): #nsga is not compatible with SSS per iteration
+                                                                print('\'../' + uid_genetic + '\',')
+                                                                uids_list.append(uid_genetic)
     return uids_list
 
 
