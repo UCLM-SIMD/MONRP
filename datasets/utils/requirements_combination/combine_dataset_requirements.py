@@ -2,6 +2,11 @@ from typing import Dict
 
 
 def combine_dataset_requirements(json_data: dict) -> dict:
+    """
+    Combines requirements that have dependencies between them. 
+    For example, given a set of requirements { r1, r2, r3, r4 } and the following dependencies:
+    r1 -> r2; r2 -> r1; the resulting requirements set will be { r12, r3, r4 }, where r12 is the combination of r1 and r2.
+    """
     combined_requirements = dict()
     # for each requirement, check its dependencies
     for req_index in range(len(json_data["dependencies"])):
@@ -10,14 +15,13 @@ def combine_dataset_requirements(json_data: dict) -> dict:
             continue
 
         # if has dependent requirements, for each one check if those have any inverse dependency to the current requirement
-        affected_requirements = set()  # {req_index}
+        affected_requirements = set()
         for other_dependency_index in req_dependencies:
             if is_requirement_affected_by_dependency(req_index, other_dependency_index, json_data):
                 affected_requirements.add(other_dependency_index)
-                # if so, also check all bidirectional dependencies of the other requirement (recursively)
-                # affected_requirements.update(check_all_dependencies_of_requirement(other_dependency_index, json_data))
 
-        combined_requirements[req_index] = affected_requirements
+        if affected_requirements:
+            combined_requirements[req_index] = affected_requirements
 
     # for each requirement and its combined requirement dependencies
     combined_requirements_sets = []
@@ -60,8 +64,8 @@ def combine_dataset_requirements(json_data: dict) -> dict:
     }
 
     new_indexes = {}
+    # calculate new indexes and reindex requirements not combined
     for index in range(len(json_data["pbis_cost"])):
-
         if index not in list(set().union(*final_requirements_combined)):
             new_data["pbis_cost"].append(json_data["pbis_cost"][index])
             for stakeholder_index in range(len(json_data["stakeholders_importances"])):
@@ -70,12 +74,36 @@ def combine_dataset_requirements(json_data: dict) -> dict:
             new_index = len(new_data["pbis_cost"]) - 1
             new_indexes[index] = new_index
 
-    for index in range(len(json_data["dependencies"])):
+    # calculate new indexes of requirement combinations
+    for index in range(len(json_data["pbis_cost"])):
+        if index in list(set().union(*final_requirements_combined)):
+            # map each combination of requirements to a new requirement_id
+            final_requirements_combined_index = next(
+                (i for i, v in enumerate(final_requirements_combined) if index in v), None)
+            new_index = len(new_data["pbis_cost"]) + \
+                        final_requirements_combined_index
+            # get final_requirements_combined index where the current index is located
+            new_indexes[index] = new_index
+
+    # for each noncombined requirement, add its former dependencies, translating them to the new indexes
+    for index in range(len(json_data["pbis_cost"])):
         if index not in list(set().union(*final_requirements_combined)):
             new_data["dependencies"].append(json_data["dependencies"][index])
             if new_data["dependencies"][-1] is not None:
                 new_data["dependencies"][-1] = [new_indexes[dep]
                                                 for dep in new_data["dependencies"][-1]]
+
+    # for each requirement combination, add former dependencies that were not pointing to requirements
+    # of the combination, and translate them to the new indexes
+    # for index in range(len(json_data["pbis_cost"])):
+    #     if index in list(set().union(*final_requirements_combined)):
+    #         new_data["dependencies"].append(json_data["dependencies"][index])
+    #         if new_data["dependencies"][-1] is not None:
+    #             current_combination = next(
+    #                 (req_combination for req_combination in final_requirements_combined if index in req_combination),
+    #                 None)
+    #             new_data["dependencies"][-1] = [new_indexes[dep] for dep in new_data["dependencies"][-1]
+    #                                             if dep not in current_combination]
 
     # for each set of combined requirements, calculate the combined cost and importance and add them to the new dataset
     for combined_requirements_set in final_requirements_combined:
@@ -92,25 +120,24 @@ def combine_dataset_requirements(json_data: dict) -> dict:
         for stakeholder_index in range(len(json_data["stakeholders_importances"])):
             new_data["stakeholders_pbis_priorities"][stakeholder_index].append(
                 new_priorities[stakeholder_index])
-        new_data["dependencies"].append(None)
+
+        comb_requirements_dependencies = []
+        for index in combined_requirements_set:
+            comb_requirements_dependencies.append(json_data["dependencies"][index])
+            if comb_requirements_dependencies[-1]:
+                comb_requirements_dependencies[-1] = [new_indexes[dep] for dep in comb_requirements_dependencies[-1]
+                                                      if dep not in combined_requirements_set]
+        # flatten comb_requirements_dependencies
+        comb_requirements_dependencies = [item for sublist in comb_requirements_dependencies for item in sublist]
+        new_data["dependencies"].append(list(set(comb_requirements_dependencies)))
+        if not new_data["dependencies"][-1]:
+            new_data["dependencies"][-1] = None
+        # new_data["dependencies"].append(None)
 
     return new_data
 
 
 def is_requirement_affected_by_dependency(req_index: int, other_dependency_index: int, json_data: Dict) -> bool:
     # find if there is a dependency between the two requirements
-    return req_index in json_data["dependencies"][other_dependency_index]
-
-
-def check_all_dependencies_of_requirement(req_index: int, json_data: Dict) -> set:
-    # for each requirement, check if it is affected by the current requirement
-    dependent_requirements = set()
-    for other_requirement_index in range(len(json_data["dependencies"])):
-        if other_requirement_index != req_index:
-            if is_requirement_affected_by_dependency(req_index, other_requirement_index, json_data):
-                dependent_requirements.add(other_requirement_index)
-                # if so, also check all bidirectional dependencies of the other requirement (recursively)
-                dependent_requirements.update(
-                    check_all_dependencies_of_requirement(other_requirement_index, json_data))
-
-    return dependent_requirements
+    return json_data["dependencies"][other_dependency_index] is not None and \
+        req_index in json_data["dependencies"][other_dependency_index]
