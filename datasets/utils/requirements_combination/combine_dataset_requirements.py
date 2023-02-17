@@ -93,18 +93,6 @@ def combine_dataset_requirements(json_data: dict) -> dict:
                 new_data["dependencies"][-1] = [new_indexes[dep]
                                                 for dep in new_data["dependencies"][-1]]
 
-    # for each requirement combination, add former dependencies that were not pointing to requirements
-    # of the combination, and translate them to the new indexes
-    # for index in range(len(json_data["pbis_cost"])):
-    #     if index in list(set().union(*final_requirements_combined)):
-    #         new_data["dependencies"].append(json_data["dependencies"][index])
-    #         if new_data["dependencies"][-1] is not None:
-    #             current_combination = next(
-    #                 (req_combination for req_combination in final_requirements_combined if index in req_combination),
-    #                 None)
-    #             new_data["dependencies"][-1] = [new_indexes[dep] for dep in new_data["dependencies"][-1]
-    #                                             if dep not in current_combination]
-
     # for each set of combined requirements, calculate the combined cost and importance and add them to the new dataset
     for combined_requirements_set in final_requirements_combined:
         # calculate cost as mean of all requirements costs
@@ -132,7 +120,6 @@ def combine_dataset_requirements(json_data: dict) -> dict:
         new_data["dependencies"].append(list(set(comb_requirements_dependencies)))
         if not new_data["dependencies"][-1]:
             new_data["dependencies"][-1] = None
-        # new_data["dependencies"].append(None)
 
     return new_data
 
