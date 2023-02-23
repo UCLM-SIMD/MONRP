@@ -9,6 +9,7 @@ from models.Solution import Solution
 """ Please fill the experiments hyper-parameters for all algorithms, which will be used to define the which results
 will be taken into account to find the reference Pareto for GD+ and UNFR"""
 
+prefix = 'files_list_allGRASP_'
 dependencies = ['False']  # {'True','False'}
 
 # post metrics are not computed among results for all indicated datasets.Only 1 dataset is taken into account each time.
@@ -17,17 +18,17 @@ dependencies = ['False']  # {'True','False'}
 # p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'd1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7'
 # 'p1', 'p2', 's1','s2','s3','s4'
 dataset = ['p1', 'p2', 's1','s2','s3','s4']
-algorithm =   ['umda', 'pbil', 'geneticnds', 'mimic','nsgaii']  # 'umda', 'pbil', 'GRASP', 'geneticnds', 'mimic','nsgaii'
+algorithm = ['GRASP', 'geneticnds', 'umda', 'pbil', 'mimic']  # 'umda', 'pbil', 'GRASP', 'geneticnds', 'mimic','nsgaii'
 
 # COMMON HYPER-PARAMETERS #
 # possible algorithm values: {'GRASP', 'feda', 'geneticnds', 'pbil', 'umda', 'mimic''}
 seed = 5
-num_executions = 30
+num_executions = 30 # 10 30
 subset_size = [10]  # number of solutions to choose from final NDS in each algorithm to compute metrics
 sss_type = [0] # 0 for greedy hv
-sss_per_iteration = [True, False] # [True, False]
-population_size = [100, 200, 500, 700, 1000] # [100, 200, 500, 700, 1000, 2000, 3000] # 2000 and 3000 not in nsgaii (too slow)
-num_generations = [50, 100, 200, 300, 400] #[50, 100, 200, 300, 400, 500, 600] #500 and 600 not in nsgaii
+sss_per_iteration = [True] # [True, False]
+population_size = [700] # [100, 200, 500, 700, 1000], 2000, 3000] # 2000 and 3000 not in nsgaii (too slow)
+num_generations = [400] #[50, 100, 200, 300, 400], 500, 600] #500 and 600 not in nsgaii
 max_evals = [0]
 
 # geneticNDS and NSGAii hyperparameters #
@@ -41,8 +42,9 @@ crossover = ['onepoint']  # only 'onepoint' available
 
 # GRASP hyper-parameters #
 init_type = ['stochastically']  # {'stochastically', 'uniform'}
-path_relinking_mode = ['None', 'after_local']  # {'None', 'after_local'}
-local_search_type = ['best_first_neighbor_random_domination']
+path_relinking_mode = ['None','after_local']  # {'None', 'after_local'}
+local_search_type = ['None', 'best_first_neighbor_random','best_first_neighbor_sorted_score',
+ 'best_first_neighbor_sorted_score_r' , 'best_first_neighbor_random_domination','best_first_neighbor_sorted_domination']
 # local_search_type values: {'None', 'best_first_neighbor_random','best_first_neighbor_sorted_score',
 # best_first_neighbor_sorted_score_r' , 'best_first_neighbor_random_domination','best_first_neighbor_sorted_domination'}
 
@@ -61,7 +63,7 @@ selection_scheme_feda = ['nds']  # {'nds','monoscore'}
 # mimic hyper-parameters #
 selection_scheme_mimic = ['nds']  # {'nds','monoscore'}
 rep_scheme_mimic = ["replacement"]  # actually, never used inside algorithm.
-selected_individuals = [50, 100]
+selected_individuals = [50]
 
 ''' returns a list of uid files created from geneticNDS hyper-parameters '''
 
@@ -91,9 +93,17 @@ def get_genetic_uids(name: str, d: str) -> [str]:
                                                                           str(candidates) + str(xover_prob) + str(mut_prob) + \
                                                                           sel + xover + mut + rep + str(num_executions) + \
                                                                           '.json'
-                                                            if not (name == 'nsgaii' and s_per_it): #nsga is not compatible with SSS per iteration
-                                                                print('\'../' + uid_genetic + '\',')
-                                                                uids_list.append(uid_genetic)
+                                                            if (name == 'nsgaii'): #nsga is not compatible with SSS per iteration
+                                                                uid_genetic = output_folder + name + dependency + d + \
+                                                                              str(seed) + str(size) + str(s_type) + \
+                                                                              'False' + str(pop_size) + \
+                                                                              str(iterations) + str(max_evalu) + \
+                                                                              str(candidates) + str(xover_prob) + str(
+                                                                    mut_prob) + sel + xover + mut + rep + str(
+                                                                    num_executions) + \
+                                                                              '.json'
+                                                            print('\'../' + uid_genetic + '\',')
+                                                            uids_list.append(uid_genetic)
     return uids_list
 
 
@@ -350,8 +360,8 @@ if __name__ == '__main__':
     sufix = ''
     for alg in algorithm:
         sufix += alg + '-'
-    container_name = 'files_list_soco_' + sufix[0:len(sufix) - 1]
+    container_name = prefix + sufix[0:len(sufix) - 1]
     with open('output/' + container_name, 'w') as container_file:
         for uid in all_files_uid:
             container_file.write(uid + "\n")
-    print(f"File list {container_name} created to be used from analisis/extensionSOCO notebook")
+    print(f"File list {container_name} created to be used from analisis notebook")

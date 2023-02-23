@@ -1,18 +1,19 @@
-dependencies = ['d']  # {'D', 'd'}
+
 # ['p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'd1', 'd2', 'd3','d4','d5','d6','d7',
 #'e1', 'e2', 'e3','e4','e5','e6']
-dataset = ['p1', 'p2', 's1','s2','s3', 's4'] # 'p1', 'p2', 's1','s2','s3', 's4'
+dependencies = ['d']  # {'D', 'd'}
+dataset = ['s2'] # 'p1', 'p2', 's1','s2','s3', 's4'
 
 # COMMON HYPER-PARAMETERS #
 # possible algorithm values: {'GRASP', 'feda', 'geneticnds', 'pbil', 'umda', nsgaii}
-algorithm = 'nsgaii'  # 'GRASP', 'geneticnds', 'nsgaii', 'umda', 'pbil', 'feda', 'mimic'
+algorithm = 'GRASP'  # 'GRASP', 'geneticnds', 'nsgaii', 'umda', 'pbil', 'feda', 'mimic'
 seed = 5
-num_executions = 30
+num_executions = 10 # 30
 
-subset_size = [10]  # number of solutions to choose from final NDS in each algorithm to compute metrics
+subset_size = [20,30]  # number of solutions to choose from final NDS in each algorithm to compute metrics
 sss_type = [0] # 0 is greedyHV
-sss_per_iteration = [False] # [True, False]
-population_size = [500] # [100, 200, 500, 700, 1000, 2000, 3000]
+sss_per_iteration = [True] # [True, False]
+population_size = [100,200,500] # [100, 200, 500, 700, 1000 #[, 2000, 3000]
 num_generations = [50, 100, 200, 300, 400] # [50, 100, 200, 300, 400, 500, 600]
 
 max_evals = [0]
@@ -28,13 +29,9 @@ crossover = ['onepoint']  # only 'onepoint' available
 
 # GRASP hyper-parameters #
 init_type = ['stochastically']  # {'stochastically', 'uniform'}
-path_relinking_mode = ['None', 'PR']  # {'None', 'PR'}
-local_search_type = [
-    'best_first_neighbor_random_domination']  # ['best_first_neighbor_random',best_first_neighbor_random_domination']
-# {'None', 'best_first_neighbor_random',
-# 'best_first_neighbor_sorted_score', best_first_neighbor_sorted_score_r' ,
-# 'best_first_neighbor_random_domination','best_first_neighbor_sorted_domination'}
-
+path_relinking_mode = ['PR']  # {'None', 'PR'}
+local_search_type = ['best_first_neighbor_sorted_domination']
+#['None', 'best_first_neighbor_random', 'best_first_neighbor_sorted_score', 'best_first_neighbor_sorted_score_r',  'best_first_neighbor_random_domination','best_first_neighbor_sorted_domination']
 
 # umda hyper-parameters #
 selection_scheme = ['nds']  # {'nds','monoscore'}
@@ -51,7 +48,7 @@ selection_scheme_feda = ['nds']  # {'nds','monoscore'}
 # mimic hyper-parameters #
 selection_scheme_mimic = ['nds']  # {'nds','monoscore'}
 rep_scheme_mimic = ["replacement"]  # actually, never used inside algorithm.
-selected_individuals = [50, 100]
+selected_individuals = [50] #[50,100]
 
 
 def get_genetic_options(name: str, dataset_name: str) -> [str]:
