@@ -71,7 +71,7 @@ class AbstractExecuter(ABC):
     
     """
 
-    def search_solution_subset(self, solutions: [Solution]) -> [Solution]:
+    def search_solution_subset(self, solutions: List[Solution]) -> List[Solution]:
 
         if len(solutions) < self.algorithm.subset_size:
             print('|solutions| < subset_size parameter!! Solution subset set to original final solution');
@@ -100,7 +100,7 @@ class AbstractExecuter(ABC):
 
     """ search for the solution which maximizes satisfaction, and other which minimizes cost"""
 
-    def init_subset_selection(self, solutions: [Solution]) -> [Solution]:
+    def init_subset_selection(self, solutions: List[Solution]) -> List[Solution]:
 
         return [], []
 
