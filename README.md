@@ -1,8 +1,6 @@
 # MONRP
 
 ![Python 3.8](https://img.shields.io/badge/Python-3.8.8-blue)
-[![CI](https://github.com/UCLM-SIMD/MONRP/actions/workflows/ci.yml/badge.svg)](https://github.com/UCLM-SIMD/MONRP/actions/workflows/ci.yml)
-[![CodeQL](https://github.com/UCLM-SIMD/MONRP/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/UCLM-SIMD/MONRP/actions/workflows/codeql-analysis.yml)
 
 # First steps
 
@@ -10,20 +8,10 @@ First, install dependencies: `pip install -r requirements.txt`
 
 # Datasets
 
-Each dataset is placed in a single function inside a file titled `dataset_X.py`. The function returns the following data: `pbis_cost, num_pbis, stakeholders_importances, stakeholders_pbis_priorities, dependencies`.
-
-Each dataset is loaded inside `Dataset.py`, which loads and calculates scaled values and dependencies for the given data.
+Datasets are .json files, described at: https://doi.org/10.5281/zenodo.7247877
 
 ---
 
-# Evaluation
-
-Shared methods for common operations:
-
-- `metrics.py` contains a set of metric calculations for evaluating an algorithm execution.
-- `update_nds.py` provides a general method for obtaining the set of nondominated solutions of a list, given a new list of candidates.
-
----
 
 # Algorithms
 
@@ -52,13 +40,13 @@ Current algorithm families are the following:
 
 - [Genetic (base)](#genetic-abstract)
   - [GeneticNDS](#geneticnds)
-  - [NSGA-II](#nsga-ii)
-- [GRASP](#grasp)
+ 
 - [EDA](#eda)
 
   - [UMDA](#umda-univariate)
   - [PBIL](#pbil-univariate)
-  - [MIMIC](#mimic-bivariate)
+  - [FEDA](#feda-univariate)
+  
 
   ***
 
@@ -85,36 +73,7 @@ replacement: str,
 
 Single-Objective genetic algorithm that updates a set of nondominated solutions after each generation.
 
-### NSGA-II
 
-Multi-objective genetic algorithm that implements a set of operators that tend to find Pareto fronts better distributed along the search space.
-
-Specific methods are:
-
-- `selection_tournament`:
-- `replacement_elitism()`:
-- `fast_nondominated_sort()`:
-- `calculate_crowding_distance()`:
-- `crowding_operator()`:
-
-  ***
-
-## GRASP
-
-Greedy Randomized Adaptive Search Procedure. Metaheuristic algorithm that iteratively constructs random solutions and by means of local search methods, tries to improve them.
-
-Specific parameters for GRASP are the following:
-
-```python
-iterations: int,
-solutions_per_iteration: int,
-max_evaluations: int,
-init_type:str,
-local_search_type:str,
-path_relinking_mode:str,
-```
-
----
 
 ## EDA
 
@@ -144,6 +103,15 @@ Specific implementations for UDMA are:
 - `learn_probability_model()`:
 - `sample_new_population()`:
 
+### FEDA (univariate)
+
+Univariate Marginal Distribution Algorithm.
+
+Specific implementations for FEDA are:
+
+- `learn_probability_model()`:
+- `sample_new_population()`:
+
 ### PBIL (univariate)
 
 Population Based Incremental Learning
@@ -158,85 +126,39 @@ Specific methods for PBIL are:
 
 - `initialize_probability_vector()`:
 
-### MIMIC (bivariate)
 
-Specific parameters for MIMIC are the following:
+### Visual indicators (scatter plots) of experiments with 12 datasets and 4 algorithms (GA, UMDA, PBIL and FEDA)
 
-```python
-selected_individuals: int,
-selection_scheme: str,
-replacement_scheme: str,
-```
+Dataset a1
+![scatter_a1](https://user-images.githubusercontent.com/25950319/197763461-cfcea645-efbc-42c9-95a0-b5f49501d817.svg)
+Dataset a2
+![scatter_a2](https://user-images.githubusercontent.com/25950319/197763479-b07507d6-99c1-4c6a-ac71-e497edb4c125.svg)
+Dataset a3
+![scatter_a3](https://user-images.githubusercontent.com/25950319/197763483-f5923cf8-cc29-4bd8-9e70-4bc5e15bb263.svg)
+Dataset a4
+![scatter_a4](https://user-images.githubusercontent.com/25950319/197763485-9fb89c94-b165-4044-a015-a4e1a9146ef2.svg)
 
-Specific implementations for MIMIC are:
+Dataset c1
+![scatter_c1](https://user-images.githubusercontent.com/25950319/197763486-1aa8c9ab-0473-4b85-a49e-bb28f24e015d.svg)
+Dataset c2
+![scatter_c2](https://user-images.githubusercontent.com/25950319/197763490-f043a239-02c2-460f-8556-3ff014e9edc4.svg)
+Dataset c3
+![scatter_c3](https://user-images.githubusercontent.com/25950319/197763492-8e5cbcc7-a408-43ff-86a3-23f4d5359adf.svg)
+Dataset c4
+![scatter_c4](https://user-images.githubusercontent.com/25950319/197763494-19391b67-1664-4f15-90c8-f43534d368db.svg)
 
-- `select_individuals()`:
-- `learn_probability_model()`:
-- `sample_new_population()`:
+Dataset d1
+![scatter_d1](https://user-images.githubusercontent.com/25950319/197763496-ef6468e7-9998-46e2-96f0-76a74589d1c3.svg)
+Dataset d2
+![scatter_d2](https://user-images.githubusercontent.com/25950319/197763497-323d6144-17bc-42c4-8268-8721e112ec0d.svg)
+Dataset d3
+![scatter_d3](https://user-images.githubusercontent.com/25950319/197763499-fdec5b14-a94d-4ad3-809d-b22615788074.svg)
+Dataset d4
+![scatter_d4](https://user-images.githubusercontent.com/25950319/197763503-522dda1c-c647-44d3-a766-6ca0f9d842e5.svg)
 
----
-
-# Testing
-
-Test suite is placed in `unit_tests.py` in the root folder and can be run by executing in the cmd:
-
-```cmd
-python -m unittest unit_tests.py
-```
-
-The steps to add new unit tests are the following:
-
-1. Create a new test file named `test_algorithm_name.py` inside the algorithm folder.
-2. Write a new test case class using `unittest` library:
-
-   ```python
-   import unittest
-   from algorithms.specific_algorithm import SpecificAlgorithm as tested_algorithm_class
-
-   class SpecificAlgorithmTestCase(unittest.TestCase):
-
-       def setUp(self):
-           """
-           Set up algorithm and random seed
-           """
-           seed = 0
-           self.algorithm = tested_algorithm_class()
-           self.algorithm.set_seed(seed)
-   ```
-
-3. Write test methods that check code is working properly:
-   ```python
-   def test_something(self):
-       """
-       Test that `something()` method works
-       """
-       expected_something = 4
-       actual_something = something()
-       self.assertEqual(actual_something, expected_something)
-   ```
-4. Add the test case to `unit_tests.py`:
-   ```python
-   # import test case
-   from algorithms.specific_algorithm import SpecificAlgorithmTestCase
-   ...
-   # add test case to the test suite
-   suite.addTests(loader.loadTestsFromModule(SpecificAlgorithmTestCase))
-   ...
-   ```
+Dataset p1
+![scatter_p1](https://user-images.githubusercontent.com/25950319/197763505-edc9f355-5c5c-4606-a0cf-3ca874a6efc8.svg)
+Dataset p2
+![scatter_p2](https://user-images.githubusercontent.com/25950319/197763508-9529e472-c319-4029-840a-77bd45104c30.svg)
 
 
----
-
-# Experiments
-
-First, arrays of hyperparameter configurations have to be defined in ```galgo/<algorithm...>/configurations_<algorithm>.py```
-
-Then, use script ```galgo_monrp.sh``` to launch the experiments. It can generate metrics of the execution or a pareto for each configuration. Execution examples are the following: 
-
-```> sh galgo_monrp.sh metrics grasp```
-
-```> sh galgo_monrp.sh pareto umda```
-
-Pareto execution will generate one file for each configuration, containing one row of X-Y values for each solution found in the pareto.
-
-Metrics execution will calculate metrics of 10 consecutive executions for each configuration, storing each configuration in a file. For grouping of these metrics, ```galgo/galgo_file_merger.py``` can be used. Running ```galgo_file_merger.py -a <algorithm>``` will generate a new output file with the column names of the metrics and will include all outputs of the given algorithm.
