@@ -146,6 +146,7 @@ class FEDAAlgorithm(EDAAlgorithm):
         #plot_solutions(self.nds)
 
         print("\nNDS created has", self.nds.__len__(), "solution(s)")
+        #print(( end - start)-nds_update_time," seconds")
 
         return {"population": self.nds,
                 "time": end - start,

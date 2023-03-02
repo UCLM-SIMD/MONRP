@@ -34,7 +34,7 @@ max_evals = [0]
 # geneticNDS and NSGAii hyperparameters #
 selection_candidates = [2]
 crossover_prob = [0.8]
-mutation_prob = [0.1, 0.3]  # [0.1, 0.3]
+mutation_prob = [0.1]  # [0.1, 0.3]
 mutation = ['flip1bit']  # {'flip1bit', 'flipeachbit'}
 replacement = ['elitismnds']  # {'elitism', 'elitismnds'}
 selection = ['tournament']  # only 'tournament' available
