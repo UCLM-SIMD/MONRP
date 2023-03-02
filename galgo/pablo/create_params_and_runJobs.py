@@ -1,20 +1,20 @@
-
 # ['p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'd1', 'd2', 'd3','d4','d5','d6','d7',
-#'e1', 'e2', 'e3','e4','e5','e6']
-dependencies = ['d']  # {'D', 'd'}
-dataset = ['s2'] # 'p1', 'p2', 's1','s2','s3', 's4'
+# 'e1', 'e2', 'e3','e4','e5','e6']
+dependencies = ['D']  # {'D', 'd'}
+dataset = ['p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'd1', 'd2', 'd3',
+           'd4']  # 'p1', 'p2', 's1','s2','s3', 's4'
 
 # COMMON HYPER-PARAMETERS #
 # possible algorithm values: {'GRASP', 'feda', 'geneticnds', 'pbil', 'umda', nsgaii}
-algorithm = 'GRASP'  # 'GRASP', 'geneticnds', 'nsgaii', 'umda', 'pbil', 'feda', 'mimic'
+algorithm = 'random'  # 'GRASP', 'geneticnds', 'nsgaii', 'umda', 'pbil', 'feda', 'mimic', 'random'
 seed = 5
-num_executions = 10 # 30
+num_executions = 30  # 30
 
-subset_size = [20,30]  # number of solutions to choose from final NDS in each algorithm to compute metrics
-sss_type = [0] # 0 is greedyHV
-sss_per_iteration = [True] # [True, False]
-population_size = [100,200,500] # [100, 200, 500, 700, 1000 #[, 2000, 3000]
-num_generations = [50, 100, 200, 300, 400] # [50, 100, 200, 300, 400, 500, 600]
+subset_size = [10]  # number of solutions to choose from final NDS in each algorithm to compute metrics
+sss_type = [0]  # 0 is greedyHV
+sss_per_iteration = [False]  # [True, False]
+population_size = [100, 200, 500, 700, 1000]  # [100, 200, 500, 700, 1000 #[, 2000, 3000]
+num_generations = [50, 100, 200, 300, 400]  # [50, 100, 200, 300, 400, 500, 600]
 
 max_evals = [0]
 
@@ -31,7 +31,7 @@ crossover = ['onepoint']  # only 'onepoint' available
 init_type = ['stochastically']  # {'stochastically', 'uniform'}
 path_relinking_mode = ['PR']  # {'None', 'PR'}
 local_search_type = ['best_first_neighbor_sorted_domination']
-#['None', 'best_first_neighbor_random', 'best_first_neighbor_sorted_score', 'best_first_neighbor_sorted_score_r',  'best_first_neighbor_random_domination','best_first_neighbor_sorted_domination']
+# ['None', 'best_first_neighbor_random', 'best_first_neighbor_sorted_score', 'best_first_neighbor_sorted_score_r',  'best_first_neighbor_random_domination','best_first_neighbor_sorted_domination']
 
 # umda hyper-parameters #
 selection_scheme = ['nds']  # {'nds','monoscore'}
@@ -48,7 +48,7 @@ selection_scheme_feda = ['nds']  # {'nds','monoscore'}
 # mimic hyper-parameters #
 selection_scheme_mimic = ['nds']  # {'nds','monoscore'}
 rep_scheme_mimic = ["replacement"]  # actually, never used inside algorithm.
-selected_individuals = [50] #[50,100]
+selected_individuals = [50]  # [50,100]
 
 
 def get_genetic_options(name: str, dataset_name: str) -> [str]:
@@ -192,6 +192,26 @@ def get_mimic_options(dataset_name: str) -> [str]:
     return params_list
 
 
+def get_random_options(dataset_name: str) -> [str]:
+    params_list = []
+
+    for dependency in dependencies:
+
+        for max_evaluations in max_evals:
+            for pop_size in population_size:
+                for iterations in num_generations:
+                    for size in subset_size:
+                        for s_type in sss_type:
+                            for s_per_it in sss_per_iteration:
+                                params_line = f"random {dataset_name} {str(seed)} {str(pop_size)}" \
+                                              f" {str(iterations)} {str(max_evaluations)} " \
+                                              f"{str(num_executions)} {dependency} {str(size)} " \
+                                              f"{str(s_type)} {str(s_per_it)}"
+
+                                params_list.append(params_line)
+    return params_list
+
+
 """""""""""""CREATE PARAMETERS (OPTIONS) FILES """""""""""""
 options_list = []
 
@@ -211,6 +231,8 @@ for data in dataset:
         options_list = options_list + get_feda_options(data)
     if 'mimic' == algorithm:
         options_list = options_list + get_mimic_options(data)
+    if 'random' == algorithm:
+        options_list = options_list + get_random_options(data)
 
 params_file = open("pablo/params_file", "w", newline='\n')
 for line in options_list:

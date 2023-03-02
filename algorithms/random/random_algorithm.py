@@ -1,5 +1,7 @@
 from typing import Any, Dict, List
 import numpy as np
+
+import evaluation
 from algorithms.abstract_algorithm.abstract_algorithm import AbstractAlgorithm
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
 import time
@@ -15,10 +17,11 @@ class RandomAlgorithm(AbstractAlgorithm):
 
     def __init__(self, execs, dataset_name: str = "test", dataset: Dataset = None, random_seed: int = None,
                  debug_mode: bool = False, tackle_dependencies: bool = False,
-                 population_length: int = 100, max_generations: int = 100, max_evaluations: int = 0):
+                 population_length: int = 100, max_generations: int = 100, max_evaluations: int = 0,
+                 subset_size: int = 20, sss_type=0, sss_per_it=False):
 
         super().__init__(execs, dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
-                         population_length, max_generations, max_evaluations)
+                         subset_size=subset_size, sss_type=sss_type, sss_per_iteration=sss_per_it)
 
         self.population_length: int = population_length
         self.max_generations: int = max_generations
@@ -56,6 +59,8 @@ class RandomAlgorithm(AbstractAlgorithm):
     def run(self) -> Dict[str, Any]:
         self.reset()
         start = time.time()
+        nds_update_time = 0
+        sss_total_time = 0
 
         try:
             while (not self.stop_criterion(self.num_generations, self.num_evaluations)):
@@ -68,10 +73,19 @@ class RandomAlgorithm(AbstractAlgorithm):
                     self.population = self.repair_population_dependencies(
                         self.population)
 
-                # update NDS
+                # update nds with solutions constructed and evolved in this iteration
+                update_start = time.time()
                 get_nondominated_solutions(self.population, self.nds)
+                nds_update_time = nds_update_time + (time.time() - update_start)
 
                 self.num_generations += 1
+
+                if self.sss_per_iteration:
+                    sss_start = time.time()
+                    self.nds = evaluation.solution_subset_selection.search_solution_subset(self.sss_type,
+                                                                                           self.subset_size, self.nds)
+                    sss_total_time = sss_total_time + (time.time() - sss_start)
+
                 if self.debug_mode:
                     self.debug_data()
 
@@ -82,14 +96,16 @@ class RandomAlgorithm(AbstractAlgorithm):
 
         # plot_solutions(self.nds)
 
-        return {
-            "population": self.nds,
-            "time": end - start,
-            "numGenerations": self.num_generations,
-            "numEvaluations": self.num_evaluations,
-            "nds_debug": self.nds_debug,
-            "population_debug": self.population_debug
-        }
+        return {"population": self.nds,
+                "time": end - start,
+                "nds_update_time": nds_update_time,
+                "sss_total_time": sss_total_time,
+                "numGenerations": self.num_generations,
+                "best_individual": self.nds[np.random.randint(low=0, high=len(self.nds))],
+                "numEvaluations": self.num_evaluations,
+                "nds_debug": self.nds_debug,
+                "population_debug": self.population_debug
+                }
 
     def init_solutions_uniform(self, population_length: int) -> List[Solution]:
         """
@@ -109,3 +125,13 @@ class RandomAlgorithm(AbstractAlgorithm):
             else:
                 i -= 1
         return solutions
+
+    def add_evaluation(self, new_population) -> None:
+
+        return None
+
+    def stop_criterion(self, num_generations, num_evaluations) -> bool:
+        if self.max_evaluations == 0:
+            return num_generations >= self.max_generations
+        else:
+            return num_evaluations >= self.max_evaluations
