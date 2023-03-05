@@ -17,10 +17,10 @@ class EDAAlgorithm(AbstractAlgorithm):
     def __init__(self, execs: int, dataset_name: str = "1", dataset: Dataset = None, random_seed: int = None,
                  debug_mode: bool = False, tackle_dependencies: bool = False,
                  population_length: int = 100, max_generations: int = 100,
-                 max_evaluations: int = 0, subset_size: int = 5):
+                 max_evaluations: int = 0, subset_size: int = 5, sss_type=0, sss_per_iteration=False):
 
         super().__init__(execs,dataset_name, dataset, random_seed, debug_mode, \
-                         tackle_dependencies, subset_size = subset_size)
+                         tackle_dependencies, subset_size=subset_size, sss_type=sss_type, sss_per_iteration=sss_per_iteration)
 
         self.nds = []
         self.num_evaluations: int = 0

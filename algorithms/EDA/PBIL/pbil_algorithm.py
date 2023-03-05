@@ -1,4 +1,6 @@
 from typing import Any, Dict, List, Tuple
+
+import evaluation
 from algorithms.EDA.eda_algorithm import EDAAlgorithm
 from algorithms.abstract_algorithm.abstract_algorithm import plot_solutions
 from datasets import Dataset
@@ -20,10 +22,11 @@ class PBILAlgorithm(EDAAlgorithm):
     def __init__(self,execs, dataset_name: str = "test", dataset: Dataset = None, random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
                  population_length: int = 100, max_generations: int = 100, max_evaluations: int = 0,
                  learning_rate: float = 0.1, mutation_prob: float = 0.1,
-                 mutation_shift: float = 0.1, subset_size: int = 5):
+                 mutation_shift: float = 0.1, subset_size: int = 5, sss_type=0, sss_per_it=False):
 
         super().__init__(execs,dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
-                         population_length, max_generations, max_evaluations, subset_size=subset_size)
+                         population_length, max_generations, max_evaluations, subset_size=subset_size,
+                         sss_type=sss_type, sss_per_iteration=sss_per_it)
 
         self.executer = PBILExecuter(algorithm=self, execs=execs)
 
@@ -118,6 +121,8 @@ class PBILAlgorithm(EDAAlgorithm):
 
     def run(self) -> Dict[str, Any]:
         start = time.time()
+        nds_update_time = 0
+        sss_total_time = 0
         self.reset()
 
         self.probability_vector = self.initialize_probability_vector()
@@ -143,9 +148,17 @@ class PBILAlgorithm(EDAAlgorithm):
                     self.probability_vector, max_sample)
 
                 # update nds with solutions constructed and evolved in this iteration
+                update_start = time.time()
                 get_nondominated_solutions(self.population, self.nds)
+                nds_update_time = nds_update_time + (time.time() - update_start)
                 #plot_solutions(self.nds)
                 self.num_generations += 1
+
+                if self.sss_per_iteration:
+                    sss_start = time.time()
+                    self.nds = evaluation.solution_subset_selection.search_solution_subset(self.sss_type,
+                                                                                           self.subset_size, self.nds)
+                    sss_total_time = sss_total_time + (time.time() - sss_start)
 
                 if self.debug_mode:
                     self.debug_data()
@@ -159,6 +172,8 @@ class PBILAlgorithm(EDAAlgorithm):
 
         return {"population": self.nds,
                 "time": end - start,
+                "nds_update_time": nds_update_time,
+                "sss_total_time": sss_total_time,
                 "numGenerations": self.num_generations,
                 "best_individual": self.best_individual,
                 "numEvaluations": self.num_evaluations,

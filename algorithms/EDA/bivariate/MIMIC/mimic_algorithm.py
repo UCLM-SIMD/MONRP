@@ -1,5 +1,7 @@
 import random
 from typing import Any, Dict, List, Tuple
+
+import evaluation
 from algorithms.EDA.bivariate.MIMIC.mimic_executer import MIMICExecuter
 from algorithms.EDA.eda_algorithm import EDAAlgorithm
 from algorithms.abstract_algorithm.abstract_algorithm import plot_solutions
@@ -20,12 +22,13 @@ class MIMICAlgorithm(EDAAlgorithm):
                  debug_mode: bool = False, tackle_dependencies: bool = False,
                  population_length: int = 100, max_generations: int = 100, max_evaluations: int = 0,
                  selected_individuals: int = 60, selection_scheme: str = "nds", replacement_scheme: str = "replacement",
-                 execs=10, subset_size: int = 10):
+                 execs=10, subset_size: int = 10, sss_type=0, sss_per_it=False):
 
 
         super().__init__(execs=execs, dataset_name=dataset_name, random_seed=random_seed,debug_mode=debug_mode,
                          tackle_dependencies=tackle_dependencies,population_length=population_length,
-                         subset_size=subset_size, max_generations=max_generations,  max_evaluations= max_evaluations)
+                         subset_size=subset_size, max_generations=max_generations,  max_evaluations= max_evaluations,
+                         sss_type=sss_type, sss_per_iteration=sss_per_it)
 
         self.executer = MIMICExecuter(algorithm=self, execs=execs)
 
@@ -224,6 +227,8 @@ class MIMICAlgorithm(EDAAlgorithm):
     def run(self) -> Dict[str, Any]:
         self.reset()
         start = time.time()
+        nds_update_time = 0
+        sss_total_time = 0
 
         self.population = self.generate_initial_population()
 
@@ -250,14 +255,24 @@ class MIMICAlgorithm(EDAAlgorithm):
 
 
                 # repair population if dependencies tackled:
-                if(self.tackle_dependencies):
-                    self.population = self.repair_population_dependencies(
-                        self.population)
+                # no lo forzamos pues tiene que aprender la estructura que le venga bien
+                #se arreglan antes de devolver el nds final
+                #if(self.tackle_dependencies):
+                 #   self.population = self.repair_population_dependencies(
+                  #      self.population)
 
                 # evaluation # update nds with solutions constructed and evolved in this iteration
+                update_start = time.time()
                 get_nondominated_solutions(self.population, self.nds)
+                nds_update_time = nds_update_time + (time.time() - update_start)
 
                 self.num_generations += 1
+
+                if self.sss_per_iteration:
+                    sss_start = time.time()
+                    self.nds = evaluation.solution_subset_selection.search_solution_subset(self.sss_type,
+                                                                                           self.subset_size, self.nds)
+                    sss_total_time = sss_total_time + (time.time() - sss_start)
 
                 if self.debug_mode:
                     self.debug_data()
@@ -265,13 +280,19 @@ class MIMICAlgorithm(EDAAlgorithm):
         except EvaluationLimit:
             pass
 
+        if (self.tackle_dependencies):
+            self.nds = self.repair_population_dependencies(
+                self.nds)
         end = time.time()
         #plot_solutions(self.nds)
 
         print("\nNDS created has", self.nds.__len__(), "solution(s)")
+        #print((end - start) - nds_update_time, " seconds")
 
         return {"population": self.nds,
                 "time": end - start,
+                "nds_update_time": nds_update_time,
+                "sss_total_time": sss_total_time,
                 "numGenerations": self.num_generations,
                 "best_individual": self.best_individual,
                 "numEvaluations": self.num_evaluations,

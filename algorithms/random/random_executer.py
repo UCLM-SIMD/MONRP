@@ -1,18 +1,18 @@
 from typing import Any, Dict, List
 from algorithms.abstract_algorithm.abstract_executer import AbstractExecuter
-from algorithms.random.random_algorithm import RandomAlgorithm
 
 
 class RandomExecuter(AbstractExecuter):
     """Specific random implementation of executer.
     """
 
-    def __init__(self, algorithm: RandomAlgorithm, execs: int):
+    def __init__(self, algorithm, execs: int):
         """Init method extends config and metrics fields with specific genetic algorithm data
         """
+        from algorithms.random.random_algorithm import RandomAlgorithm
         super().__init__(algorithm, execs)
-        self.algorithm: RandomAlgorithm = algorithm
-        self.algorithm_type: str = "ranodm"
+        self.algorithm: RandomAlgorithm
+        self.algorithm_type: str = "random"
 
         self.config_fields.extend(
             ["Population Length", "MaxGenerations", "MaxEvaluations"])

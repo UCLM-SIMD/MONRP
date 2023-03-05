@@ -172,3 +172,4 @@ temp-plot.*
 #galgo
 galgo/pablo/params_file
 galgo/pablo/runJobs.pbs
+/analisis/images/

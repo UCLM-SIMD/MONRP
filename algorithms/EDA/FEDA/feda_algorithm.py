@@ -1,4 +1,6 @@
 from typing import Any, Dict, List
+
+import evaluation
 from algorithms.EDA.eda_algorithm import EDAAlgorithm
 from algorithms.abstract_algorithm.abstract_algorithm import plot_solutions
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
@@ -51,10 +53,11 @@ class FEDAAlgorithm(EDAAlgorithm):
     def __init__(self, execs, dataset_name: str = "p2", dataset: Dataset = None, random_seed: int = None, debug_mode: bool = False,
                  tackle_dependencies: bool = False,
                  population_length: int = 100, selection_scheme: str = "nds", max_generations: int = 100,
-                 max_evaluations: int = 0, subset_size: int = 5):
+                 max_evaluations: int = 0, subset_size: int = 5, sss_type=0, sss_per_it=False):
 
         super().__init__(execs,dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
-                         population_length, max_generations, max_evaluations, subset_size=subset_size)
+                         population_length, max_generations, max_evaluations, subset_size=subset_size,
+                         sss_type=sss_type, sss_per_iteration=sss_per_it)
 
         self.population = None
         self.selection_scheme: str = selection_scheme
@@ -94,6 +97,8 @@ class FEDAAlgorithm(EDAAlgorithm):
     def run(self) -> Dict[str, Any]:
         self.reset()
         start = time.time()
+        nds_update_time = 0
+        sss_total_time = 0
 
         self.population = self.init_population()
         get_nondominated_solutions(self.population, self.nds)
@@ -118,9 +123,18 @@ class FEDAAlgorithm(EDAAlgorithm):
                # plot_solutions(self.population)
 
                 # evaluation  # update nds with solutions constructed and evolved in this iteration
+
+                update_start = time.time()
                 get_nondominated_solutions(self.population, self.nds) #TODO aquí se filtran las nds, y en la siguiente iteración también se filtran para local_nds! se hace doble?
+                nds_update_time = nds_update_time + (time.time() - update_start)
                 #plot_solutions(self.nds)
                 self.num_generations += 1
+
+                if self.sss_per_iteration:
+                    sss_start = time.time()
+                    self.nds = evaluation.solution_subset_selection.search_solution_subset(self.sss_type,
+                                                                                           self.subset_size, self.nds)
+                    sss_total_time = sss_total_time + (time.time() - sss_start)
 
                 if self.debug_mode:
                     self.debug_data()
@@ -132,9 +146,12 @@ class FEDAAlgorithm(EDAAlgorithm):
         #plot_solutions(self.nds)
 
         print("\nNDS created has", self.nds.__len__(), "solution(s)")
+        #print(( end - start)-nds_update_time," seconds")
 
         return {"population": self.nds,
                 "time": end - start,
+                "nds_update_time": nds_update_time,
+                "sss_total_time": sss_total_time,
                 "numGenerations": self.num_generations,
                 "best_individual": self.best_individual,
                 "numEvaluations": self.num_evaluations,

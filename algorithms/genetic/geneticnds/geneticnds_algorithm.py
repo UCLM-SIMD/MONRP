@@ -3,6 +3,7 @@ from typing import Any, Dict, List
 import numpy as np
 from pymoo.visualization.scatter import Scatter
 
+import evaluation
 from algorithms.abstract_algorithm.abstract_algorithm import plot_solutions
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
 from algorithms.genetic.abstract_genetic.abstract_genetic_algorithm import AbstractGeneticAlgorithm
@@ -25,12 +26,13 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
                  selection: str = "tournament", selection_candidates: int = 2,
                  crossover: str = "onepoint", crossover_prob: float = 0.9,
                  mutation: str = "flipeachbit", mutation_prob: float = 0.1,
-                 replacement: str = "elitism", subset_size: int = 5):
+                 replacement: str = "elitism", subset_size: int = 5, sss_type=0, sss_per_it=False):
 
         super().__init__(execs,dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
                          population_length, max_generations, max_evaluations,
                          selection, selection_candidates, crossover, crossover_prob,
-                         mutation, mutation_prob, replacement, subset_size=subset_size)
+                         mutation, mutation_prob, replacement, subset_size=subset_size,
+                         sss_type=sss_type, sss_per_iteration=sss_per_it)
 
         self.executer = GeneticNDSExecuter(algorithm=self, execs=execs)
         self.config_dictionary.update({'algorithm': 'geneticNDS'})
@@ -89,6 +91,8 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
     def run(self) -> Dict[str, Any]:
         self.reset()
         start = time.time()
+        nds_update_time = 0
+        sss_total_time = 0
 
         self.num_generations = 0
         self.num_evaluations = 0
@@ -121,7 +125,9 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
 
 
                 # update NDS
+                update_start = time.time()
                 get_nondominated_solutions(new_population, self.nds)
+                nds_update_time = nds_update_time + (time.time() - update_start)
 
 
                 returned_population = copy.deepcopy(new_population)
@@ -136,6 +142,12 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
                 else:
                     self.population = self.replacement(
                         self.population, new_population)
+
+                if self.sss_per_iteration:
+                    sss_start = time.time()
+                    self.nds = evaluation.solution_subset_selection.search_solution_subset(self.sss_type,
+                                                                                           self.subset_size, self.nds)
+                    sss_total_time = sss_total_time + (time.time() - sss_start)
 
                 self.num_generations += 1
                 if self.debug_mode:
@@ -152,6 +164,8 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
         return {
             "population": self.nds,
             "time": end - start,
+            "nds_update_time": nds_update_time,
+            "sss_total_time": sss_total_time,
             "numGenerations": self.num_generations,
             "bestGeneration": self.best_generation,
             "best_individual": self.best_individual,
