@@ -103,9 +103,6 @@ class UMDAAlgorithm(EDAAlgorithm):
         #plot_solutions(self.population)
 
 
-
-
-
         if self.debug_mode:
             self.debug_data()
 

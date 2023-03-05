@@ -9,16 +9,16 @@ from models.Solution import Solution
 """ Please fill the experiments hyper-parameters for all algorithms, which will be used to define the which results
 will be taken into account to find the reference Pareto for GD+ and UNFR"""
 
-prefix = 'files_list_allGRASP_'
-dependencies = ['False']  # {'True','False'}
+prefix = 'files_list_'
+dependencies = ['True']  # {'True','False'}
 
 # post metrics are not computed among results for all indicated datasets.Only 1 dataset is taken into account each time.
 # dX files are classic (like cX files) but with a larger number of implied pbis by dependency and larger number of pbis
 # do not use c5 and c6 because with 500 pbis its too slow
 # p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'd1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7'
 # 'p1', 'p2', 's1','s2','s3','s4'
-dataset = ['p1', 'p2', 's1','s2','s3','s4']
-algorithm = ['GRASP', 'geneticnds', 'umda', 'pbil', 'mimic']  # 'umda', 'pbil', 'GRASP', 'geneticnds', 'mimic','nsgaii'
+dataset = ['p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'd1', 'd2', 'd3', 'd4']
+algorithm = ['feda','random', 'geneticnds',  'umda', 'pbil', 'mimic']  # 'umda', 'pbil', 'GRASP', 'geneticnds', 'mimic','nsgaii'
 
 # COMMON HYPER-PARAMETERS #
 # possible algorithm values: {'GRASP', 'feda', 'geneticnds', 'pbil', 'umda', 'mimic''}
@@ -26,9 +26,9 @@ seed = 5
 num_executions = 30 # 10 30
 subset_size = [10]  # number of solutions to choose from final NDS in each algorithm to compute metrics
 sss_type = [0] # 0 for greedy hv
-sss_per_iteration = [True] # [True, False]
-population_size = [700] # [100, 200, 500, 700, 1000], 2000, 3000] # 2000 and 3000 not in nsgaii (too slow)
-num_generations = [400] #[50, 100, 200, 300, 400], 500, 600] #500 and 600 not in nsgaii
+sss_per_iteration = [False] # [True, False]
+population_size = [100, 200, 500, 700, 1000] # [100, 200, 500, 700, 1000], 2000, 3000] # 2000 and 3000 not in nsgaii (too slow)
+num_generations = [50, 100, 200, 300, 400] #[50, 100, 200, 300, 400], 500, 600] #500 and 600 not in nsgaii
 max_evals = [0]
 
 # geneticNDS and NSGAii hyperparameters #
@@ -156,6 +156,25 @@ def get_umda_uids(d: str) -> [str]:
                                         uids_list.append(uid_umda)
     return uids_list
 
+''' returns a list of uid files created from random hyper-parameters '''
+def get_random_uids(d: str) -> [str]:
+    uids_list = []
+
+    for dependency in dependencies:
+
+        for max_evalu in max_evals:
+            for pop_size in population_size:
+                for iterations in num_generations:
+                    for size in subset_size:
+                        for s_type in sss_type:
+                            for s_per_it in sss_per_iteration:
+                                uid_random = output_folder + 'random' + dependency + d + str(seed) + str(size) + \
+                                           str(s_type) + str(s_per_it) + \
+                                           str(pop_size) + str(iterations) + str(max_evalu) \
+                                           + str(num_executions) +'.json'
+                                print('\'../' + uid_random + '\',')
+                                uids_list.append(uid_random)
+    return uids_list
 
 ''' returns a list of uid files created from pbil hyper-parameters '''
 
@@ -345,6 +364,9 @@ if __name__ == '__main__':
         if 'feda' in algorithm:
             output_folder = 'output/feda/'
             files_uid = files_uid + get_feda_uids(data)
+        if 'random' in algorithm:
+            output_folder = 'output/random/'
+            files_uid = files_uid + get_random_uids(data)
 
         # find Reference Pareto and compute metrics, and remove files not available yet
         reference_pareto, files_uid = construct_store_reference_pareto(files_uid)

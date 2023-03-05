@@ -68,11 +68,6 @@ class RandomAlgorithm(AbstractAlgorithm):
                 self.population = self.init_solutions_uniform(
                     self.population_length)
 
-                # repair population if dependencies tackled:
-                if (self.tackle_dependencies):
-                    self.population = self.repair_population_dependencies(
-                        self.population)
-
                 # update nds with solutions constructed and evolved in this iteration
                 update_start = time.time()
                 get_nondominated_solutions(self.population, self.nds)
@@ -93,7 +88,10 @@ class RandomAlgorithm(AbstractAlgorithm):
             pass
 
         end = time.time()
-
+        # repair population if dependencies tackled, only at the end of the execution:
+        if (self.tackle_dependencies):
+            self.nds = self.repair_population_dependencies(
+                self.nds)
         # plot_solutions(self.nds)
 
         return {"population": self.nds,
