@@ -18,7 +18,7 @@ dependencies = ['True']  # {'True','False'}
 # p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'd1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7'
 # 'p1', 'p2', 's1','s2','s3','s4'
 dataset = ['p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'd1', 'd2', 'd3', 'd4']
-algorithm = ['feda','random', 'geneticnds',  'umda', 'pbil', 'mimic']  # 'umda', 'pbil', 'GRASP', 'geneticnds', 'mimic','nsgaii'
+algorithm = ['feda','random', 'geneticnds', 'umda', 'pbil', 'mimic', 'nsgaiipt']  # 'umda', 'pbil', 'GRASP', 'geneticnds', 'mimic','nsgaii'
 
 # COMMON HYPER-PARAMETERS #
 # possible algorithm values: {'GRASP', 'feda', 'geneticnds', 'pbil', 'umda', 'mimic''}
@@ -82,7 +82,8 @@ def get_genetic_uids(name: str, d: str) -> [str]:
                                     for mut_prob in mutation_prob:
                                         for mut in mutation:
                                             for rep in replacement:
-                                                rep = 'elitism' if name == 'nsgaii' and rep=='elitismnds' else rep
+                                                rep = 'elitism' if name in ['nsgaii','nsgaiipt'] and \
+                                                                   rep=='elitismnds' else rep
                                                 for size in subset_size:
                                                     for s_type in sss_type:
                                                         for s_per_it in sss_per_iteration:
@@ -93,7 +94,7 @@ def get_genetic_uids(name: str, d: str) -> [str]:
                                                                           str(candidates) + str(xover_prob) + str(mut_prob) + \
                                                                           sel + xover + mut + rep + str(num_executions) + \
                                                                           '.json'
-                                                            if (name == 'nsgaii'): #nsga is not compatible with SSS per iteration
+                                                            if (name in ['nsgaii','nsgaiipt']): #nsga is not compatible with SSS per iteration
                                                                 uid_genetic = output_folder + name + dependency + d + \
                                                                               str(seed) + str(size) + str(s_type) + \
                                                                               'False' + str(pop_size) + \
@@ -352,6 +353,9 @@ if __name__ == '__main__':
         if 'nsgaii' in algorithm:
             output_folder = 'output/nsgaii/'
             files_uid = files_uid + get_genetic_uids('nsgaii', data)
+        if 'nsgaiipt' in algorithm:
+            output_folder = 'output/nsgaiipt/'
+            files_uid = files_uid + get_genetic_uids('nsgaiipt', data)
         if 'umda' in algorithm:
             output_folder = 'output/umda/'
             files_uid = files_uid + get_umda_uids(data)

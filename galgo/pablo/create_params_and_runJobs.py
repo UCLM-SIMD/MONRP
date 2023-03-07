@@ -5,7 +5,7 @@ dataset = ['p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'd1', 'd2
 
 # COMMON HYPER-PARAMETERS #
 # possible algorithm values: {'GRASP', 'feda', 'geneticnds', 'pbil', 'umda', nsgaii}
-algorithm = 'nsgaii'  # 'GRASP', 'geneticnds', 'nsgaii', 'umda', 'pbil', 'feda', 'mimic', 'random'
+algorithm = 'nsgaiipt'  # 'GRASP', 'geneticnds', 'nsgaii', 'nsgaipt', 'umda', 'pbil', 'feda', 'mimic', 'random'
 seed = 5
 num_executions = 30  # 30
 
@@ -218,10 +218,8 @@ for data in dataset:
 
     if 'GRASP' == algorithm:
         options_list = options_list + get_grasp_options(data)
-    if 'geneticnds' == algorithm:
-        options_list = options_list + get_genetic_options('geneticnds', data)
-    if 'nsgaii' == algorithm:
-        options_list = options_list + get_genetic_options('nsgaii', data)
+    if  algorithm in ['geneticnds','nsgaii','nsgaiipt']:
+        options_list = options_list + get_genetic_options(algorithm, data)
     if 'umda' == algorithm:
         options_list = options_list + get_umda_options(data)
     if 'pbil' == algorithm:

@@ -6,6 +6,7 @@ from algorithms.GRASP.GRASP import GRASP
 from algorithms.genetic.geneticnds.geneticnds_algorithm import GeneticNDSAlgorithm
 from algorithms.genetic.nsga2.nsga2_algorithm import NSGA2Algorithm
 from algorithms.genetic.nsgaii.nsgaii_algorithm import NSGAIIAlgorithm
+from algorithms.genetic.nsgaiipt.nsgaiipt_algorithm import NSGAIIPTAlgorithm
 import argparse
 import os
 
@@ -32,6 +33,8 @@ if (params[0] == "genetic"):
         algorithm_model = GeneticNDSAlgorithm
     elif algorithm_name == "nsgaii":
         algorithm_model = NSGAIIAlgorithm
+    elif algorithm_name == "nsgaiipt":
+        algorithm_model = NSGAIIPTAlgorithm
     # algorithm_model = NSGA2Algorithm
 
     dataset_name, seed, pop_length, max_gens, max_evaluations, sel_scheme, selection_candidates, cross_scheme, \

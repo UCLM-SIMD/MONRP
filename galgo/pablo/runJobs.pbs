@@ -1,5 +1,5 @@
 #!/bin/sh 
- #PBS -N nsgaii 
+ #PBS -N nsgaiipt 
  #PBS -l mem=2500mb 
  #PBS -J 1-350 
 
