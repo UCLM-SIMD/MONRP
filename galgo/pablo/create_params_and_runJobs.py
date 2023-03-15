@@ -7,7 +7,7 @@ dataset = ['p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'd1', 'd2
 # possible algorithm values: {'GRASP', 'feda', 'geneticnds', 'pbil', 'umda', nsgaii}
 algorithm = 'nsgaiipt'  # 'GRASP', 'geneticnds', 'nsgaii', 'nsgaipt', 'umda', 'pbil', 'feda', 'mimic', 'random'
 seed = 5
-num_executions = 30  # 30
+num_executions = 10  # 30
 
 subset_size = [10]  # number of solutions to choose from final NDS in each algorithm to compute metrics
 sss_type = [0]  # 0 is greedyHV

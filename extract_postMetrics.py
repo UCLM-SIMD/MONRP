@@ -18,7 +18,7 @@ dependencies = ['True']  # {'True','False'}
 # p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'd1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7'
 # 'p1', 'p2', 's1','s2','s3','s4'
 dataset = ['p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'd1', 'd2', 'd3', 'd4']
-algorithm = ['feda','random', 'geneticnds', 'umda', 'pbil', 'mimic', 'nsgaiipt']  # 'umda', 'pbil', 'GRASP', 'geneticnds', 'mimic','nsgaii'
+algorithm = ['feda','geneticnds', 'umda', 'pbil', 'mimic', 'nsgaiipt']  # 'umda', 'pbil', 'GRASP', 'geneticnds', 'mimic','nsgaii'
 
 # COMMON HYPER-PARAMETERS #
 # possible algorithm values: {'GRASP', 'feda', 'geneticnds', 'pbil', 'umda', 'mimic''}
@@ -352,7 +352,9 @@ if __name__ == '__main__':
             files_uid = files_uid + get_genetic_uids('geneticNDS', data)
         if 'nsgaii' in algorithm:
             output_folder = 'output/nsgaii/'
-            files_uid = files_uid + get_genetic_uids('nsgaii', data)
+        if 'nsgaiipt10to30' in algorithm:
+            output_folder = 'output/nsgaiipt10to30/'
+            files_uid = files_uid + get_genetic_uids('nsgaiipt', data)
         if 'nsgaiipt' in algorithm:
             output_folder = 'output/nsgaiipt/'
             files_uid = files_uid + get_genetic_uids('nsgaiipt', data)
