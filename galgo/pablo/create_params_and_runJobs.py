@@ -1,19 +1,19 @@
 # ['p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'd1', 'd2', 'd3','d4','d5','d6','d7',
 # 'e1', 'e2', 'e3','e4','e5','e6']
 dependencies = ['D']  # {'D', 'd'}
-dataset = ['p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'd1', 'd2', 'd3','d4']  # 'p1', 'p2', 's1','s2','s3', 's4'
+dataset = ['p1', 'p2', 's1','s2','s3', 's4']  # 'p1', 'p2', 's1','s2','s3', 's4'
 
 # COMMON HYPER-PARAMETERS #
 # possible algorithm values: {'GRASP', 'feda', 'geneticnds', 'pbil', 'umda', nsgaii}
-algorithm = 'nsgaiipt'  # 'GRASP', 'geneticnds', 'nsgaii', 'nsgaipt', 'umda', 'pbil', 'feda', 'mimic', 'random'
+algorithm = 'nsgaii'  # 'GRASP', 'geneticnds', 'nsgaii', 'nsgaipt', 'umda', 'pbil', 'feda', 'mimic', 'random'
 seed = 5
-num_executions = 10  # 30
+num_executions = 30  # 30
 
 subset_size = [10]  # number of solutions to choose from final NDS in each algorithm to compute metrics
 sss_type = [0]  # 0 is greedyHV
 sss_per_iteration = [False]  # [True, False]
-population_size = [100, 200, 500, 700, 1000]  # [100, 200, 500, 700, 1000 #[, 2000, 3000]
-num_generations = [50, 100, 200, 300, 400]  # [50, 100, 200, 300, 400]
+population_size = [700]  # [100, 200, 500, 700, 1000 #[, 2000, 3000]
+num_generations = [400]  # [50, 100, 200, 300, 400]
 
 max_evals = [0]
 

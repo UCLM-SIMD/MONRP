@@ -9,7 +9,7 @@ from models.Solution import Solution
 """ Please fill the experiments hyper-parameters for all algorithms, which will be used to define the which results
 will be taken into account to find the reference Pareto for GD+ and UNFR"""
 
-prefix = 'files_list_'
+prefix = 'files_list_allGRASP_D'
 dependencies = ['True']  # {'True','False'}
 
 # post metrics are not computed among results for all indicated datasets.Only 1 dataset is taken into account each time.
@@ -17,8 +17,8 @@ dependencies = ['True']  # {'True','False'}
 # do not use c5 and c6 because with 500 pbis its too slow
 # p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'd1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7'
 # 'p1', 'p2', 's1','s2','s3','s4'
-dataset = ['p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'd1', 'd2', 'd3', 'd4']
-algorithm = ['feda','geneticnds', 'umda', 'pbil', 'mimic', 'nsgaiipt']  # 'umda', 'pbil', 'GRASP', 'geneticnds', 'mimic','nsgaii'
+dataset = ['p1', 'p2', 's1','s2','s3','s4']
+algorithm = ['geneticnds', 'pbil', 'mimic', 'nsgaii', 'GRASP']  # 'umda', 'pbil', 'GRASP', 'geneticnds', 'mimic','nsgaii'
 
 # COMMON HYPER-PARAMETERS #
 # possible algorithm values: {'GRASP', 'feda', 'geneticnds', 'pbil', 'umda', 'mimic''}
@@ -27,8 +27,8 @@ num_executions = 30 # 10 30
 subset_size = [10]  # number of solutions to choose from final NDS in each algorithm to compute metrics
 sss_type = [0] # 0 for greedy hv
 sss_per_iteration = [False] # [True, False]
-population_size = [100, 200, 500, 700, 1000] # [100, 200, 500, 700, 1000], 2000, 3000] # 2000 and 3000 not in nsgaii (too slow)
-num_generations = [50, 100, 200, 300, 400] #[50, 100, 200, 300, 400], 500, 600] #500 and 600 not in nsgaii
+population_size = [700] # [100, 200, 500, 700, 1000], 2000, 3000] # 2000 and 3000 not in nsgaii (too slow)
+num_generations = [400] #[50, 100, 200, 300, 400], 500, 600] #500 and 600 not in nsgaii
 max_evals = [0]
 
 # geneticNDS and NSGAii hyperparameters #
@@ -352,6 +352,7 @@ if __name__ == '__main__':
             files_uid = files_uid + get_genetic_uids('geneticNDS', data)
         if 'nsgaii' in algorithm:
             output_folder = 'output/nsgaii/'
+            files_uid = files_uid + get_genetic_uids('nsgaii', data)
         if 'nsgaiipt10to30' in algorithm:
             output_folder = 'output/nsgaiipt10to30/'
             files_uid = files_uid + get_genetic_uids('nsgaiipt', data)
