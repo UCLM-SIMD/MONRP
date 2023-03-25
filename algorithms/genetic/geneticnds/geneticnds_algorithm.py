@@ -92,6 +92,7 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
         self.reset()
         start = time.time()
         nds_update_time = 0
+        sss_total_time = 0
 
         self.num_generations = 0
         self.num_evaluations = 0
@@ -143,8 +144,10 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
                         self.population, new_population)
 
                 if self.sss_per_iteration:
+                    sss_start = time.time()
                     self.nds = evaluation.solution_subset_selection.search_solution_subset(self.sss_type,
                                                                                            self.subset_size, self.nds)
+                    sss_total_time = sss_total_time + (time.time() - sss_start)
 
                 self.num_generations += 1
                 if self.debug_mode:
@@ -162,6 +165,7 @@ class GeneticNDSAlgorithm(AbstractGeneticAlgorithm):
             "population": self.nds,
             "time": end - start,
             "nds_update_time": nds_update_time,
+            "sss_total_time": sss_total_time,
             "numGenerations": self.num_generations,
             "bestGeneration": self.best_generation,
             "best_individual": self.best_individual,

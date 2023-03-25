@@ -2,14 +2,10 @@ import random
 import sys
 from typing import Any, Dict, List, Tuple
 
-from pymoo.algorithms.moo.nsga2 import NSGA2
-from pymoo.factory import get_crossover, get_mutation, get_sampling
-from pymoo.operators.crossover.pntx import SinglePointCrossover
-from pymoo.operators.mutation.bitflip import BitflipMutation
-from pymoo.operators.sampling.rnd import BinaryRandomSampling
-from pymoo.optimize import minimize
-from pymoo.visualization.scatter import Scatter
+import numpy as np
+from algorithms.genetic.nsgaiipt.nsgaiipt_executer import NSGAIIPTExecuter
 
+import evaluation
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
 from algorithms.genetic.abstract_genetic.abstract_genetic_algorithm import AbstractGeneticAlgorithm
 from algorithms.genetic.nsgaii.nsgaii_executer import NSGAIIExecuter
@@ -19,34 +15,9 @@ from datasets import Dataset
 
 from models.Solution import Solution
 
-from pymoo.core.problem import Problem
-import numpy as np
 
-
-class MONRProblem(Problem):
-
-    def __init__(self, num_requirements, costs, satisfactions):
-        super().__init__(n_var=num_requirements, n_obj=2, n_constr=0, xl=0.0, xu=1.0)
-        self.costs = costs
-        self.satisfactions = satisfactions
-
-    def _evaluate(self, x, out, *args, **kwargs):
-
-        out["F"] = []
-        for ind in x:
-            selected = np.zeros(len(ind), dtype=int)
-            selected[ind] = 1
-            c = self.costs[selected].sum()
-            s = self.satisfactions[selected].sum()
-            out["F"] = out["F"] + [[c,s]]
-
-
-
-
-
-class NSGA2Algorithm(AbstractGeneticAlgorithm):
-    """Nondominated Sorting Genetic Algorithm II. This genetic algorithm keeps a list of pareto fronts, selecting
-    individuals by dominance and crowding distance.
+class NSGAIIPTAlgorithm(AbstractGeneticAlgorithm):
+    """Nondominated Sorting Genetic Algorithm II PT, as defined in paper "An Effective Method of Systems Requirement Optimization Based on Genetic Algorithms": 10.12785/isl/060102.
     """
 
     def __init__(self, execs, dataset_name="test", dataset: Dataset = None, random_seed=None, population_length=20,
@@ -59,10 +30,9 @@ class NSGA2Algorithm(AbstractGeneticAlgorithm):
 
         super().__init__(execs, dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
                          population_length, max_generations, max_evaluations, subset_size=subset_size,
-                         sss_type=sss_type, sss_per_iteration=sss_per_it
-                         )
+                         sss_type=sss_type, sss_per_iteration=sss_per_it)
 
-        self.executer = NSGAIIExecuter(algorithm=self, execs=execs)
+        self.executer = NSGAIIPTExecuter(algorithm=self, execs=execs)
         self.selection_scheme = selection
         self.selection_candidates = selection_candidates
         self.crossover_scheme = crossover
@@ -79,7 +49,7 @@ class NSGA2Algorithm(AbstractGeneticAlgorithm):
         self.num_generations: int = 0
         self.best_individual = None
 
-        self.config_dictionary.update({'algorithm': 'nsgaii'})
+        self.config_dictionary.update({'algorithm': 'nsgaiipt'})
         self.config_dictionary['population_length'] = population_length
         self.config_dictionary['max_generations'] = max_generations
         self.config_dictionary['max_evaluations'] = max_evaluations
@@ -102,7 +72,6 @@ class NSGA2Algorithm(AbstractGeneticAlgorithm):
         self.config_dictionary['mutation'] = mutation
 
         self.config_dictionary['replacement'] = self.replacement_scheme
-        self.deepcopy = True
 
     def get_file(self) -> str:
         return (f"{str(self.__class__.__name__)}-{str(self.dataset_name)}-"
@@ -113,7 +82,7 @@ class NSGA2Algorithm(AbstractGeneticAlgorithm):
                 f"{str(self.mutation_prob)}-{str(self.replacement_scheme)}.txt")
 
     def get_name(self) -> str:
-        return f"NSGA-II{str(self.population_length)}+{str(self.max_generations)}+{str(self.max_evaluations)}+{str(self.crossover_prob)}\
+        return f"NSGA-IIPT{str(self.population_length)}+{str(self.max_generations)}+{str(self.max_evaluations)}+{str(self.crossover_prob)}\
             +{str(self.mutation_scheme)}+{str(self.mutation_prob)}"
 
     def add_evaluation(self, new_population: List[Solution]) -> None:
@@ -121,54 +90,120 @@ class NSGA2Algorithm(AbstractGeneticAlgorithm):
         """
         self.num_evaluations += 1
         if self.stop_criterion(self.num_generations, self.num_evaluations):
-            self.returned_population = copy.deepcopy(new_population)
-            self.fast_nondominated_sort(self.returned_population)
+            new_population, fronts = self.fast_nondominated_sort(
+                new_population)
             self.best_generation, self.best_generation_avgValue = self.calculate_last_generation_with_enhance(
-                self.best_generation, self.best_generation_avgValue, self.num_generations, self.returned_population)
+                self.best_generation, self.best_generation_avgValue, self.num_generations,
+                new_population)
             raise EvaluationLimit
 
     def reset(self) -> None:
         super().reset()
-        self.returned_population = None
 
     def run(self) -> Dict[str, Any]:
         self.reset()
         start = time.time()
+        nds_update_time = 0
 
-        problem = MONRProblem(self.dataset.num_pbis, self.dataset.pbis_cost_scaled,
-                              self.dataset.pbis_satisfaction_scaled)
+        # init nsgaii
+        self.population = self.generate_starting_population()
+        self.evaluate(self.population, self.best_individual)
 
-        algorithm = NSGA2(pop_size=self.population_length, sampling=BinaryRandomSampling(),
-                          crossover=SinglePointCrossover(),
-                          mutation=BitflipMutation(prob=self.mutation_prob),   )
+        # 4 Correct initial population(p)
+        if (self.tackle_dependencies):
+            self.population = self.repair_population_dependencies(
+                self.population)
+            #fronts[0] = self.repair_population_dependencies(
+                #fronts[0])
 
-        res = minimize(problem,
-                       algorithm,
-                       ('n_gen', self.max_generations),
-                       seed=self.random_seed,
-                       verbose=False)
+        # 5 Rank=non dominated sorting(P)
+        # 6 CD=crowding distance assignment(P)
+        # 7 Sort(P,Rank,CD)
+        self.population, fronts = self.fast_nondominated_sort(self.population)
+        self.calculate_crowding_distance(self.population)
 
-        plot = Scatter()
-        plot.add(problem.pareto_front(), plot_type="line", color="black", alpha=0.7)
-        plot.add(res.F, facecolor="none", edgecolor="red")
-        plot.show()
+        try:
+            # 8 While not Termination Condition() Do
+            while not self.stop_criterion(self.num_generations, self.num_evaluations):
+                # 9 parents ← selection(p);
+                offsprings = self.selection(self.population)
+
+                # 10 Pc← Crossover(pc,parents);
+                offsprings_c = self.crossover(offsprings)
+
+                # 11 Pm← Mutation(pm,offspring);
+                offsprings_m = self.mutation(offsprings_c)
+
+                # 12 P← Merge(P,Pc,Pm);
+                self.population = offsprings_c
+                self.population.extend(offsprings_m)
+
+                # 14 Remove duplicate individul(P) # TODO should go before separating in fronts
+                self.population = self.remove_duplicates(self.population)
+
+                # 13 Sort(P,Rank,CD)
+                self.evaluate(self.population, self.best_individual)
+                self.population, fronts = self.fast_nondominated_sort(
+                    self.population)
+                for front in fronts:
+                    self.calculate_crowding_distance(front)
+
+                # 15 If size(P<pop size)
+                if len(self.population) < self.population_length:
+                    # 16 Generate(R,pop size-size(P))
+                    # TODO check crowding distance of elems in self.pop is OK
+                    offsprings = self.selection(self.population)
+                    offsprings = self.crossover(offsprings)
+                    offsprings = self.mutation(offsprings)
+
+                    # 17 P← Merge(P,R)
+                    offsprings = offsprings[:self.population_length - len(
+                        self.population)]
+                    self.population.extend(offsprings)
+
+                    # 18 Sort(P,Rank,CD)
+                    self.population, fronts = self.fast_nondominated_sort(
+                        self.population)
+                    for front in fronts:
+                        self.calculate_crowding_distance(front)
+
+                # 19 If size(P>pop size)
+                elif len(self.population) > self.population_length:
+                    # 20 truncate(P,size(P)-pop size)
+                    self.population = self.truncate_population(fronts)
+
+                self.num_generations += 1
+
+                # SSS should be applied here and also in each front computed after extending the popoluation at
+                # start of each iteration. it makes no sense to change the nsgaii fast filtering
+                # if self.sss_per_iteration:
+                # self.population = evaluation.solution_subset_selection.search_solution_subset(self.sss_type,
+                # self.subset_size, self.population)
+
+                self.best_generation, self.best_generation_avgValue = self.calculate_last_generation_with_enhance(
+                    self.best_generation, self.best_generation_avgValue, self.num_generations,
+                    self.population)
+
+                if self.debug_mode:
+                    self.debug_data(nds_debug=fronts[0])
+
+        except EvaluationLimit:
+            pass
 
         end = time.time()
-        solutions = []
-        for x in np.arange(len(problem.costs)):
-            sol = Solution(dataset = self.dataset, probabilities=None, cost=problem.costs[x], satisfaction=problem.satisfactions[x])
-            solutions = solutions + [sol]
 
-
-        return {"population": solutions,
-                "time": end - start,
-                "numGenerations": self.num_generations,
-                "bestGeneration": self.best_generation,
-                "best_individual": self.best_individual,
-                "numEvaluations": self.num_evaluations,
-                "nds_debug": self.nds_debug,
-                "population_debug": self.population_debug
-                }
+        return {
+            # 22 Pareto Front=P
+            "population": fronts[0],  # TODO or self.population, check step 22
+            "time": end - start,
+            "nds_update_time": -1, #not applicable in nsgaiipt,
+            "numGenerations": self.num_generations,
+            "bestGeneration": self.best_generation,
+            "best_individual": self.best_individual,
+            "numEvaluations": self.num_evaluations,
+            "nds_debug": self.nds_debug,
+            "population_debug": self.population_debug
+        }
 
     def selection_tournament(self, population: List[Solution]) -> List[Solution]:
         """Specific implementation of tournament selection that compares two solutions by the crowding operator
@@ -181,34 +216,16 @@ class NSGA2Algorithm(AbstractGeneticAlgorithm):
                 candidate = population[random_index]
 
                 if (best_candidate is None or self.crowding_operator(candidate, best_candidate) == 1):
-                    if self.deepcopy:
-                        best_candidate = copy.deepcopy(candidate)
-                    else:
-                        best_candidate = copy.copy(candidate)
+                    best_candidate = candidate
 
+            rank, crowding_distance = best_candidate.rank, best_candidate.crowding_distance
+            best_candidate = Solution(
+                self.dataset, None, selected=np.where(best_candidate.selected == 1))
+            best_candidate.rank = rank
+            best_candidate.crowding_distance = crowding_distance
             new_population.append(best_candidate)
 
         return new_population
-
-    # def replacement_elitism(self, population: List[Solution], newpopulation: List[Solution]) -> List[Solution]:
-    #    """Specific replacement implementation that compares individuals by crowding operator
-    #    """
-    #    best_individual = None
-    #    for ind in population:
-    #        if (best_individual is None or self.crowding_operator(ind, best_individual) == 1):
-    #            best_individual = copy.deepcopy(ind)
-    #
-    #    newpopulation_replaced = []
-    #    newpopulation_replaced.extend(newpopulation)
-    #    worst_individual_index = None
-    #    worst_individual = None
-    #    for ind in newpopulation_replaced:
-    #        if (worst_individual is None or self.crowding_operator(ind, worst_individual) == -1):
-    #            worst_individual = copy.deepcopy(ind)
-    #            worst_individual_index = newpopulation_replaced.index(ind)
-    #
-    #    newpopulation_replaced[worst_individual_index] = best_individual
-    #    return newpopulation_replaced
 
     def fast_nondominated_sort(self, population: List[Solution]) -> Tuple[List[Solution], List[Solution]]:
         """Fast method that sorts a population in fronts, where each front contains solutions that are nondominated between them.
@@ -260,8 +277,8 @@ class NSGA2Algorithm(AbstractGeneticAlgorithm):
             if scale == 0:
                 scale = 1
             for i in range(1, solutions_num - 1):
-                front[i].crowding_distance += (
-                                                      front[i + 1].total_cost - front[i - 1].total_cost) / scale
+                front[i].crowding_distance += (front[i + 1].total_cost -
+                                               front[i - 1].total_cost) / scale
 
             front.sort(
                 key=lambda individual: individual.total_satisfaction)
@@ -277,8 +294,8 @@ class NSGA2Algorithm(AbstractGeneticAlgorithm):
                 scale = 1
             for i in range(1, solutions_num - 1):
                 front[i].crowding_distance += (
-                                                      front[i + 1].total_satisfaction - front[
-                                                  i - 1].total_satisfaction) / scale
+                    front[i + 1].total_satisfaction - front[
+                        i - 1].total_satisfaction) / scale
 
             return front
 
@@ -287,7 +304,43 @@ class NSGA2Algorithm(AbstractGeneticAlgorithm):
         """
         if (individual.rank < other_individual.rank) or \
                 ((individual.rank == other_individual.rank) and (
-                        individual.crowding_distance > other_individual.crowding_distance)):
+                    individual.crowding_distance > other_individual.crowding_distance)):
             return 1
         else:
             return -1
+
+    def remove_duplicates(self, population: List[Solution]) -> List[Solution]:
+        """Removes duplicates from a population.
+        """
+        selected_dict = {}
+        for individual in population:
+            selected_str = str(individual.selected)
+            selected_dict[selected_str] = individual
+
+        return list(selected_dict.values())
+
+    def truncate_population(self, fronts: List[List[Solution]]) -> List[Solution]:
+        """Truncates the population to the maximum size allowed.
+        """
+        population = []
+        front_num = 0
+        # till parent population is filled, calculate crowding distance in Fi, include i-th non-dominated front in parent pop
+        while len(population) + len(fronts[front_num]) <= self.population_length:
+            self.calculate_crowding_distance(  # TODO already set previously, check
+                fronts[front_num])
+            population.extend(fronts[front_num])
+            front_num += 1
+
+        # ordenar los individuos del ultimo front por crowding distance y agregar los X que falten para completar la poblacion
+        # TODO already set previously, check
+        self.calculate_crowding_distance(fronts[front_num])
+
+        # sort in descending order using >=n
+        fronts[front_num].sort(
+            key=lambda individual: individual.crowding_distance, reverse=True)
+
+        # choose first N elements of Pt+1
+        population.extend(
+            fronts[front_num][0:self.population_length - len(population)])
+
+        return population

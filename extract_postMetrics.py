@@ -9,31 +9,32 @@ from models.Solution import Solution
 """ Please fill the experiments hyper-parameters for all algorithms, which will be used to define the which results
 will be taken into account to find the reference Pareto for GD+ and UNFR"""
 
-dependencies = ['False']  # {'True','False'}
+prefix = 'files_list_allGRASP_D'
+dependencies = ['True']  # {'True','False'}
 
 # post metrics are not computed among results for all indicated datasets.Only 1 dataset is taken into account each time.
 # dX files are classic (like cX files) but with a larger number of implied pbis by dependency and larger number of pbis
 # do not use c5 and c6 because with 500 pbis its too slow
 # p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'd1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7'
 # 'p1', 'p2', 's1','s2','s3','s4'
-dataset = ['p1', 'p2', 's1','s2','s3']
-algorithm =   ['umda', 'pbil', 'GRASP', 'geneticnds', 'mimic']  # 'GRASP', 'geneticnds', 'nsgaii', 'umda', 'pbil', 'feda', 'mimic'
+dataset = ['p1', 'p2', 's1','s2','s3','s4']
+algorithm = ['geneticnds', 'pbil', 'mimic', 'nsgaii', 'GRASP']  # 'umda', 'pbil', 'GRASP', 'geneticnds', 'mimic','nsgaii'
 
 # COMMON HYPER-PARAMETERS #
 # possible algorithm values: {'GRASP', 'feda', 'geneticnds', 'pbil', 'umda', 'mimic''}
 seed = 5
-num_executions = 30
+num_executions = 30 # 10 30
 subset_size = [10]  # number of solutions to choose from final NDS in each algorithm to compute metrics
 sss_type = [0] # 0 for greedy hv
-sss_per_iteration = [True, False] # [True, False]
-population_size = [100, 200, 500, 700, 1000]
-num_generations = [50, 100, 200, 300, 400]
+sss_per_iteration = [False] # [True, False]
+population_size = [700] # [100, 200, 500, 700, 1000], 2000, 3000] # 2000 and 3000 not in nsgaii (too slow)
+num_generations = [400] #[50, 100, 200, 300, 400], 500, 600] #500 and 600 not in nsgaii
 max_evals = [0]
 
 # geneticNDS and NSGAii hyperparameters #
 selection_candidates = [2]
 crossover_prob = [0.8]
-mutation_prob = [0.1, 0.3]  # [0.1, 0.3]
+mutation_prob = [0.1]  # [0.1, 0.3]
 mutation = ['flip1bit']  # {'flip1bit', 'flipeachbit'}
 replacement = ['elitismnds']  # {'elitism', 'elitismnds'}
 selection = ['tournament']  # only 'tournament' available
@@ -41,8 +42,9 @@ crossover = ['onepoint']  # only 'onepoint' available
 
 # GRASP hyper-parameters #
 init_type = ['stochastically']  # {'stochastically', 'uniform'}
-path_relinking_mode = ['None', 'after_local']  # {'None', 'after_local'}
-local_search_type = ['best_first_neighbor_random_domination']
+path_relinking_mode = ['None','after_local']  # {'None', 'after_local'}
+local_search_type = ['None', 'best_first_neighbor_random','best_first_neighbor_sorted_score',
+ 'best_first_neighbor_sorted_score_r' , 'best_first_neighbor_random_domination','best_first_neighbor_sorted_domination']
 # local_search_type values: {'None', 'best_first_neighbor_random','best_first_neighbor_sorted_score',
 # best_first_neighbor_sorted_score_r' , 'best_first_neighbor_random_domination','best_first_neighbor_sorted_domination'}
 
@@ -61,7 +63,7 @@ selection_scheme_feda = ['nds']  # {'nds','monoscore'}
 # mimic hyper-parameters #
 selection_scheme_mimic = ['nds']  # {'nds','monoscore'}
 rep_scheme_mimic = ["replacement"]  # actually, never used inside algorithm.
-selected_individuals = [50, 100]
+selected_individuals = [50]
 
 ''' returns a list of uid files created from geneticNDS hyper-parameters '''
 
@@ -80,6 +82,8 @@ def get_genetic_uids(name: str, d: str) -> [str]:
                                     for mut_prob in mutation_prob:
                                         for mut in mutation:
                                             for rep in replacement:
+                                                rep = 'elitism' if name in ['nsgaii','nsgaiipt'] and \
+                                                                   rep=='elitismnds' else rep
                                                 for size in subset_size:
                                                     for s_type in sss_type:
                                                         for s_per_it in sss_per_iteration:
@@ -90,6 +94,15 @@ def get_genetic_uids(name: str, d: str) -> [str]:
                                                                           str(candidates) + str(xover_prob) + str(mut_prob) + \
                                                                           sel + xover + mut + rep + str(num_executions) + \
                                                                           '.json'
+                                                            if (name in ['nsgaii','nsgaiipt']): #nsga is not compatible with SSS per iteration
+                                                                uid_genetic = output_folder + name + dependency + d + \
+                                                                              str(seed) + str(size) + str(s_type) + \
+                                                                              'False' + str(pop_size) + \
+                                                                              str(iterations) + str(max_evalu) + \
+                                                                              str(candidates) + str(xover_prob) + str(
+                                                                    mut_prob) + sel + xover + mut + rep + str(
+                                                                    num_executions) + \
+                                                                              '.json'
                                                             print('\'../' + uid_genetic + '\',')
                                                             uids_list.append(uid_genetic)
     return uids_list
@@ -144,6 +157,25 @@ def get_umda_uids(d: str) -> [str]:
                                         uids_list.append(uid_umda)
     return uids_list
 
+''' returns a list of uid files created from random hyper-parameters '''
+def get_random_uids(d: str) -> [str]:
+    uids_list = []
+
+    for dependency in dependencies:
+
+        for max_evalu in max_evals:
+            for pop_size in population_size:
+                for iterations in num_generations:
+                    for size in subset_size:
+                        for s_type in sss_type:
+                            for s_per_it in sss_per_iteration:
+                                uid_random = output_folder + 'random' + dependency + d + str(seed) + str(size) + \
+                                           str(s_type) + str(s_per_it) + \
+                                           str(pop_size) + str(iterations) + str(max_evalu) \
+                                           + str(num_executions) +'.json'
+                                print('\'../' + uid_random + '\',')
+                                uids_list.append(uid_random)
+    return uids_list
 
 ''' returns a list of uid files created from pbil hyper-parameters '''
 
@@ -232,6 +264,8 @@ def construct_store_reference_pareto(uids):
         try:
             with open(file, 'r') as f_temp:
                 dictio = json.load(f_temp)
+
+
                 paretos = dictio['paretos']
                 for pareto in paretos:
                     for xy in pareto:
@@ -241,6 +275,8 @@ def construct_store_reference_pareto(uids):
         except (FileNotFoundError, IOError):
             updated_uids.remove(file)
             print("File not found so not used to extract metrics: ", file)
+
+
 
     uids = copy.deepcopy(updated_uids)
     nds = get_nondominated_solutions(solutions=all_solutions)
@@ -317,6 +353,12 @@ if __name__ == '__main__':
         if 'nsgaii' in algorithm:
             output_folder = 'output/nsgaii/'
             files_uid = files_uid + get_genetic_uids('nsgaii', data)
+        if 'nsgaiipt10to30' in algorithm:
+            output_folder = 'output/nsgaiipt10to30/'
+            files_uid = files_uid + get_genetic_uids('nsgaiipt', data)
+        if 'nsgaiipt' in algorithm:
+            output_folder = 'output/nsgaiipt/'
+            files_uid = files_uid + get_genetic_uids('nsgaiipt', data)
         if 'umda' in algorithm:
             output_folder = 'output/umda/'
             files_uid = files_uid + get_umda_uids(data)
@@ -329,6 +371,9 @@ if __name__ == '__main__':
         if 'feda' in algorithm:
             output_folder = 'output/feda/'
             files_uid = files_uid + get_feda_uids(data)
+        if 'random' in algorithm:
+            output_folder = 'output/random/'
+            files_uid = files_uid + get_random_uids(data)
 
         # find Reference Pareto and compute metrics, and remove files not available yet
         reference_pareto, files_uid = construct_store_reference_pareto(files_uid)
@@ -344,8 +389,8 @@ if __name__ == '__main__':
     sufix = ''
     for alg in algorithm:
         sufix += alg + '-'
-    container_name = 'files_list_soco_' + sufix[0:len(sufix) - 1]
+    container_name = prefix + sufix[0:len(sufix) - 1]
     with open('output/' + container_name, 'w') as container_file:
         for uid in all_files_uid:
             container_file.write(uid + "\n")
-    print(f"File list {container_name} created to be used from analisis/extensionSOCO notebook")
+    print(f"File list {container_name} created to be used from analisis notebook")

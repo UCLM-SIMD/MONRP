@@ -46,6 +46,7 @@ class Solution:
 
             self.mono_objective_score = self.compute_mono_objective_score()
         else: # this branch should be used only from ./extract_postMetrics.py scrip
+            self.dataset: Dataset = dataset
             self.total_cost = cost
             self.total_satisfaction = satisfaction
 

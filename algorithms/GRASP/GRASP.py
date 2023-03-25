@@ -150,6 +150,7 @@ class GRASP(AbstractAlgorithm):
         self.reset()
         self.start = time.time()
         nds_update_time = 0
+        sss_total_time = 0
 
         self.num_iterations = 0
         try:
@@ -185,8 +186,10 @@ class GRASP(AbstractAlgorithm):
                 self.num_iterations += 1
 
                 if self.sss_per_iteration:
+                    sss_start = time.time()
                     self.nds = evaluation.solution_subset_selection.search_solution_subset(self.sss_type,
                                                                                            self.subset_size, self.nds)
+                    sss_total_time = sss_total_time + (time.time() - sss_start)
 
                 if self.debug_mode:
                     self.debug_data()
@@ -201,6 +204,7 @@ class GRASP(AbstractAlgorithm):
             "population": self.nds,
             "time": seconds,
             "nds_update_time": nds_update_time,
+            "sss_total_time": sss_total_time,
             "numGenerations": self.num_iterations,
             "numEvaluations": self.num_evaluations,
             "nds_debug": self.nds_debug,
