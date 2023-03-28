@@ -177,6 +177,31 @@ def calculate_hypervolume(population: List[Solution], ref_x=None, ref_y=None) ->
 
     return hypervolume
 
+def try_flip_hv(s, i, initiated_solutions) -> float:
+    """
+    This method simulates a change in an attribute without changing actually that attribute from the object
+    """
+    former_sol=initiated_solutions[s]
+    new_selected = np.copy(former_sol.selected)
+    new_selected[i] = 1 - new_selected[i]
+    new_sol = Solution(dataset=former_sol.dataset, probabilities=None, selected=np.where(new_selected == 1))
+    initiated_solutions[s] = new_sol
+    hv = calculate_hypervolume(initiated_solutions, ref_x=1.1, ref_y=1.1)
+    initiated_solutions[s] = former_sol #restore sol
+
+    return hv
+
+def flip_hv(s, i, initiated_solutions):
+    """
+    This method simulates a change in an attribute without changing actually that attribute from the object
+    """
+    new_selected = np.copy(initiated_solutions[s].selected)
+    new_selected[i] = 1 - new_selected[i]
+
+    initiated_solutions[s] = Solution(dataset=initiated_solutions[s].dataset, probabilities=None,
+                                      selected=np.where(new_selected == 1))
+    return initiated_solutions
+
 
 def find_ref_points(population: List[Solution]):
     nadir_x = float("-inf")

@@ -3,7 +3,9 @@ from decimal import Decimal, ROUND_HALF_EVEN
 from typing import List, Tuple
 import numpy as np
 
+
 from datasets.Dataset import Dataset
+
 
 
 class Solution:
@@ -117,6 +119,11 @@ class Solution:
 
         return (new_cost, new_satisfaction,
                 new_satisfaction / (new_cost + 1 / smooth))
+
+
+
+
+
     # read https://davidamos.dev/the-right-way-to-compare-floats-in-python/ for floats comparison
     # we chose 0.001 as abs_tol difference as margin to decide values are equals. otherwise,
     # when plotting solutions they seem equal since the difference is too tiny. it might be
