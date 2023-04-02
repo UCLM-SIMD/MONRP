@@ -157,8 +157,12 @@ class GRASP(AbstractAlgorithm):
                 # construction phase
                 initiated_solutions = self.initialize()
                 # get_nondominated_solutions(initiated_solutions, self.nds)
-                #plot_solutions(initiated_solutions)
 
+
+                if self.local_search_type == "local_search_bitwise_bestFirst_HV":
+                    initiated_solutions = evaluation.solution_subset_selection.search_solution_subset(self.sss_type,
+                                                                                       self.subset_size*2,initiated_solutions)
+                #plot_solutions(initiated_solutions)
                 # local search phase
                 if self.local_search != "None":
                     initiated_solutions = self.local_search(
@@ -180,7 +184,7 @@ class GRASP(AbstractAlgorithm):
                 update_start = time.time()
                 get_nondominated_solutions(initiated_solutions, self.nds)
                 nds_update_time = nds_update_time + (time.time() - update_start)
-                # plot_solutions(self.nds)
+
 
                 self.num_iterations += 1
 
@@ -188,10 +192,13 @@ class GRASP(AbstractAlgorithm):
                     sss_start = time.time()
                     self.nds = evaluation.solution_subset_selection.search_solution_subset(self.sss_type,
                                                                                            self.subset_size, self.nds)
+                    #plot_solutions(self.nds)
                     sss_total_time = sss_total_time + (time.time() - sss_start)
 
                 if self.debug_mode:
                     self.debug_data()
+                if self.num_iterations == 1:
+                    plot_solutions(self.nds)
 
         except EvaluationLimit:
             pass
@@ -200,7 +207,7 @@ class GRASP(AbstractAlgorithm):
         print("\nNDS created has", self.nds.__len__(), "solution(s)")
         print("HV: ", metrics.calculate_hypervolume(self.nds, ref_x=1.1, ref_y=1.1))
         print("time", seconds)
-        # plot_solutions(self.nds)
+        plot_solutions(self.nds)
         return {
             "population": self.nds,
             "time": seconds,
@@ -477,14 +484,14 @@ class GRASP(AbstractAlgorithm):
 
         current_hv = metrics.calculate_hypervolume(initiated_solutions, ref_x=1.1, ref_y=1.1)
         for s in range(len(initiated_solutions)):
-            for i in sorted_pbis:  # breaks the first time "sol" is improved
+            for i in sorted_pbis:  
                 # compute new hv
                 temp_hv = metrics.try_flip_hv(s=s, i=i, initiated_solutions=initiated_solutions)
                 # if neighbor improves hv
                 if temp_hv > current_hv:
                     initiated_solutions= metrics.flip_hv(s=s, i=i, initiated_solutions= initiated_solutions)
                     current_hv = temp_hv
-                    break
+                    #break
 
         return initiated_solutions
 

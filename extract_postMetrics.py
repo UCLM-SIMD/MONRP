@@ -44,7 +44,8 @@ crossover = ['onepoint']  # only 'onepoint' available
 init_type = ['stochastically']  # {'stochastically', 'uniform'}
 path_relinking_mode = ['None','after_local']  # {'None', 'after_local'}
 local_search_type = ['None', 'best_first_neighbor_random','best_first_neighbor_sorted_score',
- 'best_first_neighbor_sorted_score_r' , 'best_first_neighbor_random_domination','best_first_neighbor_sorted_domination']
+ 'best_first_neighbor_sorted_score_r' , 'best_first_neighbor_random_domination','best_first_neighbor_sorted_domination',
+                     'local_search_bitwise_bestFirst_HV']
 # local_search_type values: {'None', 'best_first_neighbor_random','best_first_neighbor_sorted_score',
 # best_first_neighbor_sorted_score_r' , 'best_first_neighbor_random_domination','best_first_neighbor_sorted_domination'}
 
@@ -263,6 +264,7 @@ def construct_store_reference_pareto(uids):
     for file in uids:
         try:
             with open(file, 'r') as f_temp:
+
                 dictio = json.load(f_temp)
 
 
