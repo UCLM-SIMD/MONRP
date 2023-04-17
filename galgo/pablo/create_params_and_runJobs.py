@@ -5,7 +5,7 @@ dataset = ['p1', 'p2', 's1','s2','s3', 's4']  # 'p1', 'p2', 's1','s2','s3', 's4'
 
 # COMMON HYPER-PARAMETERS #
 # possible algorithm values: {'GRASP', 'feda', 'geneticnds', 'pbil', 'umda', nsgaii}
-algorithm = 'GRASP'  # 'GRASP', 'geneticnds', 'nsgaii', 'nsgaipt', 'umda', 'pbil', 'feda', 'mimic', 'random'
+algorithm = 'agemoea'  # 'GRASP', 'geneticnds', 'nsgaii', 'nsgaipt', 'umda', 'pbil', 'feda', 'mimic', 'random', 'agemoea'
 seed = 5
 num_executions = 30  # 30
 
@@ -25,6 +25,9 @@ mutation = ['flip1bit']  # {'flip1bit', 'flipeachbit'}
 replacement = ['elitismnds']  # {'elitism', 'elitismnds'}
 selection = ['tournament']  # only 'tournament' available
 crossover = ['onepoint']  # only 'onepoint' available
+
+# agemoea
+repair_deps = [True, False] # [True, False]
 
 # GRASP hyper-parameters #
 init_type = ['stochastically']  # {'stochastically', 'uniform'}
@@ -97,6 +100,21 @@ def get_grasp_options(dataset_name: str) -> [str]:
                                                           f" {pr} {str(num_executions)} {dependency} {str(size)} " \
                                                           f"{str(s_type)} {str(s_per_it)}"
                                             params_list.append(params_line)
+    return params_list
+
+def get_agemoea_options(dataset_name: str) -> [str]:
+    params_list = []
+
+
+    for pop_size in population_size:
+        for iterations in num_generations:
+            for size in subset_size:
+                for s_type in sss_type:
+                    for rep_d in repair_deps:
+                        params_line = f"agemoea2 {dataset_name} {str(seed)} " \
+                                  f"{str(pop_size)} {str(iterations)}  {str(num_executions)}" \
+                                  f" {str(size)} {str(s_type)} {str(rep_d)}"
+                        params_list.append(params_line)
     return params_list
 
 
@@ -229,6 +247,8 @@ for data in dataset:
         options_list = options_list + get_feda_options(data)
     if 'mimic' == algorithm:
         options_list = options_list + get_mimic_options(data)
+    if 'agemoea' == algorithm:
+        options_list = options_list + get_agemoea_options(data)
     if 'random' == algorithm:
         options_list = options_list + get_random_options(data)
 

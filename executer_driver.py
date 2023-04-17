@@ -3,6 +3,7 @@ from algorithms.EDA.PBIL.pbil_algorithm import PBILAlgorithm
 from algorithms.EDA.UMDA.umda_algorithm import UMDAAlgorithm
 from algorithms.EDA.bivariate.MIMIC.mimic_algorithm import MIMICAlgorithm
 from algorithms.GRASP.GRASP import GRASP
+from algorithms.genetic.agemoea2.agemoea2_algorithm import AGEMOEA2Algorithm
 from algorithms.genetic.geneticnds.geneticnds_algorithm import GeneticNDSAlgorithm
 from algorithms.genetic.nsga2.nsga2_algorithm import NSGA2Algorithm
 from algorithms.genetic.nsgaii.nsgaii_algorithm import NSGAIIAlgorithm
@@ -35,7 +36,6 @@ if (params[0] == "genetic"):
         algorithm_model = NSGAIIAlgorithm
     elif algorithm_name == "nsgaiipt":
         algorithm_model = NSGAIIPTAlgorithm
-    # algorithm_model = NSGA2Algorithm
 
     dataset_name, seed, pop_length, max_gens, max_evaluations, sel_scheme, selection_candidates, cross_scheme, \
         cross_prob, mut_scheme, mut_prob, repl_scheme, execs, dependencies, subset_size, sss_type, sss_per_it = \
@@ -168,8 +168,7 @@ elif (params[0] == "eda"):
 elif params[0] == "random":
     algorithm_model = RandomAlgorithm
 
-
-    algorithm_name, dataset_name, seed, numpop, gens, max_evaluations,  \
+    algorithm_name, dataset_name, seed, numpop, gens, max_evaluations, \
         execs, dependencies, subset_size, sss_type, sss_per_it = \
         [str(params[0]), str(params[1]), int(params[2]), int(params[3]), int(params[4]), int(params[5]),
          int(params[6]), str(params[7]), int(params[8]), int(params[9]), str(params[10])]
@@ -178,7 +177,19 @@ elif params[0] == "random":
 
     algorithm = algorithm_model(execs=execs, dataset_name=dataset_name, random_seed=seed,
                                 tackle_dependencies=tackle_dependencies, population_length=numpop, max_generations=gens,
-                                max_evaluations=max_evaluations, subset_size=subset_size, sss_type=sss_type,
-                                sss_per_it=sss_per_it)
+                                subset_size=subset_size, sss_type=sss_type)
+
+
+elif (params[0] == "agemoea2"):
+    algorithm_model = AGEMOEA2Algorithm
+
+    algorithm_name, dataset_name, seed, numpop, gens, execs, subset_size, sss_type = \
+        [str(params[0]), str(params[1]), int(params[2]), int(params[3]), int(params[4]),
+         int(params[5]), int(params[6]), int(params[7])]
+
+    repair_deps = True if str(params[8]).lower() == 'true' else False
+    algorithm = algorithm_model(execs=execs, dataset_name=dataset_name, random_seed=seed, population_length=numpop,
+                                max_generations=gens, debug_mode=False, tackle_dependencies=False,
+                                subset_size=subset_size, sss_type=sss_type, repair_deps=repair_deps)
 
 algorithm.executer.execute(output_folder=OUTPUT_FOLDER)

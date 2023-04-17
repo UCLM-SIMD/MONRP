@@ -9,7 +9,8 @@ from models.Solution import Solution
 """ Please fill the experiments hyper-parameters for all algorithms, which will be used to define the which results
 will be taken into account to find the reference Pareto for GD+ and UNFR"""
 
-prefix = 'files_list_allGRASP_D'
+#prefix = 'files_list_allGRASP_D'
+prefix = 'files_list_prueba'
 dependencies = ['True']  # {'True','False'}
 
 # post metrics are not computed among results for all indicated datasets.Only 1 dataset is taken into account each time.
@@ -17,18 +18,19 @@ dependencies = ['True']  # {'True','False'}
 # do not use c5 and c6 because with 500 pbis its too slow
 # p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'd1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7'
 # 'p1', 'p2', 's1','s2','s3','s4'
-dataset = ['p1', 'p2', 's1','s2','s3','s4']
-algorithm = ['geneticnds', 'umda', 'pbil', 'mimic', 'GRASP']  # 'umda', 'pbil', 'GRASP', 'geneticnds', 'mimic','nsgaii'
+dataset = ['p2']
+# 'agemoea', 'umda', 'pbil', 'GRASP', 'geneticnds', 'mimic','nsgaii'
+algorithm =  ['agemoea'] #['geneticnds', 'umda', 'pbil', 'mimic', 'nsgaii','GRASP']
 
 # COMMON HYPER-PARAMETERS #
 # possible algorithm values: {'GRASP', 'feda', 'geneticnds', 'pbil', 'umda', 'mimic''}
 seed = 5
-num_executions = 30 # 10 30
-subset_size = [10]  # number of solutions to choose from final NDS in each algorithm to compute metrics
+num_executions = 2 #30 # 10 30
+subset_size = [5] # [10]  # number of solutions to choose from final NDS in each algorithm to compute metrics
 sss_type = [0] # 0 for greedy hv
-sss_per_iteration = [True] # [True, False]
-population_size = [700] # [100, 200, 500, 700, 1000], 2000, 3000] # 2000 and 3000 not in nsgaii (too slow)
-num_generations = [400] #[50, 100, 200, 300, 400], 500, 600] #500 and 600 not in nsgaii
+sss_per_iteration = [True] # [True] # [True, False]
+population_size = [100] #[700] # [100, 200, 500, 700, 1000], 2000, 3000] # 2000 and 3000 not in nsgaii (too slow)
+num_generations = [10] #[400] #[50, 100, 200, 300, 400], 500, 600] #500 and 600 not in nsgaii
 max_evals = [0]
 
 # geneticNDS and NSGAii hyperparameters #
@@ -39,6 +41,9 @@ mutation = ['flip1bit']  # {'flip1bit', 'flipeachbit'}
 replacement = ['elitismnds']  # {'elitism', 'elitismnds'}
 selection = ['tournament']  # only 'tournament' available
 crossover = ['onepoint']  # only 'onepoint' available
+
+# agemoea
+repair_deps = [True, False] # [True, False]
 
 # GRASP hyper-parameters #
 init_type = ['stochastically']  # {'stochastically', 'uniform'}
@@ -108,10 +113,27 @@ def get_genetic_uids(name: str, d: str) -> [str]:
                                                             uids_list.append(uid_genetic)
     return uids_list
 
+def get_agemoea_uids(d: str) -> [str]:
+    uids_list = []
+
+
+    for pop_size in population_size:
+        for iterations in num_generations:
+            for size in subset_size:
+                for s_type in sss_type:
+                    for repair_D in repair_deps:
+                        uid_agemoea = output_folder + 'agemoea2' + 'True' + d + \
+                                  str(seed) + str(size) +  str(s_type) + \
+                                  'False' + str(pop_size) + \
+                                  str(iterations) + '0' + str(repair_D)+ str(num_executions)  + \
+                                  '.json'
+
+                        print('\'../' + uid_agemoea + '\',')
+                        uids_list.append(uid_agemoea)
+    return uids_list
+
 
 ''' get_grasp_uids returns a list of uid files created from GRASP hyper-parameters '''
-
-
 def get_grasp_uids(d: str) -> [str]:
     uids_list = []
 
@@ -373,6 +395,9 @@ if __name__ == '__main__':
         if 'feda' in algorithm:
             output_folder = 'output/feda/'
             files_uid = files_uid + get_feda_uids(data)
+        if 'agemoea' in algorithm:
+            output_folder = 'output/agemoea/'
+            files_uid = files_uid + get_agemoea_uids(data)
         if 'random' in algorithm:
             output_folder = 'output/random/'
             files_uid = files_uid + get_random_uids(data)

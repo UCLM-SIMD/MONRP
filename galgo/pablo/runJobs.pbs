@@ -1,5 +1,5 @@
 #!/bin/sh 
- #PBS -N GRASP 
+ #PBS -N agemoea 
  #PBS -l mem=2500mb 
  #PBS -J 1-12 
 
