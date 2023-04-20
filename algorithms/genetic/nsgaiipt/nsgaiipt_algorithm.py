@@ -141,6 +141,11 @@ class NSGAIIPTAlgorithm(AbstractGeneticAlgorithm):
                 # 14 Remove duplicate individul(P) # TODO should go before separating in fronts
                 self.population = self.remove_duplicates(self.population)
 
+                #repair poulation
+                if (self.tackle_dependencies):
+                    self.population = self.repair_population_dependencies(
+                        self.population)
+
                 # 13 Sort(P,Rank,CD)
                 self.evaluate(self.population, self.best_individual)
                 self.population, fronts = self.fast_nondominated_sort(

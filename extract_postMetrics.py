@@ -10,7 +10,11 @@ from models.Solution import Solution
 will be taken into account to find the reference Pareto for GD+ and UNFR"""
 
 #prefix = 'files_list_allGRASP_D'
-prefix = 'files_list_prueba'
+prefix = 'files_list_FEASFIRST_'  # FEASFIRST
+# agemoea2
+repair_deps = [False] # [True, False] # False for Feasibiliy first. true for repair per iteration
+
+
 dependencies = ['True']  # {'True','False'}
 
 # post metrics are not computed among results for all indicated datasets.Only 1 dataset is taken into account each time.
@@ -18,19 +22,19 @@ dependencies = ['True']  # {'True','False'}
 # do not use c5 and c6 because with 500 pbis its too slow
 # p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'd1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7'
 # 'p1', 'p2', 's1','s2','s3','s4'
-dataset = ['p2']
-# 'agemoea', 'umda', 'pbil', 'GRASP', 'geneticnds', 'mimic','nsgaii'
-algorithm =  ['agemoea'] #['geneticnds', 'umda', 'pbil', 'mimic', 'nsgaii','GRASP']
+dataset = ['p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'd1', 'd2', 'd3', 'd4']
+# 'agemoea2', 'umda', 'pbil', 'GRASP', 'geneticnds', 'mimic','nsgaii'
+algorithm = ['agemoea2', 'geneticnds', 'umda', 'pbil', 'mimic', 'nsgaiipt', 'feda']
 
 # COMMON HYPER-PARAMETERS #
 # possible algorithm values: {'GRASP', 'feda', 'geneticnds', 'pbil', 'umda', 'mimic''}
 seed = 5
-num_executions = 2 #30 # 10 30
-subset_size = [5] # [10]  # number of solutions to choose from final NDS in each algorithm to compute metrics
+num_executions = 30 #30 # 10 30
+subset_size = [10]  # number of solutions to choose from final NDS in each algorithm to compute metrics
 sss_type = [0] # 0 for greedy hv
-sss_per_iteration = [True] # [True] # [True, False]
-population_size = [100] #[700] # [100, 200, 500, 700, 1000], 2000, 3000] # 2000 and 3000 not in nsgaii (too slow)
-num_generations = [10] #[400] #[50, 100, 200, 300, 400], 500, 600] #500 and 600 not in nsgaii
+sss_per_iteration = [False] # [True] # [True, False]
+population_size = [100, 200, 500, 700, 1000 ] # 2000, 3000] # 2000 and 3000 not in nsgaii (too slow)
+num_generations = [50, 100, 200, 300, 400] # 500 and 600 not in nsgaii
 max_evals = [0]
 
 # geneticNDS and NSGAii hyperparameters #
@@ -42,8 +46,7 @@ replacement = ['elitismnds']  # {'elitism', 'elitismnds'}
 selection = ['tournament']  # only 'tournament' available
 crossover = ['onepoint']  # only 'onepoint' available
 
-# agemoea
-repair_deps = [True, False] # [True, False]
+
 
 # GRASP hyper-parameters #
 init_type = ['stochastically']  # {'stochastically', 'uniform'}
@@ -395,8 +398,8 @@ if __name__ == '__main__':
         if 'feda' in algorithm:
             output_folder = 'output/feda/'
             files_uid = files_uid + get_feda_uids(data)
-        if 'agemoea' in algorithm:
-            output_folder = 'output/agemoea/'
+        if 'agemoea2' in algorithm:
+            output_folder = 'output/agemoea2/'
             files_uid = files_uid + get_agemoea_uids(data)
         if 'random' in algorithm:
             output_folder = 'output/random/'
