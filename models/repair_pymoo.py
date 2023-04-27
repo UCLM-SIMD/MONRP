@@ -1,6 +1,6 @@
 from pymoo.core.repair import Repair
 
-from algorithms.genetic.agemoea2.problem_monrp import MONRProblem
+from models.problem_monrp import MONRProblem
 
 
 class RepairPymoo(Repair):

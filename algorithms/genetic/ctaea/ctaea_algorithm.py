@@ -6,38 +6,42 @@ from pymoo.core.repair import NoRepair
 from pymoo.operators.mutation.bitflip import BitflipMutation
 from pymoo.operators.sampling.rnd import BinaryRandomSampling
 
+from algorithms.abstract_algorithm.abstract_algorithm import plot_solutions
 from algorithms.genetic.abstract_genetic.abstract_genetic_algorithm import AbstractGeneticAlgorithm
-from algorithms.genetic.agemoea2.agemoea_executer import AGEMOEAExecuter
-from pymoo.algorithms.moo.age import AGEMOEA
+
+from pymoo.algorithms.moo.ctaea import CTAEA
 import time
 
+from algorithms.genetic.ctaea.ctaea_executer import CTAEAExecuter
 from models.problem_monrp import MONRProblem
 from models.repair_pymoo import RepairPymoo
 from datasets import Dataset
 from evaluation.get_nondominated_solutions import get_nondominated_solutions
 
 from models.Solution import Solution
+from pymoo.util.ref_dirs import get_reference_directions
 
 pymoo.algorithms.hyperparameters.MultiRun
 
 
-class AGEMOEA2Algorithm(AbstractGeneticAlgorithm):
-    """https://pymoo.org/algorithms/moo/age2.html
-    """
+class CTAEAAlgorithm(AbstractGeneticAlgorithm):
+    """https://pymoo.org/algorithms/moo/ctaea.html
+        """
 
     def __init__(self, execs, dataset_name="test", dataset: Dataset = None, random_seed=None, population_length=20,
                  max_generations=1000, debug_mode=False, tackle_dependencies=True, subset_size=5,
-                 sss_type=0, repair_deps = False):
+                 sss_type=0, repair_deps=False):
 
-        super().__init__(execs, dataset_name, dataset, random_seed=random_seed, debug_mode=debug_mode, tackle_dependencies=True,
+        super().__init__(execs, dataset_name, dataset, random_seed=random_seed, debug_mode=debug_mode,
+                         tackle_dependencies=True,
                          population_length=population_length, max_generations=max_generations, max_evaluations=0,
                          subset_size=subset_size,
                          sss_type=sss_type, sss_per_iteration=False)
 
-        #if False, pymoo uses feasibility first, and at the end we discard unfeasible individuals. if true,
+        # if False, pymoo uses feasibility first, and at the end we discard unfeasible individuals. if true,
         # then individuals are repaired per iteration
         self.repair_deps = repair_deps
-        self.executer = AGEMOEAExecuter(algorithm=self, execs=execs)
+        self.executer = CTAEAExecuter(algorithm=self, execs=execs)
 
         self.population = None
 
@@ -47,7 +51,6 @@ class AGEMOEA2Algorithm(AbstractGeneticAlgorithm):
         self.num_generations: int = 0
         self.best_individual = None
 
-
         self.config_dictionary.update({'algorithm': 'agemoea2'})
         self.config_dictionary.update({'dependencies': 'True'})
 
@@ -55,29 +58,6 @@ class AGEMOEA2Algorithm(AbstractGeneticAlgorithm):
         self.config_dictionary['max_generations'] = max_generations
         self.config_dictionary['max_evaluations'] = 0
         self.config_dictionary['repair_deps'] = self.repair_deps
-
-    def get_file(self) -> str:
-        """
-
-        return (f"{str(self.__class__.__name__)}-{str(self.dataset_name)}-"
-                f"{self.dependencies_to_string()}-{str(self.random_seed)}-{str(self.population_length)}-"
-                f"{str(self.max_generations)}-{str(self.max_evaluations)}-"
-                f"{str(self.selection_scheme)}-{str(self.selection_candidates)}-"
-                f"{str(self.crossover_scheme)}-{str(self.crossover_prob)}-{str(self.mutation_scheme)}-"
-                f"{str(self.mutation_prob)}-{str(self.replacement_scheme)}.txt")
-        """
-        return None
-
-    def get_name(self) -> str:
-       """ return f"AGE-MOEA2{str(self.population_length)}+{str(self.max_generations)}+{str(self.max_evaluations)}+{str(self.crossover_prob)}\
-            +{str(self.mutation_scheme)}+{str(self.mutation_prob)}"""
-       return None
-
-    def reset(self) -> None:
-        super().reset()
-
-    def add_evaluation(self, new_population):
-        pass
 
     def run(self) -> Dict[str, Any]:
         self.reset()
@@ -91,12 +71,16 @@ class AGEMOEA2Algorithm(AbstractGeneticAlgorithm):
                               satisfactions=self.dataset.pbis_satisfaction_scaled,
                               dependencies=self.dataset.dependencies, num_deps=count_deps)
 
+        # https: // pymoo.org / misc / reference_directions.html
+        #n_dim is number of objectives, n_partitions also sets the popSize
+        ref_dirs = get_reference_directions("das-dennis", n_dim=2, n_partitions=self.population_length-1)
+
         # create the pymoo algorithm object
-        #by default, AGEMOE would use Feasbility First, that is, fill pop is unfeasible individuals if
+        # by default, would use Feasbility First, that is, fill pop is unfeasible individuals if
         # we do not want that. we will repair them (repair parameter).
         repair_type = NoRepair() if not self.repair_deps else RepairPymoo()
-        algorithm = AGEMOEA(pop_size=self.population_length, seed=random.randint(0, 99999), repair=repair_type,
-                            sampling=BinaryRandomSampling(), mutation=BitflipMutation(prob=0.5))
+        algorithm = CTAEA(seed=random.randint(0, 99999), repair=repair_type,
+                                   sampling=BinaryRandomSampling(), mutation=BitflipMutation(prob=0.5), ref_dirs=ref_dirs)
 
         algorithm.setup(problem=problem, termination=('n_gen', self.max_generations))
 
@@ -119,25 +103,14 @@ class AGEMOEA2Algorithm(AbstractGeneticAlgorithm):
             sol = Solution(dataset=self.dataset, selected=ind.X, probabilities=None)
             final_solutions.append(sol)
 
-        # plot_solutions(final_solutions)
-        # filter into NDS
-        """ for sol in final_solutions:
-            ind=sol.selected
-            if ind[1]==1:
-                print(ind[1], ind[21])
-            if ind[2] == 1:
-                print(ind[2], ind[23], ind[24], ind[25], ind[26], ind[42], ind[43], ind[44])
-            if ind[16] == 1:
-                print(ind[16], ind[38], ind[95]) 
-        """
         self.nds = get_nondominated_solutions(final_solutions)
-        #if dependencies are not repaired per iteration, they are repaired at the end of execution
+        # if dependencies are not repaired per iteration, they are repaired at the end of execution
         if not self.repair_deps:
             self.nds = self.repair_population_dependencies(self.nds)
 
         end = time.time()
-        print(end-start, "secs")
-        # plot_solutions(self.nds)
+        print(end - start, "secs")
+        plot_solutions(self.nds)
 
         return {"population": self.nds,
                 "time": end - start,
@@ -149,3 +122,19 @@ class AGEMOEA2Algorithm(AbstractGeneticAlgorithm):
                 "nds_debug": self.nds_debug,
                 "population_debug": self.population_debug
                 }
+
+
+    def get_file(self) -> str:
+        return None
+
+
+    def get_name(self) -> str:
+        return None
+
+
+    def reset(self) -> None:
+        super().reset()
+
+
+    def add_evaluation(self, new_population):
+        pass

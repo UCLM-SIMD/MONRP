@@ -4,6 +4,7 @@ from algorithms.EDA.UMDA.umda_algorithm import UMDAAlgorithm
 from algorithms.EDA.bivariate.MIMIC.mimic_algorithm import MIMICAlgorithm
 from algorithms.GRASP.GRASP import GRASP
 from algorithms.genetic.agemoea2.agemoea2_algorithm import AGEMOEA2Algorithm
+from algorithms.genetic.ctaea.ctaea_algorithm import CTAEAAlgorithm
 from algorithms.genetic.geneticnds.geneticnds_algorithm import GeneticNDSAlgorithm
 from algorithms.genetic.nsga2.nsga2_algorithm import NSGA2Algorithm
 from algorithms.genetic.nsgaii.nsgaii_algorithm import NSGAIIAlgorithm
@@ -180,8 +181,8 @@ elif params[0] == "random":
                                 subset_size=subset_size, sss_type=sss_type)
 
 
-elif (params[0] == "agemoea2"):
-    algorithm_model = AGEMOEA2Algorithm
+elif params[0] == "agemoea2" or params[0] == "ctaea":
+    algorithm_model = AGEMOEA2Algorithm if params[0] == "agemoea2" else CTAEAAlgorithm
 
     algorithm_name, dataset_name, seed, numpop, gens, execs, subset_size, sss_type = \
         [str(params[0]), str(params[1]), int(params[2]), int(params[3]), int(params[4]),
