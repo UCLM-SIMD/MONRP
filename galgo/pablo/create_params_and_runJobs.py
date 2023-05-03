@@ -1,11 +1,11 @@
 # ['p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'd1', 'd2', 'd3','d4','d5','d6','d7',
 # 'e1', 'e2', 'e3','e4','e5','e6']
 dependencies = ['D']  # {'D', 'd'}
-dataset = ['p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'd1', 'd2', 'd3','d4']  # 'p1', 'p2', 's1','s2','s3', 's4'
+dataset = ['p1']  # 'p1', 'p2', 's1','s2','s3', 's4'
 
 # COMMON HYPER-PARAMETERS #
-# possible algorithm values: {'GRASP', 'feda', 'geneticnds', 'pbil', 'umda', nsgaii}
-algorithm = 'nsgaiipt'  # 'GRASP', 'geneticnds', 'nsgaii', 'nsgaiipt', 'umda', 'pbil', 'feda', 'mimic', 'random', 'agemoea2'
+# 'GRASP', 'geneticnds', 'nsgaii', 'nsgaiipt', 'umda', 'pbil', 'feda', 'mimic', 'random', 'agemoea2', 'ctaea'
+algorithm = 'ctaea'
 seed = 5
 num_executions = 30  # 30
 
@@ -26,8 +26,8 @@ replacement = ['elitismnds']  # {'elitism', 'elitismnds'}
 selection = ['tournament']  # only 'tournament' available
 crossover = ['onepoint']  # only 'onepoint' available
 
-# agemoea2
-repair_deps = [True, False] # [True, False]
+# agemoea2 and ctaea
+repair_deps = [True] # [True,False]
 
 # GRASP hyper-parameters #
 init_type = ['stochastically']  # {'stochastically', 'uniform'}
@@ -102,7 +102,7 @@ def get_grasp_options(dataset_name: str) -> [str]:
                                             params_list.append(params_line)
     return params_list
 
-def get_agemoea_options(dataset_name: str) -> [str]:
+def get_pymoo_options(dataset_name: str, algorithm: str) -> [str]:
     params_list = []
 
 
@@ -111,7 +111,7 @@ def get_agemoea_options(dataset_name: str) -> [str]:
             for size in subset_size:
                 for s_type in sss_type:
                     for rep_d in repair_deps:
-                        params_line = f"agemoea2 {dataset_name} {str(seed)} " \
+                        params_line = f"{algorithm} {dataset_name} {str(seed)} " \
                                   f"{str(pop_size)} {str(iterations)}  {str(num_executions)}" \
                                   f" {str(size)} {str(s_type)} {str(rep_d)}"
                         params_list.append(params_line)
@@ -247,8 +247,8 @@ for data in dataset:
         options_list = options_list + get_feda_options(data)
     if 'mimic' == algorithm:
         options_list = options_list + get_mimic_options(data)
-    if 'agemoea2' == algorithm:
-        options_list = options_list + get_agemoea_options(data)
+    if 'agemoea2' == algorithm or 'ctaea' == algorithm:
+        options_list = options_list + get_pymoo_options(data, algorithm)
     if 'random' == algorithm:
         options_list = options_list + get_random_options(data)
 

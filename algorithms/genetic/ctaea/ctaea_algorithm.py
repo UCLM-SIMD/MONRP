@@ -51,7 +51,7 @@ class CTAEAAlgorithm(AbstractGeneticAlgorithm):
         self.num_generations: int = 0
         self.best_individual = None
 
-        self.config_dictionary.update({'algorithm': 'agemoea2'})
+        self.config_dictionary.update({'algorithm': 'ctaea'})
         self.config_dictionary.update({'dependencies': 'True'})
 
         self.config_dictionary['population_length'] = population_length
@@ -73,7 +73,8 @@ class CTAEAAlgorithm(AbstractGeneticAlgorithm):
 
         # https: // pymoo.org / misc / reference_directions.html
         #n_dim is number of objectives, n_partitions also sets the popSize
-        ref_dirs = get_reference_directions("das-dennis", n_dim=2, n_partitions=self.population_length-1)
+        n_partitions = self.population_length - 1 if self.dataset_name!="p1" else 20 #p1 is a small dataset
+        ref_dirs = get_reference_directions("das-dennis", n_dim=2, n_partitions=n_partitions)
 
         # create the pymoo algorithm object
         # by default, would use Feasbility First, that is, fill pop is unfeasible individuals if
@@ -110,7 +111,7 @@ class CTAEAAlgorithm(AbstractGeneticAlgorithm):
 
         end = time.time()
         print(end - start, "secs")
-        plot_solutions(self.nds)
+        #plot_solutions(self.nds)
 
         return {"population": self.nds,
                 "time": end - start,
