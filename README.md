@@ -8,7 +8,7 @@ First, install dependencies: `pip install -r requirements.txt`
 
 # Datasets
 
-Datasets are .json files, described at: https://doi.org/10.5281/zenodo.7247877
+Datasets are .json files, available at https://figshare.com/s/c9c81f3c6e01a0423e26
 
 ---
 
