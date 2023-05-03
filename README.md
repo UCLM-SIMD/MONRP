@@ -122,16 +122,20 @@ Specific methods for PBIL are:
 ### Visual indicators (scatter plots) of experiments with 12 datasets and 4 algorithms (SOGA, UMDA, PBIL, MIMIC, NSGA-II and HMORG)
 
 Dataset p1
-![scatter_p1](https://user-images.githubusercontent.com/25950319/197763505-edc9f355-5c5c-4606-a0cf-3ca874a6efc8.svg)
+![linePareto0_p1](https://user-images.githubusercontent.com/25950319/235906132-6e81f780-9f4e-437d-87ba-d0ee3bce873d.svg)
 Dataset p2
-
+![linePareto0_p2](https://user-images.githubusercontent.com/25950319/235906167-984deb9b-6d35-4508-920d-196c4f397d65.svg)
 Dataset s1
-
+![linePareto0_s1](https://user-images.githubusercontent.com/25950319/235906170-73b7ecf1-2339-470c-b196-e513225bc9a8.svg)
 Dataset s2
-
+![linePareto0_s2](https://user-images.githubusercontent.com/25950319/235906173-68eb1918-55c5-4c77-bf49-1911bb43e890.svg)
 Dataset s3
-
+![linePareto0_s3](https://user-images.githubusercontent.com/25950319/235906177-198d8d19-9b24-480d-a03d-1a6427b929da.svg)
 Dataset s4
+![linePareto0_s4](https://user-images.githubusercontent.com/25950319/235906178-7d7e5e54-7c32-4f5e-bc35-b19e87f20e99.svg)
+
+
+
 
 
 
