@@ -122,17 +122,23 @@ Specific methods for PBIL are:
 ### Visual indicators (scatter plots) of experiments with 12 datasets and 4 algorithms (SOGA, UMDA, PBIL, MIMIC, NSGA-II and HMORG)
 
 Dataset p1
-![linePareto0_p1](https://user-images.githubusercontent.com/25950319/235906132-6e81f780-9f4e-437d-87ba-d0ee3bce873d.svg)
+![linePareto0_p1](https://user-images.githubusercontent.com/25950319/236412686-f5b64e24-c9c3-4568-9ff4-ac3fb3b19be4.svg)
 Dataset p2
-![linePareto0_p2](https://user-images.githubusercontent.com/25950319/235906167-984deb9b-6d35-4508-920d-196c4f397d65.svg)
+![linePareto0_p2](https://user-images.githubusercontent.com/25950319/236412689-5371e597-ffe1-4919-a92f-e88a302cb0a0.svg)
 Dataset s1
-![linePareto0_s1](https://user-images.githubusercontent.com/25950319/235906170-73b7ecf1-2339-470c-b196-e513225bc9a8.svg)
+![linePareto0_s1](https://user-images.githubusercontent.com/25950319/236412692-9cc7132a-30b1-4db3-a296-a2c1328365fc.svg)
 Dataset s2
-![linePareto0_s2](https://user-images.githubusercontent.com/25950319/235906173-68eb1918-55c5-4c77-bf49-1911bb43e890.svg)
+![linePareto0_s2](https://user-images.githubusercontent.com/25950319/236412695-c7a1daef-6306-4220-8751-f8363234a871.svg)
 Dataset s3
-![linePareto0_s3](https://user-images.githubusercontent.com/25950319/235906177-198d8d19-9b24-480d-a03d-1a6427b929da.svg)
+![linePareto0_s3](https://user-images.githubusercontent.com/25950319/236412697-36a598cb-2c04-43a2-8f24-701e1b2b09eb.svg)
 Dataset s4
-![linePareto0_s4](https://user-images.githubusercontent.com/25950319/235906178-7d7e5e54-7c32-4f5e-bc35-b19e87f20e99.svg)
+![linePareto0_s4](https://user-images.githubusercontent.com/25950319/236412698-5a37843c-c3a5-480a-9a59-2eed0909df5d.svg)
+
+
+
+
+
+
 
 
 
