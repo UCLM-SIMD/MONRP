@@ -9,8 +9,8 @@ from models.Solution import Solution
 """ Please fill the experiments hyper-parameters for all algorithms, which will be used to define the which results
 will be taken into account to find the reference Pareto for GD+ and UNFR"""
 
-# prefix = 'files_list_allGRASP_D'
-prefix = 'files_list_FEASFIRST_'  # FEASFIRST
+prefix = 'files_list_allGRASP_D_nop1'
+#prefix = 'files_list_FEASFIRST_'  # FEASFIRST
 
 # agemoea2 and ctaea
 repair_deps = [True]  # [True, False] # False for Feasibiliy first. true for repair per iteration
@@ -22,9 +22,10 @@ dependencies = ['True']  # {'True','False'}
 # do not use c5 and c6 because with 500 pbis its too slow
 # p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'd1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7'
 # 'p1', 'p2', 's1','s2','s3','s4'
-dataset = ['p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'd1', 'd2', 'd3', 'd4']
+dataset = ['p2','a1','a3','c1', 's1','s2','s3','s4']
 # 'agemoea2', 'umda', 'pbil', 'GRASP', 'geneticnds', 'mimic','nsgaii', 'ctaea'
-algorithm = ['agemoea2', 'geneticnds', 'umda', 'pbil', 'mimic', 'ctaea', 'feda']
+#algorithm = ['agemoea2', 'geneticnds', 'umda', 'pbil', 'mimic', 'ctaea', 'feda']
+algorithm = ['geneticnds', 'umda', 'pbil', 'mimic','nsgaii', 'GRASP']
 
 # COMMON HYPER-PARAMETERS #
 # possible algorithm values: {'GRASP', 'feda', 'geneticnds', 'pbil', 'umda', 'mimic''}
@@ -32,9 +33,9 @@ seed = 5
 num_executions = 30  # 30 # 10 30
 subset_size = [10]  # number of solutions to choose from final NDS in each algorithm to compute metrics
 sss_type = [0]  # 0 for greedy hv
-sss_per_iteration = [False]  # [True] # [True, False]
-population_size = [100, 200, 500, 700, 1000]  # 2000, 3000] # 2000 and 3000 not in nsgaii (too slow)
-num_generations = [50, 100, 200, 300, 400]  # 500 and 600 not in nsgaii
+sss_per_iteration = [True]  # [True] # [True, False]
+population_size = [700] # [100, 200, 500, 700, 1000 #[, 2000, 3000] # 2000 and 3000 not in nsgaii (too slow)
+num_generations = [400]  # 500 and 600 not in nsgaii
 max_evals = [0]
 
 # geneticNDS and NSGAii hyperparameters #
@@ -49,12 +50,10 @@ crossover = ['onepoint']  # only 'onepoint' available
 # GRASP hyper-parameters #
 init_type = ['stochastically']  # {'stochastically', 'uniform'}
 path_relinking_mode = ['None', 'after_local']  # {'None', 'after_local'}
-local_search_type = ['None', 'best_first_neighbor_random', 'best_first_neighbor_sorted_score',
-                     'best_first_neighbor_sorted_score_r', 'best_first_neighbor_random_domination',
-                     'best_first_neighbor_sorted_domination',
-                     'local_search_bitwise_bestFirst_HV']
+local_search_type = ['None', 'local_search_bitwise_bestFirst_HV']
 # local_search_type values: {'None', 'best_first_neighbor_random','best_first_neighbor_sorted_score',
-# best_first_neighbor_sorted_score_r' , 'best_first_neighbor_random_domination','best_first_neighbor_sorted_domination'}
+# best_first_neighbor_sorted_score_r' , 'best_first_neighbor_random_domination','best_first_neighbor_sorted_domination',
+# local_search_bitwise_bestFirst_HV}
 
 # umda hyper-parameters #
 selection_scheme = ['nds']  # {'nds','monoscore'}
