@@ -1,19 +1,18 @@
-# MONRP
+# FEDA-NRP: a Fixed-Structure Multivariate Estimation of Distribution Algorithm to Solve the Multi-Objective Next Release Problem with Requirements Interactions
 
-![Python 3.8](https://img.shields.io/badge/Python-3.8.8-blue)
+## Journal of Engineering Applications of Artificial Intelligence
 
-# First steps
+<p align="start">
+  <img src="https://img.shields.io/static/v1?label=python&message=v3.8.8&color=blue">
+  <a href="https://doi.org/10.5281/zenodo.7247877"><img src="https://img.shields.io/static/v1?label=datasets&message=zenodo&color=orange"></a>
+  <a href="#"><img src="https://img.shields.io/static/v1?label=journal&message=EAAI&color=purple"></a>
+</p>
 
-First, install dependencies: `pip install -r requirements.txt`
+## How to setup
 
-# Datasets
+Install dependencies: `pip install -r requirements.txt`
 
-Datasets are .json files, described at: https://doi.org/10.5281/zenodo.7247877
-
----
-
-
-# Algorithms
+## Algorithms
 
 All algorithms inherit the base class:
 
@@ -36,98 +35,67 @@ Common methods for all algorithms are:
 - `get_name()`: to obtain its descriptive name
 - `stop_criterion()`: defines when the execution should stop
 
-Current algorithm families are the following:
+---
 
-- [Genetic (base)](#genetic-abstract)
-  - [GeneticNDS](#geneticnds)
- 
-- [EDA](#eda)
+### Algorithm families
 
-  - [UMDA](#umda-univariate)
-  - [PBIL](#pbil-univariate)
-  - [FEDA](#feda-univariate)
-  
+- [Genetic (base)](algorithms/genetic/abstract_genetic/abstract_genetic_algorithm.py): Implements common operators of genetic algorithms, such as initialization, basic selection, crossover, mutation and replacement operators. Specific implementations may override or use new operators.
 
-  ***
+  Specific parameters for genetic algorithms are the following:
 
-## Genetic (abstract)
+  ```python
+  population_length: int,
+  max_generations: int,
+  max_evaluations: int,
+  selection: str,
+  selection_candidates: int,
+  crossover: str,
+  crossover_prob: float,
+  mutation: str,
+  mutation_prob: float,
+  replacement: str,
+  ```
 
-Implements common operators of genetic algorithms, such as initialization, basic selection, crossover, mutation and replacement operators. Specific implementations may override or use new operators.
+  Algorithms used in the study are:
 
-Specific parameters for genetic algorithms are the following:
+  - [AGE-MOEA-II](algorithms/genetic/agemoea2/agemoea2_algorithm.py): uses PyMOO's [implementation](https://pymoo.org/algorithms/moo/age.html).
+  - [C-TAEA](algorithms/genetic/ctaea/ctaea_algorithm.py): uses PyMOO's [implementation](https://pymoo.org/algorithms/moo/ctaea.html).
 
-```python
-population_length: int,
-max_generations: int,
-max_evaluations: int,
-selection: str,
-selection_candidates: int,
-crossover: str,
-crossover_prob: float,
-mutation: str,
-mutation_prob: float,
-replacement: str,
-```
+---
 
-### GeneticNDS
+- [Estimation of Distribution Algorithms (EDA)](algorithms/EDA/eda_algorithm.py): Specific parameters for EDA are the following:
 
-Single-Objective genetic algorithm that updates a set of nondominated solutions after each generation.
+  ```python
+  population_length: int,
+  max_generations: int,
+  max_evaluations: int,
+  ```
 
+  Common methods for EDAs are:
 
+  `generate_initial_population()`
 
-## EDA
+  `select_individuals()`
 
-Estimation of Distribution Algorithms.
+  `learn_probability_model()`
 
-Specific parameters for EDA are the following:
+  `sample_new_population()`
 
-```python
-population_length: int,
-max_generations: int,
-max_evaluations: int,
-```
+  Algorithms used in the study are:
 
-Common methods for EDAs are:
+  - [UMDA (Univariate Marginal Distribution Algorithm)](algorithms/EDA/UMDA/umda_algorithm.py)
+  - [PBIL (Population Based Incremental Learning)](algorithms/EDA/PBIL/pbil_algorithm.py)
+  - [MIMIC](algorithms/EDA/bivariate/MIMIC/mimic_algorithm.py)
+  - [FEDA (Fixed-Structure Multivariate Estimation of Distribution Algorithm)](algorithm/EDA/FEDA/feda_algorithm.py)
 
-- `generate_initial_population()`
-- `select_individuals()`:
-- `learn_probability_model()`:
-- `sample_new_population()`:
+---
 
-### UMDA (univariate)
+## Visual indicators (scatter plots)
 
-Univariate Marginal Distribution Algorithm.
+Experiments with 14 datasets and 6 algorithms (UMDA, PBIL, MIMIC, AGE-MOEA, C-TAEA, and FEDA):
 
-Specific implementations for UDMA are:
+### Datasets AX (agile datasets)
 
-- `learn_probability_model()`:
-- `sample_new_population()`:
-
-### FEDA (univariate)
-
-Univariate Marginal Distribution Algorithm.
-
-Specific implementations for FEDA are:
-
-- `learn_probability_model()`:
-- `sample_new_population()`:
-
-### PBIL (univariate)
-
-Population Based Incremental Learning
-
-Specific implementations for PBIL are:
-
-- `select_individuals()`:
-- `learn_probability_model()`:
-- `sample_new_population()`:
-
-Specific methods for PBIL are:
-
-- `initialize_probability_vector()`:
-
-
-### Visual indicators (scatter plots) of experiments with 14 datasets and 6 algorithms (GA, NSGA-II-PT UMDA, PBIL, MIMIC, and FEDA)
 Dataset a1
 ![linePareto0_a1](https://github.com/UCLM-SIMD/MONRP/assets/25950319/e0ef85be-9c4b-4f99-9f6b-a27afca55ab6)
 Dataset a2
@@ -137,6 +105,7 @@ Dataset a3
 Dataset a4
 ![linePareto0_a4](https://github.com/UCLM-SIMD/MONRP/assets/25950319/fa412b1f-b043-4592-82d8-ac2d35220dcc)
 
+### Datasets CX (classic/plan-driven datasets)
 
 Dataset c1
 ![linePareto0_c1](https://github.com/UCLM-SIMD/MONRP/assets/25950319/cf1ef20f-5e0a-4753-bffd-ce0b5d8401b8)
@@ -147,6 +116,8 @@ Dataset c3
 Dataset c4
 ![linePareto0_c4](https://github.com/UCLM-SIMD/MONRP/assets/25950319/86b77cf9-7881-40c0-8c0b-d85db1e08840)
 
+### Datasets DX (higher complexity classic/plan-driven datasets)
+
 Dataset d1
 ![linePareto0_d1](https://github.com/UCLM-SIMD/MONRP/assets/25950319/34860c23-1e4b-4db2-a918-bce1a67d339b)
 Dataset d2
@@ -156,10 +127,9 @@ Dataset d3
 Dataset d4
 ![linePareto0_d4](https://github.com/UCLM-SIMD/MONRP/assets/25950319/c600b42f-64dc-4919-be7a-ba0142cc5ed9)
 
+### Datasets PX (public datasets)
+
 Dataset p1
 ![linePareto0_p1](https://github.com/UCLM-SIMD/MONRP/assets/25950319/103be913-45a5-4a3f-a1ea-6f6c7c888714)
 Dataset p2
 ![linePareto0_p2](https://github.com/UCLM-SIMD/MONRP/assets/25950319/7360ddb6-86a6-443e-bcff-4e22233c4a0a)
-
-
-
