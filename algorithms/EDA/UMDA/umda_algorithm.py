@@ -95,12 +95,10 @@ class UMDAAlgorithm(EDAAlgorithm):
         sss_total_time = 0
 
         self.population = self.generate_initial_population()
-        #plot_solutions(self.population)
         if (self.tackle_dependencies):
             self.population = self.repair_population_dependencies(
                 self.population)
         get_nondominated_solutions(self.population, self.nds)
-        #plot_solutions(self.population)
 
 
         if self.debug_mode:
@@ -109,13 +107,11 @@ class UMDAAlgorithm(EDAAlgorithm):
         try:
             while (not self.stop_criterion(self.num_generations, self.num_evaluations)):
                 # selection
-                # TODO individuals = self.select_individuals(self.population+old_pop)
                 individuals = self.select_individuals(self.population)
 
                 # learning
                 probability_model = self.learn_probability_model(
                     individuals)
-                # old_pop = self.population.copy()
 
                 # replacement
                 self.population = self.sample_new_population(probability_model)
@@ -129,7 +125,7 @@ class UMDAAlgorithm(EDAAlgorithm):
                 update_start = time.time()
                 get_nondominated_solutions(self.population, self.nds)
                 nds_update_time = nds_update_time + (time.time() - update_start)
-                #plot_solutions(self.nds)
+
                 self.num_generations += 1
 
                 if self.sss_per_iteration:

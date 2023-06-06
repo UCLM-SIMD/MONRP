@@ -2,7 +2,6 @@ from typing import Any, Dict, List
 
 import evaluation
 from algorithms.EDA.eda_algorithm import EDAAlgorithm
-from algorithms.abstract_algorithm.abstract_algorithm import plot_solutions
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
 from datasets import Dataset
 from evaluation.get_nondominated_solutions import get_nondominated_solutions
@@ -55,7 +54,7 @@ class FEDAAlgorithm(EDAAlgorithm):
                  population_length: int = 100, selection_scheme: str = "nds", max_generations: int = 100,
                  max_evaluations: int = 0, subset_size: int = 5, sss_type=0, sss_per_it=False):
 
-        super().__init__(execs,dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
+        super().__init__(execs, dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
                          population_length, max_generations, max_evaluations, subset_size=subset_size,
                          sss_type=sss_type, sss_per_iteration=sss_per_it)
 
@@ -103,31 +102,23 @@ class FEDAAlgorithm(EDAAlgorithm):
         self.population = self.init_population()
         get_nondominated_solutions(self.population, self.nds)
 
-        #plot_solutions(self.population)
-
-
         try:
             while not self.stop_criterion(self.num_generations, self.num_evaluations):
                 # select individuals from self.population based on self.selection_scheme
                 local_nds = self.select_individuals(self.population)
-                #plot_solutions(local_nds)
-                # learning
 
+                # learning
                 self.probs = self.learn_probability_model(local_nds)
 
-
                 # sampling
-                #go = time.time()
                 self.population = self.sample_new_population(self.probs)
-                #print("Sampling new pop: ", time.time() - go)
-               # plot_solutions(self.population)
 
                 # evaluation  # update nds with solutions constructed and evolved in this iteration
-
                 update_start = time.time()
-                get_nondominated_solutions(self.population, self.nds) #TODO aquí se filtran las nds, y en la siguiente iteración también se filtran para local_nds! se hace doble?
-                nds_update_time = nds_update_time + (time.time() - update_start)
-                #plot_solutions(self.nds)
+                get_nondominated_solutions(self.population, self.nds)
+                nds_update_time = nds_update_time + \
+                    (time.time() - update_start)
+
                 self.num_generations += 1
 
                 if self.sss_per_iteration:
@@ -143,10 +134,8 @@ class FEDAAlgorithm(EDAAlgorithm):
             pass
 
         end = time.time()
-        #plot_solutions(self.nds)
 
         print("\nNDS created has", self.nds.__len__(), "solution(s)")
-        #print(( end - start)-nds_update_time," seconds")
 
         return {"population": self.nds,
                 "time": end - start,
@@ -168,18 +157,21 @@ class FEDAAlgorithm(EDAAlgorithm):
     def init_population(self) -> List[Solution]:
 
         population = []
-        probs = np.full(self.dataset.pbis_score.size, 1 / self.dataset.pbis_score.size)
+        probs = np.full(self.dataset.pbis_score.size,
+                        1 / self.dataset.pbis_score.size)
 
         for _ in np.arange(self.population_length):
             sample_selected = np.full(self.dataset.num_pbis, 0)
             # sample whole individual using P(X)= 1/self.dataset.num_pbis for all X
-            replace = False # if True, less individuals do not reach cost=1
+            replace = False  # if True, less individuals do not reach cost=1
             while 1 not in sample_selected:
                 sample_selected = np.random.choice(np.arange(self.dataset.num_pbis),
-                                                   size=np.random.randint(self.dataset.num_pbis),
-                                           replace=replace, p=probs) # np.random.binomial(1, probs)
+                                                   size=np.random.randint(
+                                                       self.dataset.num_pbis),
+                                                   replace=replace, p=probs)  # np.random.binomial(1, probs)
 
-            if replace: sample_selected = np.unique(sample_selected)
+            if replace:
+                sample_selected = np.unique(sample_selected)
             # now follow topological order to check if any X must be set to 1
             for x in self.topological_order:
                 for p in self.parents_of[x]:
@@ -188,8 +180,6 @@ class FEDAAlgorithm(EDAAlgorithm):
             solution = Solution(self.dataset, None, selected=sample_selected)
             population.append(solution)
 
-
-        #plot_solutions(population)
         return population
 
     '''
@@ -278,7 +268,7 @@ class FEDAAlgorithm(EDAAlgorithm):
         for x in self.topological_order:
             # first set x in all individual with its Prob computed (marginal or P(X|parents(X)==0)
             x_values_in_pop = np.random.binomial(
-                    n=1, p=probs[x], size=self.population_length)
+                n=1, p=probs[x], size=self.population_length)
             population[:, x] = x_values_in_pop
             # now solve when any parent is set, then x must be 1
             parents_x = self.parents_of[x]
@@ -287,9 +277,6 @@ class FEDAAlgorithm(EDAAlgorithm):
                 for index, values in enumerate(p_values_in_pop):
                     if 1 in values:
                         population[index, x] = 1
-
-
-
 
         #  convert population into List of Solution
         new_population = []
@@ -318,7 +305,6 @@ class FEDAAlgorithm(EDAAlgorithm):
                     self.graph[parent].append(s)
                     self.parents_of[s].append(parent)
 
-        # print("Dependencies Graph is: ", self.graph)
         # Mark all the vertices as not visited
         visited = [False] * v
         order = []
@@ -328,8 +314,6 @@ class FEDAAlgorithm(EDAAlgorithm):
         for i in range(v):
             if not visited[i]:
                 self.topological_sort_util(i, visited, order)
-
-        # print("A topological order of graph structure is: ", order)
 
         return order
 

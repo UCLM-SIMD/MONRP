@@ -155,7 +155,7 @@ class AbstractGeneticAlgorithm(AbstractAlgorithm):
         """Crossover aux method
         """
         chromosome_length = len(parent1.selected)
-        # index aleatorio del punto de division para el cruce
+
         crossover_point = random.randint(1, chromosome_length - 1)
 
         offspring_genes1 = np.concatenate((parent1.selected[0:crossover_point],

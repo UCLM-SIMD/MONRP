@@ -27,14 +27,14 @@ class AGEMOEA2Algorithm(AbstractGeneticAlgorithm):
 
     def __init__(self, execs, dataset_name="test", dataset: Dataset = None, random_seed=None, population_length=20,
                  max_generations=1000, debug_mode=False, tackle_dependencies=True, subset_size=5,
-                 sss_type=0, repair_deps = False):
+                 sss_type=0, repair_deps=False):
 
         super().__init__(execs, dataset_name, dataset, random_seed=random_seed, debug_mode=debug_mode, tackle_dependencies=True,
                          population_length=population_length, max_generations=max_generations, max_evaluations=0,
                          subset_size=subset_size,
                          sss_type=sss_type, sss_per_iteration=False)
 
-        #if False, pymoo uses feasibility first, and at the end we discard unfeasible individuals. if true,
+        # if False, pymoo uses feasibility first, and at the end we discard unfeasible individuals. if true,
         # then individuals are repaired per iteration
         self.repair_deps = repair_deps
         self.executer = AGEMOEAExecuter(algorithm=self, execs=execs)
@@ -46,7 +46,6 @@ class AGEMOEA2Algorithm(AbstractGeneticAlgorithm):
         self.num_evaluations: int = 0
         self.num_generations: int = 0
         self.best_individual = None
-
 
         self.config_dictionary.update({'algorithm': 'agemoea2'})
         self.config_dictionary.update({'dependencies': 'True'})
@@ -69,9 +68,9 @@ class AGEMOEA2Algorithm(AbstractGeneticAlgorithm):
         return None
 
     def get_name(self) -> str:
-       """ return f"AGE-MOEA2{str(self.population_length)}+{str(self.max_generations)}+{str(self.max_evaluations)}+{str(self.crossover_prob)}\
-            +{str(self.mutation_scheme)}+{str(self.mutation_prob)}"""
-       return None
+        """ return f"AGE-MOEA2{str(self.population_length)}+{str(self.max_generations)}+{str(self.max_evaluations)}+{str(self.crossover_prob)}\
+             +{str(self.mutation_scheme)}+{str(self.mutation_prob)}"""
+        return None
 
     def reset(self) -> None:
         super().reset()
@@ -86,19 +85,21 @@ class AGEMOEA2Algorithm(AbstractGeneticAlgorithm):
         #### ASK and TELL PROBLEM-DEPENDENT EXECUTION pymoo mode https://pymoo.org/algorithms/usage.html  ###
 
         # create problem representation
-        count_deps = sum(len(dep) for dep in self.dataset.dependencies if dep is not None)
+        count_deps = sum(len(dep)
+                         for dep in self.dataset.dependencies if dep is not None)
         problem = MONRProblem(num_pbis=self.dataset.num_pbis, costs=self.dataset.pbis_cost_scaled,
                               satisfactions=self.dataset.pbis_satisfaction_scaled,
                               dependencies=self.dataset.dependencies, num_deps=count_deps)
 
         # create the pymoo algorithm object
-        #by default, AGEMOE would use Feasbility First, that is, fill pop is unfeasible individuals if
+        # by default, AGEMOE would use Feasbility First, that is, fill pop is unfeasible individuals if
         # we do not want that. we will repair them (repair parameter).
         repair_type = NoRepair() if not self.repair_deps else RepairPymoo()
         algorithm = AGEMOEA(pop_size=self.population_length, seed=random.randint(0, 99999), repair=repair_type,
                             sampling=BinaryRandomSampling(), mutation=BitflipMutation(prob=0.5))
 
-        algorithm.setup(problem=problem, termination=('n_gen', self.max_generations))
+        algorithm.setup(problem=problem, termination=(
+            'n_gen', self.max_generations))
 
         while algorithm.has_next():
             # ask the algorithm to create the next population (mutates, tournament, ...)
@@ -116,28 +117,18 @@ class AGEMOEA2Algorithm(AbstractGeneticAlgorithm):
         # convert final pymoo population to our List[Solutions] population
         final_solutions = []
         for ind in algorithm.pop:
-            sol = Solution(dataset=self.dataset, selected=ind.X, probabilities=None)
+            sol = Solution(dataset=self.dataset,
+                           selected=ind.X, probabilities=None)
             final_solutions.append(sol)
 
-        # plot_solutions(final_solutions)
         # filter into NDS
-        """ for sol in final_solutions:
-            ind=sol.selected
-            if ind[1]==1:
-                print(ind[1], ind[21])
-            if ind[2] == 1:
-                print(ind[2], ind[23], ind[24], ind[25], ind[26], ind[42], ind[43], ind[44])
-            if ind[16] == 1:
-                print(ind[16], ind[38], ind[95]) 
-        """
         self.nds = get_nondominated_solutions(final_solutions)
-        #if dependencies are not repaired per iteration, they are repaired at the end of execution
+        # if dependencies are not repaired per iteration, they are repaired at the end of execution
         if not self.repair_deps:
             self.nds = self.repair_population_dependencies(self.nds)
 
         end = time.time()
         print(end-start, "secs")
-        # plot_solutions(self.nds)
 
         return {"population": self.nds,
                 "time": end - start,

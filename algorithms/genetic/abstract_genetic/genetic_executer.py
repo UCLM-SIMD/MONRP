@@ -63,10 +63,6 @@ class GeneticExecuter(AbstractExecuter):
         numEvaluations = result["numEvaluations"] if "numEvaluations" in result else 'NaN'
         bestGeneration = result["bestGeneration"] if "bestGeneration" in result else 'NaN'
 
-       # metrics_fields.append(str(numGenerations))
-       # metrics_fields.append(str(numEvaluations))
-       # metrics_fields.append(str(bestGeneration))
-
         self.metrics_dictionary['NumGenerations'][repetition] = numGenerations
         self.metrics_dictionary['NumEvaluations'][repetition] = numEvaluations
         self.metrics_dictionary['BestGeneration'][repetition] = bestGeneration

@@ -66,24 +66,28 @@ class CTAEAAlgorithm(AbstractGeneticAlgorithm):
         #### ASK and TELL PROBLEM-DEPENDENT EXECUTION pymoo mode https://pymoo.org/algorithms/usage.html  ###
 
         # create problem representation
-        count_deps = sum(len(dep) for dep in self.dataset.dependencies if dep is not None)
+        count_deps = sum(len(dep)
+                         for dep in self.dataset.dependencies if dep is not None)
         problem = MONRProblem(num_pbis=self.dataset.num_pbis, costs=self.dataset.pbis_cost_scaled,
                               satisfactions=self.dataset.pbis_satisfaction_scaled,
                               dependencies=self.dataset.dependencies, num_deps=count_deps)
 
         # https: // pymoo.org / misc / reference_directions.html
-        #n_dim is number of objectives, n_partitions also sets the popSize
-        n_partitions = self.population_length - 1 if self.dataset_name!="p1" else 20 #p1 is a small dataset
-        ref_dirs = get_reference_directions("das-dennis", n_dim=2, n_partitions=n_partitions)
+        # n_dim is number of objectives, n_partitions also sets the popSize
+        n_partitions = self.population_length - \
+            1 if self.dataset_name != "p1" else 20  # p1 is a small dataset
+        ref_dirs = get_reference_directions(
+            "das-dennis", n_dim=2, n_partitions=n_partitions)
 
         # create the pymoo algorithm object
         # by default, would use Feasbility First, that is, fill pop is unfeasible individuals if
         # we do not want that. we will repair them (repair parameter).
         repair_type = NoRepair() if not self.repair_deps else RepairPymoo()
         algorithm = CTAEA(seed=random.randint(0, 99999), repair=repair_type,
-                                   sampling=BinaryRandomSampling(), mutation=BitflipMutation(prob=0.5), ref_dirs=ref_dirs)
+                          sampling=BinaryRandomSampling(), mutation=BitflipMutation(prob=0.5), ref_dirs=ref_dirs)
 
-        algorithm.setup(problem=problem, termination=('n_gen', self.max_generations))
+        algorithm.setup(problem=problem, termination=(
+            'n_gen', self.max_generations))
 
         while algorithm.has_next():
             # ask the algorithm to create the next population (mutates, tournament, ...)
@@ -101,7 +105,8 @@ class CTAEAAlgorithm(AbstractGeneticAlgorithm):
         # convert final pymoo population to our List[Solutions] population
         final_solutions = []
         for ind in algorithm.pop:
-            sol = Solution(dataset=self.dataset, selected=ind.X, probabilities=None)
+            sol = Solution(dataset=self.dataset,
+                           selected=ind.X, probabilities=None)
             final_solutions.append(sol)
 
         self.nds = get_nondominated_solutions(final_solutions)
@@ -111,7 +116,6 @@ class CTAEAAlgorithm(AbstractGeneticAlgorithm):
 
         end = time.time()
         print(end - start, "secs")
-        #plot_solutions(self.nds)
 
         return {"population": self.nds,
                 "time": end - start,
@@ -124,18 +128,14 @@ class CTAEAAlgorithm(AbstractGeneticAlgorithm):
                 "population_debug": self.population_debug
                 }
 
-
     def get_file(self) -> str:
         return None
-
 
     def get_name(self) -> str:
         return None
 
-
     def reset(self) -> None:
         super().reset()
-
 
     def add_evaluation(self, new_population):
         pass

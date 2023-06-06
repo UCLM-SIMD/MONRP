@@ -1,6 +1,7 @@
 import copy
 import json
 import string
+from typing import List
 
 from evaluation.get_nondominated_solutions import get_nondominated_solutions
 from evaluation.metrics import calculate_gdplus, calculate_unfr
@@ -10,10 +11,11 @@ from models.Solution import Solution
 will be taken into account to find the reference Pareto for GD+ and UNFR"""
 
 prefix = 'files_list_allGRASP_D_nop1'
-#prefix = 'files_list_FEASFIRST_'  # FEASFIRST
+# prefix = 'files_list_FEASFIRST_'  # FEASFIRST
 
 # agemoea2 and ctaea
-repair_deps = [True]  # [True, False] # False for Feasibiliy first. true for repair per iteration
+# [True, False] # False for Feasibiliy first. true for repair per iteration
+repair_deps = [True]
 
 dependencies = ['True']  # {'True','False'}
 
@@ -22,19 +24,21 @@ dependencies = ['True']  # {'True','False'}
 # do not use c5 and c6 because with 500 pbis its too slow
 # p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'd1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7'
 # 'p1', 'p2', 's1','s2','s3','s4'
-dataset = ['p2','a1','a3','c1', 's1','s2','s3','s4']
+dataset = ['p2', 'a1', 'a3', 'c1', 's1', 's2', 's3', 's4']
 # 'agemoea2', 'umda', 'pbil', 'GRASP', 'geneticnds', 'mimic','nsgaii', 'ctaea'
-#algorithm = ['agemoea2', 'geneticnds', 'umda', 'pbil', 'mimic', 'ctaea', 'feda']
-algorithm = ['geneticnds', 'umda', 'pbil', 'mimic','nsgaii', 'GRASP']
+# algorithm = ['agemoea2', 'geneticnds', 'umda', 'pbil', 'mimic', 'ctaea', 'feda']
+algorithm = ['geneticnds', 'umda', 'pbil', 'mimic', 'nsgaii', 'GRASP']
 
 # COMMON HYPER-PARAMETERS #
 # possible algorithm values: {'GRASP', 'feda', 'geneticnds', 'pbil', 'umda', 'mimic''}
 seed = 5
 num_executions = 30  # 30 # 10 30
-subset_size = [10]  # number of solutions to choose from final NDS in each algorithm to compute metrics
+# number of solutions to choose from final NDS in each algorithm to compute metrics
+subset_size = [10]
 sss_type = [0]  # 0 for greedy hv
 sss_per_iteration = [True]  # [True] # [True, False]
-population_size = [700] # [100, 200, 500, 700, 1000 #[, 2000, 3000] # 2000 and 3000 not in nsgaii (too slow)
+# [100, 200, 500, 700, 1000 #[, 2000, 3000] # 2000 and 3000 not in nsgaii (too slow)
+population_size = [700]
 num_generations = [400]  # 500 and 600 not in nsgaii
 max_evals = [0]
 
@@ -75,7 +79,7 @@ selected_individuals = [50]
 ''' returns a list of uid files created from geneticNDS hyper-parameters '''
 
 
-def get_genetic_uids(name: str, d: str) -> [str]:
+def get_genetic_uids(name: str, d: str) -> List[str]:
     uids_list = []
 
     for dependency in dependencies:
@@ -90,35 +94,37 @@ def get_genetic_uids(name: str, d: str) -> [str]:
                                         for mut in mutation:
                                             for rep in replacement:
                                                 rep = 'elitism' if name in ['nsgaii', 'nsgaiipt'] and \
-                                                                   rep == 'elitismnds' else rep
+                                                    rep == 'elitismnds' else rep
                                                 for size in subset_size:
                                                     for s_type in sss_type:
                                                         for s_per_it in sss_per_iteration:
                                                             uid_genetic = output_folder + name + dependency + d + \
-                                                                          str(seed) + str(size) + str(s_type) + \
-                                                                          str(s_per_it) + str(pop_size) + \
-                                                                          str(iterations) + str(max_evalu) + \
-                                                                          str(candidates) + str(xover_prob) + str(
-                                                                mut_prob) + \
-                                                                          sel + xover + mut + rep + str(
-                                                                num_executions) + \
-                                                                          '.json'
+                                                                str(seed) + str(size) + str(s_type) + \
+                                                                str(s_per_it) + str(pop_size) + \
+                                                                str(iterations) + str(max_evalu) + \
+                                                                str(candidates) + str(xover_prob) + str(
+                                                                    mut_prob) + \
+                                                                sel + xover + mut + rep + str(
+                                                                    num_executions) + \
+                                                                '.json'
                                                             if (name in ['nsgaii',
                                                                          'nsgaiipt']):  # nsga is not compatible with SSS per iteration
                                                                 uid_genetic = output_folder + name + dependency + d + \
-                                                                              str(seed) + str(size) + str(s_type) + \
-                                                                              'False' + str(pop_size) + \
-                                                                              str(iterations) + str(max_evalu) + \
-                                                                              str(candidates) + str(xover_prob) + str(
-                                                                    mut_prob) + sel + xover + mut + rep + str(
-                                                                    num_executions) + \
-                                                                              '.json'
-                                                            print('\'../' + uid_genetic + '\',')
-                                                            uids_list.append(uid_genetic)
+                                                                    str(seed) + str(size) + str(s_type) + \
+                                                                    'False' + str(pop_size) + \
+                                                                    str(iterations) + str(max_evalu) + \
+                                                                    str(candidates) + str(xover_prob) + str(
+                                                                        mut_prob) + sel + xover + mut + rep + str(
+                                                                        num_executions) + \
+                                                                    '.json'
+                                                            print(
+                                                                '\'../' + uid_genetic + '\',')
+                                                            uids_list.append(
+                                                                uid_genetic)
     return uids_list
 
 
-def get_agemoea_uids(d: str) -> [str]:
+def get_agemoea_uids(d: str) -> List[str]:
     uids_list = []
 
     for pop_size in population_size:
@@ -127,17 +133,17 @@ def get_agemoea_uids(d: str) -> [str]:
                 for s_type in sss_type:
                     for repair_D in repair_deps:
                         uid_agemoea = output_folder + 'agemoea2' + 'True' + d + \
-                                      str(seed) + str(size) + str(s_type) + \
-                                      'False' + str(pop_size) + \
-                                      str(iterations) + '0' + str(repair_D) + str(num_executions) + \
-                                      '.json'
+                            str(seed) + str(size) + str(s_type) + \
+                            'False' + str(pop_size) + \
+                            str(iterations) + '0' + str(repair_D) + str(num_executions) + \
+                            '.json'
 
                         print('\'../' + uid_agemoea + '\',')
                         uids_list.append(uid_agemoea)
     return uids_list
 
 
-def get_ctaea_uids(d: str) -> [str]:
+def get_ctaea_uids(d: str) -> List[str]:
     uids_list = []
 
     for pop_size in population_size:
@@ -146,10 +152,10 @@ def get_ctaea_uids(d: str) -> [str]:
                 for s_type in sss_type:
                     for repair_D in repair_deps:
                         uid_ctaea = output_folder + 'ctaea' + 'True' + d + \
-                                      str(seed) + str(size) + str(s_type) + \
-                                      'False' + str(pop_size) + \
-                                      str(iterations) + '0' + str(repair_D) + str(num_executions) + \
-                                      '.json'
+                            str(seed) + str(size) + str(s_type) + \
+                            'False' + str(pop_size) + \
+                            str(iterations) + '0' + str(repair_D) + str(num_executions) + \
+                            '.json'
 
                         print('\'../' + uid_ctaea + '\',')
                         uids_list.append(uid_ctaea)
@@ -159,7 +165,7 @@ def get_ctaea_uids(d: str) -> [str]:
 ''' get_grasp_uids returns a list of uid files created from GRASP hyper-parameters '''
 
 
-def get_grasp_uids(d: str) -> [str]:
+def get_grasp_uids(d: str) -> List[str]:
     uids_list = []
 
     for dependency in dependencies:
@@ -175,8 +181,8 @@ def get_grasp_uids(d: str) -> [str]:
                                         for s_per_it in sss_per_iteration:
                                             uid_grasp = output_folder + 'GRASP' + dependency + d + str(seed) + str(
                                                 size) + \
-                                                        str(s_type) + str(s_per_it) + str(iterations) + str(pop_size) + \
-                                                        str(max_evalu) + init + search + pr + str(
+                                                str(s_type) + str(s_per_it) + str(iterations) + str(pop_size) + \
+                                                str(max_evalu) + init + search + pr + str(
                                                 num_executions) + '.json'
                                             print('\'../' + uid_grasp + '\',')
                                             uids_list.append(uid_grasp)
@@ -186,7 +192,7 @@ def get_grasp_uids(d: str) -> [str]:
 ''' returns a list of uid files created from umda hyper-parameters '''
 
 
-def get_umda_uids(d: str) -> [str]:
+def get_umda_uids(d: str) -> List[str]:
     uids_list = []
 
     for dependency in dependencies:
@@ -200,9 +206,10 @@ def get_umda_uids(d: str) -> [str]:
                                 for s_type in sss_type:
                                     for s_per_it in sss_per_iteration:
                                         uid_umda = output_folder + 'umda' + dependency + d + str(seed) + str(size) + \
-                                                   str(s_type) + str(s_per_it) + \
-                                                   str(pop_size) + str(iterations) + str(max_evalu) + sel_scheme + \
-                                                   rep_scheme + str(num_executions) + '.json'
+                                            str(s_type) + str(s_per_it) + \
+                                            str(pop_size) + str(iterations) + str(max_evalu) + sel_scheme + \
+                                            rep_scheme + \
+                                            str(num_executions) + '.json'
                                         print('\'../' + uid_umda + '\',')
                                         uids_list.append(uid_umda)
     return uids_list
@@ -211,7 +218,7 @@ def get_umda_uids(d: str) -> [str]:
 ''' returns a list of uid files created from random hyper-parameters '''
 
 
-def get_random_uids(d: str) -> [str]:
+def get_random_uids(d: str) -> List[str]:
     uids_list = []
 
     for dependency in dependencies:
@@ -223,9 +230,9 @@ def get_random_uids(d: str) -> [str]:
                         for s_type in sss_type:
                             for s_per_it in sss_per_iteration:
                                 uid_random = output_folder + 'random' + dependency + d + str(seed) + str(size) + \
-                                             str(s_type) + str(s_per_it) + \
-                                             str(pop_size) + str(iterations) + str(max_evalu) \
-                                             + str(num_executions) + '.json'
+                                    str(s_type) + str(s_per_it) + \
+                                    str(pop_size) + str(iterations) + str(max_evalu) \
+                                    + str(num_executions) + '.json'
                                 print('\'../' + uid_random + '\',')
                                 uids_list.append(uid_random)
     return uids_list
@@ -234,7 +241,7 @@ def get_random_uids(d: str) -> [str]:
 ''' returns a list of uid files created from pbil hyper-parameters '''
 
 
-def get_pbil_uids(d: str) -> [str]:
+def get_pbil_uids(d: str) -> List[str]:
     uids_list = []
 
     for dependency in dependencies:
@@ -249,10 +256,11 @@ def get_pbil_uids(d: str) -> [str]:
                                     for s_type in sss_type:
                                         for s_per_it in sss_per_iteration:
                                             uid_pbil = output_folder + 'pbil' + dependency + d + str(seed) + str(size) + \
-                                                       str(s_type) + str(s_per_it) + str(pop_size) + \
-                                                       str(iterations) + str(max_evalu) + str(l_rate) + str(
+                                                str(s_type) + str(s_per_it) + str(pop_size) + \
+                                                str(iterations) + str(max_evalu) + str(l_rate) + str(
                                                 mut_prob_pbil) + \
-                                                       str(shift) + str(num_executions) + '.json'
+                                                str(shift) + \
+                                                str(num_executions) + '.json'
                                             print('\'../' + uid_pbil + '\',')
                                             uids_list.append(uid_pbil)
     return uids_list
@@ -261,7 +269,7 @@ def get_pbil_uids(d: str) -> [str]:
 ''' returns a list of uid files created from mimiv hyper-parameters '''
 
 
-def get_mimic_uids(d: str) -> [str]:
+def get_mimic_uids(d: str) -> List[str]:
     uids_list = []
 
     for dependency in dependencies:
@@ -277,9 +285,10 @@ def get_mimic_uids(d: str) -> [str]:
                                         for s_per_it in sss_per_iteration:
                                             uid_umda = output_folder + 'mimic' + dependency + d + str(seed) + str(
                                                 size) + \
-                                                       str(s_type) + str(s_per_it) + str(pop_size) + str(iterations) + \
-                                                       str(max_evalu) + str(sel_ind) + sel_scheme + \
-                                                       rep_scheme + str(num_executions) + '.json'
+                                                str(s_type) + str(s_per_it) + str(pop_size) + str(iterations) + \
+                                                str(max_evalu) + str(sel_ind) + sel_scheme + \
+                                                rep_scheme + \
+                                                str(num_executions) + '.json'
                                             print('\'../' + uid_umda + '\',')
                                             uids_list.append(uid_umda)
     return uids_list
@@ -288,7 +297,7 @@ def get_mimic_uids(d: str) -> [str]:
 ''' returns a list of uid files created from feda hyper-parameters '''
 
 
-def get_feda_uids(d: str) -> [str]:
+def get_feda_uids(d: str) -> List[str]:
     uids_list = []
 
     for dependency in dependencies:
@@ -301,8 +310,8 @@ def get_feda_uids(d: str) -> [str]:
                             for s_type in sss_type:
                                 for s_per_it in sss_per_iteration:
                                     uid_feda = output_folder + 'feda' + dependency + d + str(seed) + str(size) + \
-                                               str(s_type) + str(s_per_it) + str(pop_size) + \
-                                               str(iterations) + str(max_evalu) + sel_scheme + str(
+                                        str(s_type) + str(s_per_it) + str(pop_size) + \
+                                        str(iterations) + str(max_evalu) + sel_scheme + str(
                                         num_executions) + '.json'
 
                                     print('\'../' + uid_feda + '\',')
@@ -437,7 +446,8 @@ if __name__ == '__main__':
             files_uid = files_uid + get_random_uids(data)
 
         # find Reference Pareto and compute metrics, and remove files not available yet
-        reference_pareto, files_uid = construct_store_reference_pareto(files_uid)
+        reference_pareto, files_uid = construct_store_reference_pareto(
+            files_uid)
 
         compute_and_store_gdplus(rpf=reference_pareto, uids=files_uid)
         compute_and_store_unfr(rpf=reference_pareto, uids=files_uid)
@@ -454,4 +464,5 @@ if __name__ == '__main__':
     with open('output/' + container_name, 'w') as container_file:
         for uid in all_files_uid:
             container_file.write(uid + "\n")
-    print(f"File list {container_name} created to be used from analisis notebook")
+    print(
+        f"File list {container_name} created to be used from analisis notebook")

@@ -17,45 +17,18 @@ class UMDAExecuter(AbstractExecuter):
         self.config_fields.extend(["Population Length", "MaxGenerations", "MaxEvaluations",
                                    "Selected Individuals", "Selection Scheme", "Replacement Scheme"])
 
-       # self.metrics_fields.extend(
-        #    ["NumGenerations", "NumEvaluations", ])
-
         self.metrics_dictionary["NumGenerations"] = [None] * int(execs)
         self.metrics_dictionary["NumEvaluations"] = [None] * int(execs)
-
-    def get_config_fields(self,) -> List[str]:
-        """UMDA algorithm executer extends metrics fields read from the execution
-        """
-        config_lines: List[str] = super().get_config_fields()
-
-        population_length = self.algorithm.population_length
-        max_generations = self.algorithm.max_generations
-        max_evaluations = self.algorithm.max_evaluations
-        selected_individuals = self.algorithm.selected_individuals
-        selection_scheme = self.algorithm.selection_scheme
-        replacement_scheme = self.algorithm.replacement_scheme
-
-        #config_lines.append(str(population_length))
-        #config_lines.append(str(max_generations))
-        #config_lines.append(str(max_evaluations))
-        #config_lines.append(str(selected_individuals))
-        #config_lines.append(str(selection_scheme))
-        #config_lines.append(str(replacement_scheme))
-
-
-
-        #return config_lines
 
     def get_metrics_fields(self, result: Dict[str, Any], repetition) -> List[str]:
         """UMDA algorithm executer extends metrics fields read from the execution
         """
-        metrics_fields: List[str] = super().get_metrics_fields(result, repetition)
+        metrics_fields: List[str] = super(
+        ).get_metrics_fields(result, repetition)
 
         numGenerations = result["numGenerations"] if "numGenerations" in result else 'NaN'
         numEvaluations = result["numEvaluations"] if "numEvaluations" in result else 'NaN'
 
-        #metrics_fields.append(str(numGenerations))
-        #metrics_fields.append(str(numEvaluations))
         self.metrics_dictionary['NumGenerations'][repetition] = numGenerations
         self.metrics_dictionary['NumEvaluations'][repetition] = numEvaluations
 

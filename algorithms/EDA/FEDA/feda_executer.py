@@ -51,9 +51,6 @@ class FEDAExecuter(AbstractExecuter):
         numGenerations = result["numGenerations"] if "numGenerations" in result else 'NaN'
         numEvaluations = result["numEvaluations"] if "numEvaluations" in result else 'NaN'
 
-        #metrics_fields.append(str(numGenerations))
-        #metrics_fields.append(str(numEvaluations))
-
         self.metrics_dictionary['NumGenerations'][repetition] = numGenerations
         self.metrics_dictionary['NumEvaluations'][repetition] = numEvaluations
 

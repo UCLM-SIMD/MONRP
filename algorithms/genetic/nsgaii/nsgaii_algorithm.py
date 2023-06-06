@@ -1,5 +1,4 @@
 import random
-import sys
 from typing import Any, Dict, List, Tuple
 
 import numpy as np
@@ -90,7 +89,8 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
         """
         self.num_evaluations += 1
         if self.stop_criterion(self.num_generations, self.num_evaluations):
-            new_population, fronts = self.fast_nondominated_sort(new_population)
+            new_population, fronts = self.fast_nondominated_sort(
+                new_population)
             self.best_generation, self.best_generation_avgValue = self.calculate_last_generation_with_enhance(
                 self.best_generation, self.best_generation_avgValue, self.num_generations,
                 new_population)
@@ -150,12 +150,14 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
                     fronts[front_num][0:self.population_length - len(self.population)])
 
                 # ordenar por NDS y crowding distance
-                self.population, fronts = self.fast_nondominated_sort(self.population)
+                self.population, fronts = self.fast_nondominated_sort(
+                    self.population)
 
                 for front in fronts:
                     self.calculate_crowding_distance(front)
 
-                nds_update_time = nds_update_time + (time.time() - update_start)
+                nds_update_time = nds_update_time + \
+                    (time.time() - update_start)
 
                 # use selection,crossover and mutation to create a new population Qt+1
                 offsprings = self.selection(self.population)
@@ -214,7 +216,8 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
                     best_candidate = candidate
 
             rank, crowding_distance = best_candidate.rank, best_candidate.crowding_distance
-            best_candidate = Solution(self.dataset, None, selected=np.where(best_candidate.selected == 1))
+            best_candidate = Solution(
+                self.dataset, None, selected=np.where(best_candidate.selected == 1))
             best_candidate.rank = rank
             best_candidate.crowding_distance = crowding_distance
             new_population.append(best_candidate)
@@ -229,7 +232,6 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
             individual.domination_count = 0
             individual.dominated_solutions = []
             for other_individual in population:
-                # if not individual.__eq__(other_individual):##########################################
                 if individual.dominates(other_individual):
                     individual.dominated_solutions.append(other_individual)
                 elif other_individual.dominates(individual):
@@ -260,24 +262,21 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
 
             front.sort(
                 key=lambda individual: individual.total_cost)
-            # front[0].crowding_distance = 10 ** 9 #########################
             front[0].crowding_distance = float('inf')
-            # front[solutions_num - 1].crowding_distance = 10 ** 9 #########################
             front[solutions_num - 1].crowding_distance = float('inf')
             m_values = [
                 individual.total_cost for individual in front]
             scale = max(m_values) - min(
-                m_values)  # aqui calcula la escala o diferencia entre el valor mayor y el menor, y la usa para dividir en el crowding distance
+                m_values)
             if scale == 0:
                 scale = 1
             for i in range(1, solutions_num - 1):
-                front[i].crowding_distance += (front[i + 1].total_cost - front[i - 1].total_cost) / scale
+                front[i].crowding_distance += (front[i + 1].total_cost -
+                                               front[i - 1].total_cost) / scale
 
             front.sort(
                 key=lambda individual: individual.total_satisfaction)
-            # front[0].crowding_distance = 10 ** 9 #########################
             front[0].crowding_distance = float('inf')
-            # front[solutions_num - 1].crowding_distance = 10 ** 9 #########################
             front[solutions_num - 1].crowding_distance = float('inf')
             m_values = [
                 individual.total_satisfaction for individual in front]
@@ -287,8 +286,8 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
                 scale = 1
             for i in range(1, solutions_num - 1):
                 front[i].crowding_distance += (
-                                                      front[i + 1].total_satisfaction - front[
-                                                  i - 1].total_satisfaction) / scale
+                    front[i + 1].total_satisfaction - front[
+                        i - 1].total_satisfaction) / scale
 
             return front
 
@@ -297,7 +296,7 @@ class NSGAIIAlgorithm(AbstractGeneticAlgorithm):
         """
         if (individual.rank < other_individual.rank) or \
                 ((individual.rank == other_individual.rank) and (
-                        individual.crowding_distance > other_individual.crowding_distance)):
+                    individual.crowding_distance > other_individual.crowding_distance)):
             return 1
         else:
             return -1

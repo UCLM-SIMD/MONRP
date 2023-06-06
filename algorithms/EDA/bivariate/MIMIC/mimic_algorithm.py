@@ -4,7 +4,6 @@ from typing import Any, Dict, List, Tuple
 import evaluation
 from algorithms.EDA.bivariate.MIMIC.mimic_executer import MIMICExecuter
 from algorithms.EDA.eda_algorithm import EDAAlgorithm
-from algorithms.abstract_algorithm.abstract_algorithm import plot_solutions
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
 from datasets import Dataset
 from evaluation.get_nondominated_solutions import get_nondominated_solutions
@@ -244,7 +243,6 @@ class MIMICAlgorithm(EDAAlgorithm):
                 # selection
                 individuals = self.select_individuals(self.population)
 
-
                 # learning
                 marginals, parents, variables, conditionals = self.learn_probability_model(
                     individuals, len(individuals))
@@ -253,15 +251,7 @@ class MIMICAlgorithm(EDAAlgorithm):
                 self.population = self.sample_new_population(
                     marginals, parents, variables, conditionals)
 
-
-                # repair population if dependencies tackled:
-                # no lo forzamos pues tiene que aprender la estructura que le venga bien
-                #se arreglan antes de devolver el nds final
-                #if(self.tackle_dependencies):
-                 #   self.population = self.repair_population_dependencies(
-                  #      self.population)
-
-                # evaluation # update nds with solutions constructed and evolved in this iteration
+                # update nds with solutions constructed and evolved in this iteration
                 update_start = time.time()
                 get_nondominated_solutions(self.population, self.nds)
                 nds_update_time = nds_update_time + (time.time() - update_start)
@@ -284,10 +274,8 @@ class MIMICAlgorithm(EDAAlgorithm):
             self.nds = self.repair_population_dependencies(
                 self.nds)
         end = time.time()
-        #plot_solutions(self.nds)
 
         print("\nNDS created has", self.nds.__len__(), "solution(s)")
-        #print((end - start) - nds_update_time, " seconds")
 
         return {"population": self.nds,
                 "time": end - start,

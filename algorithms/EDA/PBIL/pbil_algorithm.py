@@ -2,7 +2,6 @@ from typing import Any, Dict, List, Tuple
 
 import evaluation
 from algorithms.EDA.eda_algorithm import EDAAlgorithm
-from algorithms.abstract_algorithm.abstract_algorithm import plot_solutions
 from datasets import Dataset
 from evaluation.get_nondominated_solutions import get_nondominated_solutions
 from algorithms.abstract_algorithm.evaluation_exception import EvaluationLimit
@@ -19,12 +18,12 @@ class PBILAlgorithm(EDAAlgorithm):
     """Population Based Incremental Learning
     """
 
-    def __init__(self,execs, dataset_name: str = "test", dataset: Dataset = None, random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
+    def __init__(self, execs, dataset_name: str = "test", dataset: Dataset = None, random_seed: int = None, debug_mode: bool = False, tackle_dependencies: bool = False,
                  population_length: int = 100, max_generations: int = 100, max_evaluations: int = 0,
                  learning_rate: float = 0.1, mutation_prob: float = 0.1,
                  mutation_shift: float = 0.1, subset_size: int = 5, sss_type=0, sss_per_it=False):
 
-        super().__init__(execs,dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
+        super().__init__(execs, dataset_name, dataset, random_seed, debug_mode, tackle_dependencies,
                          population_length, max_generations, max_evaluations, subset_size=subset_size,
                          sss_type=sss_type, sss_per_iteration=sss_per_it)
 
@@ -63,8 +62,8 @@ class PBILAlgorithm(EDAAlgorithm):
                   ]
 
     def initialize_probability_vector(self) -> np.ndarray:
-        #probabilities = np.full(self.dataset.pbis_score.size, 0.5)
-        probabilities = np.full(self.dataset.pbis_score.size, 1/self.dataset.pbis_score.size)
+        probabilities = np.full(
+            self.dataset.pbis_score.size, 1/self.dataset.pbis_score.size)
 
         return probabilities
 
@@ -73,8 +72,6 @@ class PBILAlgorithm(EDAAlgorithm):
         """
         max_sample = self.find_max_sample_nds(
             population, self.nds)
-        # max_sample = self.find_max_sample_pop(
-        #    population)
         return max_sample
 
     def find_max_sample_monoscore(self, population: List[Solution]) -> Tuple[float, Solution]:
@@ -94,7 +91,6 @@ class PBILAlgorithm(EDAAlgorithm):
 
     def find_max_sample_pop(self, population: List[Solution]) -> Solution:
         nds_pop = get_nondominated_solutions(population, [])
-        # nds_pop = population
         random_index = np.random.randint(len(nds_pop))
         return nds_pop[random_index]
 
@@ -133,14 +129,11 @@ class PBILAlgorithm(EDAAlgorithm):
 
                 self.population = self.sample_new_population(
                     self.probability_vector)
-                #plot_solutions(self.population)
 
                 # repair population if dependencies tackled:
-                if(self.tackle_dependencies):
+                if (self.tackle_dependencies):
                     self.population = self.repair_population_dependencies(
                         self.population)
-                #plot_solutions(self.population)
-
 
                 max_sample = self.select_individuals(self.population)
 
@@ -150,8 +143,9 @@ class PBILAlgorithm(EDAAlgorithm):
                 # update nds with solutions constructed and evolved in this iteration
                 update_start = time.time()
                 get_nondominated_solutions(self.population, self.nds)
-                nds_update_time = nds_update_time + (time.time() - update_start)
-                #plot_solutions(self.nds)
+                nds_update_time = nds_update_time + \
+                    (time.time() - update_start)
+
                 self.num_generations += 1
 
                 if self.sss_per_iteration:
@@ -165,7 +159,7 @@ class PBILAlgorithm(EDAAlgorithm):
 
         except EvaluationLimit:
             pass
-        #plot_solutions(self.population)
+
         end = time.time()
 
         print("\nNDS created has", self.nds.__len__(), "solution(s)")

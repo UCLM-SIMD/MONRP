@@ -7,7 +7,6 @@ import numpy as np
 from datasets.Dataset import Dataset
 
 
-
 class Solution:
     """
     It represents a solution handled by algorithm search.
@@ -44,18 +43,11 @@ class Solution:
                 self.total_cost = costs[sampled].sum()
                 self.total_satisfaction = values[sampled].sum()
 
-
-
             self.mono_objective_score = self.compute_mono_objective_score()
-        else: # this branch should be used only from ./extract_postMetrics.py scrip
+        else:  # this branch should be used only from ./extract_postMetrics.py scrip
             self.dataset: Dataset = dataset
             self.total_cost = cost
             self.total_satisfaction = satisfaction
-
-
-
-
-
 
     def compute_mono_objective_score(self) -> float:
         """
@@ -87,9 +79,9 @@ class Solution:
         if self.selected[i] == 0:
             self.selected[i] = 1
             self.total_cost = self.total_cost + i_cost
-            self.total_satisfaction =  self.total_satisfaction+  i_value
+            self.total_satisfaction = self.total_satisfaction + i_value
             self.total_satisfaction = 1 if self.total_satisfaction > 1 else self.total_satisfaction
-            #by precision loss
+            # by precision loss
 
         elif self.selected[i] == 1:
             self.selected[i] = 0
@@ -120,38 +112,39 @@ class Solution:
         return (new_cost, new_satisfaction,
                 new_satisfaction / (new_cost + 1 / smooth))
 
-
-
-
-
     # read https://davidamos.dev/the-right-way-to-compare-floats-in-python/ for floats comparison
     # we chose 0.001 as abs_tol difference as margin to decide values are equals. otherwise,
     # when plotting solutions they seem equal since the difference is too tiny. it might be
-    #changed to 0.001 or even 0.0001.
-    #by default, one solution equals to other dominates it.
-    def dominates(self, solution: "Solution", equals_dominates = True) -> bool:
+    # changed to 0.001 or even 0.0001.
+    # by default, one solution equals to other dominates it.
+
+    def dominates(self, solution: "Solution", equals_dominates=True) -> bool:
         """Return True if self dominates solution, in terms of cost and satisfaction
         """
-        this_cost = Decimal(self.total_cost).quantize(Decimal('.12345'), rounding=ROUND_HALF_EVEN)
-        other_cost = Decimal(solution.total_cost).quantize(Decimal('.12345'), rounding=ROUND_HALF_EVEN)
-        this_satisfaction = Decimal(self.total_satisfaction).quantize(Decimal('.12345'), rounding=ROUND_HALF_EVEN)
-        other_satisfaction = Decimal(solution.total_satisfaction).quantize(Decimal('.12345'), rounding=ROUND_HALF_EVEN)
+        this_cost = Decimal(self.total_cost).quantize(
+            Decimal('.12345'), rounding=ROUND_HALF_EVEN)
+        other_cost = Decimal(solution.total_cost).quantize(
+            Decimal('.12345'), rounding=ROUND_HALF_EVEN)
+        this_satisfaction = Decimal(self.total_satisfaction).quantize(
+            Decimal('.12345'), rounding=ROUND_HALF_EVEN)
+        other_satisfaction = Decimal(solution.total_satisfaction).quantize(
+            Decimal('.12345'), rounding=ROUND_HALF_EVEN)
 
-
-        dominates = (this_cost < other_cost) and (this_satisfaction > other_satisfaction)
+        dominates = (this_cost < other_cost) and (
+            this_satisfaction > other_satisfaction)
 
         dominates = dominates or (
-            math.isclose(self.total_cost,solution.total_cost,abs_tol=0.0001) and
+            math.isclose(self.total_cost, solution.total_cost, abs_tol=0.0001) and
             this_satisfaction > other_satisfaction)
 
         dominates = dominates or (this_cost < other_cost and
-                math.isclose(self.total_satisfaction,solution.total_satisfaction,abs_tol=0.0001))
+                                  math.isclose(self.total_satisfaction, solution.total_satisfaction, abs_tol=0.0001))
 
-        #if both are equals, let one dominate the other and thus remove it
+        # if both are equals, let one dominate the other and thus remove it
         if equals_dominates:
             dominates = dominates or (
-                math.isclose(self.total_cost,solution.total_cost,abs_tol=0.0001) and
-                math.isclose(self.total_satisfaction,solution.total_satisfaction,abs_tol=0.0001))
+                math.isclose(self.total_cost, solution.total_cost, abs_tol=0.0001) and
+                math.isclose(self.total_satisfaction, solution.total_satisfaction, abs_tol=0.0001))
 
         return dominates
 
@@ -200,13 +193,12 @@ class Solution:
         """
         # for each included gene
         for gene_index in range(len(self.selected)):
-            if(self.selected[gene_index] == 1):
+            if (self.selected[gene_index] == 1):
                 # if has dependencies -> include all genes
                 if self.dataset.dependencies[gene_index] is None:
                     continue
                 for other_gene in self.dataset.dependencies[gene_index]:
-                    #self.selected[other_gene-1] = 1
-                    if self.selected[other_gene]!=1:
+                    if self.selected[other_gene] != 1:
                         self.set_bit((other_gene), 1)
 
     def get_max_cost_satisfactions(self) -> float:

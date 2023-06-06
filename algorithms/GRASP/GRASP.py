@@ -111,11 +111,12 @@ class GRASP(AbstractAlgorithm):
 
     def df_find_data(self, df: any):
         return df[
-            (df["Iterations"] == self.iterations) & (df["Solutions per Iteration"] == self.solutions_per_iteration)
+            (df["Iterations"] == self.iterations) & (
+                df["Solutions per Iteration"] == self.solutions_per_iteration)
             & (df["Initialization Type"] == self.init_type) & (df["Local Search Type"] == self.local_search_type)
             & (df["Path Relinking"] == self.path_relinking_mode) & (df["Algorithm"] == self.__class__.__name__)
             & (df["Dataset"] == self.dataset_name) & (df["MaxEvaluations"] == self.max_evaluations)
-            ]
+        ]
 
     def reset(self) -> None:
         super().reset()
@@ -156,35 +157,29 @@ class GRASP(AbstractAlgorithm):
             while (not self.stop_criterion(self.num_iterations, self.num_evaluations)):
                 # construction phase
                 initiated_solutions = self.initialize()
-                # get_nondominated_solutions(initiated_solutions, self.nds)
-
 
                 if self.local_search_type == "local_search_bitwise_bestFirst_HV":
                     initiated_solutions = evaluation.solution_subset_selection.search_solution_subset(self.sss_type,
-                                                                                       self.subset_size*2,initiated_solutions)
-                #plot_solutions(initiated_solutions)
+                                                                                                      self.subset_size*2, initiated_solutions)
                 # local search phase
                 if self.local_search != "None":
                     initiated_solutions = self.local_search(
                         initiated_solutions)
-                #plot_solutions(initiated_solutions)
 
                 if self.path_relinking_mode == "after_local":
                     initiated_solutions = self.path_relinking(
                         initiated_solutions)
-                #plot_solutions(initiated_solutions)
 
                 # repair population if dependencies tackled:
-                # plot_solutions(initiated_solutions)
                 if (self.tackle_dependencies):
                     initiated_solutions = self.repair_population_dependencies(
                         initiated_solutions)
-                # plot_solutions(initiated_solutions)
+
                 # update NDS with solutions constructed and evolved in this iteration
                 update_start = time.time()
                 get_nondominated_solutions(initiated_solutions, self.nds)
-                nds_update_time = nds_update_time + (time.time() - update_start)
-
+                nds_update_time = nds_update_time + \
+                    (time.time() - update_start)
 
                 self.num_iterations += 1
 
@@ -192,7 +187,6 @@ class GRASP(AbstractAlgorithm):
                     sss_start = time.time()
                     self.nds = evaluation.solution_subset_selection.search_solution_subset(self.sss_type,
                                                                                            self.subset_size, self.nds)
-                    #plot_solutions(self.nds)
                     sss_total_time = sss_total_time + (time.time() - sss_start)
 
                 if self.debug_mode:
@@ -205,7 +199,8 @@ class GRASP(AbstractAlgorithm):
 
         seconds = time.time() - self.start
         print("\nNDS created has", self.nds.__len__(), "solution(s)")
-        print("HV: ", metrics.calculate_hypervolume(self.nds, ref_x=1.1, ref_y=1.1))
+        print("HV: ", metrics.calculate_hypervolume(
+            self.nds, ref_x=1.1, ref_y=1.1))
         print("time", seconds)
         plot_solutions(self.nds)
         return {
@@ -389,7 +384,6 @@ class GRASP(AbstractAlgorithm):
                 (c2, s2, mo2) = sol.try_flip(i, self.dataset.pbis_cost_scaled[i],
                                              self.dataset.pbis_satisfaction_scaled[i])
                 self.add_evaluation(initiated_solutions)
-                # plot_solutions(initiated_solutions)
 
                 # if neighbor has greater mono_objective_score, then overwrite former solution with neighbor
                 if mo2 > mo1 and np.count_nonzero(
@@ -397,12 +391,11 @@ class GRASP(AbstractAlgorithm):
                     sol.flip(
                         i, self.dataset.pbis_cost_scaled[i], self.dataset.pbis_satisfaction_scaled[i])
                     self.add_evaluation(initiated_solutions)
-            # plot_solutions(initiated_solutions)
 
         return initiated_solutions
 
     def local_search_bitwise_neighborhood_random_domination(self, initiated_solutions: List[Solution]) -> List[
-        Solution]:
+            Solution]:
         """
         For each initial solution, it runs an incremental search over the set of candidates, adding or removing each of them.
         Each time this operation improves sol.mono_objective_score, that change in sol is kept.
@@ -437,7 +430,7 @@ class GRASP(AbstractAlgorithm):
         return initiated_solutions
 
     def local_search_bitwise_neighborhood_sorted_domination(self, initiated_solutions: List[Solution]) -> List[
-        Solution]:
+            Solution]:
         """
         For each initial solution, it runs an incremental search over the set of candidates, adding or removing each of them.
         Each time this operation improves sol.mono_objective_score, that change in sol is kept.
@@ -482,16 +475,19 @@ class GRASP(AbstractAlgorithm):
         arr1inds = scores.argsort()
         sorted_pbis = arr[arr1inds[::-1]]
 
-        current_hv = metrics.calculate_hypervolume(initiated_solutions, ref_x=1.1, ref_y=1.1)
+        current_hv = metrics.calculate_hypervolume(
+            initiated_solutions, ref_x=1.1, ref_y=1.1)
         for s in range(len(initiated_solutions)):
-            for i in sorted_pbis:  
+            for i in sorted_pbis:
                 # compute new hv
-                temp_hv = metrics.try_flip_hv(s=s, i=i, initiated_solutions=initiated_solutions)
+                temp_hv = metrics.try_flip_hv(
+                    s=s, i=i, initiated_solutions=initiated_solutions)
                 # if neighbor improves hv
                 if temp_hv > current_hv:
-                    initiated_solutions= metrics.flip_hv(s=s, i=i, initiated_solutions= initiated_solutions)
+                    initiated_solutions = metrics.flip_hv(
+                        s=s, i=i, initiated_solutions=initiated_solutions)
                     current_hv = temp_hv
-                    #break
+                    # break
 
         return initiated_solutions
 
@@ -561,4 +557,3 @@ class GRASP(AbstractAlgorithm):
             solutions += new_sols
 
         return solutions
-

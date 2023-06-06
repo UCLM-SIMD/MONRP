@@ -71,7 +71,8 @@ class RandomAlgorithm(AbstractAlgorithm):
                 # update nds with solutions constructed and evolved in this iteration
                 update_start = time.time()
                 get_nondominated_solutions(self.population, self.nds)
-                nds_update_time = nds_update_time + (time.time() - update_start)
+                nds_update_time = nds_update_time + \
+                    (time.time() - update_start)
 
                 self.num_generations += 1
 
@@ -92,7 +93,6 @@ class RandomAlgorithm(AbstractAlgorithm):
         if (self.tackle_dependencies):
             self.nds = self.repair_population_dependencies(
                 self.nds)
-        # plot_solutions(self.nds)
 
         return {"population": self.nds,
                 "time": end - start,
@@ -124,8 +124,7 @@ class RandomAlgorithm(AbstractAlgorithm):
                 i -= 1
         return solutions
 
-    def add_evaluation(self, new_population) -> None:
-
+    def add_evaluation(self, _) -> None:
         return None
 
     def stop_criterion(self, num_generations, num_evaluations) -> bool:
