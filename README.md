@@ -94,6 +94,13 @@ Common methods for all algorithms are:
 
 Experiments with 14 datasets and 6 algorithms (UMDA, PBIL, MIMIC, AGE-MOEA, C-TAEA, and FEDA):
 
+### Datasets PX (public datasets)
+
+Dataset p1
+![linePareto0_p1](https://github.com/UCLM-SIMD/MONRP/assets/25950319/103be913-45a5-4a3f-a1ea-6f6c7c888714)
+Dataset p2
+![linePareto0_p2](https://github.com/UCLM-SIMD/MONRP/assets/25950319/7360ddb6-86a6-443e-bcff-4e22233c4a0a)
+
 ### Datasets AX (agile datasets)
 
 Dataset a1
@@ -126,10 +133,3 @@ Dataset d3
 ![linePareto0_d3](https://github.com/UCLM-SIMD/MONRP/assets/25950319/e670f16b-e6b5-44e0-a941-a5ad90f9ad00)
 Dataset d4
 ![linePareto0_d4](https://github.com/UCLM-SIMD/MONRP/assets/25950319/c600b42f-64dc-4919-be7a-ba0142cc5ed9)
-
-### Datasets PX (public datasets)
-
-Dataset p1
-![linePareto0_p1](https://github.com/UCLM-SIMD/MONRP/assets/25950319/103be913-45a5-4a3f-a1ea-6f6c7c888714)
-Dataset p2
-![linePareto0_p2](https://github.com/UCLM-SIMD/MONRP/assets/25950319/7360ddb6-86a6-443e-bcff-4e22233c4a0a)
