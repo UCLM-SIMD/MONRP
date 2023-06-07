@@ -162,4 +162,4 @@ plots
 temp-plot.*
 *.svg
 *.xml
-.vscode/settings.json
+.vscode
