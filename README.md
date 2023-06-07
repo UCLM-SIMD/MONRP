@@ -63,7 +63,30 @@ Common methods for all algorithms are:
 
 ---
 
-- [GPPR (GRASP algorithm with Pareto front and Path Relinking)](algorithms/GRASP/GRASP.py): GRASP (Greedy Randomized Adaptive Search Procedure) based proposal.
+- [Estimation of Distribution Algorithms (EDA)](algorithms/EDA/eda_algorithm.py): Specific parameters for EDA are the following:
+
+  ```python
+  population_length: int,
+  max_generations: int,
+  max_evaluations: int,
+  ```
+
+  Common methods for EDAs are:
+
+  `generate_initial_population()`
+
+  `select_individuals()`
+
+  `learn_probability_model()`
+
+  `sample_new_population()`
+
+  Algorithms used in the study are:
+
+  - [UMDA (Univariate Marginal Distribution Algorithm)](algorithms/EDA/UMDA/umda_algorithm.py)
+  - [PBIL (Population Based Incremental Learning)](algorithms/EDA/PBIL/pbil_algorithm.py)
+
+---
 
 ## Results
 
