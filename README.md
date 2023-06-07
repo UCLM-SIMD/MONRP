@@ -91,13 +91,4 @@ Common methods for all algorithms are:
 
 ## Visual indicators (scatter plots)
 
-Experiments with 6 datasets and 6 algorithms (SOGA, UMDA, PBIL, MIMIC, and NSGA-II):
-
-### Datasets PX (public datasets)
-
-
-### Datasets SX (synthetic datasets)
-
-
-
-
+Experiments with 6 datasets and 6 algorithms (SOGA, UMDA, PBIL, MIMIC, and NSGA-II): [experimentation](experimentation/).
