@@ -1,30 +1,18 @@
-# MONRP
+# Estimation of Distribution Algorithms Applied to the Next Release Problem
 
-[![Python 3.8](https://github.com/UCLM-SIMD/MONRP/actions/workflows/python.yml/badge.svg)](https://github.com/UCLM-SIMD/MONRP/actions/workflows/python.yml)
-[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/UCLM-SIMD/MONRP.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/UCLM-SIMD/MONRP/context:python)
+## International Conference on Soft Computing Models in Industrial and Environmental Applications
 
-# First steps
+<p align="start">
+  <img src="https://img.shields.io/static/v1?label=python&message=v3.8.8&color=blue">
+  <a href="https://github.com/UCLM-SIMD/MONRP/tree/soco22/datasets"><img src="https://img.shields.io/static/v1?label=datasets&message=repo&color=orange"></a>
+  <a href="https://doi.org/10.1007/978-3-031-18050-7_10"><img src="https://img.shields.io/static/v1?label=conference&message=SOCO22&color=purple"></a>
+</p>
 
-First, install dependencies: `pip install -r requirements.txt`
+## How to setup
 
-# Datasets
+Install dependencies: `pip install -r requirements.txt`
 
-Each dataset is placed in a single function inside a file titled `dataset_X.py`. The function returns the following data: `pbis_cost, num_pbis, stakeholders_importances, stakeholders_pbis_priorities, dependencies`.
-
-Each dataset is loaded inside `Dataset.py`, which loads and calculates scaled values and dependencies for the given data.
-
----
-
-# Evaluation
-
-Shared methods for common operations:
-
-- `metrics.py` contains a set of metric calculations for evaluating an algorithm execution.
-- `update_nds.py` provides a general method for obtaining the set of nondominated solutions of a list, given a new list of candidates.
-
----
-
-# Algorithms
+## Algorithms
 
 All algorithms inherit the base class:
 
@@ -47,195 +35,52 @@ Common methods for all algorithms are:
 - `get_name()`: to obtain its descriptive name
 - `stop_criterion()`: defines when the execution should stop
 
-Current algorithm families are the following:
+---
 
-- [Genetic (base)](#genetic-abstract)
-  - [GeneticNDS](#geneticnds)
-  - [NSGA-II](#nsga-ii)
-- [GRASP](#grasp)
-- [EDA](#eda)
+### Algorithm families
 
-  - [UMDA](#umda-univariate)
-  - [PBIL](#pbil-univariate)
-  - [MIMIC](#mimic-bivariate)
+- [Genetic (base)](algorithms/genetic/abstract_genetic/abstract_genetic_algorithm.py): Implements common operators of genetic algorithms, such as initialization, basic selection, crossover, mutation and replacement operators. Specific implementations may override or use new operators.
 
-  ***
+  Specific parameters for genetic algorithms are the following:
 
-## Genetic (abstract)
+  ```python
+  population_length: int,
+  max_generations: int,
+  max_evaluations: int,
+  selection: str,
+  selection_candidates: int,
+  crossover: str,
+  crossover_prob: float,
+  mutation: str,
+  mutation_prob: float,
+  replacement: str,
+  ```
 
-Implements common operators of genetic algorithms, such as initialization, basic selection, crossover, mutation and replacement operators. Specific implementations may override or use new operators.
+  Algorithms used in the study are:
 
-Specific parameters for genetic algorithms are the following:
-
-```python
-population_length: int,
-max_generations: int,
-max_evaluations: int,
-selection: str,
-selection_candidates: int,
-crossover: str,
-crossover_prob: float,
-mutation: str,
-mutation_prob: float,
-replacement: str,
-```
-
-### GeneticNDS
-
-Single-Objective genetic algorithm that updates a set of nondominated solutions after each generation.
-
-### NSGA-II
-
-Multi-objective genetic algorithm that implements a set of operators that tend to find Pareto fronts better distributed along the search space.
-
-Specific methods are:
-
-- `selection_tournament`:
-- `replacement_elitism()`:
-- `fast_nondominated_sort()`:
-- `calculate_crowding_distance()`:
-- `crowding_operator()`:
-
-  ***
-
-## GRASP
-
-Greedy Randomized Adaptive Search Procedure. Metaheuristic algorithm that iteratively constructs random solutions and by means of local search methods, tries to improve them.
-
-Specific parameters for GRASP are the following:
-
-```python
-iterations: int,
-solutions_per_iteration: int,
-max_evaluations: int,
-init_type:str,
-local_search_type:str,
-path_relinking_mode:str,
-```
+  - [Single-Objective GA](algorithms/genetic/genetic_nds/geneticnds_algorithm.py)
+  - [NSGA-II (Nondominated Sorting Genetic Algorithm II)](algorithms/genetic/nsgaii/nsgaii_algorithm.py)
 
 ---
 
-## EDA
+- [GPPR (GRASP algorithm with Pareto front and Path Relinking)](algorithms/GRASP/GRASP.py): GRASP (Greedy Randomized Adaptive Search Procedure) based proposal.
 
-Estimation of Distribution Algorithms.
+## Results
 
-Specific parameters for EDA are the following:
+Analysis with 3 datasets and 5 algorithms (Random, SOGA, NSGA-II, UMDA, and PBIL): [analysis](experimentation_analysis.ipynb) and [pairwise comparison](pairwisecomparison.ipynb).
 
-```python
-population_length: int,
-max_generations: int,
-max_evaluations: int,
-```
+Outputs of experiments: [outputs](output).
 
-Common methods for EDAs are:
+## Experiments
 
-- `generate_initial_population()`
-- `select_individuals()`:
-- `learn_probability_model()`:
-- `sample_new_population()`:
+First, arrays of hyperparameter configurations have to be defined in `galgo/<algorithm...>/configurations_<algorithm>.py`
 
-### UMDA (univariate)
+Then, use script `galgo_monrp.sh` to launch the experiments. It can generate metrics of the execution or a pareto for each configuration. Execution examples are the following:
 
-Univariate Marginal Distribution Algorithm.
+`> sh galgo_monrp.sh metrics grasp`
 
-Specific implementations for UDMA are:
-
-- `learn_probability_model()`:
-- `sample_new_population()`:
-
-### PBIL (univariate)
-
-Population Based Incremental Learning
-
-Specific implementations for PBIL are:
-
-- `select_individuals()`:
-- `learn_probability_model()`:
-- `sample_new_population()`:
-
-Specific methods for PBIL are:
-
-- `initialize_probability_vector()`:
-
-### MIMIC (bivariate)
-
-Specific parameters for MIMIC are the following:
-
-```python
-selected_individuals: int,
-selection_scheme: str,
-replacement_scheme: str,
-```
-
-Specific implementations for MIMIC are:
-
-- `select_individuals()`:
-- `learn_probability_model()`:
-- `sample_new_population()`:
-
----
-
-# Testing
-
-Test suite is placed in `unit_tests.py` in the root folder and can be run by executing in the cmd:
-
-```cmd
-python -m unittest unit_tests.py
-```
-
-The steps to add new unit tests are the following:
-
-1. Create a new test file named `test_algorithm_name.py` inside the algorithm folder.
-2. Write a new test case class using `unittest` library:
-
-   ```python
-   import unittest
-   from algorithms.specific_algorithm import SpecificAlgorithm as tested_algorithm_class
-
-   class SpecificAlgorithmTestCase(unittest.TestCase):
-
-       def setUp(self):
-           """
-           Set up algorithm and random seed
-           """
-           seed = 0
-           self.algorithm = tested_algorithm_class()
-           self.algorithm.set_seed(seed)
-   ```
-
-3. Write test methods that check code is working properly:
-   ```python
-   def test_something(self):
-       """
-       Test that `something()` method works
-       """
-       expected_something = 4
-       actual_something = something()
-       self.assertEqual(actual_something, expected_something)
-   ```
-4. Add the test case to `unit_tests.py`:
-   ```python
-   # import test case
-   from algorithms.specific_algorithm import SpecificAlgorithmTestCase
-   ...
-   # add test case to the test suite
-   suite.addTests(loader.loadTestsFromModule(SpecificAlgorithmTestCase))
-   ...
-   ```
-
-
----
-
-# Experiments
-
-First, arrays of hyperparameter configurations have to be defined in ```galgo/<algorithm...>/configurations_<algorithm>.py```
-
-Then, use script ```galgo_monrp.sh``` to launch the experiments. It can generate metrics of the execution or a pareto for each configuration. Execution examples are the following: 
-
-```> sh galgo_monrp.sh metrics grasp```
-
-```> sh galgo_monrp.sh pareto umda```
+`> sh galgo_monrp.sh pareto umda`
 
 Pareto execution will generate one file for each configuration, containing one row of X-Y values for each solution found in the pareto.
 
-Metrics execution will calculate metrics of 10 consecutive executions for each configuration, storing each configuration in a file. For grouping of these metrics, ```galgo/galgo_file_merger.py``` can be used. Running ```galgo_file_merger.py -a <algorithm>``` will generate a new output file with the column names of the metrics and will include all outputs of the given algorithm.
+Metrics execution will calculate metrics of 10 consecutive executions for each configuration, storing each configuration in a file. For grouping of these metrics, `galgo/galgo_file_merger.py` can be used. Running `galgo_file_merger.py -a <algorithm>` will generate a new output file with the column names of the metrics and will include all outputs of the given algorithm.
