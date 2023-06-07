@@ -4,9 +4,8 @@
 
 <p align="start">
   <img src="https://img.shields.io/static/v1?label=python&message=v3.8.8&color=blue">
-  <img src="https://img.shields.io/static/v1?label=datasets&message=repo&color=orange">
+  <a href="https://github.com/UCLM-SIMD/MONRP/tree/igpl23/datasets"><img src="https://img.shields.io/static/v1?label=datasets&message=repo&color=orange"></a>
   <a href="#"><img src="https://img.shields.io/static/v1?label=journal&message=IGPL&color=purple"></a>
-
 </p>
 
 ## How to setup
@@ -86,7 +85,7 @@ Common methods for all algorithms are:
 
   - [UMDA (Univariate Marginal Distribution Algorithm)](algorithms/EDA/UMDA/umda_algorithm.py)
   - [PBIL (Population Based Incremental Learning)](algorithms/EDA/PBIL/pbil_algorithm.py)
-  - [MIMIC](algorithms/EDA/bivariate/MIMIC/mimic_algorithm.py)
+  - [MIMIC (Mutual-Information-Maximizing Input Clustering)](algorithms/EDA/bivariate/MIMIC/mimic_algorithm.py)
 
 ---
 
