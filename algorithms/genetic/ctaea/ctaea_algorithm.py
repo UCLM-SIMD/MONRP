@@ -111,7 +111,7 @@ class CTAEAAlgorithm(AbstractGeneticAlgorithm):
 
         end = time.time()
         print(end - start, "secs")
-        #plot_solutions(self.nds)
+        
 
         return {"population": self.nds,
                 "time": end - start,

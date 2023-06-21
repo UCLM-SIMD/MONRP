@@ -117,17 +117,14 @@ class FEDAAlgorithm(EDAAlgorithm):
 
 
                 # sampling
-                #go = time.time()
                 self.population = self.sample_new_population(self.probs)
-                #print("Sampling new pop: ", time.time() - go)
-               # plot_solutions(self.population)
 
                 # evaluation  # update nds with solutions constructed and evolved in this iteration
 
                 update_start = time.time()
                 get_nondominated_solutions(self.population, self.nds) #TODO aquí se filtran las nds, y en la siguiente iteración también se filtran para local_nds! se hace doble?
                 nds_update_time = nds_update_time + (time.time() - update_start)
-                #plot_solutions(self.nds)
+                
                 self.num_generations += 1
 
                 if self.sss_per_iteration:
@@ -143,7 +140,7 @@ class FEDAAlgorithm(EDAAlgorithm):
             pass
 
         end = time.time()
-        #plot_solutions(self.nds)
+        
 
         print("\nNDS created has", self.nds.__len__(), "solution(s)")
         #print(( end - start)-nds_update_time," seconds")
@@ -177,7 +174,7 @@ class FEDAAlgorithm(EDAAlgorithm):
             while 1 not in sample_selected:
                 sample_selected = np.random.choice(np.arange(self.dataset.num_pbis),
                                                    size=np.random.randint(self.dataset.num_pbis),
-                                           replace=replace, p=probs) # np.random.binomial(1, probs)
+                                           replace=replace, p=probs)
 
             if replace: sample_selected = np.unique(sample_selected)
             # now follow topological order to check if any X must be set to 1
@@ -188,8 +185,6 @@ class FEDAAlgorithm(EDAAlgorithm):
             solution = Solution(self.dataset, None, selected=sample_selected)
             population.append(solution)
 
-
-        #plot_solutions(population)
         return population
 
     '''
@@ -318,7 +313,6 @@ class FEDAAlgorithm(EDAAlgorithm):
                     self.graph[parent].append(s)
                     self.parents_of[s].append(parent)
 
-        # print("Dependencies Graph is: ", self.graph)
         # Mark all the vertices as not visited
         visited = [False] * v
         order = []

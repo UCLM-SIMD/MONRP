@@ -190,26 +190,6 @@ class NSGA2Algorithm(AbstractGeneticAlgorithm):
 
         return new_population
 
-    # def replacement_elitism(self, population: List[Solution], newpopulation: List[Solution]) -> List[Solution]:
-    #    """Specific replacement implementation that compares individuals by crowding operator
-    #    """
-    #    best_individual = None
-    #    for ind in population:
-    #        if (best_individual is None or self.crowding_operator(ind, best_individual) == 1):
-    #            best_individual = copy.deepcopy(ind)
-    #
-    #    newpopulation_replaced = []
-    #    newpopulation_replaced.extend(newpopulation)
-    #    worst_individual_index = None
-    #    worst_individual = None
-    #    for ind in newpopulation_replaced:
-    #        if (worst_individual is None or self.crowding_operator(ind, worst_individual) == -1):
-    #            worst_individual = copy.deepcopy(ind)
-    #            worst_individual_index = newpopulation_replaced.index(ind)
-    #
-    #    newpopulation_replaced[worst_individual_index] = best_individual
-    #    return newpopulation_replaced
-
     def fast_nondominated_sort(self, population: List[Solution]) -> Tuple[List[Solution], List[Solution]]:
         """Fast method that sorts a population in fronts, where each front contains solutions that are nondominated between them.
         """
@@ -218,7 +198,6 @@ class NSGA2Algorithm(AbstractGeneticAlgorithm):
             individual.domination_count = 0
             individual.dominated_solutions = []
             for other_individual in population:
-                # if not individual.__eq__(other_individual):##########################################
                 if individual.dominates(other_individual):
                     individual.dominated_solutions.append(other_individual)
                 elif other_individual.dominates(individual):
@@ -249,9 +228,7 @@ class NSGA2Algorithm(AbstractGeneticAlgorithm):
 
             front.sort(
                 key=lambda individual: individual.total_cost)
-            # front[0].crowding_distance = 10 ** 9 #########################
             front[0].crowding_distance = float('inf')
-            # front[solutions_num - 1].crowding_distance = 10 ** 9 #########################
             front[solutions_num - 1].crowding_distance = float('inf')
             m_values = [
                 individual.total_cost for individual in front]
@@ -265,9 +242,7 @@ class NSGA2Algorithm(AbstractGeneticAlgorithm):
 
             front.sort(
                 key=lambda individual: individual.total_satisfaction)
-            # front[0].crowding_distance = 10 ** 9 #########################
             front[0].crowding_distance = float('inf')
-            # front[solutions_num - 1].crowding_distance = 10 ** 9 #########################
             front[solutions_num - 1].crowding_distance = float('inf')
             m_values = [
                 individual.total_satisfaction for individual in front]

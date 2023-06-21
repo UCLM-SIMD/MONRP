@@ -92,7 +92,7 @@ class RandomAlgorithm(AbstractAlgorithm):
         if (self.tackle_dependencies):
             self.nds = self.repair_population_dependencies(
                 self.nds)
-        # plot_solutions(self.nds)
+        
 
         return {"population": self.nds,
                 "time": end - start,

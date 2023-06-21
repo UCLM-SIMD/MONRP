@@ -253,14 +253,6 @@ class MIMICAlgorithm(EDAAlgorithm):
                 self.population = self.sample_new_population(
                     marginals, parents, variables, conditionals)
 
-
-                # repair population if dependencies tackled:
-                # no lo forzamos pues tiene que aprender la estructura que le venga bien
-                #se arreglan antes de devolver el nds final
-                #if(self.tackle_dependencies):
-                 #   self.population = self.repair_population_dependencies(
-                  #      self.population)
-
                 # evaluation # update nds with solutions constructed and evolved in this iteration
                 update_start = time.time()
                 get_nondominated_solutions(self.population, self.nds)
@@ -284,10 +276,8 @@ class MIMICAlgorithm(EDAAlgorithm):
             self.nds = self.repair_population_dependencies(
                 self.nds)
         end = time.time()
-        #plot_solutions(self.nds)
 
         print("\nNDS created has", self.nds.__len__(), "solution(s)")
-        #print((end - start) - nds_update_time, " seconds")
 
         return {"population": self.nds,
                 "time": end - start,

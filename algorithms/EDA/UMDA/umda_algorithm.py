@@ -129,7 +129,7 @@ class UMDAAlgorithm(EDAAlgorithm):
                 update_start = time.time()
                 get_nondominated_solutions(self.population, self.nds)
                 nds_update_time = nds_update_time + (time.time() - update_start)
-                #plot_solutions(self.nds)
+
                 self.num_generations += 1
 
                 if self.sss_per_iteration:
@@ -146,7 +146,7 @@ class UMDAAlgorithm(EDAAlgorithm):
             pass
 
         end = time.time()
-        #plot_solutions(self.nds)
+        
 
         print("\nNDS created has", self.nds.__len__(), "solution(s)")
 

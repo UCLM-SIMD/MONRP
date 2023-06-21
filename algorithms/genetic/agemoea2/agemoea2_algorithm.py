@@ -57,20 +57,9 @@ class AGEMOEA2Algorithm(AbstractGeneticAlgorithm):
         self.config_dictionary['repair_deps'] = self.repair_deps
 
     def get_file(self) -> str:
-        """
-
-        return (f"{str(self.__class__.__name__)}-{str(self.dataset_name)}-"
-                f"{self.dependencies_to_string()}-{str(self.random_seed)}-{str(self.population_length)}-"
-                f"{str(self.max_generations)}-{str(self.max_evaluations)}-"
-                f"{str(self.selection_scheme)}-{str(self.selection_candidates)}-"
-                f"{str(self.crossover_scheme)}-{str(self.crossover_prob)}-{str(self.mutation_scheme)}-"
-                f"{str(self.mutation_prob)}-{str(self.replacement_scheme)}.txt")
-        """
         return None
 
     def get_name(self) -> str:
-       """ return f"AGE-MOEA2{str(self.population_length)}+{str(self.max_generations)}+{str(self.max_evaluations)}+{str(self.crossover_prob)}\
-            +{str(self.mutation_scheme)}+{str(self.mutation_prob)}"""
        return None
 
     def reset(self) -> None:
@@ -133,22 +122,13 @@ class AGEMOEA2Algorithm(AbstractGeneticAlgorithm):
             # do some more things, printing, logging, storing or even modifying the algorithm object
             print(algorithm.n_gen, algorithm.evaluator.n_eval)
 
-        # convert final pymoo population to our List[Solutions] population
-        #final_solutions = []
-        #for ind in algorithm.pop:
-         #   sol = Solution(dataset=self.dataset, selected=ind.X, probabilities=None)
-         #   final_solutions.append(sol)
-
-        # plot_solutions(final_solutions)
-
-        #self.nds = get_nondominated_solutions(final_solutions)
         #if dependencies are not repaired per iteration, they are repaired at the end of execution
         if not self.repair_deps and self.tackle_dependencies:
             self.nds = self.repair_population_dependencies(self.nds)
 
         end = time.time()
         print(end-start, "secs")
-        # plot_solutions(self.nds)
+        
 
         return {"population": self.nds,
                 "time": end - start,

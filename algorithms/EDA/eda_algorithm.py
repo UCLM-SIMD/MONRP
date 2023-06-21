@@ -55,11 +55,6 @@ class EDAAlgorithm(AbstractAlgorithm):
     def select_individuals(self, population: List[Solution]) -> List[Solution]:
         individuals = None
         if self.selection_scheme == "nds":
-            # TODO
-            # if len(self.nds) > 0:
-            #     individuals = self.select_nondominated_individuals(
-            #         self.nds)
-            # else:
             individuals = self.select_nondominated_individuals(
                 population)
 
@@ -92,22 +87,11 @@ class EDAAlgorithm(AbstractAlgorithm):
         sample = Solution(self.dataset, None, selected=sample_selected)
         return sample
 
-    # def generate_sample_from_probabilities(self, probabilities: List[float]) -> Solution:
-    #     """Generates a sample given the probability vector, using scaled probabilities
-    #     """
-    #     probs = [prob * 10 for prob in probabilities]
-    #     sum_probs = np.sum(probs)
-    #     scaled_probs = probs / sum_probs
-    #     sample = Solution(self.dataset, scaled_probs)
-    #     return sample
-
     def replace_population_from_probabilities(self, probability_model: List[float]) -> List[Solution]:
         new_population = []
         for _ in np.arange(self.population_length):
             new_individual = self.generate_sample_from_probabilities_binomial(
                 probability_model)
-            # new_individual = self.generate_sample_from_probabilities(
-            #    probability_model)
             new_population.append(new_individual)
 
         return new_population
@@ -118,8 +102,6 @@ class EDAAlgorithm(AbstractAlgorithm):
         for _ in np.arange(self.population_length-1):
             new_individual = self.generate_sample_from_probabilities_binomial(
                 probability_model)
-            # new_individual = self.generate_sample_from_probabilities(
-            #    probability_model)
             new_population.append(new_individual)
 
         # elitism -> add best individual from old population
@@ -128,14 +110,6 @@ class EDAAlgorithm(AbstractAlgorithm):
         new_population.append(population[0])
 
         return new_population
-
-    # @abstractmethod
-    # def learn_probability_model(self):
-    #     pass
-
-    # @abstractmethod
-    # def sample_new_population(self):
-    #     pass
 
     def add_evaluation(self, new_population) -> None:
         self.num_evaluations += 1
