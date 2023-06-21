@@ -1,19 +1,19 @@
 # ['p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'd1', 'd2', 'd3','d4','d5','d6','d7',
 # 'e1', 'e2', 'e3','e4','e5','e6']
-dependencies = ['D']  # {'D', 'd'}
-dataset = ['a1','a3','c1']  # 'p1', 'p2', 's1','s2','s3', 's4'
+dependencies = ['d']  # {'D', 'd'}
+dataset = ['p1', 'p2', 's1','s2','s3', 's4']  # 'p1', 'p2', 's1','s2','s3', 's4'
 
 # COMMON HYPER-PARAMETERS #
 # 'GRASP', 'geneticnds', 'nsgaii', 'nsgaiipt', 'umda', 'pbil', 'feda', 'mimic', 'random', 'agemoea2', 'ctaea'
-algorithm = 'geneticnds'
+algorithm = 'agemoea2'
 seed = 5
 num_executions = 30  # 30
 
 subset_size = [10]  # number of solutions to choose from final NDS in each algorithm to compute metrics
 sss_type = [0]  # 0 is greedyHV
-sss_per_iteration = [True]  # [True, False]
-population_size = [700]  # [100, 200, 500, 700, 1000 #[, 2000, 3000]
-num_generations = [400]  # [50, 100, 200, 300, 400]
+sss_per_iteration = [True, False]  # [True, False]
+population_size = [100, 200, 500, 700, 1000]  # [100, 200, 500, 700, 1000 #[, 2000, 3000]
+num_generations = [50, 100, 200, 300, 400]  # [50, 100, 200, 300, 400]
 
 max_evals = [0]
 
@@ -27,7 +27,7 @@ selection = ['tournament']  # only 'tournament' available
 crossover = ['onepoint']  # only 'onepoint' available
 
 # agemoea2 and ctaea
-repair_deps = [True] # [True,False]
+repair_deps = [False] # [True,False]
 
 # GRASP hyper-parameters #
 init_type = ['stochastically']  # {'stochastically', 'uniform'}
@@ -110,11 +110,13 @@ def get_pymoo_options(dataset_name: str, algorithm: str) -> [str]:
         for iterations in num_generations:
             for size in subset_size:
                 for s_type in sss_type:
-                    for rep_d in repair_deps:
-                        params_line = f"{algorithm} {dataset_name} {str(seed)} " \
-                                  f"{str(pop_size)} {str(iterations)}  {str(num_executions)}" \
-                                  f" {str(size)} {str(s_type)} {str(rep_d)}"
-                        params_list.append(params_line)
+                    for dependency in dependencies:
+                        for s_per_it in sss_per_iteration:
+                            for rep_d in repair_deps:
+                                params_line = f"{algorithm} {dataset_name} {str(seed)} " \
+                                          f"{str(pop_size)} {str(iterations)}  {str(num_executions)}" \
+                                          f" {str(size)} {str(s_type)} {str(rep_d)} {str(dependency)} {str(s_per_it)}"
+                                params_list.append(params_line)
     return params_list
 
 

@@ -184,13 +184,16 @@ elif params[0] == "random":
 elif params[0] == "agemoea2" or params[0] == "ctaea":
     algorithm_model = AGEMOEA2Algorithm if params[0] == "agemoea2" else CTAEAAlgorithm
 
-    algorithm_name, dataset_name, seed, numpop, gens, execs, subset_size, sss_type = \
+    algorithm_name, dataset_name, seed, numpop, gens, execs, subset_size, sss_type, repair_deps, dependencies, sss_per_it = \
         [str(params[0]), str(params[1]), int(params[2]), int(params[3]), int(params[4]),
-         int(params[5]), int(params[6]), int(params[7])]
+         int(params[5]), int(params[6]), int(params[7]),  str(params[8]), str(params[9]),  str(params[10])]
 
     repair_deps = True if str(params[8]).lower() == 'true' else False
+    tackle_dependencies = True if dependencies == 'D' else False
+    sss_per_it = True if sss_per_it.lower() == 'true' else False
+
     algorithm = algorithm_model(execs=execs, dataset_name=dataset_name, random_seed=seed, population_length=numpop,
-                                max_generations=gens, debug_mode=False, tackle_dependencies=False,
-                                subset_size=subset_size, sss_type=sss_type, repair_deps=repair_deps)
+                                max_generations=gens, debug_mode=False, tackle_dependencies=tackle_dependencies,
+                                subset_size=subset_size, sss_type=sss_type, repair_deps=repair_deps, sss_per_iteration=sss_per_it)
 
 algorithm.executer.execute(output_folder=OUTPUT_FOLDER)

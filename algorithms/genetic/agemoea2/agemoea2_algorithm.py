@@ -6,6 +6,7 @@ from pymoo.core.repair import NoRepair
 from pymoo.operators.mutation.bitflip import BitflipMutation
 from pymoo.operators.sampling.rnd import BinaryRandomSampling
 
+import evaluation
 from algorithms.genetic.abstract_genetic.abstract_genetic_algorithm import AbstractGeneticAlgorithm
 from algorithms.genetic.agemoea2.agemoea_executer import AGEMOEAExecuter
 from pymoo.algorithms.moo.age import AGEMOEA
@@ -27,12 +28,11 @@ class AGEMOEA2Algorithm(AbstractGeneticAlgorithm):
 
     def __init__(self, execs, dataset_name="test", dataset: Dataset = None, random_seed=None, population_length=20,
                  max_generations=1000, debug_mode=False, tackle_dependencies=True, subset_size=5,
-                 sss_type=0, repair_deps = False):
+                 sss_type=0, repair_deps = False, sss_per_iteration=False):
 
-        super().__init__(execs, dataset_name, dataset, random_seed=random_seed, debug_mode=debug_mode, tackle_dependencies=True,
+        super().__init__(execs, dataset_name, dataset, random_seed=random_seed, debug_mode=debug_mode, tackle_dependencies=tackle_dependencies,
                          population_length=population_length, max_generations=max_generations, max_evaluations=0,
-                         subset_size=subset_size,
-                         sss_type=sss_type, sss_per_iteration=False)
+                         subset_size=subset_size,  sss_type=sss_type, sss_per_iteration=sss_per_iteration)
 
         #if False, pymoo uses feasibility first, and at the end we discard unfeasible individuals. if true,
         # then individuals are repaired per iteration
@@ -81,12 +81,17 @@ class AGEMOEA2Algorithm(AbstractGeneticAlgorithm):
 
     def run(self) -> Dict[str, Any]:
         self.reset()
+        nds_update_time = 0
+        sss_total_time = 0
         start = time.time()
 
         #### ASK and TELL PROBLEM-DEPENDENT EXECUTION pymoo mode https://pymoo.org/algorithms/usage.html  ###
 
         # create problem representation
-        count_deps = sum(len(dep) for dep in self.dataset.dependencies if dep is not None)
+        count_deps = 0
+        if self.tackle_dependencies:
+            count_deps = sum(len(dep) for dep in self.dataset.dependencies if dep is not None)
+
         problem = MONRProblem(num_pbis=self.dataset.num_pbis, costs=self.dataset.pbis_cost_scaled,
                               satisfactions=self.dataset.pbis_satisfaction_scaled,
                               dependencies=self.dataset.dependencies, num_deps=count_deps)
@@ -107,6 +112,21 @@ class AGEMOEA2Algorithm(AbstractGeneticAlgorithm):
             # evaluate the individuals using the algorithm's evaluator (necessary to count evaluations for termination)
             algorithm.evaluator.eval(problem, pop)
 
+            # update nds
+            update_start = time.time()
+            current_pop=[]
+            for ind in pop:
+                sol = Solution(dataset=self.dataset, selected=ind.X, probabilities=None)
+                current_pop.append(sol)
+            get_nondominated_solutions(current_pop, self.nds)
+            nds_update_time = nds_update_time + (time.time() - update_start)
+
+            if self.sss_per_iteration:
+                sss_start = time.time()
+                self.nds = evaluation.solution_subset_selection.search_solution_subset(self.sss_type,
+                                                                                       self.subset_size, self.nds)
+                sss_total_time = sss_total_time + (time.time() - sss_start)
+
             # set the evaluated population as the one to use to create offspring
             algorithm.tell(infills=pop)
 
@@ -114,25 +134,16 @@ class AGEMOEA2Algorithm(AbstractGeneticAlgorithm):
             print(algorithm.n_gen, algorithm.evaluator.n_eval)
 
         # convert final pymoo population to our List[Solutions] population
-        final_solutions = []
-        for ind in algorithm.pop:
-            sol = Solution(dataset=self.dataset, selected=ind.X, probabilities=None)
-            final_solutions.append(sol)
+        #final_solutions = []
+        #for ind in algorithm.pop:
+         #   sol = Solution(dataset=self.dataset, selected=ind.X, probabilities=None)
+         #   final_solutions.append(sol)
 
         # plot_solutions(final_solutions)
-        # filter into NDS
-        """ for sol in final_solutions:
-            ind=sol.selected
-            if ind[1]==1:
-                print(ind[1], ind[21])
-            if ind[2] == 1:
-                print(ind[2], ind[23], ind[24], ind[25], ind[26], ind[42], ind[43], ind[44])
-            if ind[16] == 1:
-                print(ind[16], ind[38], ind[95]) 
-        """
-        self.nds = get_nondominated_solutions(final_solutions)
+
+        #self.nds = get_nondominated_solutions(final_solutions)
         #if dependencies are not repaired per iteration, they are repaired at the end of execution
-        if not self.repair_deps:
+        if not self.repair_deps and self.tackle_dependencies:
             self.nds = self.repair_population_dependencies(self.nds)
 
         end = time.time()
@@ -141,7 +152,8 @@ class AGEMOEA2Algorithm(AbstractGeneticAlgorithm):
 
         return {"population": self.nds,
                 "time": end - start,
-                "nds_update_time": -1,
+                "nds_update_time": nds_update_time,
+                "sss_total_time": sss_total_time,
                 "numGenerations": self.max_generations,
                 "bestGeneration": None,
                 "best_individual": None,

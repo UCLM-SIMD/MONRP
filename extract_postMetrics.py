@@ -9,23 +9,22 @@ from models.Solution import Solution
 """ Please fill the experiments hyper-parameters for all algorithms, which will be used to define the which results
 will be taken into account to find the reference Pareto for GD+ and UNFR"""
 
-prefix = 'files_list_allGRASP_D_nop1'
+prefix = 'files_list_IGPL_'
 #prefix = 'files_list_FEASFIRST_'  # FEASFIRST
 
-# agemoea2 and ctaea
-repair_deps = [True]  # [True, False] # False for Feasibiliy first. true for repair per iteration
+#manage dependencies
+dependencies = ['False']  # {'True','False'}
 
-dependencies = ['True']  # {'True','False'}
+# agemoea2 and ctaea
+repair_deps = [False]  # [True, False] # False for Feasibiliy first. true for repair per iteration
 
 # post metrics are not computed among results for all indicated datasets.Only 1 dataset is taken into account each time.
-# dX files are classic (like cX files) but with a larger number of implied pbis by dependency and larger number of pbis
-# do not use c5 and c6 because with 500 pbis its too slow
 # p1', 'p2', 'a1', 'a2', 'a3', 'a4', 'c1', 'c2', 'c3', 'c4', 'd1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7'
 # 'p1', 'p2', 's1','s2','s3','s4'
-dataset = ['p2','a1','a3','c1', 's1','s2','s3','s4']
+dataset = ['s1','s2','s3','s4','p1','p2',]
 # 'agemoea2', 'umda', 'pbil', 'GRASP', 'geneticnds', 'mimic','nsgaii', 'ctaea'
-#algorithm = ['agemoea2', 'geneticnds', 'umda', 'pbil', 'mimic', 'ctaea', 'feda']
-algorithm = ['geneticnds', 'umda', 'pbil', 'mimic','nsgaii', 'GRASP']
+algorithm = ['agemoea2', 'geneticnds', 'umda', 'pbil', 'mimic', 'nsgaii']
+
 
 # COMMON HYPER-PARAMETERS #
 # possible algorithm values: {'GRASP', 'feda', 'geneticnds', 'pbil', 'umda', 'mimic''}
@@ -33,9 +32,9 @@ seed = 5
 num_executions = 30  # 30 # 10 30
 subset_size = [10]  # number of solutions to choose from final NDS in each algorithm to compute metrics
 sss_type = [0]  # 0 for greedy hv
-sss_per_iteration = [True]  # [True] # [True, False]
-population_size = [700] # [100, 200, 500, 700, 1000 #[, 2000, 3000] # 2000 and 3000 not in nsgaii (too slow)
-num_generations = [400]  # 500 and 600 not in nsgaii
+sss_per_iteration = [True, False]  # [True] # [True, False]
+population_size = [100, 200, 500, 700, 1000] # [100, 200, 500, 700, 1000 #[, 2000, 3000] # 2000 and 3000 not in nsgaii (too slow)
+num_generations = [50, 100, 200, 300, 400]  # 500 and 600 not in nsgaii
 max_evals = [0]
 
 # geneticNDS and NSGAii hyperparameters #
@@ -126,14 +125,15 @@ def get_agemoea_uids(d: str) -> [str]:
             for size in subset_size:
                 for s_type in sss_type:
                     for repair_D in repair_deps:
-                        uid_agemoea = output_folder + 'agemoea2' + 'True' + d + \
-                                      str(seed) + str(size) + str(s_type) + \
-                                      'False' + str(pop_size) + \
-                                      str(iterations) + '0' + str(repair_D) + str(num_executions) + \
-                                      '.json'
+                        for s_per_it in sss_per_iteration:
+                            uid_agemoea = output_folder + 'agemoea2' 'True'+ d + \
+                                          str(seed) + str(size) + str(s_type) + \
+                                          str(s_per_it) + str(pop_size) + \
+                                          str(iterations) + '0' +\
+                                          str(repair_D) + str(num_executions)+ '.json'
 
-                        print('\'../' + uid_agemoea + '\',')
-                        uids_list.append(uid_agemoea)
+                            print('\'../' + uid_agemoea + '\',')
+                            uids_list.append(uid_agemoea)
     return uids_list
 
 
