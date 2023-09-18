@@ -1,19 +1,18 @@
-# MONRP
+# Hybrid Multi-Objective Relinked GRASP for the constrained Next Release Problem
 
-![Python 3.8](https://img.shields.io/badge/Python-3.8.8-blue)
+## 26th IEEE International Conference on Computational Science and Engineering
 
-# First steps
+<p align="start">
+  <img src="https://img.shields.io/static/v1?label=python&message=v3.8.8&color=blue">
+  <a href="https://github.com/UCLM-SIMD/MONRP/tree/cse23/datasets"><img src="https://img.shields.io/static/v1?label=datasets&message=repo&color=orange"></a>
+  <a href="#"><img src="https://img.shields.io/static/v1?label=conference&message=CSE23&color=purple"></a>
+</p>
 
-First, install dependencies: `pip install -r requirements.txt`
+## How to setup
 
-# Datasets
+Install dependencies: `pip install -r requirements.txt`
 
-Datasets are .json files, available at https://figshare.com/s/c9c81f3c6e01a0423e26
-
----
-
-
-# Algorithms
+## Algorithms
 
 All algorithms inherit the base class:
 
@@ -36,115 +35,62 @@ Common methods for all algorithms are:
 - `get_name()`: to obtain its descriptive name
 - `stop_criterion()`: defines when the execution should stop
 
-Current algorithm families are the following:
+---
 
-- [Genetic (base)](#genetic-abstract)
-  - [GeneticNDS](#geneticnds)
- 
-- [EDA](#eda)
+### Algorithm families
 
-  - [UMDA](#umda-univariate)
-  - [PBIL](#pbil-univariate)
-  - [MIMIC](#feda-univariate)
-  
+- [Genetic (base)](algorithms/genetic/abstract_genetic/abstract_genetic_algorithm.py): Implements common operators of genetic algorithms, such as initialization, basic selection, crossover, mutation and replacement operators. Specific implementations may override or use new operators.
 
-  ***
+  Specific parameters for genetic algorithms are the following:
 
-## Genetic (abstract)
+  ```python
+  population_length: int,
+  max_generations: int,
+  max_evaluations: int,
+  selection: str,
+  selection_candidates: int,
+  crossover: str,
+  crossover_prob: float,
+  mutation: str,
+  mutation_prob: float,
+  replacement: str,
+  ```
 
-Implements common operators of genetic algorithms, such as initialization, basic selection, crossover, mutation and replacement operators. Specific implementations may override or use new operators.
+  Algorithms used in the study are:
 
-Specific parameters for genetic algorithms are the following:
+  - [Single-Objective GA](algorithms/genetic/geneticnds/geneticnds_algorithm.py)
+  - [NSGA-II (Nondominated Sorting Genetic Algorithm II)](algorithms/genetic/nsgaii/nsgaii_algorithm.py)
 
-```python
-population_length: int,
-max_generations: int,
-max_evaluations: int,
-selection: str,
-selection_candidates: int,
-crossover: str,
-crossover_prob: float,
-mutation: str,
-mutation_prob: float,
-replacement: str,
-```
+---
 
-### GeneticNDS
+- [Estimation of Distribution Algorithms (EDA)](algorithms/EDA/eda_algorithm.py): Specific parameters for EDA are the following:
 
-Single-Objective genetic algorithm that updates a set of nondominated solutions after each generation.
+  ```python
+  population_length: int,
+  max_generations: int,
+  max_evaluations: int,
+  ```
 
+  Common methods for EDAs are:
 
+  `generate_initial_population()`
 
-## EDA
+  `select_individuals()`
 
-Estimation of Distribution Algorithms.
+  `learn_probability_model()`
 
-Specific parameters for EDA are the following:
+  `sample_new_population()`
 
-```python
-population_length: int,
-max_generations: int,
-max_evaluations: int,
-```
+  Algorithms used in the study are:
 
-Common methods for EDAs are:
+  - [UMDA (Univariate Marginal Distribution Algorithm)](algorithms/EDA/UMDA/umda_algorithm.py)
+  - [PBIL (Population Based Incremental Learning)](algorithms/EDA/PBIL/pbil_algorithm.py)
+  - [MIMIC (Mutual-Information-Maximizing Input Clustering)](algorithms/EDA/bivariate/MIMIC/mimic_algorithm.py)
 
-- `generate_initial_population()`
-- `select_individuals()`:
-- `learn_probability_model()`:
-- `sample_new_population()`:
+---
 
-### UMDA (univariate)
+- [HMORG (Hybrid Multi-Objective Relinked GRASP)](algorithms/GRASP/GRASP.py): GRASP (Greedy Randomized Adaptive Search Procedure) based proposal.
 
-Univariate Marginal Distribution Algorithm.
+## Results
 
-Specific implementations for UDMA are:
-
-- `learn_probability_model()`:
-- `sample_new_population()`:
-
-
-### PBIL (univariate)
-
-Population Based Incremental Learning
-
-Specific implementations for PBIL are:
-
-- `select_individuals()`:
-- `learn_probability_model()`:
-- `sample_new_population()`:
-
-Specific methods for PBIL are:
-
-- `initialize_probability_vector()`:
-
-
-### Visual indicators (scatter plots) of experiments with 12 datasets and 4 algorithms (SOGA, UMDA, PBIL, MIMIC, NSGA-II and HMORG)
-
-Dataset p1
-![linePareto0_p1](https://user-images.githubusercontent.com/25950319/236412686-f5b64e24-c9c3-4568-9ff4-ac3fb3b19be4.svg)
-Dataset p2
-![linePareto0_p2](https://user-images.githubusercontent.com/25950319/236412689-5371e597-ffe1-4919-a92f-e88a302cb0a0.svg)
-Dataset s1
-![linePareto0_s1](https://user-images.githubusercontent.com/25950319/236412692-9cc7132a-30b1-4db3-a296-a2c1328365fc.svg)
-Dataset s2
-![linePareto0_s2](https://user-images.githubusercontent.com/25950319/236412695-c7a1daef-6306-4220-8751-f8363234a871.svg)
-Dataset s3
-![linePareto0_s3](https://user-images.githubusercontent.com/25950319/236412697-36a598cb-2c04-43a2-8f24-701e1b2b09eb.svg)
-Dataset s4
-![linePareto0_s4](https://user-images.githubusercontent.com/25950319/236412698-5a37843c-c3a5-480a-9a59-2eed0909df5d.svg)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Analysis with 6 datasets and 6 algorithms (SOGA, NSGA-II, UMDA, PBIL, MIMIC and HMORG): [analysis](results_CSE23.html).
