@@ -58,7 +58,7 @@ Common methods for all algorithms are:
 
   Algorithms used in the study are:
 
-  - [Single-Objective GA](algorithms/genetic/genetic_nds/geneticnds_algorithm.py)
+  - [Single-Objective GA](algorithms/genetic/geneticnds/geneticnds_algorithm.py)
   - [NSGA-II (Nondominated Sorting Genetic Algorithm II)](algorithms/genetic/nsgaii/nsgaii_algorithm.py)
 
 ---
