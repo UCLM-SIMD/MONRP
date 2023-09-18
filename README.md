@@ -1,6 +1,6 @@
 # Estimation of Distribution Algorithms Applied to the Next Release Problem
 
-## International Conference on Soft Computing Models in Industrial and Environmental Applications
+## 17th International Conference on Soft Computing Models in Industrial and Environmental Applications (SOCO 2022)
 
 <p align="start">
   <img src="https://img.shields.io/static/v1?label=python&message=v3.8.8&color=blue">
