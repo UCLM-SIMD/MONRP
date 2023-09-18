@@ -1,6 +1,6 @@
 # GRASP-Based Hybrid Search to Solve the Multi-objective Requirements Selection Problem
 
-## International Conference on Optimization and Learning
+## OLA'22 International Conference on Optimization and Learning
 
 <p align="start">
   <img src="https://img.shields.io/static/v1?label=python&message=v3.8.8&color=blue">
