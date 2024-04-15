@@ -1,7 +1,10 @@
-# MONRP
+# Multi-Objective Next Release Problem (MONRP)
 
-![Python 3.8](https://img.shields.io/badge/Python-3.8.8-blue)
-
+![Python 3.8](https://img.shields.io/badge/Python-3.8.8-blue?logo=python&logoColor=yellow)
+<a href="https://github.com/UCLM-SIMD/MONRP/tree/ola22"><img src="https://img.shields.io/static/v1?label=conference&message=OLA22&color=purple"></a>
+<a href="https://github.com/UCLM-SIMD/MONRP/tree/soco22"><img src="https://img.shields.io/static/v1?label=conference&message=SOCO22&color=purple"></a>
+<a href="https://github.com/UCLM-SIMD/MONRP/tree/igpl23"><img src="https://img.shields.io/static/v1?label=conference&message=OLA22&color=purple"></a>
+<a href="https://github.com/UCLM-SIMD/MONRP/tree/eng_app_ai23"><img src="https://img.shields.io/static/v1?label=journal&message=EAAI&color=purple"></a>
 # First steps
 
 First, install dependencies: `pip install -r requirements.txt`
